@@ -64,30 +64,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Check if the Authorization header is present and starts with "Bearer"
         if (authenticationHeader == null || !authenticationHeader.startsWith("Bearer")) {
-            // Continue with the filter chain if the header is absent or not a valid Bearer token
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extract the JWT token from the Authorization header
         jwtToken = authenticationHeader.substring(7);
         userEmail = jwtService.extractEmail(jwtToken);
 
-        // Check if the user is not already authenticated and the extracted email is not null
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Load UserDetails based on the extracted user email
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-            // Validate the JWT token against the UserDetails
             if (jwtService.isTokenValid(jwtToken, userDetails)) {
-                // Create an authentication token and set it in the SecurityContextHolder
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
 
-        // Continue with the filter chain
         filterChain.doFilter(request, response);
     }
 }
