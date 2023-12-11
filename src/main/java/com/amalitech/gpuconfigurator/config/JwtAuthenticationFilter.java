@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.controller;
+package com.amalitech.gpuconfigurator.config;
 
 import com.amalitech.gpuconfigurator.service.JwtService;
 import jakarta.servlet.FilterChain;
