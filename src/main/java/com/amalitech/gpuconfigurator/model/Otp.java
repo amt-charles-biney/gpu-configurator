@@ -45,5 +45,13 @@ public class Otp {
     @OneToOne
     @JoinColumn(name = "user_id", unique = true)
     private User user;
+
+    @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    private LocalDateTime deletedAt;
+
     
 }
