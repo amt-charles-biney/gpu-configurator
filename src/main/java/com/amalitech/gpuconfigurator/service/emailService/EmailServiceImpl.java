@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService{
@@ -26,7 +29,7 @@ public class EmailServiceImpl implements EmailService{
         Context context = new Context();
         context.setVariable("otp", otp);
 
-        String process = templateEngine.process("templates/email-otp-template", context);
+        String process = templateEngine.process("email-otp-template", context);
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
         helper.setSubject("OTP password for GPU Configurator");
@@ -34,5 +37,17 @@ public class EmailServiceImpl implements EmailService{
         helper.setTo(to);
 
         javaMailSender.send(mimeMessage);
+    }
+
+    @Override
+    public boolean isValidEmail(String email) {
+
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+
+        return matcher.matches();
+
     }
 }

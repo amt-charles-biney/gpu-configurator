@@ -1,8 +1,13 @@
 package com.amalitech.gpuconfigurator.service.otpService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+@Service
+@RequiredArgsConstructor
 public class OtpServiceImpl implements OtpService{
     private static final int OTP_LENGTH = 6;
     private static final int OTP_EXPIRY_MINUTES = 5;
