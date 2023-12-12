@@ -1,4 +1,6 @@
 package com.amalitech.gpuconfigurator.service.otpService;
+import com.amalitech.gpuconfigurator.model.Otp;
+import com.amalitech.gpuconfigurator.repository.OtpRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,8 @@ import java.time.temporal.ChronoUnit;
 public class OtpServiceImpl implements OtpService{
     private static final int OTP_LENGTH = 6;
     private static final int OTP_EXPIRY_MINUTES = 5;
+    private final OtpRepository otpRepository;
+
     @Override
     public String generateOtp() {
         SecureRandom secureRandom = new SecureRandom();
@@ -30,10 +34,19 @@ public class OtpServiceImpl implements OtpService{
 
 
     @Override
-    public Boolean isExpiredOtp(String otp) {
-        LocalDateTime creationTime = LocalDateTime.parse(otp.substring(OTP_LENGTH));
+    public Boolean isExpiredOtp(Otp otpInstance) {
         LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expirationTime = otpInstance.getExpiration();
 
-        return ChronoUnit.MINUTES.between(creationTime, currentTime) > OTP_EXPIRY_MINUTES;
+        return currentTime.isAfter(expirationTime);
+    }
+
+    @Override
+    public void saveOtp(String email, String otp) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expirationTime = currentTime.plusMinutes(5);
+        var otpInstance = Otp.builder().code(otp).email(email).expiration(expirationTime).build();
+
+        otpRepository.save(otpInstance);
     }
 }
