@@ -11,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -18,6 +19,21 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /**
+     * Configuration class for defining the security filter chain.
+     * This class configures security-related settings for HTTP requests,
+     * including CSRF protection, URL authorization, session management,
+     * authentication providers, and filters.
+     *
+     * It defines a custom SecurityFilterChain bean that specifies the
+     * security configuration for specific URL patterns.
+     *
+     * @param http The HttpSecurity object to configure security settings.
+     * @return A SecurityFilterChain that represents the configured security.
+     * @throws Exception If an error occurs during configuration.
+     *
+     * @author ClementOwireku-Bogyah
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)

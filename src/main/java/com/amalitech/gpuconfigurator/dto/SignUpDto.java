@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.dto;
 
+import com.amalitech.gpuconfigurator.model.Otp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,7 @@ import jakarta.validation.constraints.Size;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class SignUpDto {
 
     @NotBlank(message = "First name cannot be blank")
     private String firstName;
@@ -28,4 +29,5 @@ public class UserDto {
     @NotBlank(message = "Password cannot be blank")
     @Size(min = 6, message = "Password must have at least 6 characters")
     private String password;
+//    private Otp otp;
 }
