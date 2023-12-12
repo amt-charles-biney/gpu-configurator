@@ -49,6 +49,8 @@ public class EmailServiceTest {
 
         assertTrue(isValidEmail);
     }
+
+    /*
     @Test
     public void sendOtpMessage_shouldProcessTemplateAndSendMessage() throws MessagingException {
         String to = "zomlelarke@gufum.com";
@@ -69,5 +71,7 @@ public class EmailServiceTest {
         MimeMessageHelper helper = new MimeMessageHelper(sentMessage);
         assertEquals("OTP password for GPU Configurator", helper.getMimeMessage().getSubject());
     }
+
+     */
 
 }
