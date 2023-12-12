@@ -8,6 +8,7 @@ import com.amalitech.gpuconfigurator.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,13 +26,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
-    public AuthenticationResponse login(@RequestBody LoginDto request ){
-        return userService.login(request);
+//    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDto request )  {
+        return ResponseEntity.ok(userService.login(request));
     }
 
 
-    //todo : Remove it later
+    //todo : for testing purpose :  Remove it later
     @GetMapping("/users")
     public List<Iterable<User>> users(){
         return List.of(repository.findAll());
