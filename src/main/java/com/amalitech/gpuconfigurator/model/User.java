@@ -2,6 +2,8 @@ package com.amalitech.gpuconfigurator.model;
 
 import java.util.Collection;
 import java.util.List;
+import java.time.LocalDateTime;
+
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -58,6 +60,13 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+  
+    @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    private LocalDateTime deletedAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -93,4 +102,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }
