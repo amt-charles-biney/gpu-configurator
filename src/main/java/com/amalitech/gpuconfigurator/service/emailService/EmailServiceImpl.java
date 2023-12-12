@@ -8,6 +8,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -19,10 +20,7 @@ import java.util.regex.Pattern;
 public class EmailServiceImpl implements EmailService{
 
     private final JavaMailSender javaMailSender;
-    private final TemplateEngine templateEngine;
-
-    @Value("${spring.mail.username}")
-    private String mailFrom;
+    private final ITemplateEngine templateEngine;
 
     @Override
     public void sendOtpMessage(String to, String otp) throws MessagingException {
