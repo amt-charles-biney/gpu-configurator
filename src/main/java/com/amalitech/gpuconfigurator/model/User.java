@@ -18,8 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -43,11 +41,13 @@ public class User implements UserDetails {
     private UUID id;
 
     @Column(nullable = false)
+    @NotEmpty(message = "Required")
     private String firstName;
 
     @Column(nullable = false)
     private String lastName;
 
+    @NotEmpty(message = "Email is mandatory")
     @Column(nullable = false)
     private String email;
 

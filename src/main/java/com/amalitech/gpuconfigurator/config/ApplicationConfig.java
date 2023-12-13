@@ -19,24 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfig {
 
 
+
     private final UserRepository repository;
 
-    /**
-     * Creates a UserDetailsService bean that retrieves user details from the UserRepository.
-     *
-     * @return An implementation of UserDetailsService.
-     */
-    @Bean
-    public UserDetailsService userDetailsService(){
-        return username -> repository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("No Username found"));
-    }
-
-    /**
-     * Creates an AuthenticationProvider bean using DaoAuthenticationProvider.
-     * It sets the UserDetailsService and PasswordEncoder for authentication.
-     *
-     * @return An implementation of AuthenticationProvider.
-     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -45,23 +30,16 @@ public class ApplicationConfig {
         return authProvider;
     }
 
-    /**
-     * Creates an AuthenticationManager bean using AuthenticationConfiguration.
-     *
-     * @param config The AuthenticationConfiguration used to create the AuthenticationManager.
-     * @return An implementation of AuthenticationManager.
-     * @throws Exception If an error occurs while creating the AuthenticationManager.
-     */
+
+    @Bean
+    public UserDetailsService userDetailsService(){
+        return username -> repository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("No Username found"));
+    }
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    /**
-     * Creates a PasswordEncoder bean for secure password hashing.
-     *
-     * @return An implementation of PasswordEncoder (BCryptPasswordEncoder).
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

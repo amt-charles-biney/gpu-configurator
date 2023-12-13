@@ -25,7 +25,6 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse signup(SignUpDto request) {
-        // Create a new user with encoded password and default role (USER)
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -58,4 +57,6 @@ public class UserService {
                 .lastName(user.getLastName())
                 .build();
     }
+
+
 }
