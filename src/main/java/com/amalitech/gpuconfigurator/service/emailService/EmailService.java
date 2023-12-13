@@ -1,9 +1,10 @@
 package com.amalitech.gpuconfigurator.service.emailService;
 
+import com.amalitech.gpuconfigurator.model.OtpType;
 import jakarta.mail.MessagingException;
 
 public interface EmailService {
 
-    void sendOtpMessage(String to, String otp) throws MessagingException;
+    void sendOtpMessage(String to, String otp, OtpType type) throws MessagingException;
     boolean isValidEmail(String email);
 }

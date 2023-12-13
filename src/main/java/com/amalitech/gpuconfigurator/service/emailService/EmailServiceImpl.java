@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.emailService;
 
+import com.amalitech.gpuconfigurator.model.OtpType;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +24,12 @@ public class EmailServiceImpl implements EmailService{
     private final ITemplateEngine templateEngine;
 
     @Override
-    public void sendOtpMessage(String to, String otp) throws MessagingException {
+    public void sendOtpMessage(String to, String otp, OtpType type) throws MessagingException {
         Context context = new Context();
         context.setVariable("otp", otp);
 
-        String process = templateEngine.process("email-otp-template", context);
+        String templateType = type == OtpType.CREATE ? "email-otp-template" : "email-reset-template";
+        String process = templateEngine.process(templateType, context);
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
         helper.setSubject("OTP password for GPU Configurator");
