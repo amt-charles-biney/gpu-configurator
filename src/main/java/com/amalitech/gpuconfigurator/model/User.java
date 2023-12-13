@@ -33,7 +33,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -53,10 +52,6 @@ public class User implements UserDetails {
 
     @Column(name = "isVerified", nullable = false, columnDefinition = "boolean default false")
     private Boolean isVerified;
-
-    @OneToOne(mappedBy= "user", cascade = CascadeType.ALL)
-    @JoinColumn(name = "otp_id", referencedColumnName = "id")
-    private Otp otp;
 
     @Enumerated(EnumType.STRING)
     private Role role;

@@ -47,4 +47,9 @@ public class EmailServiceImpl implements EmailService{
         return matcher.matches();
 
     }
+
+    @Override
+    public void sendOtpMail(String email, String otp) {
+
+    }
 }

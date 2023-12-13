@@ -4,6 +4,7 @@ import com.amalitech.gpuconfigurator.model.OtpType;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.OtpRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -29,8 +30,11 @@ public class OtpServiceImpl implements OtpService{
     }
 
     @Override
-    public Boolean isValidOtp(String otp, String otpReceived) {
-        return otp.equals(otpReceived);
+    public Boolean isValidOtp(String email, String otpCode, OtpType otpType) {
+        Otp otp = otpRepository.findByEmailAndCodeAndType(email, otpCode, otpType).orElseThrow(() -> new UsernameNotFoundException("unable to verify"));
+
+        Boolean isExpiredOtp = isExpiredOtp(otp);
+        return !isExpiredOtp;
     }
 
 
@@ -53,11 +57,11 @@ public class OtpServiceImpl implements OtpService{
                             .email(user.getEmail())
                             .expiration(expirationTime)
                             .type(type)
-                            .user(user)
                             .build();
 
         otpRepository.save(otpInstance);
 
         return code;
     }
+
 }

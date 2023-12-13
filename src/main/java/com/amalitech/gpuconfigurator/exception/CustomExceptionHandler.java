@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.HttpMediaTypeException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -33,7 +35,7 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
-    @ExceptionHandler(MessagingException.class)
+    @ExceptionHandler({MessagingException.class})
     public ResponseEntity<ErrorResponse> handleEmailSendingException(MessagingException e) {
         String msg = e.getMessage();
         int statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
@@ -41,4 +43,7 @@ public class CustomExceptionHandler {
 
         return ResponseEntity.status(statusCode).body(err);
     }
+
+
+
 }
