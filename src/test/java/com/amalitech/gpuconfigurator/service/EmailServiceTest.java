@@ -1,29 +1,19 @@
 package com.amalitech.gpuconfigurator.service;
 
-import com.amalitech.gpuconfigurator.service.emailService.EmailService;
-import com.amalitech.gpuconfigurator.service.emailService.EmailServiceImpl;
-import jakarta.mail.MessagingException;
+import com.amalitech.gpuconfigurator.service.email.EmailServiceImpl;
 import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.thymeleaf.ITemplateEngine;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)

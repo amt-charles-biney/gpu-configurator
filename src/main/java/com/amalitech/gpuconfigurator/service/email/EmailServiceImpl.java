@@ -1,16 +1,13 @@
-package com.amalitech.gpuconfigurator.service.emailService;
+package com.amalitech.gpuconfigurator.service.email;
 
 import com.amalitech.gpuconfigurator.model.OtpType;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.ITemplateEngine;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.util.regex.Matcher;

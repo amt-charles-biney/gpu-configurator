@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.service.emailService;
+package com.amalitech.gpuconfigurator.service.email;
 
 import com.amalitech.gpuconfigurator.model.OtpType;
 import jakarta.mail.MessagingException;

@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.service.otpService;
+package com.amalitech.gpuconfigurator.service.otp;
 import com.amalitech.gpuconfigurator.model.Otp;
 import com.amalitech.gpuconfigurator.model.OtpType;
 import com.amalitech.gpuconfigurator.model.User;

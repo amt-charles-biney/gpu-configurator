@@ -5,13 +5,10 @@ import com.amalitech.gpuconfigurator.model.OtpType;
 import com.amalitech.gpuconfigurator.model.Role;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.OtpRepository;
-import com.amalitech.gpuconfigurator.service.otpService.OtpService;
-import com.amalitech.gpuconfigurator.service.otpService.OtpServiceImpl;
-import lombok.RequiredArgsConstructor;
+import com.amalitech.gpuconfigurator.service.otp.OtpServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import org.junit.jupiter.api.Test;
