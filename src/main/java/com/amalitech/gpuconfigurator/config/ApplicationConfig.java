@@ -18,8 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-
-
     private final UserRepository repository;
 
     @Bean
@@ -30,11 +28,11 @@ public class ApplicationConfig {
         return authProvider;
     }
 
-
     @Bean
     public UserDetailsService userDetailsService(){
         return username -> repository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("No Username found"));
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

@@ -14,27 +14,26 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/auth")
 public class UserController {
     private final UserService userService;
     private final UserRepository repository;
-    @PostMapping("/signup")
+    @PostMapping("/v1/auth/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public AuthenticationResponse signup(@RequestBody SignUpDto request){
     return userService.signup(request);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/v1/auth/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDto request )  {
         return ResponseEntity.ok(userService.login(request));
     }
 
-    @GetMapping("/users")
+    @GetMapping("/v1/auth/users")
     public List<Iterable<User>> users(){
         return List.of(repository.findAll());
     }
 
-    @DeleteMapping("/users")
+    @DeleteMapping("/v1/auth/users")
     public void delete(){
        repository.deleteAll();
     }

@@ -21,6 +21,9 @@ public class JwtService implements IJwtService{
     @Value("${secret-key}")
     private String secret;
 
+    @Value("${jwt-token-expiration}")
+    private int tokenExpirationTime;
+
     /**
      * Extracts the email address of the user from a JWT token.
      * This method uses the {@link #extractSingleClaim(String, Function) extractSingleClaim} method
@@ -94,7 +97,7 @@ public class JwtService implements IJwtService{
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername()) //getUsername() is a getter for the email in user model
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + tokenExpirationTime))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
