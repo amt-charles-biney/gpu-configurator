@@ -14,9 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements IUserService {
 
 
     private final PasswordEncoder passwordEncoder;
@@ -57,6 +58,5 @@ public class UserService {
                 .lastName(user.getLastName())
                 .build();
     }
-
 
 }

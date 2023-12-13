@@ -41,20 +41,16 @@ public class User implements UserDetails {
     private UUID id;
 
     @Column(nullable = false)
-    @NotEmpty(message = "Required")
     private String firstName;
 
     @Column(nullable = false)
     private String lastName;
 
-    @NotEmpty(message = "Email is mandatory")
     @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
     @JsonIgnore
-    @NotEmpty(message = "Password cannot be blank")
-    @Size(min = 4)
     private String password;
 
     @Column(name = "isVerified", nullable = false, columnDefinition = "boolean default false")
