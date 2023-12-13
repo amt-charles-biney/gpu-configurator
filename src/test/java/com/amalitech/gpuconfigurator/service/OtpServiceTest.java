@@ -8,6 +8,7 @@ import com.amalitech.gpuconfigurator.repository.OtpRepository;
 import com.amalitech.gpuconfigurator.service.otpService.OtpService;
 import com.amalitech.gpuconfigurator.service.otpService.OtpServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,31 @@ public class OtpServiceTest {
     @Mock
     private OtpRepository otpRepository;
 
+    private User user;
+    private Otp otpInstance;
+
+    @BeforeEach
+    void setUp() {
+
+        String userId = "550e8400-e29b-41d4-a716-446655440000";
+        user = User.builder()
+                .id(UUID.fromString(userId))
+                .firstName("dickson")
+                .lastName("anyaele")
+                .email("kaycydickson@gmail.com")
+                .password("dissonance")
+                .isVerified(false)
+                .role(Role.USER).build();
+
+        otpInstance = Otp.builder()
+                .expiration(LocalDateTime.now().plusMinutes(-5))
+                .code("1234")
+                .email("kaycydicksons@gmail.com")
+                .type(OtpType.CREATE)
+                .build();
+
+    }
+
 
     @Test
     public void generateOtp_shouldGenerateNonEmptyString() {
@@ -41,16 +67,6 @@ public class OtpServiceTest {
 
     @Test
     public void generateAndSaveOtp_shouldGenerateAndSaveOtp() {
-        String userId = "550e8400-e29b-41d4-a716-446655440000";
-        var user = User.builder()
-                        .id(UUID.fromString(userId))
-                        .firstName("dickson")
-                        .lastName("anyaele")
-                        .email("kaycydickson@gmail.com")
-                        .password("dissonance")
-                        .isVerified(false)
-                        .role(Role.USER).build();
-
         String code = otpService.generateAndSaveOtp(user, OtpType.CREATE);
 
         assertNotNull(code);
@@ -73,12 +89,7 @@ public class OtpServiceTest {
 
     @Test
     public void isExpiredOtp_shouldPassIfOtpIsExpired(){
-        var otpInstance = Otp.builder()
-                .expiration(LocalDateTime.now().plusMinutes(-5))
-                .code("1234")
-                .email("kaycydicksons@gmail.com")
-                .type(OtpType.CREATE)
-                .build();
+
 
         Boolean isExpired = otpService.isExpiredOtp(otpInstance);
 
