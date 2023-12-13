@@ -18,6 +18,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -49,6 +53,8 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     @JsonIgnore
+    @NotEmpty(message = "Password cannot be blank")
+    @Size(min = 4)
     private String password;
 
     @Column(name = "isVerified", nullable = false, columnDefinition = "boolean default false")

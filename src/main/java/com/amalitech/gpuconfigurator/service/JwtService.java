@@ -16,11 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-/**
- * {@code JwtService} is responsible for all jwt manipulation.
- * Check Methods for specific usage
- * @author ClementOwireku-Bogyah
- */
 @Service
 public class JwtService {
     @Value("${secret-key}")

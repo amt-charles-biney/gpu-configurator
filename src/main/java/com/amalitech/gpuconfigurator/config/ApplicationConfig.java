@@ -13,14 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/**
- * ApplicationConfig class configures beans related to user authentication and authorization.
- * It provides beans for creating a UserDetailsService, AuthenticationProvider, and AuthenticationManager,
- * as well as a PasswordEncoder for secure password hashing.
- * This configuration class is used to set up authentication in the application.
- *
- * @author Clement Owireku-Bogyah
- */
+
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {

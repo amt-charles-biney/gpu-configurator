@@ -5,10 +5,10 @@ import com.amalitech.gpuconfigurator.dto.SignUpDto;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class UserController {
     private final UserRepository repository;
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthenticationResponse signup(@Valid @RequestBody SignUpDto request){
+    public AuthenticationResponse signup(@Validated @RequestBody  SignUpDto request){
     return userService.signup(request);
     }
 
