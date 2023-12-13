@@ -1,6 +1,8 @@
 package com.amalitech.gpuconfigurator.service.otpService;
 
 import com.amalitech.gpuconfigurator.model.Otp;
+import com.amalitech.gpuconfigurator.model.OtpType;
+import com.amalitech.gpuconfigurator.model.User;
 
 public interface OtpService {
 
@@ -10,7 +12,6 @@ public interface OtpService {
 
     public Boolean isExpiredOtp(Otp otp);
 
-    public void saveOtp(String email, String otp);
-
+    public String generateAndSaveOtp(User user, OtpType type);
 
 }

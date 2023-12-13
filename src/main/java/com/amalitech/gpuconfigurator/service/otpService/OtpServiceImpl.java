@@ -1,12 +1,13 @@
 package com.amalitech.gpuconfigurator.service.otpService;
 import com.amalitech.gpuconfigurator.model.Otp;
+import com.amalitech.gpuconfigurator.model.OtpType;
+import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.OtpRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -42,11 +43,21 @@ public class OtpServiceImpl implements OtpService{
     }
 
     @Override
-    public void saveOtp(String email, String otp) {
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime expirationTime = currentTime.plusMinutes(5);
-        var otpInstance = Otp.builder().code(otp).email(email).expiration(expirationTime).build();
+    public String generateAndSaveOtp(User user, OtpType type) {
+        String code = this.generateOtp();
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(5);
+
+        var otpInstance = Otp
+                            .builder()
+                            .code(code)
+                            .email(user.getEmail())
+                            .expiration(expirationTime)
+                            .type(type)
+                            .user(user)
+                            .build();
 
         otpRepository.save(otpInstance);
+
+        return code;
     }
 }
