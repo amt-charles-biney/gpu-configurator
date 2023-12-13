@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.exception;
+package com.amalitech.gpuconfigurator.dto;
 
 public record ErrorResponse(String msg, int status) {
 }
