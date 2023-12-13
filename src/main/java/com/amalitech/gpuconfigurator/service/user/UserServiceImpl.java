@@ -16,6 +16,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -46,10 +48,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticationResponse login(LoginDto request){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword()));
-        var user = repository.findByEmail(request.getEmail()).orElseThrow(()-> new UsernameNotFoundException("Email or Password incorrect"));
-        if(!user.getIsVerified()) {
+    public AuthenticationResponse login(LoginDto request) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        var user = repository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Email or Password incorrect"));
+        if (!user.getIsVerified()) {
             throw new UsernameNotFoundException("email not verified");
         }
         var jwtToken = jwtServiceImpl.generateToken(user);
@@ -66,7 +68,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthenticationResponse verifyUserSignup(VerifyUserDto request) {
         boolean isValidOtp = otpService.isValidOtp(request.email(), request.code(), OtpType.CREATE);
-        if(!isValidOtp) {
+        if (!isValidOtp) {
             throw new UsernameNotFoundException("could not verify otp");
         }
 
@@ -96,41 +98,33 @@ public class UserServiceImpl implements UserService {
 
     public void verifyResetOtp(VerifyOtpDTO verifyOtpDTO) {
         boolean isValidOtp = otpService.isValidOtp(verifyOtpDTO.getEmail(), verifyOtpDTO.getOtpCode(), OtpType.RESET);
-        if(!isValidOtp) {
+        if (!isValidOtp) {
             throw new UsernameNotFoundException("could not verify otp");
         }
     }
 
-    public void changePassword(ChangePasswordResponseDTO changePasswordResponseDTO) {
-        //        String email = changePasswordDTO.getEmail();
-//        String otpCode = changePasswordDTO.getOtpCode();
-//        var newPassword = changePasswordDTO.getNewPassword();
-//        var confirmNewPassword = changePasswordDTO.getConfirmNewPassword();
-//
-//        if (!newPassword.equals(confirmNewPassword)) {
-//            var response = ChangePasswordResponseDTO
-//                    .builder()
-//                    .message("New password and confirmation do not match")
-//                    .build();
-//            return ResponseEntity.badRequest().body(response);
-//        }
-//
-//        boolean isValidOtp = otpService.verifyOtp(email, otpCode, OtpType.RESET);
-//        if (!isValidOtp) {
-//            return ResponseEntity.badRequest().body(ChangePasswordResponseDTO
-//                    .builder()
-//                    .message("Invalid OTP")
-//                    .build());
-//        }
-//        otpService.deleteOtp(email, otpCode);
-//        if (userServiceImpl.changePassword(email, changePasswordDTO.getNewPassword())) {
-//            return ResponseEntity.ok(ChangePasswordResponseDTO
-//                    .builder()
-//                    .message("Password was changed successfully")
-//                    .build());
-//        }
+    public String changePassword(ChangePasswordDTO changePasswordDTO) {
+        String email = changePasswordDTO.getEmail();
+        String otpCode = changePasswordDTO.getOtpCode();
+        if (otpService.isValidOtp(email, otpCode, OtpType.RESET)) {
+            otpService.deleteOtp(email, otpCode);
+            if (updateUserPassword(email, changePasswordDTO.getNewPassword())) {
+                return "Password was changed successfully";
+            }
+        }
+        return "Invalid OTP";
     }
 
+    private boolean updateUserPassword(String email, String newPassword) {
+        Optional<User> optionalUser = repository.findByEmail(email);
+        if (optionalUser.isPresent()) {
+            var user = optionalUser.get();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            repository.save(user);
+            return true;
+        }
+        return false;
+    }
 
 
 }

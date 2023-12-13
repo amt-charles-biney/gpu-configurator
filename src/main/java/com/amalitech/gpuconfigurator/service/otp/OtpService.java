@@ -6,12 +6,13 @@ import com.amalitech.gpuconfigurator.model.User;
 
 public interface OtpService {
 
-    public String generateOtp();
+    String generateOtp();
 
-    public Boolean isValidOtp(String email, String otpCode, OtpType type);
+    Boolean isValidOtp(String email, String otpCode, OtpType type);
 
-    public Boolean isExpiredOtp(Otp otp);
+    Boolean isExpiredOtp(Otp otp);
 
-    public String generateAndSaveOtp(User user, OtpType type);
+    String generateAndSaveOtp(User user, OtpType type);
 
+    void deleteOtp(String email, String otpCode);
 }

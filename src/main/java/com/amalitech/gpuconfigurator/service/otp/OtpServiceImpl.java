@@ -1,4 +1,5 @@
 package com.amalitech.gpuconfigurator.service.otp;
+
 import com.amalitech.gpuconfigurator.model.Otp;
 import com.amalitech.gpuconfigurator.model.OtpType;
 import com.amalitech.gpuconfigurator.model.User;
@@ -12,9 +13,8 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class OtpServiceImpl implements OtpService{
+public class OtpServiceImpl implements OtpService {
     private static final int OTP_LENGTH = 6;
-    private static final int OTP_EXPIRY_MINUTES = 5;
     private final OtpRepository otpRepository;
 
     @Override
@@ -52,16 +52,21 @@ public class OtpServiceImpl implements OtpService{
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(5);
 
         var otpInstance = Otp
-                            .builder()
-                            .code(code)
-                            .email(user.getEmail())
-                            .expiration(expirationTime)
-                            .type(type)
-                            .build();
+                .builder()
+                .code(code)
+                .email(user.getEmail())
+                .expiration(expirationTime)
+                .type(type)
+                .build();
 
         otpRepository.save(otpInstance);
 
         return code;
+    }
+
+    @Override
+    public void deleteOtp(String email, String otpCode) {
+        otpRepository.deleteByEmailAndCode(email, otpCode);
     }
 
 }

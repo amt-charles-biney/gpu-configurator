@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface OtpRepository extends JpaRepository<Otp, UUID> {
-    Optional<Otp> findByEmail(String email);
     Optional<Otp> findByEmailAndCodeAndType(String email, String code, OtpType type);
+
+    void deleteByEmailAndCode(String email, String otpCode);
 }
