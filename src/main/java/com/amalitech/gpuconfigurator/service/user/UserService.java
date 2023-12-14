@@ -5,11 +5,12 @@ import jakarta.mail.MessagingException;
 
 public interface UserService {
     void signup(SignUpDto request) throws MessagingException;
+
     AuthenticationResponse login(LoginDto request);
 
     AuthenticationResponse verifyUserSignup(VerifyUserDto request);
 
-    void changePassword(ChangePasswordResponseDTO changePasswordDTO);
+    String changePassword(ChangePasswordDTO changePasswordDTO);
 
     void verifyResetOtp(VerifyOtpDTO verifyOtpDTO);
 
