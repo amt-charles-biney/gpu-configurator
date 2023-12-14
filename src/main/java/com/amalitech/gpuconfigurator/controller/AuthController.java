@@ -25,13 +25,13 @@ public class AuthController {
 
 
     @PostMapping("/v1/auth/signup")
-    public ResponseEntity<String> signup(@RequestBody SignUpDto request) throws MessagingException {
+    public ResponseEntity<String> signup(@Validated @RequestBody SignUpDto request) throws MessagingException {
        userServiceImpl.signup(request);
        return ResponseEntity.ok("verification email has been sent");
     }
 
     @PostMapping("/v1/auth/verify")
-    public ResponseEntity<AuthenticationResponse> verify(@RequestBody VerifyUserDto request) throws MessagingException {
+    public ResponseEntity<AuthenticationResponse> verify(@RequestBody VerifyUserDto request)  {
 
         AuthenticationResponse user = userServiceImpl.verifyUserSignup(request);
         return ResponseEntity.ok(user);
