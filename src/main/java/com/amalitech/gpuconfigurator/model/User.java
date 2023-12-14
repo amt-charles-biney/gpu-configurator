@@ -46,10 +46,6 @@ public class User {
     @Column(name = "isVerified", nullable = false, columnDefinition = "boolean default false")
     private Boolean isVerified;
 
-    @OneToOne(mappedBy= "user", cascade = CascadeType.ALL)
-    @JoinColumn(name = "otp_id", referencedColumnName = "id")
-    private Otp otp;
-
     @Enumerated(EnumType.STRING)
     private Role role;
 
