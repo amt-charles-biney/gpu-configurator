@@ -53,7 +53,6 @@ public class OtpServiceImpl implements OtpService{
                             .email(user.getEmail())
                             .expiration(expirationTime)
                             .type(type)
-                            .user(user)
                             .build();
 
         otpRepository.save(otpInstance);
