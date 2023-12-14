@@ -8,10 +8,12 @@ public interface OtpService {
 
     public String generateOtp();
 
-    public Boolean isValidOtp(String otp, String otpReceived);
+    public Boolean isValidOtp(String email, String otpCode, OtpType type);
 
     public Boolean isExpiredOtp(Otp otp);
 
     public String generateAndSaveOtp(User user, OtpType type);
+
+    void deleteOtp(String email, String otpCode);
 
 }
