@@ -37,7 +37,6 @@ public class UserServiceImpl implements UserService {
 
       Optional<User> newUser = repository.findByEmail(request.getEmail());
       if(newUser.isPresent()){
-//          throw new UsernameNotFoundException("Email already exist");
           throw new BadRequestException("Email Already Exist");
       }
 
