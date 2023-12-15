@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.config;
 
+import com.amalitech.gpuconfigurator.model.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +23,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
-        http.authorizeHttpRequests(auth-> auth.requestMatchers("/api/v1/auth/**").permitAll().anyRequest().authenticated());
+        http.authorizeHttpRequests(auth-> auth
+                .requestMatchers("/api/v1/auth/**")
+                .permitAll()
+                .requestMatchers("/api/v1/profile/**")
+                .hasAuthority(Role.USER.name())
+                .anyRequest()
+                .authenticated());
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authenticationProvider(authenticationProvider);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
