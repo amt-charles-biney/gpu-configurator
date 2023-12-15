@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -22,25 +23,6 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
-    @ExceptionHandler(Exception.class)
-    public ProblemDetail handleSecurityException(Exception e){
-        ProblemDetail errorDetail = null;
-        if(e instanceof BadCredentialsException){
-
-            errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(401));
-            errorDetail.setTitle("Bad Credentials");
-            errorDetail.setDetail("Invalid email or password");
-            errorDetail.setProperty("access_denied_reason", "Invalid Email or Password");
-        }
-        if(e instanceof DataIntegrityViolationException){
-            errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
-            errorDetail.setTitle("Data Integrity Violation");
-            errorDetail.setDetail("A not-null property references a null or transient value");
-        }
-
-        return errorDetail;
-    }
-
     @ExceptionHandler({MessagingException.class})
     public ResponseEntity<ErrorResponse> handleEmailSendingException(MessagingException e) {
         String msg = e.getMessage();
@@ -64,11 +46,32 @@ public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException 
         String errorMessage = error.getDefaultMessage();
         fieldErrors.put(fieldName, errorMessage);
     });
-
     errorDetail.setProperty("field_errors", fieldErrors);
-
     return errorDetail;
 }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ProblemDetail handleBadCredentialException(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(401));
+        errorDetail.setTitle("Bad Credentials");
+        errorDetail.setDetail("Invalid email or password");
+        errorDetail.setProperty("access_denied_reason", "Invalid Email or Password");
+        return errorDetail;
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail dataIntegrityViolationExceptionException(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
+        errorDetail.setTitle("Data Integrity Violation");
+        errorDetail.setDetail("A not-null property references a null or transient value");
+        return errorDetail;
+    }
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ProblemDetail usernameNotFoundException(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
+        errorDetail.setTitle("Email not found");
+        errorDetail.setDetail("Email not found");
+        return errorDetail;
+    }
 
 }
