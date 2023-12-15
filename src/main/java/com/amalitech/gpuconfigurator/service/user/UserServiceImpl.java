@@ -33,6 +33,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void signup(SignUpDto request) throws MessagingException {
+
+      Optional<User> newUser = repository.findByEmail(request.getEmail());
+      if(newUser.isPresent()){
+          throw new UsernameNotFoundException("Email already exist");
+      }
+
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -41,6 +47,8 @@ public class UserServiceImpl implements UserService {
                 .role(Role.USER)
                 .isVerified(false)
                 .build();
+
+
 
         repository.save(user);
         String code = otpService.generateAndSaveOtp(user, OtpType.CREATE);

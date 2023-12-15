@@ -37,7 +37,6 @@ public class CustomExceptionHandler {
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
     ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
-    errorDetail.setTitle("Validation Failed");
     errorDetail.setDetail("One or more validation errors occurred");
 
     Map<String, Object> fieldErrors = new HashMap<>();
@@ -53,24 +52,20 @@ public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException 
     @ExceptionHandler(BadCredentialsException.class)
     public ProblemDetail handleBadCredentialException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(401));
-        errorDetail.setTitle("Bad Credentials");
-        errorDetail.setDetail("Invalid email or password");
-        errorDetail.setProperty("access_denied_reason", "Invalid Email or Password");
+        errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail dataIntegrityViolationExceptionException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
-        errorDetail.setTitle("Data Integrity Violation");
-        errorDetail.setDetail("A not-null property references a null or transient value");
+        errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
     @ExceptionHandler(UsernameNotFoundException.class)
     public ProblemDetail usernameNotFoundException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
-        errorDetail.setTitle("Email not found");
-        errorDetail.setDetail("Email not found");
+        errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
 

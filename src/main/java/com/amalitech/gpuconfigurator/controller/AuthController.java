@@ -6,10 +6,7 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final UserService userServiceImpl;
 
+    @CrossOrigin
     @PostMapping("/v1/auth/signup")
 
     public ResponseEntity<String> signup(@Validated @RequestBody SignUpDto request) throws MessagingException {
@@ -24,6 +22,7 @@ public class AuthController {
        return ResponseEntity.ok("verification email has been sent");
     }
 
+    @CrossOrigin
     @PostMapping("/v1/auth/verify")
     public ResponseEntity<AuthenticationResponse> verify(@RequestBody VerifyUserDto request)  {
 
@@ -31,11 +30,13 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
+    @CrossOrigin
     @PostMapping("/v1/auth/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDto request) {
         return ResponseEntity.ok(userServiceImpl.login(request));
     }
 
+    @CrossOrigin
     @PostMapping("/v1/auth/reset-password")
     public ResponseEntity<String> resetPassword(
             @Validated @RequestBody ResetPasswordDTO resetPasswordDto
@@ -44,6 +45,7 @@ public class AuthController {
         return ResponseEntity.ok("Email with otp sent");
     }
 
+    @CrossOrigin
     @PostMapping("/v1/auth/verify-otp")
     public ResponseEntity<String> verifyOtp(
             @Validated @RequestBody VerifyOtpDTO verifyOtpDTO
@@ -51,7 +53,7 @@ public class AuthController {
         userServiceImpl.verifyResetOtp(verifyOtpDTO);
         return ResponseEntity.ok("OTP verified successfully");
     }
-
+    @CrossOrigin
     @PostMapping("/v1/auth/change-password")
     public ResponseEntity<String> changePassword(
             @Validated @RequestBody ChangePasswordDTO changePasswordDTO
