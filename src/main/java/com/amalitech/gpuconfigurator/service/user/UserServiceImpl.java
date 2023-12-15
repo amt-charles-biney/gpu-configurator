@@ -10,6 +10,7 @@ import com.amalitech.gpuconfigurator.service.jwt.JwtServiceImpl;
 import com.amalitech.gpuconfigurator.service.otp.OtpServiceImpl;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,11 +33,12 @@ public class UserServiceImpl implements UserService {
     private final EmailServiceImpl emailService;
 
     @Override
-    public void signup(SignUpDto request) throws MessagingException {
+    public void signup(SignUpDto request) throws MessagingException, BadRequestException {
 
       Optional<User> newUser = repository.findByEmail(request.getEmail());
       if(newUser.isPresent()){
-          throw new UsernameNotFoundException("Email already exist");
+//          throw new UsernameNotFoundException("Email already exist");
+          throw new BadRequestException("Email Already Exist");
       }
 
         var user = User.builder()

@@ -2,9 +2,10 @@ package com.amalitech.gpuconfigurator.service.user;
 
 import com.amalitech.gpuconfigurator.dto.*;
 import jakarta.mail.MessagingException;
+import org.apache.coyote.BadRequestException;
 
 public interface UserService {
-    void signup(SignUpDto request) throws MessagingException;
+    void signup(SignUpDto request) throws MessagingException, BadRequestException;
 
     AuthenticationResponse login(LoginDto request);
 

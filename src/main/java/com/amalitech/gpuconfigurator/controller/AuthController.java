@@ -4,6 +4,7 @@ import com.amalitech.gpuconfigurator.dto.*;
 import com.amalitech.gpuconfigurator.service.user.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class AuthController {
     @CrossOrigin
     @PostMapping("/v1/auth/signup")
 
-    public ResponseEntity<String> signup(@Validated @RequestBody SignUpDto request) throws MessagingException {
+    public ResponseEntity<String> signup(@Validated @RequestBody SignUpDto request) throws MessagingException, BadRequestException {
        userServiceImpl.signup(request);
        return ResponseEntity.ok("verification email has been sent");
     }

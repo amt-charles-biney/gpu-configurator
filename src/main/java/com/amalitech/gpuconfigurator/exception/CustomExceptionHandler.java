@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.exception;
 
 import com.amalitech.gpuconfigurator.dto.ErrorResponse;
 import jakarta.mail.MessagingException;
+import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -65,6 +66,12 @@ public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ProblemDetail usernameNotFoundException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
+        errorDetail.setDetail(e.getMessage());
+        return errorDetail;
+    }
+    @ExceptionHandler(BadRequestException.class)
+    public ProblemDetail badRequestException(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
         errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
