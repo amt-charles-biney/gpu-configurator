@@ -18,9 +18,13 @@ public class AuthController {
     @CrossOrigin
     @PostMapping("/v1/auth/signup")
 
-    public ResponseEntity<String> signup(@Validated @RequestBody SignUpDto request) throws MessagingException, BadRequestException {
+    public ResponseEntity<SignupResponse> signup(@Validated @RequestBody SignUpDto request) throws MessagingException, BadRequestException {
        userServiceImpl.signup(request);
-       return ResponseEntity.ok("verification email has been sent");
+
+       SignupResponse message = new SignupResponse("Email Verification sent");
+
+
+       return ResponseEntity.ok(message);
     }
 
     @CrossOrigin
