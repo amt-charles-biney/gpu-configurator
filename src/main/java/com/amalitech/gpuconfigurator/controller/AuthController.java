@@ -43,25 +43,28 @@ public class AuthController {
 
     @CrossOrigin
     @PostMapping("/v1/auth/reset-password")
-    public ResponseEntity<String> resetPassword(
+    public ResponseEntity<ResetResponseDTO> resetPassword(
             @Validated @RequestBody ResetPasswordDTO resetPasswordDto
     ) throws MessagingException {
         userServiceImpl.resetPassword(resetPasswordDto);
-        return ResponseEntity.ok("Email with otp sent");
+        ResetResponseDTO message = new ResetResponseDTO("Email with otp sent");
+        return ResponseEntity.ok(message);
     }
 
     @CrossOrigin
     @PostMapping("/v1/auth/verify-otp")
-    public ResponseEntity<String> verifyOtp(
+    public ResponseEntity<VerifyOTPResponse> verifyOtp(
             @Validated @RequestBody VerifyOtpDTO verifyOtpDTO
     ) {
         userServiceImpl.verifyResetOtp(verifyOtpDTO);
-        return ResponseEntity.ok("OTP verified successfully");
+        VerifyOTPResponse message = new VerifyOTPResponse("OTP verified successfully");
+        return ResponseEntity.ok(message);
     }
     @CrossOrigin
     @PostMapping("/v1/auth/change-password")
     public ResponseEntity<String> changePassword(
             @Validated @RequestBody ChangePasswordDTO changePasswordDTO
+
     ) {
         return ResponseEntity.ok(userServiceImpl.changePassword(changePasswordDTO));
     }
