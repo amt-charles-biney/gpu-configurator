@@ -28,6 +28,7 @@ public class AttributeOption {
     @Column(name= "priceAdjustment")
     private BigDecimal priceAdjustment;
 
-    @Column(name = "attributeId", nullable = false)
-    private UUID attributeId;
+    @ManyToOne
+    @JoinColumn(name = "attribute_id", nullable = false)
+    private Attribute attribute;
 }

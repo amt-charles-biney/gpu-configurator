@@ -11,6 +11,6 @@ public interface AttributeOptionRepository extends JpaRepository<AttributeOption
     Optional<AttributeOption> findByOptionName(String name);
     Optional<List<AttributeOption>> findAllByAttributeId(UUID id);
 
-    void deleteByName(String name);
+    void deleteByOptionName(String name);
 
 }

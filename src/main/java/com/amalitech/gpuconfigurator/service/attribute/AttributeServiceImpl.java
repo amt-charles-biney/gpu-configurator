@@ -104,7 +104,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public void deleteAttributeOptionByName(String name){
-        attributeOptionRepository.deleteByName(name);
+        attributeOptionRepository.deleteByOptionName(name);
     }
 
     @Override
@@ -116,5 +116,16 @@ public class AttributeServiceImpl implements AttributeService {
         return attributeOptionRepository.save(updateAtr);
     }
 
+    @Override
+    public AttributeOption createAttributeOption(UUID attributeId, AttributeOptionDto atr) {
+        var attr = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException("could not create option for this attribute type"));
+        var newAttributeOption = AttributeOption.builder()
+                .optionName(atr.optionName())
+                .priceAdjustment(atr.priceAdjustment())
+                .attribute(attr)
+                .build();
+
+        return attributeOptionRepository.save(newAttributeOption);
+    }
 
 }

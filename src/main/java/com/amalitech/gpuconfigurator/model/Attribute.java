@@ -28,7 +28,7 @@ public class Attribute {
     @Enumerated(EnumType.STRING)
     private AttributeType attributeType;
 
-    @OneToMany(mappedBy = "attribute", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy="attribute", cascade = CascadeType.ALL)
     private List<AttributeOption> attributeOptions;
 
 }

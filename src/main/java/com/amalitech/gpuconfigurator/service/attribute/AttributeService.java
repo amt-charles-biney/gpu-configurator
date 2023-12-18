@@ -38,4 +38,6 @@ public interface AttributeService {
     void deleteAttributeOptionByName(String name);
 
     AttributeOption updateAttributeOption(UUID id, AttributeOptionDto atrDto);
+
+    AttributeOption createAttributeOption(UUID attributeId, AttributeOptionDto atr);
 }
