@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.attribute;
 
 import com.amalitech.gpuconfigurator.dto.AttributeDto;
 import com.amalitech.gpuconfigurator.dto.AttributeOptionDto;
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.model.Attribute;
 import com.amalitech.gpuconfigurator.model.AttributeOption;
 import com.amalitech.gpuconfigurator.model.enums.AttributeType;
@@ -9,7 +10,7 @@ import com.amalitech.gpuconfigurator.repository.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.AttributeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -65,9 +66,11 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public void deleteAttributeById(UUID attributeId) {
+    public GenericResponse deleteAttributeById(UUID attributeId) {
         Attribute attribute = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException("Attribute not found with id: " + attributeId));
         attributeRepository.delete(attribute);
+
+        return GenericResponse.builder().status(HttpStatus.ACCEPTED.value()).msg("deleted successfully").build();
     }
 
     /* attribute options methodss */
@@ -111,8 +114,8 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public AttributeOption updateAttributeOption(UUID id, AttributeOptionDto atrDto) {
         AttributeOption updateAtr = attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute option does not exist"));
-        updateAtr.setPriceAdjustment(atrDto.priceAdjustment());
-        updateAtr.setOptionName(atrDto.optionName());
+        updateAtr.setPriceAdjustment(atrDto.price());
+        updateAtr.setOptionName(atrDto.name());
 
         return attributeOptionRepository.save(updateAtr);
     }
@@ -121,8 +124,8 @@ public class AttributeServiceImpl implements AttributeService {
     public AttributeOption createAttributeOption(UUID attributeId, AttributeOptionDto atr) {
         var attr = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException("could not create option for this attribute type"));
         var newAttributeOption = AttributeOption.builder()
-                .optionName(atr.optionName())
-                .priceAdjustment(atr.priceAdjustment())
+                .optionName(atr.name())
+                .priceAdjustment(atr.price())
                 .attribute(attr)
                 .build();
 

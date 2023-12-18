@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.model;
+package com.amalitech.gpuconfigurator.dto;
 
 import lombok.Builder;
 

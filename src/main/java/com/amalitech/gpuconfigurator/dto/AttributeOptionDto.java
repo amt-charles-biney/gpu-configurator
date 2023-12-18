@@ -2,5 +2,5 @@ package com.amalitech.gpuconfigurator.dto;
 
 import java.math.BigDecimal;
 
-public record AttributeOptionDto(String optionName, BigDecimal priceAdjustment, String id) {
+public record AttributeOptionDto(String name, BigDecimal price) {
 }

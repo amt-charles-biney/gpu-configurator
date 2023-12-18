@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.attribute;
 
 import com.amalitech.gpuconfigurator.dto.AttributeDto;
 import com.amalitech.gpuconfigurator.dto.AttributeOptionDto;
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.model.Attribute;
 import com.amalitech.gpuconfigurator.model.AttributeOption;
 
@@ -21,7 +22,7 @@ public interface AttributeService {
 
     void deleteAttributeByName(String name);
 
-    void deleteAttributeById(UUID attributeId);
+    GenericResponse deleteAttributeById(UUID attributeId);
 
     List<AttributeOption> getAllAttributeOptionByAttributeId(UUID id);
 
