@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "attributes")
+@Table(name = "attribute")
 public class Attribute {
 
     @Id
@@ -26,5 +27,8 @@ public class Attribute {
 
     @Enumerated(EnumType.STRING)
     private AttributeType attributeType;
+
+    @OneToMany(mappedBy = "attribute", cascade = CascadeType.ALL)
+    private List<AttributeOption> attributeOptions;
 
 }
