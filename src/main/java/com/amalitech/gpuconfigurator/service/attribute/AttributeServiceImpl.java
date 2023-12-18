@@ -9,6 +9,7 @@ import com.amalitech.gpuconfigurator.repository.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.AttributeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,9 +29,9 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public Attribute addAttribute(AttributeDto attribute) {
-        var newAttribute =  Attribute.builder()
-                .attributeName(attribute.name())
-                .attributeType(AttributeType.valueOf(attribute.type()))
+        Attribute newAttribute =  Attribute.builder()
+                .attributeName(attribute.attributeName())
+                .attributeType(AttributeType.valueOf(attribute.attributeType()))
                 .build();
 
         return attributeRepository.save(newAttribute);
@@ -40,8 +41,8 @@ public class AttributeServiceImpl implements AttributeService {
     public Attribute updateAttribute(UUID id, AttributeDto attribute) {
         Attribute updateAttribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute not found"));
 
-        updateAttribute.setAttributeName(attribute.name());
-        updateAttribute.setAttributeType(AttributeType.valueOf(attribute.type()));
+        updateAttribute.setAttributeName(attribute.attributeName());
+        updateAttribute.setAttributeType(AttributeType.valueOf(attribute.attributeType()));
 
         return attributeRepository.save(updateAttribute);
    }

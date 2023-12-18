@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +30,7 @@ public class Attribute {
     @Enumerated(EnumType.STRING)
     private AttributeType attributeType;
 
-    @OneToMany(mappedBy="attribute", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy="attribute", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<AttributeOption> attributeOptions;
 
 }
