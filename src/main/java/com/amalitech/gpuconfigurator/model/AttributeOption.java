@@ -1,0 +1,33 @@
+package com.amalitech.gpuconfigurator.model;
+
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "attributeOptions")
+public class AttributeOption {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(name = "optionName", nullable = false)
+    private String optionName;
+
+    @Column(name= "priceAdjustment")
+    private BigDecimal priceAdjustment;
+
+    @Column(name = "attributeId", nullable = false)
+    private UUID attributeId;
+}
