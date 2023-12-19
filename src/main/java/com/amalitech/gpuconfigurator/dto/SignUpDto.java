@@ -1,5 +1,7 @@
 package com.amalitech.gpuconfigurator.dto;
 
+import com.amalitech.gpuconfigurator.util.PasswordMinimumLength;
+import com.amalitech.gpuconfigurator.util.ValidationErrorMessages;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -16,16 +18,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SignUpDto {
 
-    @NotBlank(message = "First Name is required")
-    @NotNull(message = "First Name cannot be null")
+    @NotBlank(message = ValidationErrorMessages.FIRST_NAME_BLANK)
+    @NotNull(message = ValidationErrorMessages.FIRST_NAME_NULL)
     private String firstName;
-    @NotBlank(message = "Last Name is required")
-    @NotNull(message = "Last Name cannot be null")
+
+    @NotBlank(message = ValidationErrorMessages.LAST_NAME_BLANK)
+    @NotNull(message = ValidationErrorMessages.LAST_NAME_NULL)
     private String lastName;
-    @Email(message = "Format should be an email")
-    @NotBlank(message = "Email cannot be null")
-    @NotNull(message = "Email cannot be null ")
+
+    @Email(message = ValidationErrorMessages.MUST_BE_EMAIL)
+    @NotBlank(message = ValidationErrorMessages.EMAIL_BLANK)
+    @NotNull(message = ValidationErrorMessages.EMAIL_NULL)
     private String email;
-    @Size(min = 4, message = "Password must be a minimum of 4 characters")
+
+    @Size(min = PasswordMinimumLength.MIN_LENGTH, message = ValidationErrorMessages.PASSWORD_MIN_LENGTH)
     private String password;
 }

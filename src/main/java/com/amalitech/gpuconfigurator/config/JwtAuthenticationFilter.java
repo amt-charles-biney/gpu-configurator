@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.config;
 
+import com.amalitech.gpuconfigurator.service.jwt.JwtService;
 import com.amalitech.gpuconfigurator.service.jwt.JwtServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,9 +23,10 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    public final JwtServiceImpl jwtServiceImpl;
+    public final JwtService jwtService;
 
     private final UserDetailsService userDetailsService;
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String authenticationHeader = request.getHeader("Authorization");
@@ -37,12 +39,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwtToken = authenticationHeader.substring(7);
-        userEmail = jwtServiceImpl.extractEmail(jwtToken);
+        userEmail = jwtService.extractEmail(jwtToken);
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-            if (jwtServiceImpl.isTokenValid(jwtToken, userDetails)) {
+            if (jwtService.isTokenValid(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);

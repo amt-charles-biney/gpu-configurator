@@ -19,9 +19,9 @@ import org.thymeleaf.ITemplateEngine;
 @ExtendWith(MockitoExtension.class)
 public class EmailServiceTest {
 
-   @Autowired
-   @InjectMocks
-   private EmailServiceImpl emailService;
+    @Autowired
+    @InjectMocks
+    private EmailServiceImpl emailService;
 
     @Mock
     private JavaMailSender javaMailSender;
@@ -40,28 +40,5 @@ public class EmailServiceTest {
         assertTrue(isValidEmail);
     }
 
-    /*
-    @Test
-    public void sendOtpMessage_shouldProcessTemplateAndSendMessage() throws MessagingException {
-        String to = "zomlelarke@gufum.com";
-        String otp = "123456";
-
-        when(templateEngine.process(anyString(), any(Context.class))).thenReturn("Processed template");
-
-        emailService.sendOtpMessage(to, otp);
-
-        verify(templateEngine).process(anyString(), any(Context.class));
-        verify(javaMailSender).send(any(MimeMessage.class));
-
-        // Implement additional verification/assertions for your email sending logic
-        ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
-        verify(javaMailSender).send(captor.capture());
-
-        MimeMessage sentMessage = captor.getValue();
-        MimeMessageHelper helper = new MimeMessageHelper(sentMessage);
-        assertEquals("OTP password for GPU Configurator", helper.getMimeMessage().getSubject());
-    }
-
-     */
 
 }

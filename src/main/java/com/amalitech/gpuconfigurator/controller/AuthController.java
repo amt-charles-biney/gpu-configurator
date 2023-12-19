@@ -13,32 +13,32 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class AuthController {
-    private final UserService userServiceImpl;
+    private final UserService userService;
 
     @CrossOrigin
     @PostMapping("/v1/auth/signup")
 
     public ResponseEntity<SignupResponse> signup(@Validated @RequestBody SignUpDto request) throws MessagingException, BadRequestException {
-       userServiceImpl.signup(request);
+        userService.signup(request);
 
-       SignupResponse message = new SignupResponse("Email Verification sent");
+        SignupResponse message = new SignupResponse("Email Verification sent");
 
 
-       return ResponseEntity.ok(message);
+        return ResponseEntity.ok(message);
     }
 
     @CrossOrigin
     @PostMapping("/v1/auth/verify")
-    public ResponseEntity<AuthenticationResponse> verify(@RequestBody VerifyUserDto request)  {
+    public ResponseEntity<AuthenticationResponse> verify(@RequestBody VerifyUserDto request) {
 
-        AuthenticationResponse user = userServiceImpl.verifyUserSignup(request);
+        AuthenticationResponse user = userService.verifyUserSignup(request);
         return ResponseEntity.ok(user);
     }
 
     @CrossOrigin
     @PostMapping("/v1/auth/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDto request) {
-        return ResponseEntity.ok(userServiceImpl.login(request));
+        return ResponseEntity.ok(userService.login(request));
     }
 
     @CrossOrigin
@@ -46,7 +46,7 @@ public class AuthController {
     public ResponseEntity<ResetResponseDTO> resetPassword(
             @Validated @RequestBody ResetPasswordDTO resetPasswordDto
     ) throws MessagingException {
-        userServiceImpl.resetPassword(resetPasswordDto);
+        userService.resetPassword(resetPasswordDto);
         ResetResponseDTO message = new ResetResponseDTO("Email with otp sent");
         return ResponseEntity.ok(message);
     }
@@ -56,17 +56,18 @@ public class AuthController {
     public ResponseEntity<VerifyOTPResponse> verifyOtp(
             @Validated @RequestBody VerifyOtpDTO verifyOtpDTO
     ) {
-        userServiceImpl.verifyResetOtp(verifyOtpDTO);
+        userService.verifyResetOtp(verifyOtpDTO);
         VerifyOTPResponse message = new VerifyOTPResponse("OTP verified successfully");
         return ResponseEntity.ok(message);
     }
+
     @CrossOrigin
     @PostMapping("/v1/auth/change-password")
     public ResponseEntity<String> changePassword(
             @Validated @RequestBody ChangePasswordDTO changePasswordDTO
 
     ) {
-        return ResponseEntity.ok(userServiceImpl.changePassword(changePasswordDTO));
+        return ResponseEntity.ok(userService.changePassword(changePasswordDTO));
     }
 
 }

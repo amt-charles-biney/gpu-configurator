@@ -71,7 +71,7 @@ public class OtpServiceTest {
     }
 
     @Test
-    public void isExpiredOtp_shouldPassIfOtpIsNotExpired(){
+    public void isExpiredOtp_shouldPassIfOtpIsNotExpired() {
         var otpInstance = Otp.builder()
                 .expiration(LocalDateTime.now().plusMinutes(5))
                 .code("1234")
@@ -85,7 +85,7 @@ public class OtpServiceTest {
     }
 
     @Test
-    public void isExpiredOtp_shouldPassIfOtpIsExpired(){
+    public void isExpiredOtp_shouldPassIfOtpIsExpired() {
 
 
         Boolean isExpired = otpService.isExpiredOtp(otpInstance);

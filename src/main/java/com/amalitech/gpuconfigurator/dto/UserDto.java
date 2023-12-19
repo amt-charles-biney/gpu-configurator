@@ -1,5 +1,7 @@
 package com.amalitech.gpuconfigurator.dto;
 
+import com.amalitech.gpuconfigurator.util.PasswordMinimumLength;
+import com.amalitech.gpuconfigurator.util.ValidationErrorMessages;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,17 +17,17 @@ import jakarta.validation.constraints.Size;
 @NoArgsConstructor
 public class UserDto {
 
-    @NotBlank(message = "First name cannot be blank")
+    @NotBlank(message = ValidationErrorMessages.FIRST_NAME_BLANK)
     private String firstName;
 
-    @NotBlank(message = "Last name cannot be blank")
+    @NotBlank(message = ValidationErrorMessages.LAST_NAME_BLANK)
     private String lastName;
 
-    @NotBlank(message = "Email cannot be blank")
-    @Email(message = "Invalid email format")
+    @NotBlank(message = ValidationErrorMessages.EMAIL_BLANK)
+    @Email(message = ValidationErrorMessages.INVALID_EMAIL_FORMAT)
     private String email;
 
-    @NotBlank(message = "Password cannot be blank")
-    @Size(min = 6, message = "Password must have at least 6 characters")
+    @NotBlank(message = ValidationErrorMessages.PASSWORD_BLANK)
+    @Size(min = PasswordMinimumLength.MIN_LENGTH, message = ValidationErrorMessages.PASSWORD_MIN_LENGTH)
     private String password;
 }
