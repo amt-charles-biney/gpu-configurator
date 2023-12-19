@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -55,6 +56,7 @@ public class AttributeServiceImpl implements AttributeService {
 
         updateAttribute.setAttributeName(attribute.attributeName());
         updateAttribute.setAttributeType(AttributeType.valueOf(attribute.attributeType()));
+        updateAttribute.setUpdatedAt(LocalDateTime.now());
 
         return attributeRepository.save(updateAttribute);
    }
@@ -130,6 +132,7 @@ public class AttributeServiceImpl implements AttributeService {
 
         updateAtr.setPriceAdjustment(atrDto.price());
         updateAtr.setOptionName(atrDto.name());
+        updateAtr.setUpdatedAt(LocalDateTime.now());
 
         AttributeOption savedAttribute =  attributeOptionRepository.save(updateAtr);
         return this.createAttributeResponseType(savedAttribute);
