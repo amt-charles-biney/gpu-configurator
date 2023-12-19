@@ -112,28 +112,18 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public String changePassword(ChangePasswordDTO changePasswordDTO) {
+    public GenericResponse changePassword(ChangePasswordDTO changePasswordDTO) throws BadRequestException {
         String email = changePasswordDTO.getEmail();
         String otpCode = changePasswordDTO.getOtpCode();
         if (otpService.isValidOtp(email, otpCode, OtpType.RESET)) {
-            otpService.deleteOtp(email, otpCode);
-            if (updateUserPassword(email, changePasswordDTO.getNewPassword())) {
-                return "Password was changed successfully";
-            }
-        }
-        return "Invalid OTP";
-    }
-
-    private boolean updateUserPassword(String email, String newPassword) {
-        Optional<User> optionalUser = repository.findByEmail(email);
-        if (optionalUser.isPresent()) {
-            var user = optionalUser.get();
-            user.setPassword(passwordEncoder.encode(newPassword));
+            User user = repository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("cannot change password, try again"));
+            user.setPassword(changePasswordDTO.newPassword);
             repository.save(user);
-            return true;
+            // otpService.deleteOtp(email, otpCode);
+            return new GenericResponse(201, "user changed password successfully");
         }
-        return false;
-    }
 
+        throw new BadRequestException("invalid Otp");
+    }
 
 }

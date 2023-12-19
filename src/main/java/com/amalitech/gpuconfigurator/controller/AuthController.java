@@ -63,11 +63,12 @@ public class AuthController {
 
     @CrossOrigin
     @PostMapping("/v1/auth/change-password")
-    public ResponseEntity<String> changePassword(
+    public ResponseEntity<GenericResponse> changePassword(
             @Validated @RequestBody ChangePasswordDTO changePasswordDTO
 
-    ) {
-        return ResponseEntity.ok(userService.changePassword(changePasswordDTO));
+    ) throws BadRequestException {
+        GenericResponse changePasswordResponse = userService.changePassword(changePasswordDTO);
+        return ResponseEntity.ok(changePasswordResponse);
     }
 
 }

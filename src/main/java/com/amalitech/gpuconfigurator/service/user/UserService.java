@@ -11,7 +11,7 @@ public interface UserService {
 
     AuthenticationResponse verifyUserSignup(VerifyUserDto request);
 
-    String changePassword(ChangePasswordDTO changePasswordDTO);
+    GenericResponse changePassword(ChangePasswordDTO changePasswordDTO) throws BadRequestException;
 
     void verifyResetOtp(VerifyOtpDTO verifyOtpDTO);
 
