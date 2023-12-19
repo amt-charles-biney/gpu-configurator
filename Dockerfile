@@ -10,7 +10,7 @@ WORKDIR /code
 RUN mvn clean package -DskipTests
 
 # Use Adoptium JDK 16 as the base image for the final image
-FROM adoptopenjdk/openjdk16
+FROM openjdk:21-jdk-slim
 
 RUN mkdir /app
 
@@ -21,6 +21,6 @@ COPY --from=build /code/target/gpu-configurator-0.0.1-SNAPSHOT.jar /app/gpuconfi
 # Set the working directory in the container
 WORKDIR /app
 
-# Specify the command to run on container startup
-# CMD ["java", "-jar", "your-application.jar"]
-CMD java $JAVA_OPTS -jar gpuconfigurator.jar
+EXPOSE 8081
+
+CMD [ "java", "--enable-preview", "-jar", "gpuconfigurator.jar" ]
