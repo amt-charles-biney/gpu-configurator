@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.model.product;
 
+import com.amalitech.gpuconfigurator.model.category.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,10 @@ public class Product {
 
     @Column(name = "product_price", nullable = false)
     private Double productPrice;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "category_id_fk"))
+    private Category category;
 
     @Column(name = "product_availability", nullable = false)
     private Boolean productAvailability;
