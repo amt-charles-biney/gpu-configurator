@@ -7,11 +7,9 @@ import com.amalitech.gpuconfigurator.model.product.Product;
 import com.amalitech.gpuconfigurator.repository.product.ProductRepository;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 
@@ -22,7 +20,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryServiceImpl categoryService;
 
     public CreateProductResponseDto createProduct(ProductDto request) {
-        Category category = categoryService.getOrCreateCategory(request.getCategoryName());
+        Category category = categoryService.getCategory(request.getCategory());
 
         var product = Product
                 .builder()
@@ -44,6 +42,7 @@ public class ProductServiceImpl implements ProductService {
                 .createdAt(product.getCreatedAt())
                 .build();
     }
+
 
     public List<Product> getAllProduct() {
 

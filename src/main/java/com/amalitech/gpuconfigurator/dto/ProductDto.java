@@ -25,5 +25,6 @@ public class ProductDto{
     @NotNull(message = "Product Price cannot be null")
     @PositiveOrZero(message = "Product price cannot be negative")
     private Double productPrice;
-    private String categoryName;
+
+    private String category;
 }

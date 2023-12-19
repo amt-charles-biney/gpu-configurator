@@ -22,25 +22,26 @@ public class ProductController {
 
     private final ProductServiceImpl productService;
 
-    @PostMapping("/v1/product")
+
+    @PostMapping("/v1/admin/product")
     @ResponseStatus(HttpStatus.CREATED)
     public CreateProductResponseDto addProduct(@Valid @RequestBody ProductDto request){
         return productService.createProduct(request);
     }
 
-    @GetMapping("/v1/product")
+    @GetMapping("/v1/admin/product")
     public List<Product> getAllProducts(){
         return productService.getAllProduct();
     }
 
-    @GetMapping("/v1/product/{name}")
+    @GetMapping("/v1/admin/product/{name}")
     public List<Product> getProductByName(@PathVariable("name") String name){
         return productService.getProductByName(name);
     }
 
 
 
-    @DeleteMapping("/v1/product/{id}")
+    @DeleteMapping("/v1/admin/product/{id}")
     public void deleteProduct(@PathVariable("id")UUID id) {
         productService.deleteProductById(id);
     }
