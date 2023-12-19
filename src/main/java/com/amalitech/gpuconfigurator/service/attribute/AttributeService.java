@@ -1,8 +1,6 @@
 package com.amalitech.gpuconfigurator.service.attribute;
 
-import com.amalitech.gpuconfigurator.dto.AttributeDto;
-import com.amalitech.gpuconfigurator.dto.AttributeOptionDto;
-import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.*;
 import com.amalitech.gpuconfigurator.model.Attribute;
 import com.amalitech.gpuconfigurator.model.AttributeOption;
 
@@ -10,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface AttributeService {
-    List<Attribute> getAllAttributes();
+    List<AttributeResponse> getAllAttributes();
 
     Attribute addAttribute(AttributeDto attribute);
 
@@ -24,21 +22,21 @@ public interface AttributeService {
 
     GenericResponse deleteAttributeById(UUID attributeId);
 
-    List<AttributeOption> getAllAttributeOptionByAttributeId(UUID id);
+    List<AttributeOptionResponseDto> getAllAttributeOptionByAttributeId(UUID id);
 
     List<AttributeOption> getAllAttributeOptionByAttributeName(String name);
 
-    List<AttributeOption> getAllAttributeOptions();
+    List<AttributeOptionResponseDto> getAllAttributeOptions();
 
-    AttributeOption getAttributeOptionById(UUID id);
+    AttributeOptionResponseDto getAttributeOptionById(UUID id);
 
-    void deleteAttributeOption(UUID id);
+    GenericResponse deleteAttributeOption(UUID id);
 
     AttributeOption getAttributeOptionByName(String name);
 
     void deleteAttributeOptionByName(String name);
 
-    AttributeOption updateAttributeOption(UUID id, AttributeOptionDto atrDto);
+    AttributeOptionResponseDto updateAttributeOption(UUID id, AttributeOptionDto atrDto);
 
-    AttributeOption createAttributeOption(UUID attributeId, AttributeOptionDto atr);
+    AttributeOptionResponseDto createAttributeOption(UUID attributeId, AttributeOptionDto atr);
 }
