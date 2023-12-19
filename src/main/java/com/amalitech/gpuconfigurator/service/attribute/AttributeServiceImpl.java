@@ -40,7 +40,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public Attribute addAttribute(AttributeDto attribute) {
+    public Attribute addAttribute(@NotNull AttributeDto attribute) {
         Attribute newAttribute =  Attribute.builder()
                 .attributeName(attribute.attributeName())
                 .attributeType(AttributeType.valueOf(attribute.attributeType()))
@@ -50,7 +50,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public Attribute updateAttribute(UUID id, AttributeDto attribute) {
+    public Attribute updateAttribute(UUID id, @NotNull AttributeDto attribute) {
         Attribute updateAttribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute not found"));
 
         updateAttribute.setAttributeName(attribute.attributeName());
@@ -125,7 +125,7 @@ public class AttributeServiceImpl implements AttributeService {
     public void deleteAttributeOptionByName(String name){ attributeOptionRepository.deleteByOptionName(name); }
 
     @Override
-    public AttributeOptionResponseDto updateAttributeOption(UUID id, AttributeOptionDto atrDto) {
+    public AttributeOptionResponseDto updateAttributeOption(UUID id, @NotNull AttributeOptionDto atrDto) {
         AttributeOption updateAtr = attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute option does not exist"));
 
         updateAtr.setPriceAdjustment(atrDto.price());
@@ -136,7 +136,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public AttributeOptionResponseDto createAttributeOption(UUID attributeId, AttributeOptionDto atr) {
+    public AttributeOptionResponseDto createAttributeOption(UUID attributeId, @NotNull AttributeOptionDto atr) {
         var attr = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException("could not create option for this attribute type"));
         var newAttributeOption = AttributeOption.builder()
                 .optionName(atr.name())
