@@ -23,4 +23,7 @@ WORKDIR /app
 
 EXPOSE 8081
 
+COPY ./init_db.sh /docker-entrypoint-initdb.d/
+RUN chmod +x /docker-entrypoint-initdb.d/init_db.sh
+
 CMD [ "java", "--enable-preview", "-jar", "gpuconfigurator.jar" ]
