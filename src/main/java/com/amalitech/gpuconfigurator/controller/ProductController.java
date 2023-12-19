@@ -7,10 +7,12 @@ import com.amalitech.gpuconfigurator.model.product.Product;
 import com.amalitech.gpuconfigurator.service.ProductServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -35,6 +37,8 @@ public class ProductController {
     public List<Product> getProductByName(@PathVariable("name") String name){
         return productService.getProductByName(name);
     }
+
+
 
     @DeleteMapping("/v1/product/{id}")
     public void deleteProduct(@PathVariable("id")UUID id) {

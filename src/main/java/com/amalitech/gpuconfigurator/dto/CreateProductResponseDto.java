@@ -12,9 +12,10 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class CreateProductResponseDto{
-   private String productName;
+    private String productName;
     private String productDescription;
     private Double productPrice;
+    private String productCategory;
     private Boolean productAvailability;
     private LocalDateTime createdAt;
 }

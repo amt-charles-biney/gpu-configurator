@@ -14,8 +14,6 @@ import java.util.UUID;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 
-//    @Query("SELECT s FROM Product s WHERE s.id = ?1")
-//    Optional<Product> findById(UUID id);
 
     @Query("SELECT p FROM Product p WHERE p.productName = ?1")
     List<Product> findProductsByName(String productName);
