@@ -40,4 +40,6 @@ public class ProductController {
     public void deleteProduct(@PathVariable("id")UUID id) {
         productService.deleteProductById(id);
     }
+
+
 }

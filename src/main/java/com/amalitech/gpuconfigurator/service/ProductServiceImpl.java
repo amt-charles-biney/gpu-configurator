@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.model.product.Product;
 import com.amalitech.gpuconfigurator.repository.product.ProductRepository;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
