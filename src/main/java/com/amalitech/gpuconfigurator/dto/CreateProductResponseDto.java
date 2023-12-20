@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class CreateProductResponseDto{
+public class CreateProductResponseDto {
     private String productName;
     private String productDescription;
     private Double productPrice;

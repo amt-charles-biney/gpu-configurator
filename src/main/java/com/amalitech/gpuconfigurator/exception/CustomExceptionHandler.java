@@ -1,14 +1,13 @@
 package com.amalitech.gpuconfigurator.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
@@ -18,8 +17,7 @@ import java.util.Map;
 public class CustomExceptionHandler {
 
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({MethodArgumentNotValidException.class, DataIntegrityViolationException.class, BadRequestException.class, EntityNotFoundException.class})
     public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
         errorDetail.setDetail("One or more validation errors occurred");
@@ -34,20 +32,5 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
-
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ProblemDetail dataIntegrityViolationExceptionException(Exception e) {
-        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
-        errorDetail.setDetail(e.getMessage());
-        return errorDetail;
-    }
-
-    @ExceptionHandler(BadRequestException.class)
-    public ProblemDetail badRequestException(Exception e) {
-        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
-        errorDetail.setDetail(e.getMessage());
-        return errorDetail;
-    }
 
 }
