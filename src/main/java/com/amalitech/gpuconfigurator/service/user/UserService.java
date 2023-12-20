@@ -11,9 +11,11 @@ public interface UserService {
 
     AuthenticationResponse verifyUserSignup(VerifyUserDto request);
 
-    String changePassword(ChangePasswordDTO changePasswordDTO);
+    GenericResponse changePassword(ChangePasswordDTO changePasswordDTO) throws BadRequestException;
 
     void verifyResetOtp(VerifyOtpDTO verifyOtpDTO);
 
     void resetPassword(ResetPasswordDTO resetPasswordDto) throws MessagingException;
+
+    GenericResponse resendOtp(ResendOtpDto resend) throws MessagingException;
 }

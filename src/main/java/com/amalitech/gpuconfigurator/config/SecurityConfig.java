@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.config;
 
+import com.amalitech.gpuconfigurator.model.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
