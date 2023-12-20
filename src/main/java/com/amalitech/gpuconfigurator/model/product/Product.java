@@ -35,7 +35,7 @@ public class Product {
     private Double productPrice;
 
     @JsonIgnoreProperties("products")
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(
             name = "category_id_fk"
     ))
