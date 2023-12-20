@@ -1,10 +1,13 @@
 package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.BasicInformationRequest;
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.UserPasswordRequest;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.service.profile.ProfileService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -38,16 +41,12 @@ public class ProfileController {
 
     @CrossOrigin
     @PostMapping("/password")
-    public ResponseEntity<String> updateUserPassword(
+    public ResponseEntity<GenericResponse> updateUserPassword(
             @Validated @RequestBody UserPasswordRequest dto,
             Principal principal
-    ) {
-        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
-            return ResponseEntity.badRequest().body("Password and password confirmation are not equal");
-        }
-        if (profileService.updateUserPassword(dto, principal)) {
-            return ResponseEntity.ok("Password updated successfully");
-        }
-        return ResponseEntity.badRequest().body("Wrong user password");
+    ) throws BadRequestException {
+
+        GenericResponse response = profileService.updateUserPassword(dto, principal);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

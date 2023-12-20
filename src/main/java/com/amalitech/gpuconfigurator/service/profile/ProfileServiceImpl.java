@@ -1,15 +1,14 @@
 package com.amalitech.gpuconfigurator.service.profile;
 
 import com.amalitech.gpuconfigurator.dto.BasicInformationRequest;
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.UserPasswordRequest;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.service.contact.ContactService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.apache.coyote.BadRequestException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,13 +36,14 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public boolean updateUserPassword(UserPasswordRequest dto, Principal principal) {
+    public GenericResponse updateUserPassword(UserPasswordRequest dto, Principal principal) throws BadRequestException {
         var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
-        if (passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
-            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-            userRepository.save(user);
-            return true;
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+            throw new BadRequestException("could not update password");
         }
-        return false;
+
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(user);
+        return new GenericResponse(201, "password updated successfully");
     }
 }

@@ -16,4 +16,6 @@ public interface UserService {
     void verifyResetOtp(VerifyOtpDTO verifyOtpDTO);
 
     void resetPassword(ResetPasswordDTO resetPasswordDto) throws MessagingException;
+
+    GenericResponse resendOtp(ResendOtpDto resend) throws MessagingException;
 }

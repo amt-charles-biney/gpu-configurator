@@ -113,17 +113,23 @@ public class UserServiceImpl implements UserService {
     }
 
     public GenericResponse changePassword(ChangePasswordDTO changePasswordDTO) throws BadRequestException {
-        String email = changePasswordDTO.getEmail();
-        String otpCode = changePasswordDTO.getOtpCode();
-        if (otpService.isValidOtp(email, otpCode, OtpType.RESET)) {
-            User user = repository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("cannot change password, try again"));
-            user.setPassword(changePasswordDTO.newPassword);
-            repository.save(user);
-            // otpService.deleteOtp(email, otpCode);
-            return new GenericResponse(201, "user changed password successfully");
+        User user = repository.findByEmail(changePasswordDTO.getEmail()).orElseThrow(() -> new UsernameNotFoundException("cannot change password, try again"));
+        Boolean otpValid = otpService.isValidOtp(changePasswordDTO.getEmail(), changePasswordDTO.getOtpCode(), OtpType.RESET);
+        if(!otpValid) {
+            throw new BadRequestException("could not change password");
         }
 
-        throw new BadRequestException("invalid Otp");
+        user.setPassword(passwordEncoder.encode(changePasswordDTO.newPassword));
+        repository.save(user);
+        return new GenericResponse(201, "user changed password successfully");
+    }
+
+    public GenericResponse resendOtp(ResendOtpDto resend) throws MessagingException {
+        User user = repository.findByEmail(resend.email()).orElseThrow(() -> new UsernameNotFoundException("could not send otp as this user does not exist"));
+        String otp = otpService.generateAndSaveOtp(user, OtpType.valueOf(resend.type()));
+        emailService.sendOtpMessage(user.getEmail(), otp, OtpType.valueOf(resend.type()));
+
+        return new GenericResponse(201, "otp has been sent");
     }
 
 }
