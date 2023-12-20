@@ -21,7 +21,6 @@ public class ProductServiceImpl implements ProductService {
 
     public CreateProductResponseDto createProduct(ProductDto request) {
         Category category = categoryService.getCategory(request.getCategory());
-
         var product = Product
                 .builder()
                 .productName(request.getProductName())
