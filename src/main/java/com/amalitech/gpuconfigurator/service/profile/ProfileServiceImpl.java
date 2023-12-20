@@ -39,7 +39,7 @@ public class ProfileServiceImpl implements ProfileService {
     public GenericResponse updateUserPassword(UserPasswordRequest dto, Principal principal) throws BadRequestException {
         var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
         if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
-            throw new BadRequestException("could not update password");
+            throw new BadRequestException("invalid password");
         }
 
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
