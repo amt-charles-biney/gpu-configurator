@@ -29,14 +29,7 @@ public class AttributeServiceImpl implements AttributeService {
         List<Attribute> attributes = attributeRepository.findAll();
 
         return attributes.stream()
-                .map(attribute -> {
-                    return AttributeResponse
-                            .builder()
-                            .id(attribute.getId())
-                            .attributeName(attribute.getAttributeName())
-                            .attributeType(String.valueOf(attribute.getAttributeType()))
-                            .build();
-                })
+                .map(this::createAttributeResponseType)
                 .collect(Collectors.toList());
     }
 
@@ -51,14 +44,15 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public Attribute updateAttribute(UUID id, @NotNull AttributeDto attribute) {
+    public AttributeResponse updateAttribute(UUID id, @NotNull AttributeDto attribute) {
         Attribute updateAttribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute not found"));
 
         updateAttribute.setAttributeName(attribute.attributeName());
         updateAttribute.setAttributeType(AttributeType.valueOf(attribute.attributeType()));
         updateAttribute.setUpdatedAt(LocalDateTime.now());
 
-        return attributeRepository.save(updateAttribute);
+        Attribute savedAttribute = attributeRepository.save(updateAttribute);
+        return this.createAttributeResponseType(savedAttribute);
    }
 
    @Override
@@ -69,12 +63,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public AttributeResponse getAttributeById(UUID id) {
         Attribute attribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute not found"));
-        return AttributeResponse
-                .builder()
-                .id(attribute.getId())
-                .attributeName(attribute.getAttributeName())
-                .attributeType(String.valueOf(attribute.getAttributeType()))
-                .build();
+        return this.createAttributeResponseType(attribute);
     }
 
     @Override
@@ -173,6 +162,15 @@ public class AttributeServiceImpl implements AttributeService {
                 .optionName(attr.getOptionName())
                 .optionPrice(attr.getPriceAdjustment())
                 .attribute(new AttributeDto(attr.getAttribute().getAttributeName(), String.valueOf(attr.getAttribute().getAttributeType())))
+                .build();
+    }
+
+    private AttributeResponse createAttributeResponseType(@NotNull Attribute attribute) {
+        return AttributeResponse
+                .builder()
+                .id(attribute.getId())
+                .attributeName(attribute.getAttributeName())
+                .attributeType(String.valueOf(attribute.getAttributeType()))
                 .build();
     }
 

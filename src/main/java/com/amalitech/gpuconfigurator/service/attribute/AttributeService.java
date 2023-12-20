@@ -12,7 +12,7 @@ public interface AttributeService {
 
     Attribute addAttribute(AttributeDto attribute);
 
-    Attribute updateAttribute(UUID id, AttributeDto attribute);
+    AttributeResponse updateAttribute(UUID id, AttributeDto attribute);
 
     Attribute getAttributeByName(String name);
 

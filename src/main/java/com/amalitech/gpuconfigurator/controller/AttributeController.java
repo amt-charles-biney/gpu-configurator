@@ -38,8 +38,8 @@ public class AttributeController {
     }
 
     @PutMapping("/v1/admin/attributes/{attributeId}")
-    public ResponseEntity<Attribute> updateAttribute(@PathVariable String attributeId, @RequestBody  AttributeDto atr) {
-        Attribute attribute = attributeService.updateAttribute(UUID.fromString(attributeId), atr);
+    public ResponseEntity<AttributeResponse> updateAttribute(@PathVariable String attributeId, @RequestBody  AttributeDto atr) {
+        AttributeResponse attribute = attributeService.updateAttribute(UUID.fromString(attributeId), atr);
         return ResponseEntity.status(HttpStatus.CREATED).body(attribute);
     }
 
