@@ -15,10 +15,9 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 
 
-    @Query("SELECT p FROM Product p WHERE p.productName = ?1")
-    List<Product> findProductsByName(String productName);
-
-
     @Modifying
     void deleteById(UUID id);
+
+    @Query("SELECT i FROM Product i WHERE i.productId =?1")
+    Optional<Product> getProductByProductId(String productId);
 }

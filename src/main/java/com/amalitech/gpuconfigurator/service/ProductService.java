@@ -9,6 +9,9 @@ import java.util.UUID;
 
 public interface ProductService {
     CreateProductResponseDto createProduct(ProductDto request);
-    List<Product> getProductByName(String name);
+
+
     void deleteProductById(UUID id) throws NoSuchFieldException;
+
+    Product getProductByProductId(String productId);
 }

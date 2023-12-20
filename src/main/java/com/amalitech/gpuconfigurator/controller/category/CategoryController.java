@@ -1,5 +1,7 @@
 package com.amalitech.gpuconfigurator.controller.category;
 
+
+import com.amalitech.gpuconfigurator.dto.AllCategoryResponse;
 import com.amalitech.gpuconfigurator.dto.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.model.category.Category;
 import com.amalitech.gpuconfigurator.service.CategoryService;
@@ -18,12 +20,19 @@ public class CategoryController {
     @PostMapping("/v1/admin/category")
     @ResponseStatus(HttpStatus.CREATED)
     public Category createCategory(@RequestBody CategoryRequestDto request){
-        return categoryService.addCategory(request);
+        return categoryService.createCategory(request);
     }
 
     @GetMapping("/v1/admin/category")
     @ResponseStatus(HttpStatus.OK)
-    public List<Category> getAllCategories(){
+    public List<AllCategoryResponse> getAllCategories(){
         return categoryService.getAllCategories();
     }
+
+    @GetMapping("/v1/admin/category/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Category> getCategoryByName(@PathVariable("name") String name){
+        return categoryService.getCategoryByName(name);
+    }
+
 }

@@ -16,6 +16,7 @@ public class CreateProductResponseDto{
     private String productDescription;
     private Double productPrice;
     private String productCategory;
+    private String productId;
     private Boolean productAvailability;
     private LocalDateTime createdAt;
 }

@@ -24,7 +24,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "category_name", nullable = false, unique = true)
+    @Column(name = "category_name", nullable = false)
     private String categoryName;
 
     @Column(name = "created_at", nullable = false)

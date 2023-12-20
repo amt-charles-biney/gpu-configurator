@@ -34,9 +34,10 @@ public class ProductController {
         return productService.getAllProduct();
     }
 
-    @GetMapping("/v1/admin/product/{name}")
-    public List<Product> getProductByName(@PathVariable("name") String name){
-        return productService.getProductByName(name);
+
+    @GetMapping("/v1/admin/product/{productId}")
+    public Product getProductByProductId(@PathVariable("productId") String productId){
+        return productService.getProductByProductId(productId);
     }
 
 

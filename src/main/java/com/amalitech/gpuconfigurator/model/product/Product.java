@@ -25,6 +25,9 @@ public class Product {
     @Column(name = "product_name", nullable = false)
     private String productName;
 
+    @Column(name = "product_id", nullable = false)
+    private String productId;
+
     @Column(name = "product_description", nullable = false)
     private String productDescription;
 
@@ -32,15 +35,19 @@ public class Product {
     private Double productPrice;
 
     @JsonIgnoreProperties("products")
-    @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "category_id_fk"))
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(
+            name = "category_id_fk"
+    ))
     private Category category;
+
 
     @Column(name = "product_availability", nullable = false)
     private Boolean productAvailability;
 
     @Column(name = "createdAt", updatable = false)
     private LocalDateTime createdAt;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
