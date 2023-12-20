@@ -16,7 +16,7 @@ public interface AttributeService {
 
     Attribute getAttributeByName(String name);
 
-    Attribute getAttributeById(UUID id);
+    AttributeResponse getAttributeById(UUID id);
 
     void deleteAttributeByName(String name);
 

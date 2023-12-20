@@ -67,8 +67,14 @@ public class AttributeServiceImpl implements AttributeService {
    }
 
     @Override
-    public Attribute getAttributeById(UUID id) {
-        return attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute not found"));
+    public AttributeResponse getAttributeById(UUID id) {
+        Attribute attribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute not found"));
+        return AttributeResponse
+                .builder()
+                .id(attribute.getId())
+                .attributeName(attribute.getAttributeName())
+                .attributeType(String.valueOf(attribute.getAttributeType()))
+                .build();
     }
 
     @Override

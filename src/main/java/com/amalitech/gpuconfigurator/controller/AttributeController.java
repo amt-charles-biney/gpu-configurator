@@ -32,8 +32,8 @@ public class AttributeController {
     }
 
     @GetMapping("/v1/admin/attributes/{attributeId}")
-    public ResponseEntity<Attribute> getAttribute(@PathVariable String attributeId) {
-        Attribute attribute = attributeService.getAttributeById(UUID.fromString(attributeId));
+    public ResponseEntity<AttributeResponse> getAttribute(@PathVariable String attributeId) {
+        AttributeResponse attribute = attributeService.getAttributeById(UUID.fromString(attributeId));
         return ResponseEntity.ok(attribute);
     }
 
