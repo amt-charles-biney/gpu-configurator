@@ -2,7 +2,7 @@ package com.amalitech.gpuconfigurator.util;
 
 
 
-public record ValidationErrorMessages(){
+public class ValidationErrorMessages {
     public static final String EMAIL_BLANK = "Email cannot be blank";
     public static final String INVALID_EMAIL_FORMAT = "Invalid email format";
     public static final String OTP_BLANK = "OTP code cannot be blank";
