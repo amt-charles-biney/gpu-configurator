@@ -1,9 +1,10 @@
-package com.amalitech.gpuconfigurator.service;
+package com.amalitech.gpuconfigurator.service.category;
 
 import com.amalitech.gpuconfigurator.dto.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.dto.AllCategoryResponse;
 import com.amalitech.gpuconfigurator.model.category.Category;
 import com.amalitech.gpuconfigurator.repository.category.CategoryRepository;
+import com.amalitech.gpuconfigurator.service.category.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

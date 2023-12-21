@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.service;
+package com.amalitech.gpuconfigurator.service.product;
 
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.ProductDto;

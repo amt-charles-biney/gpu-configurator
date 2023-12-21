@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.service;
+package com.amalitech.gpuconfigurator.service.product;
 
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
@@ -9,6 +9,8 @@ import com.amalitech.gpuconfigurator.repository.product.ProductRepository;
 
 import java.util.Collections;
 
+import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
+import com.amalitech.gpuconfigurator.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

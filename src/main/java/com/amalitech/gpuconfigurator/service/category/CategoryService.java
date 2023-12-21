@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.service;
+package com.amalitech.gpuconfigurator.service.category;
 
 import com.amalitech.gpuconfigurator.dto.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.dto.AllCategoryResponse;
