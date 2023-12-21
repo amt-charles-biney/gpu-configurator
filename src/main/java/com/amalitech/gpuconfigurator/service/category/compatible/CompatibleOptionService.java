@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.category.compatible;
 
 import com.amalitech.gpuconfigurator.dto.CompatibleOptionDto;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.model.category.Category;
 import com.amalitech.gpuconfigurator.model.category.CompatibleOption;
 import com.amalitech.gpuconfigurator.repository.category.CompatibleOptionRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,7 +21,7 @@ public class CompatibleOptionService {
     private final CompatibleOptionRepository compatibleOptionRepository;
 
     @Transactional
-    public GenericResponse addBulkCompatibleOptions(List<CompatibleOptionDto> compatibleOptionDto) {
+    public void addBulkCompatibleOptions(List<CompatibleOptionDto> compatibleOptionDto) {
          List<CompatibleOption> compatibleOptions = compatibleOptionDto.stream().map(option -> CompatibleOption.builder()
                 .isCompatible(option.isCompatible())
                 .attributeOption(option.attributeOption())
@@ -29,7 +30,6 @@ public class CompatibleOptionService {
                 .build()).toList();
 
          compatibleOptionRepository.saveAll(compatibleOptions);
-         return new GenericResponse(201, "successfully saved all compatible options");
     }
 
     public GenericResponse addCompatibleOption(CompatibleOptionDto compatibleOptionDto) {

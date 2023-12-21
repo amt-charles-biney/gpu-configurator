@@ -31,14 +31,10 @@ public class Attribute {
     @Column(nullable = false, unique = true)
     private String attributeName;
 
-    @Enumerated(EnumType.STRING)
-    private AttributeType attributeType;
 
-    @OneToMany(mappedBy="attribute", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy="attribute", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AttributeOption> attributeOptions;
 
-    @OneToMany(mappedBy = "attribute", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<CompatibleOption> compatibleOption;
 
     @OneToMany(mappedBy = "attribute", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<CategoryConfigOption> categoryConfigOptions;

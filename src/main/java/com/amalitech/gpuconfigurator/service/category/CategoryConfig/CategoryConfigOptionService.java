@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.dto.CompatibleOptionDto;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.model.Attribute;
 import com.amalitech.gpuconfigurator.model.AttributeOption;
+import com.amalitech.gpuconfigurator.model.category.Category;
 import com.amalitech.gpuconfigurator.model.category.CategoryConfigOption;
 import com.amalitech.gpuconfigurator.model.category.CompatibleOption;
 import com.amalitech.gpuconfigurator.repository.category.CategoryConfigOptionRepository;
@@ -25,7 +26,7 @@ public class CategoryConfigOptionService {
     private final CategoryConfigOptionRepository categoryConfigOptionRepository;
 
     @Transactional
-    public GenericResponse addBulkCategoryConfigOptions(List<CategoryConfigOptionDto> categoryConfigOpt) {
+    public void addBulkCategoryConfigOptions(List<CategoryConfigOptionDto> categoryConfigOpt) {
         List<CategoryConfigOption> categoryConfigOptions = categoryConfigOpt
                 .stream()
                 .map(option ->
@@ -38,7 +39,6 @@ public class CategoryConfigOptionService {
                 ).collect(Collectors.toList());
 
         categoryConfigOptionRepository.saveAll(categoryConfigOptions);
-        return new GenericResponse(201, "successfully saved all compatible options");
     }
 
     public GenericResponse deleteCategoryOption(String id) {
