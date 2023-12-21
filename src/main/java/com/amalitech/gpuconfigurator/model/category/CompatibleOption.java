@@ -1,13 +1,12 @@
 package com.amalitech.gpuconfigurator.model.category;
 
-import com.amalitech.gpuconfigurator.model.Attribute;
-import com.amalitech.gpuconfigurator.model.AttributeOption;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -16,25 +15,32 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "compatibleOption")
+@Table(name = "compatibleOption", uniqueConstraints = {@UniqueConstraint(columnNames = {"id", "attribute_id"})})
 public class CompatibleOption {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @ManyToOne
     private CategoryConfig categoryConfig;
 
+    @Column(nullable = false)
+    private String name;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "attribute_id")
-    private Attribute attribute;
+    @Column(nullable = false)
+    private String type;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private AttributeOption attributeOption;
+    @Column(nullable = false)
+    private BigDecimal price;
+
+    private String media;
+
+    private String unit;
 
     private Boolean isCompatible;
+
+    private Boolean isIncluded;
 
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;

@@ -1,20 +1,16 @@
 package com.amalitech.gpuconfigurator.service.category.CategoryConfig;
 
-import com.amalitech.gpuconfigurator.dto.CategoryConfigDto;
-import com.amalitech.gpuconfigurator.dto.CategoryConfigOptionDto;
-import com.amalitech.gpuconfigurator.dto.CompatibleOptionDto;
-import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.*;
 import com.amalitech.gpuconfigurator.model.category.Category;
 import com.amalitech.gpuconfigurator.model.category.CategoryConfig;
-import com.amalitech.gpuconfigurator.model.category.CategoryConfigOption;
 import com.amalitech.gpuconfigurator.model.category.CompatibleOption;
 import com.amalitech.gpuconfigurator.repository.category.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.category.CategoryRepository;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,11 +22,10 @@ public class CategoryConfigService {
 
     private final CategoryConfigRepository categoryConfigRepository;
     private final CategoryRepository categoryRepository;
-    private final CategoryConfigOptionService categoryConfigOptionService;
     private final CompatibleOptionService compatibleOptionService;
 
     @Transactional
-    public GenericResponse createCategoryConfig(UUID id, CategoryConfigDto categoryConfigDto) {
+    public GenericResponse createCategoryConfig(UUID id, List<CompatibleOptionDTO> compatibleOptions) {
         Category category = categoryRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("category not found"));
 
         CategoryConfig config = CategoryConfig
@@ -40,40 +35,52 @@ public class CategoryConfigService {
 
         CategoryConfig savedCategoryConfig = categoryConfigRepository.save(config);
 
-        List<CategoryConfigOptionDto> categoryConfigOptionRequestToResponse = categoryConfigDto
-                .categoryConfigOptions()
+        List<CompatibleOption> compatibleOptionRequestToResponse = compatibleOptions
                 .stream()
-                .map(option -> CategoryConfigOptionDto
+                .map(option -> CompatibleOption
                         .builder()
-                        .categoryConfig(savedCategoryConfig)
-                        .attribute(option.attribute())
-                        .attributeOption(option.attributeOption())
-                        .category(category)
-                        .build()
-                ).toList();
-
-        List<CompatibleOptionDto> compatibleOptionRequestToResponse = categoryConfigDto.compatibleOptions()
-                .stream()
-                .map(option -> CompatibleOptionDto
-                        .builder()
+                        .type(option.type())
+                        .price(option.price())
+                        .name(option.name())
+                        .media(option.media())
                         .isCompatible(option.isCompatible())
-                        .attributeOption(option.attributeOption())
-                        .attribute(option.attribute())
+                        .unit(option.unit())
+                        .isIncluded(option.isIncluded())
                         .categoryConfig(savedCategoryConfig)
                         .build()).toList();
 
-
-        categoryConfigOptionService.addBulkCategoryConfigOptions(categoryConfigOptionRequestToResponse);
         compatibleOptionService.addBulkCompatibleOptions(compatibleOptionRequestToResponse);
-
-        return new GenericResponse(201, "category config created successfully " +  config.getId());
+        return new GenericResponse(201, "category config created successfully " + config.getId());
     }
 
     public CategoryConfig getCategoryConfig(String id) {
         return categoryConfigRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("no config found"));
     }
 
-    public CategoryConfig getCategoryConfigByCategory(String id) {
-        return categoryConfigRepository.findByCategoryId(UUID.fromString(id));
+    public CategoryConfigResponseDto getCategoryConfigByCategory(String id) {
+        CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(UUID.fromString(id));
+
+        List<CompatibleOption> compatibleOptions = compatibleOptionService.getByCategoryConfigId(categoryConfig.getId());
+
+        AttributeResponseDto categoryResponse = AttributeResponseDto.builder().id(categoryConfig.getCategory().getId().toString()).name(categoryConfig.getCategory().getCategoryName()).build();
+
+        List<CompatibleOptionResponseDto> compatibleOptionResponse = compatibleOptions.stream()
+                .map(option -> CompatibleOptionResponseDto.builder()
+                        .id(option.getId().toString())
+                        .type(option.getType())
+                        .price(option.getPrice())
+                        .name(option.getName())
+                        .media(option.getMedia())
+                        .isCompatible(option.getIsCompatible())
+                        .unit(option.getUnit())
+                        .isIncluded(option.getIsIncluded())
+                        .build()
+                ).toList();
+
+        return CategoryConfigResponseDto.builder()
+                .id(categoryConfig.getId().toString())
+                .category(categoryResponse)
+                .options(compatibleOptionResponse)
+                .build();
     }
 }

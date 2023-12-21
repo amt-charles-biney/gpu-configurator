@@ -21,11 +21,9 @@ public class CategoryConfig {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id")
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Category category;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "categoryConfig")
-    private List<CategoryConfigOption> categoryConfigOptions;
-
+    private List<CompatibleOption> compatibleOptions;
 }

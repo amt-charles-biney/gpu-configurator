@@ -1,6 +1,5 @@
 package com.amalitech.gpuconfigurator.dto;
 
-import com.amalitech.gpuconfigurator.model.Attribute;
 import lombok.Builder;
 
 import java.math.BigDecimal;
