@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.model.category.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.category.CompatibleOption;
 import com.amalitech.gpuconfigurator.repository.category.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.category.CategoryRepository;
+import com.amalitech.gpuconfigurator.repository.category.CompatibleOptionRepository;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -59,28 +61,32 @@ public class CategoryConfigService {
 
     public CategoryConfigResponseDto getCategoryConfigByCategory(String id) {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(UUID.fromString(id));
-
         List<CompatibleOption> compatibleOptions = compatibleOptionService.getByCategoryConfigId(categoryConfig.getId());
 
-        AttributeResponseDto categoryResponse = AttributeResponseDto.builder().id(categoryConfig.getCategory().getId().toString()).name(categoryConfig.getCategory().getCategoryName()).build();
+        AttributeResponseDto categoryResponse = AttributeResponseDto
+                .builder()
+                .id(categoryConfig.getCategory().getId().toString())
+                .name(categoryConfig.getCategory().getCategoryName())
+                .build();
 
-        List<CompatibleOptionResponseDto> compatibleOptionResponse = compatibleOptions.stream()
-                .map(option -> CompatibleOptionResponseDto.builder()
-                        .id(option.getId().toString())
-                        .type(option.getType())
-                        .price(option.getPrice())
-                        .name(option.getName())
-                        .media(option.getMedia())
-                        .isCompatible(option.getIsCompatible())
-                        .unit(option.getUnit())
-                        .isIncluded(option.getIsIncluded())
-                        .build()
-                ).toList();
+        Map<String, List<CompatibleOptionResponseDto>> compatibleGroupedByType = compatibleOptions.stream()
+                .collect(Collectors.groupingBy(CompatibleOption::getType,                           // Group by 'type'
+                        Collectors.mapping(option -> CompatibleOptionResponseDto.builder()      // Map each group to a list of CompatibleOptionResponseDto
+                                        .id(option.getId().toString())
+                                        .type(option.getType())
+                                        .price(option.getPrice())
+                                        .name(option.getName())
+                                        .media(option.getMedia())
+                                        .isCompatible(option.getIsCompatible())
+                                        .unit(option.getUnit())
+                                        .isIncluded(option.getIsIncluded())
+                                        .build(),
+                                Collectors.toList())));
 
         return CategoryConfigResponseDto.builder()
                 .id(categoryConfig.getId().toString())
                 .category(categoryResponse)
-                .options(compatibleOptionResponse)
+                .options(compatibleGroupedByType)
                 .build();
     }
 }
