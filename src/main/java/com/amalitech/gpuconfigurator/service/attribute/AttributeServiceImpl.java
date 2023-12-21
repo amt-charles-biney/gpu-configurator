@@ -37,6 +37,7 @@ public class AttributeServiceImpl implements AttributeService {
     public Attribute addAttribute(@NotNull AttributeDto attribute) {
         Attribute newAttribute =  Attribute.builder()
                 .attributeName(attribute.attributeName())
+                .attributeType(AttributeType.valueOf(attribute.attributeType()))
                 .build();
 
         return attributeRepository.save(newAttribute);
@@ -47,6 +48,7 @@ public class AttributeServiceImpl implements AttributeService {
         Attribute updateAttribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute not found"));
 
         updateAttribute.setAttributeName(attribute.attributeName());
+        updateAttribute.setAttributeType(AttributeType.valueOf(attribute.attributeType()));
         updateAttribute.setUpdatedAt(LocalDateTime.now());
 
         Attribute savedAttribute = attributeRepository.save(updateAttribute);
@@ -159,7 +161,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .id(attr.getId().toString())
                 .optionName(attr.getOptionName())
                 .optionPrice(attr.getPriceAdjustment())
-                .attribute(new AttributeResponseDto(attr.getAttribute().getAttributeName(), attr.getAttribute().getId().toString()))
+                .attribute(new AttributeDto(attr.getAttribute().getAttributeName(), String.valueOf(attr.getAttribute().getAttributeType())))
                 .build();
     }
 
@@ -168,6 +170,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .builder()
                 .id(attribute.getId())
                 .attributeName(attribute.getAttributeName())
+                .attributeType(String.valueOf(attribute.getAttributeType()))
                 .build();
     }
 

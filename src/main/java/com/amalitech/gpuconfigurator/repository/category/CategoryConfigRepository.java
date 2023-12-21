@@ -8,5 +8,4 @@ import java.util.UUID;
 
 @Repository
 public interface CategoryConfigRepository extends JpaRepository<CategoryConfig, UUID> {
-    CategoryConfig findByCategoryId(UUID uuid);
 }

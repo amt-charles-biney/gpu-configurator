@@ -26,12 +26,12 @@ public class CompatibleOption {
     @ManyToOne
     private CategoryConfig categoryConfig;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "attribute_id")
     private Attribute attribute;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "attribute_option_id")
+    @ManyToOne(fetch = FetchType.EAGER)
     private AttributeOption attributeOption;
 
     private Boolean isCompatible;

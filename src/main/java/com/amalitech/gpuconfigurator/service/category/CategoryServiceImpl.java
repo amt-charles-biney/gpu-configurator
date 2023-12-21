@@ -25,8 +25,6 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-
-
     public Category getCategory(String categoryName) {
         return categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new EntityNotFoundException("Category not found"));
     }

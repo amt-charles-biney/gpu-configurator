@@ -66,7 +66,7 @@ public class CategoryConfigService {
         categoryConfigOptionService.addBulkCategoryConfigOptions(categoryConfigOptionRequestToResponse);
         compatibleOptionService.addBulkCompatibleOptions(compatibleOptionRequestToResponse);
 
-        return new GenericResponse(201, "category config created successfully" +  config.getId());
+        return new GenericResponse(201, "category config created successfully " +  config.getId());
     }
 
     public CategoryConfig getCategoryConfig(String id) {

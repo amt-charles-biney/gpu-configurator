@@ -32,16 +32,19 @@ public class CategoryConfigOption {
     @JoinColumn(name = "category_config_id")
     private CategoryConfig categoryConfig;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "attribute_id")
     private Attribute attribute;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "attribute_option_id")
     private AttributeOption attributeOption;
 
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "category_config")
     private List<CompatibleOption> compatibleOptions = new ArrayList<CompatibleOption>();
+
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
