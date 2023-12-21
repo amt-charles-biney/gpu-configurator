@@ -37,6 +37,9 @@ public class Category {
     )
     private List<Product> products = new ArrayList<>();
 
+    @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CategoryConfig categoryConfig;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

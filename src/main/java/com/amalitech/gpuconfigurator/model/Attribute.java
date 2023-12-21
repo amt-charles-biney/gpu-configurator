@@ -1,5 +1,8 @@
 package com.amalitech.gpuconfigurator.model;
 
+import com.amalitech.gpuconfigurator.model.category.CategoryConfig;
+import com.amalitech.gpuconfigurator.model.category.CategoryConfigOption;
+import com.amalitech.gpuconfigurator.model.category.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.enums.AttributeType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,6 +36,12 @@ public class Attribute {
 
     @OneToMany(mappedBy="attribute", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<AttributeOption> attributeOptions;
+
+    @OneToMany(mappedBy = "attribute", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<CompatibleOption> compatibleOption;
+
+    @OneToMany(mappedBy = "attribute", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<CategoryConfigOption> categoryConfigOptions;
 
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
