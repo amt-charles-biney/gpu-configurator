@@ -4,13 +4,15 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
 import com.amalitech.gpuconfigurator.model.product.Product;
-import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
+import com.amalitech.gpuconfigurator.service.ProductServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
