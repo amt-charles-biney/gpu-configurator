@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class CreateProductResponseDto {
+    private String id;
     private String productName;
     private String productDescription;
     private Double productPrice;

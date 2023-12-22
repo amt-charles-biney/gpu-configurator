@@ -3,21 +3,18 @@ package com.amalitech.gpuconfigurator.service.product;
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
+import com.amalitech.gpuconfigurator.dto.ProductUpdateDto;
 import com.amalitech.gpuconfigurator.model.category.Category;
 import com.amalitech.gpuconfigurator.model.product.Product;
 import com.amalitech.gpuconfigurator.repository.category.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.product.ProductRepository;
-
-import java.util.Collections;
-
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 
@@ -27,7 +24,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryServiceImpl categoryService;
     private final CategoryRepository categoryRepository;
-    private final ModelMapper modelMapper;
 
     public CreateProductResponseDto createProduct(ProductDto request) {
         Category category = categoryService.getCategory(request.getCategory());
@@ -44,10 +40,10 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
 
 
-
         return CreateProductResponseDto
                 .builder()
                 .productName(product.getProductName())
+                .id(product.getId().toString())
                 .productDescription(product.getProductDescription())
                 .productPrice(product.getProductPrice())
                 .productId(product.getProductId())
@@ -58,15 +54,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
+    public List<CreateProductResponseDto> getAllProduct() {
+        List<Product> products = productRepository.findAll();
 
-    public List<Product> getAllProduct() {
-
-        var allProducts = productRepository.findAll();
-
-        if (allProducts.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return allProducts;
+        return products.stream().map(option -> CreateProductResponseDto.
+                        builder()
+                        .productPrice(option.getProductPrice())
+                        .productAvailability(option.getProductAvailability())
+                        .id(option.getId().toString())
+                        .productId(option.getProductId())
+                        .productName(option.getProductName())
+                        .productDescription(option.getProductDescription())
+                        .build())
+                .toList();
     }
 
 
@@ -75,27 +75,34 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product getProductByProductId(String productId) {
-        Optional<Product> product = productRepository.getProductByProductId(productId);
-
-        return product.orElse(new Product());
+    public CreateProductResponseDto getProductByProductId(String productId) {
+        Product option = productRepository.getProductByProductId(productId).orElseThrow(() -> new EntityNotFoundException("product does not exist"));
+        return CreateProductResponseDto.
+                builder()
+                .productPrice(option.getProductPrice())
+                .productAvailability(option.getProductAvailability())
+                .id(option.getId().toString())
+                .productId(option.getProductId())
+                .productName(option.getProductName())
+                .productDescription(option.getProductDescription())
+                .build();
     }
+
     @Override
-    public GenericResponse updateProduct(UUID productId, ProductDto updatedProduct) {
+    public GenericResponse updateProduct(UUID productId, ProductUpdateDto updatedProduct) {
 
-        Optional<Product> optionalProduct = productRepository.findById(productId);
+        Product optionalProduct = productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("could not update product"));
 
-        if (optionalProduct.isPresent()) {
-            Product existingProduct = optionalProduct.get();
+        optionalProduct.setProductAvailability(updatedProduct.availability());
+        optionalProduct.setProductDescription(updatedProduct.productDescription());
+        optionalProduct.setProductName(updatedProduct.productName());
+        optionalProduct.setProductPrice(updatedProduct.productPrice());
+        optionalProduct.setUpdated_at(LocalDateTime.now());
+        optionalProduct.setProductId(updatedProduct.productId());
 
-            modelMapper.map(updatedProduct, existingProduct);
-            productRepository.save(existingProduct);
+        productRepository.save(optionalProduct);
 
-            return new GenericResponse(201, "updated successfully");
-        } else {
-            throw new EntityNotFoundException("Product with ID: " + productId + " not found");
-        }
-
+        return new GenericResponse(201, "updated successfully ");
     }
 
 }

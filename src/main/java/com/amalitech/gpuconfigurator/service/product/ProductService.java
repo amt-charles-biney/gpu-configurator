@@ -3,9 +3,8 @@ package com.amalitech.gpuconfigurator.service.product;
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
-import com.amalitech.gpuconfigurator.model.product.Product;
+import com.amalitech.gpuconfigurator.dto.ProductUpdateDto;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
@@ -14,7 +13,7 @@ public interface ProductService {
 
     void deleteProductById(UUID id) throws NoSuchFieldException;
 
-    Product getProductByProductId(String productId);
-    
-    GenericResponse updateProduct(UUID productId, ProductDto updatedProduct);
+    CreateProductResponseDto getProductByProductId(String productId);
+
+    GenericResponse updateProduct(UUID productId, ProductUpdateDto updatedProduct);
 }

@@ -4,6 +4,7 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
+import com.amalitech.gpuconfigurator.dto.ProductUpdateDto;
 import com.amalitech.gpuconfigurator.model.product.Product;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
 import jakarta.validation.Valid;
@@ -31,18 +32,19 @@ public class ProductController {
 
     @GetMapping("/v1/admin/product")
     @ResponseStatus(HttpStatus.OK)
-    public List<Product> getAllProducts(){
+    public List<CreateProductResponseDto> getAllProducts(){
         return productService.getAllProduct();
     }
 
 
     @GetMapping("/v1/admin/product/{productId}")
-    public Product getProductByProductId(@PathVariable("productId") String productId){
-        return productService.getProductByProductId(productId);
+    public ResponseEntity<CreateProductResponseDto> getProductByProductId(@PathVariable("productId") String productId){
+        CreateProductResponseDto productResponseDto =  productService.getProductByProductId(productId);
+        return ResponseEntity.ok(productResponseDto);
     }
 
-    @GetMapping("/v1/admin/product/{productId}")
-    public ResponseEntity<GenericResponse> getProductByProductId(@PathVariable("productId") String productId, @RequestBody ProductDto product){
+    @PutMapping("/v1/admin/product/{productId}")
+    public ResponseEntity<GenericResponse> getProductByProductId(@PathVariable("productId") String productId, @RequestBody ProductUpdateDto product){
         GenericResponse productUpdated =  productService.updateProduct(UUID.fromString(productId), product);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(productUpdated);
