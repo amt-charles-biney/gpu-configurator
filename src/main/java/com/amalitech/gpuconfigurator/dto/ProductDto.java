@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -31,4 +33,6 @@ public class ProductDto{
     private String productId;
 
     private String category;
+
+    private List<String> imageUrl;
 }

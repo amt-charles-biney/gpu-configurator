@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -19,4 +20,5 @@ public class CreateProductResponseDto{
     private String productId;
     private Boolean productAvailability;
     private LocalDateTime createdAt;
+    private List<String> imageUrl;
 }

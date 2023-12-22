@@ -1,6 +1,6 @@
-package com.amalitech.gpuconfigurator.repository.category;
+package com.amalitech.gpuconfigurator.repository;
 
-import com.amalitech.gpuconfigurator.model.category.Category;
+import com.amalitech.gpuconfigurator.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -10,12 +10,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, UUID> {
+public interface CategoryRepository extends JpaRepository<Role.Category, UUID> {
 
     @Query("SELECT s FROM Category s WHERE s.categoryName = ?1 ")
-   Optional<Category> findByCategoryName(String categoryName);
+   Optional<Role.Category> findByCategoryName(String categoryName);
 
     @Query("SELECT s FROM Category s WHERE s.categoryName = ?1 ")
-    List<Category> findByCategoryNameList(String categoryName);
+    List<Role.Category> findByCategoryNameList(String categoryName);
 
 }

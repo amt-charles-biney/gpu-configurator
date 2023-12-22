@@ -50,4 +50,13 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
+    @ExceptionHandler(CloudinaryUploadException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ProblemDetail handleCloudinaryUploadException(CloudinaryUploadException e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(500));
+        errorDetail.setDetail("Error uploading image to Cloudinary");
+        errorDetail.setProperty("error_message", e.getMessage());
+        return errorDetail;
+    }
+
 }
