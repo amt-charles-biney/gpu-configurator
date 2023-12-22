@@ -15,7 +15,6 @@ import java.util.UUID;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 
-
     @Modifying
     void deleteById(@NotNull UUID id);
 
