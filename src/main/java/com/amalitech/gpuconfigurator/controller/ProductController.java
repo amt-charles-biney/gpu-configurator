@@ -1,12 +1,11 @@
 package com.amalitech.gpuconfigurator.controller;
 
 
-import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
-import com.amalitech.gpuconfigurator.dto.ProductDto;
-import com.amalitech.gpuconfigurator.model.Otp;
+import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
+import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.model.Product;
-import com.amalitech.gpuconfigurator.service.UploadImageService;
 import com.amalitech.gpuconfigurator.service.ProductServiceImpl;
+import com.amalitech.gpuconfigurator.service.UploadImageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

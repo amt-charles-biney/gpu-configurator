@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.model.category;
+package com.amalitech.gpuconfigurator.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -2,7 +2,7 @@ package com.amalitech.gpuconfigurator.service.category;
 
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.AllCategoryResponse;
-import com.amalitech.gpuconfigurator.model.category.Category;
+import com.amalitech.gpuconfigurator.model.Category;
 
 import java.util.List;
 

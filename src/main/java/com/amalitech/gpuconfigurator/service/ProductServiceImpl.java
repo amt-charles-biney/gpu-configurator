@@ -1,18 +1,18 @@
 package com.amalitech.gpuconfigurator.service;
 
-import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
-import com.amalitech.gpuconfigurator.dto.ProductDto;
+
+import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
+import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
-
-import java.util.Collections;
-
+import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,7 +45,6 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
 
 
-
         return CreateProductResponseDto
                 .builder()
                 .productName(product.getProductName())
@@ -56,9 +55,9 @@ public class ProductServiceImpl implements ProductService {
                 .productCategory(category.getCategoryName())
                 .imageUrl(product.getImageUrl())
                 .createdAt(product.getCreatedAt())
+                .id(product.getId().toString())
                 .build();
     }
-
 
 
     public List<Product> getAllProduct() {

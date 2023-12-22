@@ -1,7 +1,7 @@
 package com.amalitech.gpuconfigurator.service;
 
-import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
-import com.amalitech.gpuconfigurator.dto.ProductDto;
+import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
+import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.model.Product;
 import org.springframework.web.multipart.MultipartFile;
 

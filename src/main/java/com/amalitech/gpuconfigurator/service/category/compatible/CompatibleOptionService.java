@@ -2,8 +2,9 @@ package com.amalitech.gpuconfigurator.service.category.compatible;
 
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionDTO;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.model.category.CompatibleOption;
-import com.amalitech.gpuconfigurator.repository.category.CompatibleOptionRepository;
+import com.amalitech.gpuconfigurator.model.CompatibleOption;
+
+import com.amalitech.gpuconfigurator.repository.CompatibleOptionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

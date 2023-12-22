@@ -1,6 +1,6 @@
 package com.amalitech.gpuconfigurator.dto.categoryconfig;
 
-import com.amalitech.gpuconfigurator.model.category.CategoryConfig;
+import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import lombok.Builder;
 
 import java.math.BigDecimal;
