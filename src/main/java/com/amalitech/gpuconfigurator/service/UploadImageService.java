@@ -17,7 +17,7 @@ public class UploadImageService implements UploadImageServiceImpl {
     @Override
     public String upload(MultipartFile file) {
         try {
-            Map response = cloudinary.uploader().upload(file.getBytes(), Map.of());
+            var response = cloudinary.uploader().upload(file.getBytes(), Map.of());
             return (String) response.get("url");
         } catch (IOException e) {
             throw new CloudinaryUploadException("Error uploading image to Cloudinary", e);
