@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.repository.product;
 
 import com.amalitech.gpuconfigurator.model.product.Product;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
 
     @Modifying
-    void deleteById(UUID id);
+    void deleteById(@NotNull UUID id);
 
     @Query("SELECT i FROM Product i WHERE i.productId =?1")
     Optional<Product> getProductByProductId(String productId);
