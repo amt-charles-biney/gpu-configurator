@@ -1,7 +1,5 @@
-package com.amalitech.gpuconfigurator.model.category;
+package com.amalitech.gpuconfigurator.model;
 
-
-import com.amalitech.gpuconfigurator.model.product.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

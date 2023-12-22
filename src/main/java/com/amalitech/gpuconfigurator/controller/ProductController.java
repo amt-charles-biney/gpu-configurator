@@ -1,16 +1,17 @@
 package com.amalitech.gpuconfigurator.controller;
 
 
-import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
-import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.product.ProductDto;
-import com.amalitech.gpuconfigurator.dto.product.ProductUpdateDto;
-import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
+import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
+import com.amalitech.gpuconfigurator.dto.ProductDto;
+import com.amalitech.gpuconfigurator.model.Otp;
+import com.amalitech.gpuconfigurator.model.Product;
+import com.amalitech.gpuconfigurator.service.UploadImageService;
+import com.amalitech.gpuconfigurator.service.ProductServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,33 +22,27 @@ import java.util.UUID;
 public class ProductController {
 
     private final ProductServiceImpl productService;
+    private final UploadImageService cloudinaryImage;
 
 
     @PostMapping("/v1/admin/product")
-    public ResponseEntity<CreateProductResponseDto> addProduct(@Valid @RequestBody ProductDto request){
-        CreateProductResponseDto productResponse =  productService.createProduct(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(productResponse);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CreateProductResponseDto addProduct(@Valid @ModelAttribute ProductDto request, @RequestParam("file") MultipartFile file){
+
+        return productService.createProduct(request, file);
     }
 
     @GetMapping("/v1/admin/product")
-    @ResponseStatus(HttpStatus.OK)
-    public List<CreateProductResponseDto> getAllProducts(){
+    public List<Product> getAllProducts(){
         return productService.getAllProduct();
     }
 
 
     @GetMapping("/v1/admin/product/{productId}")
-    public ResponseEntity<CreateProductResponseDto> getProductByProductId(@PathVariable("productId") String productId){
-        CreateProductResponseDto productResponseDto =  productService.getProductByProductId(productId);
-        return ResponseEntity.ok(productResponseDto);
+    public Product getProductByProductId(@PathVariable("productId") String productId){
+        return productService.getProductByProductId(productId);
     }
 
-    @PutMapping("/v1/admin/product/{productId}")
-    public ResponseEntity<GenericResponse> getProductByProductId(@PathVariable("productId") String productId, @RequestBody ProductUpdateDto product){
-        GenericResponse productUpdated =  productService.updateProduct(UUID.fromString(productId), product);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(productUpdated);
-    }
 
 
     @DeleteMapping("/v1/admin/product/{id}")

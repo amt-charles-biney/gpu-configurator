@@ -1,6 +1,7 @@
-package com.amalitech.gpuconfigurator.repository.category;
+package com.amalitech.gpuconfigurator.repository;
 
-import com.amalitech.gpuconfigurator.model.category.Category;
+import com.amalitech.gpuconfigurator.model.Category;
+import com.amalitech.gpuconfigurator.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
