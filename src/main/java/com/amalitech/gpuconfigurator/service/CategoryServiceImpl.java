@@ -2,7 +2,7 @@ package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.dto.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.dto.AllCategoryResponse;
-import com.amalitech.gpuconfigurator.model.Role;
+import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,21 +18,21 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public Role.Category createCategory(CategoryRequestDto request) {
-        var category = Role.Category.builder().categoryName(request.name()).build();
+    public Category createCategory(CategoryRequestDto request) {
+        var category = Category.builder().categoryName(request.name()).build();
         return categoryRepository.save(category);
     }
 
 
 
 
-    public Role.Category getCategory(String categoryName) {
+    public Category getCategory(String categoryName) {
         return categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new EntityNotFoundException("Category not found"));
     }
 
     @Override
     public List<AllCategoryResponse> getAllCategories() {
-        List<Role.Category> allCategories = categoryRepository.findAll();
+        List<Category> allCategories = categoryRepository.findAll();
 
         return allCategories.stream()
                 .map(category -> AllCategoryResponse.builder().categoryName(category.getCategoryName()).build())
@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Role.Category> getCategoryByName(String name) {
+    public List<Category> getCategoryByName(String name) {
         var categoryList = categoryRepository.findByCategoryNameList(name);
 
         if(categoryList == null){
@@ -51,7 +51,6 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryList;
 
     }
-
 
 }
 

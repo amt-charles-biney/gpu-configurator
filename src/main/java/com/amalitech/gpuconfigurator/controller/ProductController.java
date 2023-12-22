@@ -4,6 +4,7 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
 import com.amalitech.gpuconfigurator.model.Otp;
+import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.service.UploadImageService;
 import com.amalitech.gpuconfigurator.service.ProductServiceImpl;
 import jakarta.validation.Valid;
@@ -32,13 +33,13 @@ public class ProductController {
     }
 
     @GetMapping("/v1/admin/product")
-    public List<Otp.Product> getAllProducts(){
+    public List<Product> getAllProducts(){
         return productService.getAllProduct();
     }
 
 
     @GetMapping("/v1/admin/product/{productId}")
-    public Otp.Product getProductByProductId(@PathVariable("productId") String productId){
+    public Product getProductByProductId(@PathVariable("productId") String productId){
         return productService.getProductByProductId(productId);
     }
 

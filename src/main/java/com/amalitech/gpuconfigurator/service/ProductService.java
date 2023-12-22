@@ -2,7 +2,7 @@ package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
-import com.amalitech.gpuconfigurator.model.Otp;
+import com.amalitech.gpuconfigurator.model.Product;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
@@ -12,5 +12,5 @@ public interface ProductService {
 
     void deleteProductById(UUID id) throws NoSuchFieldException;
 
-    Otp.Product getProductByProductId(String productId);
+    Product getProductByProductId(String productId);
 }

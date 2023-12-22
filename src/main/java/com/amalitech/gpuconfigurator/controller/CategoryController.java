@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.AllCategoryResponse;
 import com.amalitech.gpuconfigurator.dto.CategoryRequestDto;
+import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Role;
 import com.amalitech.gpuconfigurator.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class CategoryController {
     private final CategoryService categoryService;
     @PostMapping("/v1/admin/category")
     @ResponseStatus(HttpStatus.CREATED)
-    public Role.Category createCategory(@RequestBody CategoryRequestDto request){
+    public Category createCategory(@RequestBody CategoryRequestDto request){
         return categoryService.createCategory(request);
     }
 
@@ -31,7 +32,7 @@ public class CategoryController {
 
     @GetMapping("/v1/admin/category/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Role.Category> getCategoryByName(@PathVariable("name") String name){
+    public List<Category> getCategoryByName(@PathVariable("name") String name){
         return categoryService.getCategoryByName(name);
     }
 

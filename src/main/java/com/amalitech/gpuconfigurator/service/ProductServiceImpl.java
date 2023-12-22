@@ -2,8 +2,8 @@ package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
-import com.amalitech.gpuconfigurator.model.Otp;
-import com.amalitech.gpuconfigurator.model.Role;
+import com.amalitech.gpuconfigurator.model.Category;
+import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 
@@ -28,11 +28,11 @@ public class ProductServiceImpl implements ProductService {
 
 
     public CreateProductResponseDto createProduct(ProductDto request, MultipartFile file) {
-        Role.Category category = categoryService.getCategory(request.getCategory());
+        Category category = categoryService.getCategory(request.getCategory());
 
         var data = this.cloudianryImage.upload(file);
 
-        var product = Otp.Product
+        var product = Product
                 .builder()
                 .productName(request.getProductName())
                 .productDescription(request.getProductDescription())
@@ -61,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
 
 
 
-    public List<Otp.Product> getAllProduct() {
+    public List<Product> getAllProduct() {
 
         var allProducts = productRepository.findAll();
 
@@ -77,10 +77,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Otp.Product getProductByProductId(String productId) {
-        Optional<Otp.Product> product = productRepository.getProductByProductId(productId);
+    public Product getProductByProductId(String productId) {
+        Optional<Product> product = productRepository.getProductByProductId(productId);
 
-        return product.orElse(new Otp.Product());
+        return product.orElse(new Product());
     }
 
 }
