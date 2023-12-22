@@ -1,8 +1,16 @@
 package com.amalitech.gpuconfigurator.service.user;
 
 import com.amalitech.gpuconfigurator.dto.*;
-import com.amalitech.gpuconfigurator.model.OtpType;
-import com.amalitech.gpuconfigurator.model.Role;
+import com.amalitech.gpuconfigurator.dto.auth.AuthenticationResponse;
+import com.amalitech.gpuconfigurator.dto.auth.LoginDto;
+import com.amalitech.gpuconfigurator.dto.auth.ResetPasswordDTO;
+import com.amalitech.gpuconfigurator.dto.auth.SignUpDto;
+import com.amalitech.gpuconfigurator.dto.otp.ResendOtpDto;
+import com.amalitech.gpuconfigurator.dto.otp.VerifyOtpDTO;
+import com.amalitech.gpuconfigurator.dto.otp.VerifyUserDto;
+import com.amalitech.gpuconfigurator.dto.profile.ChangePasswordDTO;
+import com.amalitech.gpuconfigurator.model.enums.OtpType;
+import com.amalitech.gpuconfigurator.model.enums.Role;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.service.email.EmailServiceImpl;

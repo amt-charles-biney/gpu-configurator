@@ -1,11 +1,11 @@
 package com.amalitech.gpuconfigurator.service.attribute;
 
 import com.amalitech.gpuconfigurator.dto.*;
-import com.amalitech.gpuconfigurator.model.Attribute;
-import com.amalitech.gpuconfigurator.model.AttributeOption;
-import com.amalitech.gpuconfigurator.model.enums.AttributeType;
-import com.amalitech.gpuconfigurator.repository.AttributeOptionRepository;
-import com.amalitech.gpuconfigurator.repository.AttributeRepository;
+import com.amalitech.gpuconfigurator.dto.attribute.*;
+import com.amalitech.gpuconfigurator.model.attributes.Attribute;
+import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;

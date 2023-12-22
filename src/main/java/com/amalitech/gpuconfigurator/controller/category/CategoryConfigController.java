@@ -1,9 +1,8 @@
 package com.amalitech.gpuconfigurator.controller.category;
 
-import com.amalitech.gpuconfigurator.dto.CategoryConfigResponseDto;
-import com.amalitech.gpuconfigurator.dto.CompatibleOptionDTO;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigResponseDto;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionDTO;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.model.category.CategoryConfig;
 import com.amalitech.gpuconfigurator.service.category.CategoryConfig.CategoryConfigService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

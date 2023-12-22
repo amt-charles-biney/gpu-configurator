@@ -1,6 +1,12 @@
 package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.*;
+import com.amalitech.gpuconfigurator.dto.auth.*;
+import com.amalitech.gpuconfigurator.dto.otp.ResendOtpDto;
+import com.amalitech.gpuconfigurator.dto.otp.VerifyOTPResponse;
+import com.amalitech.gpuconfigurator.dto.otp.VerifyOtpDTO;
+import com.amalitech.gpuconfigurator.dto.otp.VerifyUserDto;
+import com.amalitech.gpuconfigurator.dto.profile.ChangePasswordDTO;
 import com.amalitech.gpuconfigurator.service.user.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;

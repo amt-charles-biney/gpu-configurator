@@ -1,8 +1,11 @@
 package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.*;
-import com.amalitech.gpuconfigurator.model.Attribute;
-import com.amalitech.gpuconfigurator.model.AttributeOption;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeDto;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionDto;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionResponseDto;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
+import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.service.attribute.AttributeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

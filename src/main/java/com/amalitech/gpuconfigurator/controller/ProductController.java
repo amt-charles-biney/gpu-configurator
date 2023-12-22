@@ -1,11 +1,10 @@
 package com.amalitech.gpuconfigurator.controller;
 
 
-import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
+import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.ProductDto;
-import com.amalitech.gpuconfigurator.dto.ProductUpdateDto;
-import com.amalitech.gpuconfigurator.model.product.Product;
+import com.amalitech.gpuconfigurator.dto.product.ProductDto;
+import com.amalitech.gpuconfigurator.dto.product.ProductUpdateDto;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

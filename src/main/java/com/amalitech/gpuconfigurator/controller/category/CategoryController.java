@@ -1,8 +1,8 @@
 package com.amalitech.gpuconfigurator.controller.category;
 
 
-import com.amalitech.gpuconfigurator.dto.AllCategoryResponse;
-import com.amalitech.gpuconfigurator.dto.CategoryRequestDto;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.AllCategoryResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.model.category.Category;
 import com.amalitech.gpuconfigurator.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package com.amalitech.gpuconfigurator.controller;
 
-import com.amalitech.gpuconfigurator.dto.BasicInformationRequest;
+import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.UserPasswordRequest;
+import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.service.profile.ProfileService;
 import lombok.RequiredArgsConstructor;

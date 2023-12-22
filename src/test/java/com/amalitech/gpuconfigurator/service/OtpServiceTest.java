@@ -1,8 +1,8 @@
 package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.model.Otp;
-import com.amalitech.gpuconfigurator.model.OtpType;
-import com.amalitech.gpuconfigurator.model.Role;
+import com.amalitech.gpuconfigurator.model.enums.OtpType;
+import com.amalitech.gpuconfigurator.model.enums.Role;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.OtpRepository;
 import com.amalitech.gpuconfigurator.service.otp.OtpServiceImpl;

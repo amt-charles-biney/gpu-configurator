@@ -1,8 +1,12 @@
 package com.amalitech.gpuconfigurator.service.attribute;
 
 import com.amalitech.gpuconfigurator.dto.*;
-import com.amalitech.gpuconfigurator.model.Attribute;
-import com.amalitech.gpuconfigurator.model.AttributeOption;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeDto;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionDto;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionResponseDto;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
+import com.amalitech.gpuconfigurator.model.attributes.Attribute;
+import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 
 import java.util.List;
 import java.util.UUID;

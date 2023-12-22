@@ -1,6 +1,6 @@
 package com.amalitech.gpuconfigurator.service.category.compatible;
 
-import com.amalitech.gpuconfigurator.dto.CompatibleOptionDTO;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionDTO;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.model.category.CompatibleOption;
 import com.amalitech.gpuconfigurator.repository.category.CompatibleOptionRepository;

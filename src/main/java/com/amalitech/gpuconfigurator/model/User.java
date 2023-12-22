@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 import java.util.UUID;
 
+import com.amalitech.gpuconfigurator.model.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
