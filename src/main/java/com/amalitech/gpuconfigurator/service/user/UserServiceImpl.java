@@ -70,6 +70,7 @@ public class UserServiceImpl implements UserService {
                 .token(jwtToken)
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .role(String.valueOf(user.getRole()))
                 .build();
     }
 
