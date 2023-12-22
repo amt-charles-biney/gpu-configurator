@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service.product;
 
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
 import com.amalitech.gpuconfigurator.model.product.Product;
 
@@ -14,4 +15,6 @@ public interface ProductService {
     void deleteProductById(UUID id) throws NoSuchFieldException;
 
     Product getProductByProductId(String productId);
+    
+    GenericResponse updateProduct(UUID productId, ProductDto updatedProduct);
 }
