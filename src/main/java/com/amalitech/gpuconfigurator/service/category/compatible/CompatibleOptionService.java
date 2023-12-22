@@ -25,7 +25,6 @@ public class CompatibleOptionService {
 
     public GenericResponse addCompatibleOption(CompatibleOptionDTO option) {
         CompatibleOption compatibleOption = CompatibleOption.builder().isCompatible(option.isCompatible()).price(option.price()).name(option.name()).type(option.type()).isIncluded(option.isIncluded()).isCompatible(option.isCompatible()).categoryConfig(option.categoryConfig()).build();
-
         compatibleOptionRepository.save(compatibleOption);
         return new GenericResponse(201, "compatible option created");
     }

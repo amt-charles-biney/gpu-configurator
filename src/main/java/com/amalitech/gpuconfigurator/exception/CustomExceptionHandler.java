@@ -21,6 +21,7 @@ public class CustomExceptionHandler {
     public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
         errorDetail.setDetail("One or more validation errors occurred");
+        errorDetail.setTitle(ex.getMessage());
 
         Map<String, Object> fieldErrors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
