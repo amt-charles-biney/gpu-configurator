@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -27,10 +28,12 @@ public class ProductServiceImpl implements ProductService {
     private final UploadImageServiceImpl cloudianryImage;
 
 
-    public CreateProductResponseDto createProduct(ProductDto request, MultipartFile file) {
+    public CreateProductResponseDto createProduct(ProductDto request, List<MultipartFile> files) {
         Category category = categoryService.getCategory(request.getCategory());
 
-        var data = this.cloudianryImage.upload(file);
+        List<String> imageUrls = files.stream()
+                .map(this.cloudianryImage::upload)
+                .collect(Collectors.toList());
 
         var product = Product
                 .builder()
@@ -38,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
                 .productDescription(request.getProductDescription())
                 .productPrice(request.getProductPrice())
                 .category(category)
-                .imageUrl(Collections.singletonList(data))
+                .imageUrl(imageUrls)
                 .productId(request.getProductId())
                 .build();
 

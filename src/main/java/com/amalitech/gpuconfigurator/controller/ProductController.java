@@ -26,10 +26,11 @@ public class ProductController {
 
     @PostMapping("/v1/admin/product")
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateProductResponseDto addProduct(@Valid @ModelAttribute ProductDto request, @RequestParam("file") MultipartFile file){
-
-        return productService.createProduct(request, file);
+    public CreateProductResponseDto addProduct(@Valid @ModelAttribute ProductDto request,
+                                               @RequestParam("file") List<MultipartFile> files) {
+        return productService.createProduct(request, files);
     }
+
 
     @GetMapping("/v1/admin/product")
     public List<Product> getAllProducts(){
