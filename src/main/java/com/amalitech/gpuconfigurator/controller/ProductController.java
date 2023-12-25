@@ -24,6 +24,7 @@ public class ProductController {
     private final UploadImageService cloudinaryImage;
 
 
+    @CrossOrigin
     @PostMapping("/v1/admin/product")
     @ResponseStatus(HttpStatus.CREATED)
     public CreateProductResponseDto addProduct(@Valid @ModelAttribute ProductDto request,
@@ -31,20 +32,21 @@ public class ProductController {
         return productService.createProduct(request, files);
     }
 
-
+    @CrossOrigin
     @GetMapping("/v1/admin/product")
     public List<Product> getAllProducts(){
         return productService.getAllProduct();
     }
 
 
+    @CrossOrigin
     @GetMapping("/v1/admin/product/{productId}")
     public Product getProductByProductId(@PathVariable("productId") String productId){
         return productService.getProductByProductId(productId);
     }
 
 
-
+    @CrossOrigin
     @DeleteMapping("/v1/admin/product/{id}")
     public void deleteProduct(@PathVariable("id")UUID id) {
         productService.deleteProductById(id);
