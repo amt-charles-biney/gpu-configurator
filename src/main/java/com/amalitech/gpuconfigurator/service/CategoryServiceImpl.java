@@ -4,6 +4,7 @@ import com.amalitech.gpuconfigurator.dto.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.dto.AllCategoryResponse;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
+import com.cloudinary.api.exceptions.BadRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,15 +42,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> getCategoryByName(String name) {
-        var categoryList = categoryRepository.findByCategoryNameList(name);
-
-        if(categoryList == null){
-            return Collections.emptyList();
-        }
-
-        return categoryList;
-
+    public Category getCategoryByName(String name) {
+        return categoryRepository.findByCategoryName(name).orElseThrow();
     }
 
 }
