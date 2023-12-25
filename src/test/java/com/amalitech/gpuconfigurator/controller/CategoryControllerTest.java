@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,54 +34,51 @@ class CategoryControllerTest {
     @DisplayName("Test success for creating new category")
     void createCategory() {
         CategoryRequestDto dto = new CategoryRequestDto("GPU");
-        Category data = Category.builder()
+        Category expectedCategory = Category.builder()
                 .id(UUID.fromString("6c4a87df-6831-4d49-a924-42979ec657ba"))
                 .categoryName(dto.name())
                 .build();
 
-        when(categoryController.createCategory(dto)).thenReturn(data);
-        Category response =  categoryController.createCategory(dto);
+        when(categoryService.createCategory(dto)).thenReturn(expectedCategory);
+        Category response = categoryController.createCategory(dto);
 
         assertNotNull(response.getId());
-        assertEquals(HttpStatus.CREATED.value(),201);
-
+        assertEquals(expectedCategory, response);
+        assertEquals(HttpStatus.CREATED.value(), 201);
     }
 
     @Test
-    @DisplayName("Test success for getting all category")
-    void getAllCategoriesTest(){
+    @DisplayName("Test success for getting all categories")
+    void getAllCategoriesTest() {
+        List<AllCategoryResponse> expectedCategories = Arrays.asList(
+                AllCategoryResponse.builder().categoryName("SERVER").build(),
+                AllCategoryResponse.builder().categoryName("GPU").build()
+        );
 
-        List<AllCategoryResponse> categoryList = new ArrayList<>();
-        AllCategoryResponse dataOne = AllCategoryResponse
-                .builder()
-                .categoryName("SERVER")
-                .build();
-        AllCategoryResponse dataTwo = AllCategoryResponse
-                .builder()
-                .categoryName("SERVER")
-                .build();
+        when(categoryService.getAllCategories()).thenReturn(expectedCategories);
+        List<AllCategoryResponse> response = categoryController.getAllCategories();
 
-        categoryList.add(dataOne);
-        categoryList.add(dataTwo);
-        when(categoryController.getAllCategories()).thenReturn(categoryList);
-       var response = categoryController.getAllCategories();
-       assertEquals(2, response.size());
-       assertEquals(HttpStatus.OK.value(),200);
 
+        assertEquals(expectedCategories.size(), response.size());
+        assertEquals(expectedCategories, response);
+        assertEquals(HttpStatus.OK.value(), 200);
     }
 
     @Test
-    @DisplayName("Test success for getting all category")
-    void getCategoryByNameTest(){
-
-        List<Category> listOfCategory = new ArrayList<>();
-        Category data = Category.builder()
+    @DisplayName("Test success for getting category by name")
+    void getCategoryByNameTest() {
+        String categoryName = "GPU";
+        Category expectedCategory = Category.builder()
                 .id(UUID.fromString("6c4a87df-6831-4d49-a924-42979ec657ba"))
-                .categoryName("GPU")
+                .categoryName(categoryName)
                 .build();
-        listOfCategory.add(data);
-        when(categoryController.getCategoryByName("GPU")).thenReturn(listOfCategory);
-       var response =  categoryController.getCategoryByName("GPU");
-//       assertEquals(data,response.);
+
+        when(categoryService.getCategoryByName(categoryName)).thenReturn(expectedCategory);
+        Category response = categoryController.getCategoryByName(categoryName);
+
+        assertEquals(expectedCategory.getCategoryName(), response.getCategoryName());
+        assertEquals(expectedCategory, response);
+        assertEquals(HttpStatus.OK.value(), 200);
     }
 }
+
