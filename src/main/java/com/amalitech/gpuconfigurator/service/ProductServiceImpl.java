@@ -9,6 +9,7 @@ import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,9 +81,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProductByProductId(String productId) {
-        Optional<Product> product = productRepository.getProductByProductId(productId);
-
-        return product.orElse(new Product());
+        return productRepository.findById(UUID.fromString(productId)).orElseThrow(()-> new UsernameNotFoundException("No product with this id"));
     }
 
 }
