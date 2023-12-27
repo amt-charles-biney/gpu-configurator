@@ -3,7 +3,6 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
-import com.amalitech.gpuconfigurator.model.Otp;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.service.UploadImageService;
 import com.amalitech.gpuconfigurator.service.ProductServiceImpl;
