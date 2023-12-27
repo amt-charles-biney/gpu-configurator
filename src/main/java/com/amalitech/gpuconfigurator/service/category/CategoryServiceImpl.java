@@ -24,8 +24,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
+
+
     public Category getCategory(String categoryName) {
-        return categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new EntityNotFoundException("Category not found"));
+        return categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new NotFoundException("Category not found"));
     }
 
     @Override
@@ -33,23 +35,15 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> allCategories = categoryRepository.findAll();
 
         return allCategories.stream()
-                .map(category -> AllCategoryResponse.builder().categoryName(category.getCategoryName()).id(category.getId()).build())
+                .map(category -> AllCategoryResponse.builder().categoryName(category.getCategoryName()).build())
                 .toList();
 
     }
 
     @Override
-    public List<Category> getCategoryByName(String name) {
-        var categoryList = categoryRepository.findByCategoryNameList(name);
-
-        if(categoryList == null){
-            return Collections.emptyList();
-        }
-
-        return categoryList;
-
+    public Category getCategoryByName(String name) {
+        return categoryRepository.findByCategoryName(name).orElseThrow(()-> new NotFoundException(name+ " "+ "Not found"));
     }
-
 
 }
 

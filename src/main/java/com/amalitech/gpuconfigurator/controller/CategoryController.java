@@ -31,7 +31,7 @@ public class CategoryController {
 
     @GetMapping("/v1/admin/category/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Category> getCategoryByName(@PathVariable("name") String name){
+    public Category getCategoryByName(@PathVariable("name") String name){
         return categoryService.getCategoryByName(name);
     }
 
