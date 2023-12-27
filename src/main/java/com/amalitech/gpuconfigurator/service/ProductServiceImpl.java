@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
+import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
@@ -79,9 +80,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProductByProductId(String productId) {
-        Optional<Product> product = productRepository.getProductByProductId(productId);
-
-        return product.orElse(new Product());
+        return productRepository.getProductByProductId(productId).orElseThrow(()-> new NotFoundException(productId+ " "+ "Notfound"));
     }
 
 }

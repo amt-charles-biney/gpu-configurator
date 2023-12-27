@@ -5,12 +5,14 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +20,10 @@ import java.util.Map;
 public class CustomExceptionHandler {
 
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({MethodArgumentNotValidException.class,
+            DataIntegrityViolationException.class,
+            BadRequestException.class,
+    })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
@@ -35,26 +40,20 @@ public class CustomExceptionHandler {
     }
 
 
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ProblemDetail dataIntegrityViolationExceptionException(Exception e) {
-        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
-        errorDetail.setDetail(e.getMessage());
-        return errorDetail;
-    }
-
-    @ExceptionHandler(BadRequestException.class)
-    public ProblemDetail badRequestException(Exception e) {
-        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
-        errorDetail.setDetail(e.getMessage());
-        return errorDetail;
-    }
-
     @ExceptionHandler(CloudinaryUploadException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ProblemDetail handleCloudinaryUploadException(CloudinaryUploadException e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(500));
         errorDetail.setDetail("Error uploading image to Cloudinary");
+        errorDetail.setProperty("error_message", e.getMessage());
+        return errorDetail;
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ProblemDetail notFoundException(NotFoundException e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
+        errorDetail.setDetail("Not found");
         errorDetail.setProperty("error_message", e.getMessage());
         return errorDetail;
     }

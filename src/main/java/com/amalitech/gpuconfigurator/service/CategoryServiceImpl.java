@@ -2,14 +2,13 @@ package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.dto.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.dto.AllCategoryResponse;
+import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
-import com.cloudinary.api.exceptions.BadRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 
@@ -28,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     public Category getCategory(String categoryName) {
-        return categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new EntityNotFoundException("Category not found"));
+        return categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new NotFoundException("Category not found"));
     }
 
     @Override
@@ -43,7 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category getCategoryByName(String name) {
-        return categoryRepository.findByCategoryName(name).orElseThrow();
+        return categoryRepository.findByCategoryName(name).orElseThrow(()-> new NotFoundException(name+ " "+ "Not found"));
     }
 
 }

@@ -7,8 +7,8 @@ import com.amalitech.gpuconfigurator.model.Category;
 import java.util.List;
 
 public interface CategoryService {
-    public Category createCategory(CategoryRequestDto request);
-    public Category getCategory(String categoryName);
+     Category createCategory(CategoryRequestDto request);
+     Category getCategory(String categoryName);
 
     List<AllCategoryResponse> getAllCategories();
 
