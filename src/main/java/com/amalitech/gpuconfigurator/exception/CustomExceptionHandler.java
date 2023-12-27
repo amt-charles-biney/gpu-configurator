@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -22,8 +23,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class,
             DataIntegrityViolationException.class,
-            BadRequestException.class,
-    })
+            BadRequestException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
@@ -37,6 +37,15 @@ public class CustomExceptionHandler {
         });
         errorDetail.setProperty("field_errors", fieldErrors);
         return errorDetail;
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ProblemDetail> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
+        errorDetail.setDetail("Max file size exceeded");
+        errorDetail.setProperty("error_message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetail);
     }
 
 
