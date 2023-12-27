@@ -23,8 +23,6 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-
-
     public Category getCategory(String categoryName) {
         return categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new NotFoundException("Category not found"));
     }
@@ -34,7 +32,9 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> allCategories = categoryRepository.findAll();
 
         return allCategories.stream()
-                .map(category -> AllCategoryResponse.builder().categoryName(category.getCategoryName()).build())
+                .map(category -> AllCategoryResponse.builder()
+                        .id(category.getId())
+                        .categoryName(category.getCategoryName()).build())
                 .toList();
 
     }
