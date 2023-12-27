@@ -41,7 +41,7 @@ public class CustomExceptionHandler {
     }
 
 
-    @ExceptionHandler(CloudinaryUploadException.class)
+    @ExceptionHandler({CloudinaryUploadException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ProblemDetail handleCloudinaryUploadException(CloudinaryUploadException e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(500));

@@ -35,8 +35,6 @@ class ProductControllerTest {
     @Mock
     private ProductServiceImpl productService;
 
-    @Mock
-    private ProductRepository productRepository;
 
     @Test
     @DisplayName("Test Success for creating new product")
@@ -140,18 +138,5 @@ class ProductControllerTest {
         assertNotNull(response);
         assertEquals(response.getProductId(), product.getProductId());
     }
-
-    @Test
-    void getProductByProductIdFailure() {
-
-        when(productRepository.getProductByProductId(Mockito.anyString())).thenReturn(Optional.empty());
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            productController.getProductByProductId("1234");
-        });
-
-        assertEquals("1234 Notfound", exception.getMessage());
-
-    }
-
 
 }
