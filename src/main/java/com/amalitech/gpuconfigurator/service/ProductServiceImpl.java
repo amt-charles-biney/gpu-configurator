@@ -1,7 +1,8 @@
 package com.amalitech.gpuconfigurator.service;
 
-import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
-import com.amalitech.gpuconfigurator.dto.ProductDto;
+
+import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
+import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
@@ -10,6 +11,7 @@ import com.amalitech.gpuconfigurator.repository.ProductRepository;
 
 import java.util.Collections;
 
+import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
