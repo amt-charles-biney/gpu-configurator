@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -47,6 +48,15 @@ public class CustomExceptionHandler {
         errorDetail.setDetail("Error uploading image to Cloudinary");
         errorDetail.setProperty("error_message", e.getMessage());
         return errorDetail;
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ProblemDetail> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
+        errorDetail.setDetail("Max file size exceeded");
+        errorDetail.setProperty("error_message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetail);
     }
 
     @ExceptionHandler(NotFoundException.class)
