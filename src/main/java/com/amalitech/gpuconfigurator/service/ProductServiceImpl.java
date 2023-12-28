@@ -75,7 +75,7 @@ public class ProductServiceImpl implements ProductService {
                         .productId(product.getProductId())
                         .productDescription(product.getProductDescription())
                         .productPrice(BigDecimal.valueOf(product.getProductPrice()))
-                        .imageUrl(product.getImageUrl().toString())
+                        .imageUrl(String.valueOf(product.getImageUrl()))
                         .build()).toList();
     }
 
