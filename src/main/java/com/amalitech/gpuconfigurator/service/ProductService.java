@@ -18,5 +18,4 @@ public interface ProductService {
 
     void deleteProductById(UUID id) throws NoSuchFieldException;
 
-    Product getProductByProductId(String productId);
 }
