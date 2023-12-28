@@ -9,9 +9,7 @@ import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
-
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,22 +78,6 @@ public class ProductServiceImpl implements ProductService {
                         .build()).toList();
     }
 
-    @Override
-    public ProductResponse getProduct(String id) {
-        Product product = productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("product not found"));
-
-        return ProductResponse.builder()
-                .productName(product.getProductName())
-                .id(product.getId().toString())
-                .productId(product.getProductId())
-                .productDescription(product.getProductDescription())
-                .productPrice(BigDecimal.valueOf(product.getProductPrice()))
-                .imageUrl(product.getImageUrl().toString())
-                .category(product.getCategory())
-                .build();
-
-    }
-
 
     @Override
     public void deleteProductById(UUID id) {
@@ -103,8 +85,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product getProductByProductId(String productId) {
-        return productRepository.getProductByProductId(productId).orElseThrow(()-> new NotFoundException(productId+ " "+ "Notfound"));
+    public Product getProductByProductId(String id) {
+        try {
+            return productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new NotFoundException("product not found"));
+        } catch (Exception e) {
+            throw new NotFoundException("Invalid UUID format");
+        }
     }
 
 }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +38,7 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ExceptionHandler({MaxUploadSizeExceededException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ProblemDetail> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
@@ -49,7 +48,7 @@ public class CustomExceptionHandler {
     }
 
 
-    @ExceptionHandler(CloudinaryUploadException.class)
+    @ExceptionHandler({CloudinaryUploadException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ProblemDetail handleCloudinaryUploadException(CloudinaryUploadException e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(500));
