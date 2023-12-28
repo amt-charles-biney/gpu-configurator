@@ -3,12 +3,14 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductDto;
+import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.service.ProductServiceImpl;
 import com.amalitech.gpuconfigurator.service.UploadImageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,19 +29,20 @@ public class ProductController {
     @PostMapping("/v1/admin/product")
     @ResponseStatus(HttpStatus.CREATED)
     public CreateProductResponseDto addProduct(@Valid @ModelAttribute ProductDto request, @RequestParam("file") MultipartFile file){
-
         return productService.createProduct(request, file);
     }
 
     @GetMapping("/v1/admin/product")
-    public List<Product> getAllProducts(){
-        return productService.getAllProduct();
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
+        List<ProductResponse> products =  productService.getAllProducts();
+        return ResponseEntity.ok(products);
     }
 
 
     @GetMapping("/v1/admin/product/{productId}")
-    public Product getProductByProductId(@PathVariable("productId") String productId){
-        return productService.getProductByProductId(productId);
+    public ResponseEntity<ProductResponse> getProductByProductId(@PathVariable("productId") String productId){
+        ProductResponse product =  productService.getProduct(productId);
+        return ResponseEntity.ok(product);
     }
 
 
