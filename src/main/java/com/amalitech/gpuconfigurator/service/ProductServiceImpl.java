@@ -11,7 +11,6 @@ import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,7 +36,7 @@ public class ProductServiceImpl implements ProductService {
 
         List<String> imageUrls = files.stream()
                 .map(this.cloudianryImage::upload)
-                .collect(Collectors.toList());
+                .toList();
 
         var product = Product
                 .builder()
