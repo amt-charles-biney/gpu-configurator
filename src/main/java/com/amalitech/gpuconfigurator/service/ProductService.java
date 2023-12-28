@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
-    CreateProductResponseDto createProduct(ProductDto request, MultipartFile file);
+    CreateProductResponseDto createProduct(ProductDto request, List<MultipartFile> files);
 
     List<ProductResponse> getAllProducts();
 
@@ -18,4 +18,5 @@ public interface ProductService {
 
     void deleteProductById(UUID id) throws NoSuchFieldException;
 
+    Product getProductByProductId(String productId);
 }

@@ -2,13 +2,12 @@ package com.amalitech.gpuconfigurator.service.category;
 
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.AllCategoryResponse;
+import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 
@@ -25,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     public Category getCategory(String categoryName) {
-        return categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new EntityNotFoundException("Category not found"));
+        return categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new NotFoundException("Category not found"));
     }
 
     @Override
@@ -33,23 +32,17 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> allCategories = categoryRepository.findAll();
 
         return allCategories.stream()
-                .map(category -> AllCategoryResponse.builder().categoryName(category.getCategoryName()).id(category.getId()).build())
+                .map(category -> AllCategoryResponse.builder()
+                        .id(category.getId())
+                        .categoryName(category.getCategoryName()).build())
                 .toList();
 
     }
 
     @Override
-    public List<Category> getCategoryByName(String name) {
-        var categoryList = categoryRepository.findByCategoryNameList(name);
-
-        if(categoryList == null){
-            return Collections.emptyList();
-        }
-
-        return categoryList;
-
+    public Category getCategoryByName(String name) {
+        return categoryRepository.findByCategoryName(name).orElseThrow(()-> new NotFoundException(name+ " "+ "Not found"));
     }
-
 
 }
 

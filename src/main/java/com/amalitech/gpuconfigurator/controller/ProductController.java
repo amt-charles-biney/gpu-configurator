@@ -26,12 +26,16 @@ public class ProductController {
     private final UploadImageService cloudinaryImage;
 
 
+    @CrossOrigin
     @PostMapping("/v1/admin/product")
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateProductResponseDto addProduct(@Valid @ModelAttribute ProductDto request, @RequestParam("file") MultipartFile file){
-        return productService.createProduct(request, file);
+
+    public CreateProductResponseDto addProduct(@Valid @ModelAttribute ProductDto request,
+                                               @RequestParam("file") List<MultipartFile> files) {
+        return productService.createProduct(request, files);
     }
 
+    @CrossOrigin
     @GetMapping("/v1/admin/product")
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
         List<ProductResponse> products =  productService.getAllProducts();
@@ -39,6 +43,7 @@ public class ProductController {
     }
 
 
+    @CrossOrigin
     @GetMapping("/v1/admin/product/{productId}")
     public ResponseEntity<ProductResponse> getProductByProductId(@PathVariable("productId") String productId){
         ProductResponse product =  productService.getProduct(productId);
@@ -46,7 +51,7 @@ public class ProductController {
     }
 
 
-
+    @CrossOrigin
     @DeleteMapping("/v1/admin/product/{id}")
     public void deleteProduct(@PathVariable("id")UUID id) {
         productService.deleteProductById(id);

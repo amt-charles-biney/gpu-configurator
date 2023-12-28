@@ -1,8 +1,13 @@
 package com.amalitech.gpuconfigurator.util;
 
 
-
-public record ValidationErrorMessages(){
+public class ValidationErrorMessages {
+    public static final String PRODUCT_NAME_BLANK = "Product cannot be blank";
+    public static final String PRODUCT_NAME_EMPTY = "Product cannot be blank";
+    public static final String PRODUCT_DESCRIPTION_BLANK = "Product Description cannot be blank";
+    public static final String PRODUCT_PRICE_EMPTY = "Product Price cannot be blank";
+    public static final String PRODUCT_PRICE_NOT_NEGATIVE= "Product Description cannot be blank";
+    public static final String PRODUCT_DESCRIPTION_EMPTY = "Product Description cannot be blank";
     public static final String EMAIL_BLANK = "Email cannot be blank";
     public static final String INVALID_EMAIL_FORMAT = "Invalid email format";
     public static final String OTP_BLANK = "OTP code cannot be blank";

@@ -101,7 +101,10 @@ public class UserServiceImpl implements UserService {
 
         repository.save(user);
 
-        var jwtToken = jwtServiceImpl.generateToken(user);
+        Map<String, Object> extraClaim = new HashMap<>();
+        extraClaim.put("role", user.getRole());
+
+        var jwtToken = jwtServiceImpl.generateToken(extraClaim, user);
 
         return AuthenticationResponse.builder()
                 .email(user.getEmail())

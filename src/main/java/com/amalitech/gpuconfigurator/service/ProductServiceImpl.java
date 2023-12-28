@@ -4,10 +4,12 @@ package com.amalitech.gpuconfigurator.service;
 import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
+import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
+
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -32,10 +32,12 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public CreateProductResponseDto createProduct(ProductDto request, MultipartFile file) {
+    public CreateProductResponseDto createProduct(ProductDto request, List<MultipartFile> files) {
         Category category = categoryService.getCategory(request.getCategory());
 
-        var data = this.cloudianryImage.upload(file);
+        List<String> imageUrls = files.stream()
+                .map(this.cloudianryImage::upload)
+                .collect(Collectors.toList());
 
         var product = Product
                 .builder()
@@ -43,12 +45,11 @@ public class ProductServiceImpl implements ProductService {
                 .productDescription(request.getProductDescription())
                 .productPrice(request.getProductPrice())
                 .category(category)
-                .imageUrl(Collections.singletonList(data))
+                .imageUrl(imageUrls)
                 .productId(request.getProductId())
                 .build();
 
         productRepository.save(product);
-
 
         return CreateProductResponseDto
                 .builder()
@@ -60,7 +61,6 @@ public class ProductServiceImpl implements ProductService {
                 .productCategory(category.getCategoryName())
                 .imageUrl(product.getImageUrl())
                 .createdAt(product.getCreatedAt())
-                .id(product.getId().toString())
                 .build();
     }
 
@@ -100,6 +100,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProductById(UUID id) {
         productRepository.deleteById(id);
+    }
+
+    @Override
+    public Product getProductByProductId(String productId) {
+        return productRepository.getProductByProductId(productId).orElseThrow(()-> new NotFoundException(productId+ " "+ "Notfound"));
     }
 
 }
