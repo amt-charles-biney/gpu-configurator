@@ -25,6 +25,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -67,11 +69,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthenticationResponse login(LoginDto request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        var user = repository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Email or Password incorrect"));
+        User user = repository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Email or Password incorrect"));
         if (!user.getIsVerified()) {
             throw new UsernameNotFoundException("email not verified");
         }
-        var jwtToken = jwtServiceImpl.generateToken(user);
+
+        Map<String, Object> extraClaim = new HashMap<>();
+        extraClaim.put("role", user.getRole());
+
+        var jwtToken = jwtServiceImpl.generateToken(extraClaim, user);
 
         return AuthenticationResponse.builder()
                 .email(user.getEmail())
