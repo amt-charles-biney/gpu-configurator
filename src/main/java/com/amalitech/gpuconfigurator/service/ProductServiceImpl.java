@@ -92,7 +92,6 @@ public class ProductServiceImpl implements ProductService {
                 .imageUrl(product.getImageUrl().toString())
                 .category(product.getCategory())
                 .build();
-
     }
 
 
