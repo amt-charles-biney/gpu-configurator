@@ -31,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
     private final UploadImageServiceImpl cloudianryImage;
 
 
+    @Override
     public CreateProductResponseDto createProduct(ProductDto request, MultipartFile file) {
         Category category = categoryService.getCategory(request.getCategory());
 
@@ -63,6 +64,7 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
+    @Override
     public List<ProductResponse> getAllProducts() {
         List<Product> products = productRepository.findAll();
 
@@ -78,6 +80,7 @@ public class ProductServiceImpl implements ProductService {
                         .build()).collect(Collectors.toList());
     }
 
+    @Override
     public ProductResponse getProduct(String id) {
         Product product = productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("product not found"));
 
@@ -94,26 +97,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    public List<Product> getAllProduct() {
-
-        var allProducts = productRepository.findAll();
-
-        if (allProducts.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return allProducts;
-    }
-
-
+    @Override
     public void deleteProductById(UUID id) {
         productRepository.deleteById(id);
     }
 
-    @Override
-    public Product getProductByProductId(String productId) {
-        Optional<Product> product = productRepository.getProductByProductId(productId);
-
-        return product.orElse(new Product());
-    }
 
 }
