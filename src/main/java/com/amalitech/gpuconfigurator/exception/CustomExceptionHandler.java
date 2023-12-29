@@ -13,13 +13,22 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
 
+    private static final String setProperty = "error_message";
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ProblemDetail handleUncheckedExceptions(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(500));
+        errorDetail.setDetail("Something went wrong");
+        errorDetail.setProperty(setProperty, e.getMessage());
+        return errorDetail;
+    }
 
     @ExceptionHandler({MethodArgumentNotValidException.class,
             DataIntegrityViolationException.class,
@@ -46,7 +55,7 @@ public class CustomExceptionHandler {
     public ProblemDetail handleCloudinaryUploadException(CloudinaryUploadException e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(500));
         errorDetail.setDetail("Error uploading image to Cloudinary");
-        errorDetail.setProperty("error_message", e.getMessage());
+        errorDetail.setProperty(setProperty, e.getMessage());
         return errorDetail;
     }
 
@@ -55,7 +64,7 @@ public class CustomExceptionHandler {
     public ResponseEntity<ProblemDetail> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
         errorDetail.setDetail("Max file size exceeded");
-        errorDetail.setProperty("error_message", e.getMessage());
+        errorDetail.setProperty(setProperty, e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetail);
     }
 
@@ -64,7 +73,7 @@ public class CustomExceptionHandler {
     public ProblemDetail notFoundException(NotFoundException e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
         errorDetail.setDetail("Not found");
-        errorDetail.setProperty("error_message", e.getMessage());
+        errorDetail.setProperty(setProperty, e.getMessage());
         return errorDetail;
     }
 

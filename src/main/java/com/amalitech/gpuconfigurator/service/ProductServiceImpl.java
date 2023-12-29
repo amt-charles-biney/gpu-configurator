@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
 
         List<String> imageUrls = files.stream()
                 .map(this.cloudianryImage::upload)
-                .collect(Collectors.toList());
+                .toList();
 
         var product = Product
                 .builder()
