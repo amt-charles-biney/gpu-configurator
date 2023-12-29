@@ -16,6 +16,8 @@ public record ProductResponse(
         List<String> imageUrl,
         String productId,
         AttributeResponseDto category,
-        String productDescription
+        String productDescription,
+
+        boolean productAvailability
 ) {
 }

@@ -54,6 +54,7 @@ public class ProductServiceImpl implements ProductService {
 
         return CreateProductResponseDto
                 .builder()
+                .id(product.getId().toString())
                 .productName(product.getProductName())
                 .productDescription(product.getProductDescription())
                 .productPrice(product.getProductPrice())
@@ -91,6 +92,7 @@ public class ProductServiceImpl implements ProductService {
                 .productId(product.getProductId())
                 .productDescription(product.getProductDescription())
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))
+                .productAvailability(product.getProductAvailability())
                 .imageUrl(product.getImageUrl().stream().toList())
                 .category(new AttributeResponseDto(category.getCategoryName(), category.getId().toString()))
                 .build();
