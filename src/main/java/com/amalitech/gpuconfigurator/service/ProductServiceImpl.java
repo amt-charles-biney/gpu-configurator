@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service;
 
 
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
@@ -11,6 +12,7 @@ import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,13 +76,14 @@ public class ProductServiceImpl implements ProductService {
                         .productId(product.getProductId())
                         .productDescription(product.getProductDescription())
                         .productPrice(BigDecimal.valueOf(product.getProductPrice()))
-                        .imageUrl(String.valueOf(product.getImageUrl()))
+                        .imageUrl(product.getImageUrl())
                         .build()).toList();
     }
 
     @Override
     public ProductResponse getProduct(String id) {
-        Product product = productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new NotFoundException("product not found"));
+        Product product = productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("product not found"));
+        Category category = categoryRepository.findById(product.getCategory().getId()).orElseThrow(() -> new EntityNotFoundException("category does not exist "));
 
         return ProductResponse.builder()
                 .productName(product.getProductName())
@@ -88,8 +91,8 @@ public class ProductServiceImpl implements ProductService {
                 .productId(product.getProductId())
                 .productDescription(product.getProductDescription())
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))
-                .imageUrl(product.getImageUrl().toString())
-                .category(product.getCategory())
+                .imageUrl(product.getImageUrl().stream().toList())
+                .category(new AttributeResponseDto(category.getCategoryName(), category.getId().toString()))
                 .build();
     }
 
