@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -57,7 +58,7 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler({NotFoundException.class, EntityNotFoundException.classgit})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ProblemDetail notFoundException(NotFoundException e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
