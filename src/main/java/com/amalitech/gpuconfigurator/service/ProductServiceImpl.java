@@ -7,16 +7,15 @@ import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
-
-import java.util.Collections;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -61,17 +60,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
+    public Page<Product> getAllProducts(int page, int size) {
 
-    public List<Product> getAllProduct() {
-
-        var allProducts = productRepository.findAll();
-
-        if (allProducts.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return allProducts;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("productPrice").ascending());
+        return productRepository.findAll(pageRequest);
     }
-
 
     public void deleteProductById(UUID id) {
         productRepository.deleteById(id);
@@ -79,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProductByProductId(String productId) {
-        return productRepository.getProductByProductId(productId).orElseThrow(()-> new NotFoundException(productId+ " "+ "Notfound"));
+        return productRepository.getProductByProductId(productId).orElseThrow(() -> new NotFoundException(productId + " " + "Notfound"));
     }
 
 }

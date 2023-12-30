@@ -14,6 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -84,7 +87,6 @@ class ProductControllerTest {
     @Test
     @DisplayName("Test success for getting all product")
     void getAllProducts() {
-
         Category category = Category.builder().categoryName("GPU").build();
 
         List<Product> expectedProduct = Arrays.asList(
@@ -110,11 +112,13 @@ class ProductControllerTest {
                         .build()
         );
 
-        when(productService.getAllProduct()).thenReturn(expectedProduct);
-        var response = productController.getAllProducts();
-        assertNotNull(response);
-        assertEquals(response.size(), expectedProduct.size());
-        assertEquals(response.get(0).getId(), expectedProduct.get(0).getId());
+        when(productService.getAllProducts(anyInt(), anyInt())).thenReturn(new PageImpl<>(expectedProduct));
+
+        ResponseEntity<List<Product>> response = productController.getAllProducts(0, 1);
+
+        assertNotNull(response.getBody());
+        assertEquals(expectedProduct.size(), response.getBody().size());
+        assertEquals(expectedProduct.get(0).getId(), response.getBody().get(0).getId());
     }
 
     @Test
