@@ -47,12 +47,6 @@ public class ProductController {
     }
 
 
-    @GetMapping("/v1/admin/product/{productId}")
-    public Product getProductByProductId(@PathVariable("productId") String productId) {
-        return productService.getProductByProductId(productId);
-    }
-
-
     @DeleteMapping("/v1/admin/product/{id}")
     public void deleteProduct(@PathVariable("id") UUID id) {
         productService.deleteProductById(id);
