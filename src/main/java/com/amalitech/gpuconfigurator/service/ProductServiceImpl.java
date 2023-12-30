@@ -83,8 +83,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse getProduct(String id) {
-        Product product = productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("product not found"));
-        Category category = categoryRepository.findById(product.getCategory().getId()).orElseThrow(() -> new EntityNotFoundException("category does not exist "));
+        Product product = productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new NotFoundException("product not found"));
+        Category category = categoryRepository.findById(product.getCategory().getId()).orElseThrow(() -> new NotFoundException("category does not exist "));
 
         return ProductResponse.builder()
                 .productName(product.getProductName())
