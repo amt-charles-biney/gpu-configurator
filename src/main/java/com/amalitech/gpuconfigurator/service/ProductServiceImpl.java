@@ -12,15 +12,17 @@ import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
-import jakarta.persistence.EntityNotFoundException;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -99,10 +101,26 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    @Override
+
+    public Page<ProductResponse> getAllProducts(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("productPrice").ascending());
+        Page<Product> productPage = productRepository.findAll(pageRequest);
+
+        return productPage.map(product -> ProductResponse.builder()
+                .productName(product.getProductName())
+                .id(product.getId().toString())
+                .productId(product.getProductId())
+                .productDescription(product.getProductDescription())
+                .productPrice(BigDecimal.valueOf(product.getProductPrice()))
+                .imageUrl(product.getImageUrl())
+                .build());
+    }
+
+
     public void deleteProductById(UUID id) {
         productRepository.deleteById(id);
     }
+
 
 
 }

@@ -9,6 +9,7 @@ import com.amalitech.gpuconfigurator.service.ProductServiceImpl;
 import com.amalitech.gpuconfigurator.service.UploadImageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +36,12 @@ public class ProductController {
         return productService.createProduct(request, files);
     }
 
-    @CrossOrigin
-    @GetMapping("/v1/admin/product")
-    public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        List<ProductResponse> products =  productService.getAllProducts();
-        return ResponseEntity.ok(products);
-    }
+//    @CrossOrigin
+//    @GetMapping("/v1/admin/product")
+//    public ResponseEntity<List<ProductResponse>> getAllProducts() {
+//        List<ProductResponse> products =  productService.getAllProducts();
+//        return ResponseEntity.ok(products);
+//    }
 
 
     @CrossOrigin
@@ -52,8 +53,29 @@ public class ProductController {
 
 
     @CrossOrigin
+    @GetMapping("/v1/admin/product")
+    public ResponseEntity<?> getAllProducts(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
+        if (page != null && size != null) {
+            Page<ProductResponse> products = productService.getAllProducts(page, size);
+            if (products.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(products.getContent());
+        } else {
+            List<ProductResponse> products = productService.getAllProducts();
+            return ResponseEntity.ok(products);
+        }
+    }
+
+
+
+
+    @CrossOrigin
     @DeleteMapping("/v1/admin/product/{id}")
-    public void deleteProduct(@PathVariable("id")UUID id) {
+    public void deleteProduct(@PathVariable("id") UUID id) {
         productService.deleteProductById(id);
     }
 

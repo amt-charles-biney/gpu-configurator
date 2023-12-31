@@ -1,9 +1,10 @@
 package com.amalitech.gpuconfigurator.controller;
 
-import com.amalitech.gpuconfigurator.dto.AllCategoryResponse;
-import com.amalitech.gpuconfigurator.dto.CategoryRequestDto;
+
+import com.amalitech.gpuconfigurator.dto.categoryconfig.AllCategoryResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.model.Category;
-import com.amalitech.gpuconfigurator.service.CategoryService;
+import com.amalitech.gpuconfigurator.service.category.CategoryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
