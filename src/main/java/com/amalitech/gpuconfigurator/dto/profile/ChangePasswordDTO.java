@@ -4,9 +4,11 @@ import com.amalitech.gpuconfigurator.annotation.PasswordsMatch;
 import com.amalitech.gpuconfigurator.util.ValidationErrorMessages;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 @PasswordsMatch(message = "password and confirm password are not equal")
 public class ChangePasswordDTO {
 
