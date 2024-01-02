@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
-    CreateProductResponseDto createProduct(ProductDto request, List<MultipartFile> files);
+    CreateProductResponseDto createProduct(ProductDto request, List<MultipartFile> files,  MultipartFile coverImage);
 
     List<ProductResponse> getAllProducts();
 

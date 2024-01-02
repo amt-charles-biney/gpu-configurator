@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProductControllerTest {
@@ -61,6 +63,9 @@ class ProductControllerTest {
                 "http://example.com/image2.jpg"
         );
 
+        MultipartFile coverImage = new MockMultipartFile("coverImage", "originalFilename1.txt", "text/plain", "File content 1".getBytes());
+        String coverImageUrl = "http://example.com/image1.jpg";
+
         CreateProductResponseDto expectedResponse = CreateProductResponseDto
                 .builder()
                 .productName(requestDto.getProductName())
@@ -72,10 +77,11 @@ class ProductControllerTest {
                 .productAvailability(true)
                 .createdAt(LocalDateTime.now())
                 .imageUrl(imageUrls)
+                .coverImage(coverImageUrl)
                 .build();
 
-        when(productService.createProduct(requestDto, files)).thenReturn(expectedResponse);
-        CreateProductResponseDto response = productController.addProduct(requestDto, files);
+        when(productService.createProduct(requestDto, files, coverImage)).thenReturn(expectedResponse);
+        CreateProductResponseDto response = productController.addProduct(requestDto, files, coverImage);
 
         assertNotNull(response);
         assertEquals(response.getProductId(), expectedResponse.getProductId());
@@ -127,8 +133,8 @@ class ProductControllerTest {
 
         ResponseEntity<?> response = productController.getAllProducts(0, 1);
 
+
         assertNotNull(response.getBody());
     }
-
 
 }
