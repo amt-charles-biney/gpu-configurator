@@ -1,20 +1,18 @@
 package com.amalitech.gpuconfigurator.controller;
 
+
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
-import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
-import com.amalitech.gpuconfigurator.repository.ProductRepository;
+
 import com.amalitech.gpuconfigurator.service.ProductServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
@@ -118,7 +116,7 @@ class ProductControllerTest {
 
         when(productService.getAllProducts(anyInt(), anyInt())).thenReturn(new PageImpl<>(expectedProduct));
 
-        ResponseEntity<List<Product>> response = productController.getAllProducts(0, 1);
+        ResponseEntity<List<Product>> response = (ResponseEntity<List<Product>>) productController.getAllProducts(0, 1);
 
         assertNotNull(response.getBody());
         assertEquals(expectedProduct.size(), response.getBody().size());

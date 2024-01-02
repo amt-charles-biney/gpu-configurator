@@ -1,6 +1,6 @@
 package com.amalitech.gpuconfigurator.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,8 +34,8 @@ public class Product {
     @Column(name = "product_price", nullable = false)
     private Double productPrice;
 
-    @JsonIgnoreProperties("products")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(
             name = "category_id_fk"
     ))
