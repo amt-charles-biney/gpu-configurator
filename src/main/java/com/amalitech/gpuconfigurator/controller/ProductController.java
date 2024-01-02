@@ -36,12 +36,6 @@ public class ProductController {
         return productService.createProduct(request, files, coverImage);
     }
 
-//    @CrossOrigin
-//    @GetMapping("/v1/admin/product")
-//    public ResponseEntity<List<ProductResponse>> getAllProducts() {
-//        List<ProductResponse> products =  productService.getAllProducts();
-//        return ResponseEntity.ok(products);
-//    }
 
 
     @CrossOrigin
