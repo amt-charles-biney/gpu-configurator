@@ -46,10 +46,6 @@ public class BrandServiceImpl implements BrandService {
         return new GenericResponse(204, "brand has been deleted successfully");
     }
 
-    @Override
-    public GenericResponse updatedBrand(UUID id, String name) {
-        return null;
-    }
 
     @Override
     public GenericResponse updatedBrand(UUID id, @NotNull BrandRequest request) {
