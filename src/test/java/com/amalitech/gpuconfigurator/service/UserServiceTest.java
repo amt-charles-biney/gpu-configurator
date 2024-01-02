@@ -60,6 +60,13 @@ public class UserServiceTest {
         SignUpDto signUpDto = new SignUpDto("Dickson", "Anyaele", "dickson.anyaele@gmail.com", "password");
 
         when(userRepository.findByEmail(signUpDto.getEmail())).thenReturn(Optional.ofNullable(null));
+        when(userRepository.save(User.builder()
+                        .firstName(signUpDto.getFirstName())
+                        .lastName(signUpDto.getLastName())
+                        .email(signUpDto.getEmail())
+                        .password(signUpDto.getPassword())
+                .build())).thenReturn(any(User.class));
+
         userService.signup(signUpDto);
 
         verify(userRepository, times(1)).save(any(User.class));
