@@ -29,8 +29,8 @@ public class ProductController {
     @PostMapping("/v1/admin/product")
     @ResponseStatus(HttpStatus.CREATED)
     public CreateProductResponseDto addProduct(@Valid @ModelAttribute ProductDto request,
-                                               @RequestParam("file") List<MultipartFile> files) {
-        return productService.createProduct(request, files);
+                                               @RequestParam("file") List<MultipartFile> files, @RequestParam("coverImage") MultipartFile coverImage) {
+        return productService.createProduct(request, files, coverImage);
     }
 
 

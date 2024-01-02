@@ -21,4 +21,5 @@ public class CreateProductResponseDto{
     private Boolean productAvailability;
     private LocalDateTime createdAt;
     private List<String> imageUrl;
+    private String coverImage;
 }

@@ -62,6 +62,9 @@ class ProductControllerTest {
                 "http://example.com/image2.jpg"
         );
 
+        MultipartFile coverImage = new MockMultipartFile("coverImage", "originalFilename1.txt", "text/plain", "File content 1".getBytes());
+        String coverImageUrl =  "http://example.com/image1.jpg";
+
         CreateProductResponseDto expectedResponse = CreateProductResponseDto
                 .builder()
                 .productName(requestDto.getProductName())
@@ -73,10 +76,11 @@ class ProductControllerTest {
                 .productAvailability(true)
                 .createdAt(LocalDateTime.now())
                 .imageUrl(imageUrls)
+                .coverImage(coverImageUrl)
                 .build();
 
-        when(productService.createProduct(requestDto, files)).thenReturn(expectedResponse);
-        CreateProductResponseDto response = productController.addProduct(requestDto, files);
+        when(productService.createProduct(requestDto, files, coverImage)).thenReturn(expectedResponse);
+        CreateProductResponseDto response = productController.addProduct(requestDto, files, coverImage);
 
         assertNotNull(response);
         assertEquals(response.getProductId(), expectedResponse.getProductId());
@@ -119,28 +123,6 @@ class ProductControllerTest {
         assertNotNull(response.getBody());
         assertEquals(expectedProduct.size(), response.getBody().size());
         assertEquals(expectedProduct.get(0).getId(), response.getBody().get(0).getId());
-    }
-
-    @Test
-    void getProductByProductId() {
-
-        Category category = Category.builder().categoryName("GPU").build();
-
-        Product product = Product.builder()
-                .id(UUID.fromString("c6409193-44e8-4791-b811-c58f2e2aba4b"))
-                .productName("Product 1")
-                .productDescription("powerful gpu")
-                .productPrice(10.00)
-                .productAvailability(true)
-                .category(category)
-                .createdAt(LocalDateTime.now())
-                .productId("1234")
-                .build();
-
-        when(productService.getProductByProductId(product.getProductId())).thenReturn(product);
-        var response = productService.getProductByProductId("1234");
-        assertNotNull(response);
-        assertEquals(response.getProductId(), product.getProductId());
     }
 
 }

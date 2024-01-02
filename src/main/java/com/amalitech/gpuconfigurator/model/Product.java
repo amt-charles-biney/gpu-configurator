@@ -44,6 +44,9 @@ public class Product {
     @Column(name = "image_url", nullable = false)
     private List<String> imageUrl;
 
+    @Column(name = "cover_image_url", nullable = false)
+    private String coverImage;
+
     @Column(name = "product_availability", nullable = false)
     private Boolean productAvailability;
 
@@ -62,3 +65,4 @@ public class Product {
     private LocalDateTime deleted_at;
 
 }
+

@@ -23,5 +23,14 @@ public class UploadImageService implements UploadImageServiceImpl {
             throw new CloudinaryUploadException("Error uploading image to Cloudinary", e);
         }
     }
+
+    public String uploadCoverImage(MultipartFile coverImage){
+        try {
+            var response = cloudinary.uploader().upload(coverImage.getBytes(), Map.of());
+            return (String) response.get("url");
+        } catch (IOException e) {
+            throw new CloudinaryUploadException("Error uploading image to Cloudinary", e);
+        }
+    }
 }
 

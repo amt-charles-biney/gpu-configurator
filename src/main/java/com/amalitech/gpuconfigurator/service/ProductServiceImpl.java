@@ -2,7 +2,6 @@ package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.dto.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.ProductDto;
-import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
@@ -27,12 +26,13 @@ public class ProductServiceImpl implements ProductService {
     private final UploadImageServiceImpl cloudianryImage;
 
 
-    public CreateProductResponseDto createProduct(ProductDto request, List<MultipartFile> files) {
+    public CreateProductResponseDto createProduct(ProductDto request, List<MultipartFile> files, MultipartFile coverImage) {
         Category category = categoryService.getCategory(request.getCategory());
 
         List<String> imageUrls = files.stream()
                 .map(this.cloudianryImage::upload)
                 .toList();
+        String coverImageUrl = cloudianryImage.uploadCoverImage(coverImage);
 
         var product = Product
                 .builder()
@@ -41,6 +41,7 @@ public class ProductServiceImpl implements ProductService {
                 .productPrice(request.getProductPrice())
                 .category(category)
                 .imageUrl(imageUrls)
+                .coverImage(coverImageUrl)
                 .productId(request.getProductId())
                 .build();
 
@@ -54,6 +55,7 @@ public class ProductServiceImpl implements ProductService {
                 .productId(product.getProductId())
                 .productAvailability(product.getProductAvailability())
                 .productCategory(category.getCategoryName())
+                .coverImage(product.getCoverImage())
                 .imageUrl(product.getImageUrl())
                 .createdAt(product.getCreatedAt())
                 .build();
@@ -69,7 +71,6 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProductById(UUID id) {
         productRepository.deleteById(id);
     }
-
 
 
 }
