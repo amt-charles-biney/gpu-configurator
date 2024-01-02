@@ -24,6 +24,7 @@ public class UploadImageService implements UploadImageServiceImpl {
         }
     }
 
+    @Override
     public String uploadCoverImage(MultipartFile coverImage){
         try {
             var response = cloudinary.uploader().upload(coverImage.getBytes(), Map.of());
