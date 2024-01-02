@@ -6,8 +6,8 @@ import com.amalitech.gpuconfigurator.dto.brand.BrandRequest;
 import com.amalitech.gpuconfigurator.model.Brand;
 import com.amalitech.gpuconfigurator.repository.BrandRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -25,13 +25,13 @@ public class Brand {
     @Column(nullable=false)
     private String name;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "deleted_at", nullable = false)
+    @Column(name = "deleted_at")
     private LocalDateTime deleted_at;
 
 

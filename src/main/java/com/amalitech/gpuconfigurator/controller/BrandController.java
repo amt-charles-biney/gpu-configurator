@@ -33,13 +33,13 @@ public class BrandController {
         return ResponseEntity.ok(brands);
     }
 
-    @DeleteMapping("/v1/admin/brand/${brandId}")
+    @DeleteMapping("/v1/admin/brand/{brandId}")
     public ResponseEntity<GenericResponse> deleteBrand(@PathVariable String brandId) {
         GenericResponse deletedBrand = brandService.deleteBrand(UUID.fromString(brandId));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(deletedBrand);
     }
 
-    @DeleteMapping("/v1/admin/brand/${brandId}")
+    @PutMapping("/v1/admin/brand/{brandId}")
     public ResponseEntity<GenericResponse> updatedBrand(@PathVariable String brandId, @RequestBody BrandRequest request) {
         GenericResponse updatedBrand = brandService.updatedBrand(UUID.fromString(brandId), request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedBrand);
