@@ -53,6 +53,7 @@ public class ProductServiceImpl implements ProductService {
                 .category(category)
                 .imageUrl(imageUrls)
                 .coverImage(coverImageUrl)
+                .inStock(request.getInStock())
                 .productId(request.getProductId())
                 .build();
 
@@ -69,6 +70,7 @@ public class ProductServiceImpl implements ProductService {
                 .productCategory(category.getCategoryName())
                 .coverImage(product.getCoverImage())
                 .imageUrl(product.getImageUrl())
+                .inStock(product.getInStock())
                 .createdAt(product.getCreatedAt())
                 .build();
     }

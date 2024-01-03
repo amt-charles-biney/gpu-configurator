@@ -36,4 +36,6 @@ public class ProductDto{
     private String category;
 
     private List<String> imageUrl;
+
+    private Integer inStock;
 }

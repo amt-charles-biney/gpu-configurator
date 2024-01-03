@@ -23,4 +23,5 @@ public class CreateProductResponseDto {
     private LocalDateTime createdAt;
     private List<String> imageUrl;
     private String coverImage;
+    private Integer inStock;
 }
