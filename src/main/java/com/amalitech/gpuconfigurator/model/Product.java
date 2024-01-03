@@ -34,6 +34,9 @@ public class Product {
     @Column(name = "product_price", nullable = false)
     private Double productPrice;
 
+    @Column(name = "product_brand", nullable = false)
+    private Double productBrand;
+
     @Column(name = "product_instock", nullable = false)
     private Integer inStock;
 
