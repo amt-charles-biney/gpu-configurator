@@ -25,6 +25,10 @@ public class ProductDto{
     @NotEmpty(message = ValidationErrorMessages.PRODUCT_DESCRIPTION_EMPTY)
    private String productDescription;
 
+    @NotNull(message = ValidationErrorMessages.PRODUCT_DESCRIPTION_BLANK)
+    @NotEmpty(message = ValidationErrorMessages.PRODUCT_DESCRIPTION_EMPTY)
+    private String productBrand;
+
     @NotNull(message = "Product Price cannot be null")
     @PositiveOrZero(message = "Product price cannot be negative")
     private Double productPrice;

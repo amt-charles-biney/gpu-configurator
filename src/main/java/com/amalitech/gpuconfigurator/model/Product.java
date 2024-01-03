@@ -35,7 +35,7 @@ public class Product {
     private Double productPrice;
 
     @Column(name = "product_brand", nullable = false)
-    private Double productBrand;
+    private String productBrand;
 
     @Column(name = "product_instock", nullable = false)
     private Integer inStock;
