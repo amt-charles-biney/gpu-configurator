@@ -9,7 +9,6 @@ import com.amalitech.gpuconfigurator.service.brand.BrandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +23,7 @@ public class BrandController {
 
     @CrossOrigin
     @PostMapping("/v1/admin/brand")
-    public ResponseEntity<Brand> createBrand(@Validated  @RequestBody BrandRequest request) {
+    public ResponseEntity<Brand> createBrand(@RequestBody BrandRequest request) {
         Brand brand = brandService.createBrand(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(brand);
     }
