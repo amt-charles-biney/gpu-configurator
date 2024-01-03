@@ -32,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryServiceImpl categoryService;
     private final CategoryRepository categoryRepository;
-    private final UploadImageServiceImpl cloudianryImage;
+    private final UploadImageServiceImpl cloudinaryImage;
 
 
     @Override
@@ -41,9 +41,9 @@ public class ProductServiceImpl implements ProductService {
         Category category = categoryService.getCategory(request.getCategory());
 
         List<String> imageUrls = files.stream()
-                .map(this.cloudianryImage::upload)
+                .map(this.cloudinaryImage::upload)
                 .toList();
-        String coverImageUrl = cloudianryImage.uploadCoverImage(coverImage);
+        String coverImageUrl = cloudinaryImage.uploadCoverImage(coverImage);
 
         var product = Product
                 .builder()
