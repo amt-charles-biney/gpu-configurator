@@ -34,6 +34,9 @@ public class Product {
     @Column(name = "product_price", nullable = false)
     private Double productPrice;
 
+    @Column(name = "product_instock", nullable = false)
+    private Integer inStock;
+
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(
@@ -53,16 +56,15 @@ public class Product {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    private LocalDateTime updatedAt;
+
+    private LocalDateTime deletedAt;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         productAvailability = true;
     }
-
-
-    private LocalDateTime updated_at;
-
-    private LocalDateTime deleted_at;
 
 }
 
