@@ -14,6 +14,8 @@ public record ProductResponse(
         String productName,
         BigDecimal productPrice,
         List<String> imageUrl,
+
+        String coverImage,
         String productId,
         AttributeResponseDto category,
         String productDescription,
