@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.controller;
 
 
 import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
+import com.amalitech.gpuconfigurator.dto.product.PageResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
@@ -46,21 +47,23 @@ public class ProductController {
 
     @CrossOrigin
     @GetMapping("/v1/admin/product")
-    public ResponseEntity<?> getAllProducts(
+    public ResponseEntity<PageResponseDto> getAllProducts(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
 
+        PageResponseDto productsResponse = new PageResponseDto();
+
         if (page != null && size != null) {
             Page<ProductResponse> products = productService.getAllProducts(page, size);
-            if (products.isEmpty()) {
-                return ResponseEntity.ok(null);
-            }
-            return ResponseEntity.ok(products.getContent());
+            productsResponse.setProducts(products.getContent());
+            productsResponse.setTotal(products.getTotalElements());
         } else {
             List<ProductResponse> products = productService.getAllProducts();
-
-            return ResponseEntity.ok(products);
+            productsResponse.setProducts(products);
+            productsResponse.setTotal(products.size());
         }
+
+        return ResponseEntity.ok(productsResponse);
     }
 
 
