@@ -19,7 +19,13 @@ RUN mkdir /app
 COPY --from=build /code/target/gpu-configurator-0.0.1-SNAPSHOT.jar /app/gpuconfigurator.jar
 
 # Set the working directory in the container
+# Set the working directory in the container
 WORKDIR /app
+
+# Copy the JAR file from the Maven image
+
+COPY --from=build /code/target/gpu-configurator-0.0.1-SNAPSHOT.jar /app/gpuconfigurator.jar
+
 
 EXPOSE 8081
 
