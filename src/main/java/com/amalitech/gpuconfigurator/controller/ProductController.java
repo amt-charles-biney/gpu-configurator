@@ -64,6 +64,7 @@ public class ProductController {
     }
 
 
+    @CrossOrigin
     @PatchMapping("/v1/admin/product/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable("id") UUID id,
