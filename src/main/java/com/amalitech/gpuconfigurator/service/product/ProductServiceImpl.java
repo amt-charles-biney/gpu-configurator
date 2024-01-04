@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
+import com.amalitech.gpuconfigurator.dto.product.ProductUpdateDto;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
@@ -133,7 +134,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse updateProduct(UUID id, ProductDto updatedProductDto) {
+    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto) {
         try {
             Product existingProduct = productRepository.getReferenceById(id);
 
@@ -151,6 +152,10 @@ public class ProductServiceImpl implements ProductService {
             }
             if (updatedProductDto.getProductId() != null) {
                 existingProduct.setProductId(updatedProductDto.getProductId());
+                existingProduct.setUpdatedAt(LocalDateTime.now());
+            }
+            if (updatedProductDto.getInStock() != null) {
+                existingProduct.setInStock(updatedProductDto.getInStock());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
 

@@ -1,10 +1,7 @@
 package com.amalitech.gpuconfigurator.controller;
 
 
-import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
-import com.amalitech.gpuconfigurator.dto.product.PageResponseDto;
-import com.amalitech.gpuconfigurator.dto.product.ProductDto;
-import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
+import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
 import jakarta.validation.Valid;
@@ -70,7 +67,7 @@ public class ProductController {
     @PatchMapping("/v1/admin/product/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable("id") UUID id,
-            @Valid @ModelAttribute ProductDto updatedProductDto) {
+            @Valid @ModelAttribute ProductUpdateDto updatedProductDto) {
 
         ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto);
 
