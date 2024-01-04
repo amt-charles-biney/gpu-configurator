@@ -34,7 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
         return allCategories.stream()
                 .map(category -> AllCategoryResponse.builder()
                         .id(category.getId())
-                        .categoryName(category.getCategoryName()).build())
+                        .name(category.getCategoryName()).build())
                 .toList();
 
     }
