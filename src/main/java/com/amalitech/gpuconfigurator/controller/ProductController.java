@@ -2,11 +2,11 @@ package com.amalitech.gpuconfigurator.controller;
 
 
 import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
+import com.amalitech.gpuconfigurator.dto.product.PageResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
-import com.amalitech.gpuconfigurator.model.Product;
-import com.amalitech.gpuconfigurator.service.ProductServiceImpl;
-import com.amalitech.gpuconfigurator.service.UploadImageService;
+import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
+import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,35 +37,45 @@ public class ProductController {
     }
 
 
-
     @CrossOrigin
     @GetMapping("/v1/admin/product/{productId}")
-    public ResponseEntity<ProductResponse> getProductByProductId(@PathVariable("productId") String productId){
-        ProductResponse product =  productService.getProduct(productId);
+    public ResponseEntity<ProductResponse> getProductByProductId(@PathVariable("productId") String productId) {
+        ProductResponse product = productService.getProduct(productId);
         return ResponseEntity.ok(product);
     }
 
 
     @CrossOrigin
     @GetMapping("/v1/admin/product")
-    public ResponseEntity<?> getAllProducts(
-            @RequestParam(required = false) Integer page,
+    public ResponseEntity<PageResponseDto> getAllProducts(
+            @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(required = false) Integer size) {
+
+        PageResponseDto productsResponse = new PageResponseDto();
 
         if (page != null && size != null) {
             Page<ProductResponse> products = productService.getAllProducts(page, size);
-            if (products.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
-            return ResponseEntity.ok(products.getContent());
+            productsResponse.setProducts(products.getContent());
+            productsResponse.setTotal(products.getTotalElements());
         } else {
             List<ProductResponse> products = productService.getAllProducts();
-            return ResponseEntity.ok(products);
+            productsResponse.setProducts(products);
+            productsResponse.setTotal(products.size());
         }
+
+        return ResponseEntity.ok(productsResponse);
     }
 
 
+    @PatchMapping("/v1/admin/product/{id}")
+    public ResponseEntity<ProductResponse> updateProduct(
+            @PathVariable("id") UUID id,
+            @Valid @ModelAttribute ProductDto updatedProductDto) {
 
+        ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto);
+
+        return ResponseEntity.ok(updatedProduct);
+    }
 
     @CrossOrigin
     @DeleteMapping("/v1/admin/product/{id}")
