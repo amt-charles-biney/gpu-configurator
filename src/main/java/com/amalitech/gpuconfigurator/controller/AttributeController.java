@@ -10,6 +10,7 @@ import com.amalitech.gpuconfigurator.service.attribute.AttributeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class AttributeController {
     private final AttributeService attributeService;
 
     @PostMapping("/v1/admin/attributes")
-    public ResponseEntity<Attribute> createAttribute(@RequestBody AttributeDto atr) {
+    public ResponseEntity<Attribute> createAttribute(@Validated  @RequestBody AttributeDto atr) {
         Attribute attribute = attributeService.addAttribute(atr);
         return ResponseEntity.status(HttpStatus.CREATED).body(attribute);
     }
@@ -53,7 +54,7 @@ public class AttributeController {
     }
 
     @PostMapping("/v1/admin/attributes/{attributeId}/options")
-    public ResponseEntity<AttributeOptionResponseDto> createAttributeOption(@PathVariable String attributeId, @RequestBody AttributeOptionDto atrOption) {
+    public ResponseEntity<AttributeOptionResponseDto> createAttributeOption(@PathVariable String attributeId, @Validated git st@RequestBody AttributeOptionDto atrOption) {
         AttributeOptionResponseDto option = attributeService.createAttributeOption(UUID.fromString(attributeId), atrOption);
         return ResponseEntity.status(HttpStatus.CREATED).body(option);
     }
