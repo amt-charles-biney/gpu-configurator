@@ -1,10 +1,7 @@
 FROM maven:3.9.6 AS build
 
-RUN mkdir /code
-
-COPY . /code
-
 WORKDIR /code
+COPY . /code
 
 # Build the application
 RUN mvn clean package -DskipTests
@@ -18,7 +15,6 @@ RUN mkdir /app
 
 COPY --from=build /code/target/gpu-configurator-0.0.1-SNAPSHOT.jar /app/gpuconfigurator.jar
 
-# Set the working directory in the container
 # Set the working directory in the container
 WORKDIR /app
 

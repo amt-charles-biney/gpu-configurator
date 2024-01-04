@@ -23,7 +23,7 @@ services:
       dockerfile: Dockerfile
     image: gpu-configurator-backend-dec-java
     container_name: gpu-configurator-backend-dec-backend
-    restart: no
+    restart: on-failure
     ports:
       - "8081:8081"
     depends_on:
