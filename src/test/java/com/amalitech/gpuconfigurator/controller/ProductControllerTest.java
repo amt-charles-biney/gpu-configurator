@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
+import com.amalitech.gpuconfigurator.dto.product.ProductUpdateDto;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
@@ -156,13 +157,12 @@ class ProductControllerTest {
                 .productId("abcd")
                 .build();
 
-        ProductDto updateDto = ProductDto
+        ProductUpdateDto updateDto = ProductUpdateDto
                 .builder()
                 .productName("Product")
                 .productDescription("powerful gpu")
                 .productPrice(100.00)
                 .productId("1234")
-                .category("SERVER")
                 .build();
 
         ProductResponse expectedResponse = ProductResponse

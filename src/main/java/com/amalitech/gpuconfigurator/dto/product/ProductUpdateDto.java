@@ -1,8 +1,18 @@
 package com.amalitech.gpuconfigurator.dto.product;
 
-public record ProductUpdateDto(
-        String productName,
-        String productDescription,
-        Double productPrice,
-        String productId,
-        Boolean availability) {}
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+@Builder
+@Data
+@AllArgsConstructor
+@RequiredArgsConstructor
+public class ProductUpdateDto {
+    String productName;
+    String productDescription;
+    Double productPrice;
+    String productId;
+    Boolean availability;
+}

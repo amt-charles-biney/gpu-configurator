@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.service.product;
 import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
+import com.amalitech.gpuconfigurator.dto.product.ProductUpdateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,5 +21,5 @@ public interface ProductService {
 
     Page<ProductResponse> getAllProducts(int page, int size);
 
-    ProductResponse updateProduct(UUID id, ProductDto updatedProductDto);
+    ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto);
 }
