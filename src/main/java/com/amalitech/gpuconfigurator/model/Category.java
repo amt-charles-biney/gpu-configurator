@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -22,6 +24,14 @@ public class Category {
 
     @Column(name = "category_name", nullable = false)
     private String categoryName;
+
+    @OneToMany(
+            mappedBy = "category",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Product> products = new ArrayList<>();
+
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
