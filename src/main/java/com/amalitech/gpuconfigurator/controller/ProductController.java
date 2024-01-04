@@ -53,11 +53,12 @@ public class ProductController {
         if (page != null && size != null) {
             Page<ProductResponse> products = productService.getAllProducts(page, size);
             if (products.isEmpty()) {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.ok(null);
             }
             return ResponseEntity.ok(products.getContent());
         } else {
             List<ProductResponse> products = productService.getAllProducts();
+
             return ResponseEntity.ok(products);
         }
     }
