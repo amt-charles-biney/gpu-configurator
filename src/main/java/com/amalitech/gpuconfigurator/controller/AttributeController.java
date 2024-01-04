@@ -54,7 +54,7 @@ public class AttributeController {
     }
 
     @PostMapping("/v1/admin/attributes/{attributeId}/options")
-    public ResponseEntity<AttributeOptionResponseDto> createAttributeOption(@PathVariable String attributeId, @Validated git st@RequestBody AttributeOptionDto atrOption) {
+    public ResponseEntity<AttributeOptionResponseDto> createAttributeOption(@PathVariable String attributeId, @Validated @RequestBody AttributeOptionDto atrOption) {
         AttributeOptionResponseDto option = attributeService.createAttributeOption(UUID.fromString(attributeId), atrOption);
         return ResponseEntity.status(HttpStatus.CREATED).body(option);
     }
