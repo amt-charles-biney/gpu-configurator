@@ -179,7 +179,6 @@ class ProductControllerTest {
         when(productService.updateProduct(product.getId(), updateDto)).thenReturn(expectedResponse);
         ResponseEntity<ProductResponse> response = productController.updateProduct(product.getId(),updateDto);
         assertNotNull(response);
-        System.out.println(response);
         assertEquals(Objects.requireNonNull(response.getBody()).productName(),expectedResponse.productName());
 
     }

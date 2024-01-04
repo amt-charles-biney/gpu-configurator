@@ -20,7 +20,4 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("SELECT i FROM Product i WHERE i.productId =?1")
     Optional<Product> getProductByProductId(String productId);
 
-    @Modifying
-    @Query("UPDATE Product p SET p.productName = ?2 WHERE p.id = ?1")
-    void updateProductName(@Param("id") UUID id, @Param("productName") String productName);
 }

@@ -136,6 +136,18 @@ public class ProductServiceImpl implements ProductService {
                 existingProduct.setProductName(updatedProductDto.getProductName());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
+            if(updatedProductDto.getProductDescription() != null){
+                existingProduct.setProductDescription(updatedProductDto.getProductDescription());
+                existingProduct.setUpdatedAt(LocalDateTime.now());
+            }
+            if(updatedProductDto.getProductPrice() != null){
+                existingProduct.setProductPrice(updatedProductDto.getProductPrice());
+                existingProduct.setUpdatedAt(LocalDateTime.now());
+            }
+            if(updatedProductDto.getProductId() != null){
+                existingProduct.setProductId(updatedProductDto.getProductId());
+                existingProduct.setUpdatedAt(LocalDateTime.now());
+            }
 
             Product updatedProduct = productRepository.save(existingProduct);
             return mapProductToProductResponse(updatedProduct);

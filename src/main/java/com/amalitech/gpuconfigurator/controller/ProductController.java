@@ -66,7 +66,7 @@ public class ProductController {
     @PatchMapping("/v1/admin/product/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable("id") UUID id,
-            @Valid @RequestBody ProductDto updatedProductDto) {
+            @Valid @ModelAttribute ProductDto updatedProductDto) {
 
         ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto);
 
