@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.service.category.compatible;
+package com.amalitech.gpuconfigurator.service.category.CategoryConfig;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionDTO;
