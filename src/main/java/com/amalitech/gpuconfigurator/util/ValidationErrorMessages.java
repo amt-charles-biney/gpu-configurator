@@ -7,6 +7,7 @@ public class ValidationErrorMessages {
     public static final String PRODUCT_PRICE_EMPTY = "Product Price cannot be blank";
     public static final String PRODUCT_PRICE_NOT_NEGATIVE= "Product Description cannot be blank";
     public static final String PRODUCT_DESCRIPTION_EMPTY = "Product Description cannot be blank";
+    public static final String CATEGORY_NAME = "Category name cannot be blank";
 
     public static final String EMAIL_BLANK = "Email cannot be blank";
     public static final String INVALID_EMAIL_FORMAT = "Invalid email format";
