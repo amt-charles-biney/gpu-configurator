@@ -129,29 +129,29 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse updateProduct(UUID id, ProductDto updatedProductDto) {
-        try{
+        try {
             Product existingProduct = productRepository.getReferenceById(id);
 
-            if(updatedProductDto.getProductName() != null){
+            if (updatedProductDto.getProductName() != null) {
                 existingProduct.setProductName(updatedProductDto.getProductName());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
-            if(updatedProductDto.getProductDescription() != null){
+            if (updatedProductDto.getProductDescription() != null) {
                 existingProduct.setProductDescription(updatedProductDto.getProductDescription());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
-            if(updatedProductDto.getProductPrice() != null){
+            if (updatedProductDto.getProductPrice() != null) {
                 existingProduct.setProductPrice(updatedProductDto.getProductPrice());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
-            if(updatedProductDto.getProductId() != null){
+            if (updatedProductDto.getProductId() != null) {
                 existingProduct.setProductId(updatedProductDto.getProductId());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
 
             Product updatedProduct = productRepository.save(existingProduct);
             return mapProductToProductResponse(updatedProduct);
-        }catch (NotFoundException e){
+        } catch (NotFoundException e) {
             throw new NotFoundException("No product found");
         }
     }
