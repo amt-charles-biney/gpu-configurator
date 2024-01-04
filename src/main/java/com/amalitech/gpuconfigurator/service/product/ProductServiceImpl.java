@@ -153,6 +153,11 @@ public class ProductServiceImpl implements ProductService {
                 existingProduct.setInStock(updatedProductDto.getInStock());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
+            if (updatedProductDto.getCategory() != null) {
+                var newCategory = categoryRepository.findByCategoryName(updatedProductDto.getCategory()).orElseThrow();
+                existingProduct.setCategory(newCategory);
+                existingProduct.setUpdatedAt(LocalDateTime.now());
+            }
 
             Product updatedProduct = productRepository.save(existingProduct);
             return mapProductToProductResponse(updatedProduct);
