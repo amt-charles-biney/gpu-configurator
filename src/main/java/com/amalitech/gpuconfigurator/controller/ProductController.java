@@ -63,6 +63,16 @@ public class ProductController {
     }
 
 
+    @PatchMapping("/v1/admin/product/{id}")
+    public ResponseEntity<ProductResponse> updateProduct(
+            @PathVariable("id") UUID id,
+            @Valid @RequestBody ProductDto updatedProductDto) {
+
+        ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto);
+
+        return ResponseEntity.ok(updatedProduct);
+    }
+
     @CrossOrigin
     @DeleteMapping("/v1/admin/product/{id}")
     public void deleteProduct(@PathVariable("id") UUID id) {

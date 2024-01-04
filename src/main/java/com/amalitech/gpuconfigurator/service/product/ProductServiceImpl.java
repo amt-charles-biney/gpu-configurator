@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -124,6 +125,35 @@ public class ProductServiceImpl implements ProductService {
                 .imageUrl(product.getImageUrl())
                 .inStock(product.getInStock())
                 .build());
+    }
+
+    @Override
+    public ProductResponse updateProduct(UUID id, ProductDto updatedProductDto) {
+        try{
+            Product existingProduct = productRepository.getReferenceById(id);
+
+            if(updatedProductDto.getProductName() != null){
+                existingProduct.setProductName(updatedProductDto.getProductName());
+                existingProduct.setUpdatedAt(LocalDateTime.now());
+            }
+
+            Product updatedProduct = productRepository.save(existingProduct);
+            return mapProductToProductResponse(updatedProduct);
+        }catch (NotFoundException e){
+            throw new NotFoundException("No product found");
+        }
+    }
+
+    private ProductResponse mapProductToProductResponse(Product updatedProduct) {
+        return ProductResponse.builder()
+                .id(String.valueOf(updatedProduct.getId()))
+                .productName(updatedProduct.getProductName())
+                .productId(updatedProduct.getProductId())
+                .productDescription(updatedProduct.getProductDescription())
+                .productPrice(BigDecimal.valueOf(updatedProduct.getProductPrice()))
+                .inStock(updatedProduct.getInStock())
+                .productAvailability(updatedProduct.getProductAvailability())
+                .build();
     }
 
 

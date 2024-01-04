@@ -4,6 +4,7 @@ import com.amalitech.gpuconfigurator.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -18,4 +19,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     @Query("SELECT i FROM Product i WHERE i.productId =?1")
     Optional<Product> getProductByProductId(String productId);
+
+    @Modifying
+    @Query("UPDATE Product p SET p.productName = ?2 WHERE p.id = ?1")
+    void updateProductName(@Param("id") UUID id, @Param("productName") String productName);
 }

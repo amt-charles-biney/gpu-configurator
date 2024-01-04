@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -137,4 +138,49 @@ class ProductControllerTest {
         assertNotNull(response.getBody());
     }
 
+    @Test
+    @DisplayName("Test success for updating product")
+    void updateProductTest() {
+
+        Category category = Category.builder().categoryName("GPU").build();
+
+        Product product = Product.builder()
+                .id(UUID.fromString("c6409193-44e8-4791-1232-c58f2e2aba4b"))
+                .productName("Product 2")
+                .productDescription("powerful gpu")
+                .productPrice(20.00)
+                .productAvailability(true)
+                .inStock(10)
+                .category(category)
+                .createdAt(LocalDateTime.now())
+                .productId("abcd")
+                .build();
+
+        ProductDto updateDto = ProductDto
+                .builder()
+                .productName("Product")
+                .productDescription("powerful gpu")
+                .productPrice(100.00)
+                .productId("1234")
+                .category("SERVER")
+                .build();
+
+        ProductResponse expectedResponse = ProductResponse
+                .builder()
+                .id("c6409193-44e8-4791-1232-c58f2e2aba4bb")
+                .productName("New Product")
+                .productDescription("powerful gpu")
+                .productPrice(BigDecimal.valueOf(100))
+                .productAvailability(true)
+                .inStock(10)
+                .productId("abcd")
+                .build();
+
+        when(productService.updateProduct(product.getId(), updateDto)).thenReturn(expectedResponse);
+        ResponseEntity<ProductResponse> response = productController.updateProduct(product.getId(),updateDto);
+        assertNotNull(response);
+        System.out.println(response);
+        assertEquals(Objects.requireNonNull(response.getBody()).productName(),expectedResponse.productName());
+
+    }
 }
