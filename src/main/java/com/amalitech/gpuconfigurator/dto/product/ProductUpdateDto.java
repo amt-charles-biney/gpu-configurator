@@ -15,4 +15,5 @@ public class ProductUpdateDto {
     Double productPrice;
     String productId;
     Boolean availability;
+    Integer inStock;
 }
