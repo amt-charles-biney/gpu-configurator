@@ -88,6 +88,7 @@ class ProductControllerTest {
         assertEquals(response.getProductId(), expectedResponse.getProductId());
         assertEquals(response.getImageUrl().size(), expectedResponse.getImageUrl().size());
         assertEquals(response.getProductPrice(), expectedResponse.getProductPrice());
+        assertEquals(response.getProductDescription(), expectedResponse.getProductDescription());
     }
 
     @Test
