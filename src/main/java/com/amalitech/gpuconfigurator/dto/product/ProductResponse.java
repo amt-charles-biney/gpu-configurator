@@ -13,7 +13,7 @@ public record ProductResponse(
         BigDecimal productPrice,
         List<String> imageUrl,
 
-        String brand,
+        String productBrand,
         String coverImage,
         String productId,
         AttributeResponseDto category,
