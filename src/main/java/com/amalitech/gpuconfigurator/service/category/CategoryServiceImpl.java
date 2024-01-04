@@ -35,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> allCategories = categoryRepository.findAll();
 
         return allCategories.stream()
-                .map(category -> AllCategoryResponse.builder().categoryName(category.getCategoryName()).build())
+                .map(category -> AllCategoryResponse.builder().name(category.getCategoryName()).build())
                 .toList();
 
     }
