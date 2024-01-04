@@ -46,7 +46,6 @@ class ProductControllerTest {
     void addProduct() {
         ProductDto requestDto = ProductDto
                 .builder()
-                .productId("c58f2e2aba4b")
                 .productName("New Product")
                 .productDescription("Serverless server")
                 .productPrice(100.00)
@@ -70,7 +69,6 @@ class ProductControllerTest {
         CreateProductResponseDto expectedResponse = CreateProductResponseDto
                 .builder()
                 .productName(requestDto.getProductName())
-                .productId(requestDto.getProductId())
                 .productDescription(requestDto.getProductDescription())
                 .productPrice(requestDto.getProductPrice())
                 .productId(requestDto.getProductId())
@@ -86,6 +84,7 @@ class ProductControllerTest {
 
         assertNotNull(response);
         assertEquals(response.getProductId(), expectedResponse.getProductId());
+        assertEquals(response.getProductName(), expectedResponse.getProductName());
         assertEquals(response.getImageUrl().size(), expectedResponse.getImageUrl().size());
         assertEquals(response.getProductPrice(), expectedResponse.getProductPrice());
     }
