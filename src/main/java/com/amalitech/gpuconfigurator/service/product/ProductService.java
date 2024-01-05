@@ -21,5 +21,5 @@ public interface ProductService {
 
     Page<ProductResponse> getAllProducts(int page, int size,String sort);
 
-    ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto);
+    ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto,List<MultipartFile> files, MultipartFile coverImage );
 }

@@ -20,6 +20,4 @@ public class ProductUpdateDto {
     Boolean availability;
     Integer inStock;
     String category;
-    List<MultipartFile> files;
-    MultipartFile coverImage;
 }

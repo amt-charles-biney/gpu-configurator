@@ -48,7 +48,7 @@ public class ProductController {
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(required = false) Integer size,
             @RequestParam(required = false) String sort
-            ) {
+    ) {
 
         PageResponseDto productsResponse = new PageResponseDto();
 
@@ -70,15 +70,11 @@ public class ProductController {
     @PatchMapping("/v1/admin/product/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable("id") UUID id,
-            @Valid @ModelAttribute ProductUpdateDto updatedProductDto,
-            @RequestPart("coverImage") MultipartFile coverImage,
-            @RequestParam("file") List<MultipartFile> files
-            ) {
-
-        updatedProductDto.setCoverImage(coverImage);
-        updatedProductDto.setFiles(files);
-        ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto);
-
+            @ModelAttribute ProductUpdateDto updatedProductDto,
+            @RequestParam(value = "file", required = false) List<MultipartFile> files,
+            @RequestParam(value = "coverImage",required = false) MultipartFile coverImage
+    ) {
+        ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto, files,coverImage);
         return ResponseEntity.ok(updatedProduct);
     }
 
