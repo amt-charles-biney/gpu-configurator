@@ -25,7 +25,7 @@ public class CustomExceptionHandler {
         if (e instanceof MaxUploadSizeExceededException) {
             return buildProblemDetail(400, "Max file size exceeded", e.getMessage());
         } else if (e instanceof BadRequestException || e instanceof DataIntegrityViolationException) {
-            return buildProblemDetail(400, "Bad Request", e.getMessage());
+            return buildProblemDetail(400, e.getMessage(), e.getMessage());
         }
         return buildProblemDetail(500, "Something went wrong", e.getMessage());
     }
