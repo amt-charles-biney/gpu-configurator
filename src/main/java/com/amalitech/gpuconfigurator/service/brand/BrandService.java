@@ -7,11 +7,13 @@ import com.amalitech.gpuconfigurator.model.Brand;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface BrandService {
 
-    Brand createBrand(BrandRequest request);
+
+    Brand createBrand(BrandRequest request) throws Exception;
 
     List<BrandDto> getAllBrands();
 

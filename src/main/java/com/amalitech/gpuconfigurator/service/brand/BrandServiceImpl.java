@@ -3,11 +3,14 @@ package com.amalitech.gpuconfigurator.service.brand;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.brand.BrandDto;
 import com.amalitech.gpuconfigurator.dto.brand.BrandRequest;
+import com.amalitech.gpuconfigurator.exception.CustomExceptionHandler;
 import com.amalitech.gpuconfigurator.model.Brand;
 import com.amalitech.gpuconfigurator.repository.BrandRepository;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,13 +23,18 @@ public class BrandServiceImpl implements BrandService {
     private final BrandRepository brandRepository;
 
     @Override
-    public Brand createBrand(BrandRequest request) {
-        Brand newBrand = Brand
-                .builder()
-                .name(request.name())
-                .build();
+    public Brand createBrand(BrandRequest request) throws Exception {
+       try{
+           Brand newBrand = Brand
+                   .builder()
+                   .name(request.name())
+                   .build();
 
-        return brandRepository.save(newBrand);
+           return brandRepository.save(newBrand);
+       }catch (Exception e){
+           throw new Exception("Brand exist");
+
+       }
     }
 
     @Override
