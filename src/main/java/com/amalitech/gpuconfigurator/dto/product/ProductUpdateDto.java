@@ -18,4 +18,5 @@ public class ProductUpdateDto {
     Boolean availability;
     Integer inStock;
     String category;
+    String brand;
 }
