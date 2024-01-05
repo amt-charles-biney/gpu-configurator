@@ -31,7 +31,7 @@ public class BrandServiceImpl implements BrandService {
 
            return brandRepository.save(newBrand);
        }catch (DataIntegrityViolationException e){
-           throw new DataIntegrityViolationException(e.getMessage());
+           throw new DataIntegrityViolationException("Brand Exist");
 
        }
     }
