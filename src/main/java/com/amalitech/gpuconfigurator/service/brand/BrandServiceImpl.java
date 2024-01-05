@@ -6,7 +6,6 @@ import com.amalitech.gpuconfigurator.dto.brand.BrandRequest;
 import com.amalitech.gpuconfigurator.exception.CustomExceptionHandler;
 import com.amalitech.gpuconfigurator.model.Brand;
 import com.amalitech.gpuconfigurator.repository.BrandRepository;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ public class BrandServiceImpl implements BrandService {
     private final BrandRepository brandRepository;
 
     @Override
-    public Brand createBrand(BrandRequest request) throws Exception {
+    public Brand createBrand(BrandRequest request)  {
        try{
            Brand newBrand = Brand
                    .builder()
@@ -32,7 +31,7 @@ public class BrandServiceImpl implements BrandService {
 
            return brandRepository.save(newBrand);
        }catch (DataIntegrityViolationException e){
-           throw new Exception("Brand exist");
+           throw new DataIntegrityViolationException(e.getMessage());
 
        }
     }

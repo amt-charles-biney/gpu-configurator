@@ -22,9 +22,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUncheckedExceptions(Exception e) {
-        if (e instanceof MaxUploadSizeExceededException) {
-            return buildProblemDetail(400, "Max file size exceeded", e.getMessage());
-        } else if (e instanceof BadRequestException || e instanceof DataIntegrityViolationException) {
+        if (e instanceof MaxUploadSizeExceededException || e instanceof BadRequestException || e instanceof DataIntegrityViolationException) {
             return buildProblemDetail(400, e.getMessage(), e.getMessage());
         }
         return buildProblemDetail(500, "Something went wrong", e.getMessage());
@@ -66,7 +64,7 @@ public class CustomExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ProblemDetail notFoundException(NotFoundException e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
-        errorDetail.setDetail("Not found");
+        errorDetail.setDetail(e.getMessage());
         errorDetail.setProperty(setProperty, e.getMessage());
         return errorDetail;
     }

@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface BrandService {
 
 
-    Brand createBrand(BrandRequest request) throws Exception;
+    Brand createBrand(BrandRequest request) ;
 
     List<BrandDto> getAllBrands();
 

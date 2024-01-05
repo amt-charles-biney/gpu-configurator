@@ -24,7 +24,7 @@ public class BrandController {
 
     @CrossOrigin
     @PostMapping("/v1/admin/brand")
-    public ResponseEntity<Brand> createBrand(@Validated  @RequestBody BrandRequest request) throws Exception {
+    public ResponseEntity<Brand> createBrand(@Validated  @RequestBody BrandRequest request)  {
         Brand brand = brandService.createBrand(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(brand);
     }
