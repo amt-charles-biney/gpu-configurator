@@ -158,6 +158,19 @@ class ProductControllerTest {
                 .productId("abcd")
                 .build();
 
+        List<MultipartFile> files = Arrays.asList(
+                new MockMultipartFile("file1", "originalFilename1.txt", "text/plain", "File content 1".getBytes()),
+                new MockMultipartFile("file2", "originalFilename2.txt", "text/plain", "File content 2".getBytes())
+        );
+
+        List<String> imageUrls = Arrays.asList(
+                "http://example.com/image1.jpg",
+                "http://example.com/image2.jpg"
+        );
+
+        MultipartFile coverImage = new MockMultipartFile("coverImage", "originalFilename1.txt", "text/plain", "File content 1".getBytes());
+        String coverImageUrl = "http://example.com/image1.jpg";
+
         ProductUpdateDto updateDto = ProductUpdateDto
                 .builder()
                 .productName("Product")
@@ -177,8 +190,8 @@ class ProductControllerTest {
                 .productId("abcd")
                 .build();
 
-        when(productService.updateProduct(product.getId(), updateDto)).thenReturn(expectedResponse);
-        ResponseEntity<ProductResponse> response = productController.updateProduct(product.getId(),updateDto);
+        when(productService.updateProduct(product.getId(), updateDto, files, coverImage)).thenReturn(expectedResponse);
+        ResponseEntity<ProductResponse> response = productController.updateProduct(product.getId(),updateDto,files,coverImage);
         assertNotNull(response);
         assertEquals(Objects.requireNonNull(response.getBody()).productName(),expectedResponse.productName());
 
