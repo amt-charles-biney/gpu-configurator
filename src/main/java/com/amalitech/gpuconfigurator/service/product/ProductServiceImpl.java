@@ -130,7 +130,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto) {
+    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto,List<MultipartFile> files, MultipartFile coverImage) {
         try {
             Product existingProduct = productRepository.getReferenceById(id);
 
@@ -159,15 +159,15 @@ public class ProductServiceImpl implements ProductService {
                 existingProduct.setCategory(newCategory);
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
-            if (updatedProductDto.getFiles() != null) {
-                List<String> imageUrls = updatedProductDto.getFiles().stream()
+            if (files != null) {
+                List<String> imageUrls = files.stream()
                         .map(this.cloudinaryImage::upload)
                         .toList();
                 existingProduct.setImageUrl(imageUrls);
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
-            if (updatedProductDto.getCoverImage() != null) {
-                String coverImageUrl = cloudinaryImage.uploadCoverImage(updatedProductDto.getCoverImage());
+            if (coverImage != null) {
+                String coverImageUrl = cloudinaryImage.uploadCoverImage(coverImage);
                 existingProduct.setCoverImage(coverImageUrl);
                 existingProduct.setUpdatedAt(LocalDateTime.now());
 
