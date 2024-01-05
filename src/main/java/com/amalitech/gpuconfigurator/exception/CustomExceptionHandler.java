@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,10 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUncheckedExceptions(Exception e) {
-        if (e instanceof MaxUploadSizeExceededException || e instanceof BadRequestException || e instanceof DataIntegrityViolationException) {
+        if (e instanceof MaxUploadSizeExceededException ||
+                e instanceof BadRequestException ||
+                e instanceof DataIntegrityViolationException ||
+                e instanceof EntityNotFoundException) {
             return buildProblemDetail(400, e.getMessage(), e.getMessage());
         }
         return buildProblemDetail(500, "Something went wrong", e.getMessage());
@@ -51,6 +55,7 @@ public class CustomExceptionHandler {
         errorDetail.setProperty("field_errors", fieldErrors);
         return errorDetail;
     }
+
     @ExceptionHandler({CloudinaryUploadException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ProblemDetail handleCloudinaryUploadException(CloudinaryUploadException e) {
