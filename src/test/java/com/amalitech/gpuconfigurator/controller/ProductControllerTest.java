@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -131,9 +132,9 @@ class ProductControllerTest {
                         .build())
                 .collect(Collectors.toList()));
 
-        when(productService.getAllProducts(anyInt(), anyInt())).thenReturn(expectedPage);
+        when(productService.getAllProducts(anyInt(), anyInt(),anyString())).thenReturn(expectedPage);
 
-        ResponseEntity<?> response = productController.getAllProducts(0, 1);
+        ResponseEntity<?> response = productController.getAllProducts(0, 1, "productName");
 
 
         assertNotNull(response.getBody());

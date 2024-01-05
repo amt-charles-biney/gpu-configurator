@@ -19,7 +19,7 @@ public interface ProductService {
 
     void deleteProductById(UUID id) throws NoSuchFieldException;
 
-    Page<ProductResponse> getAllProducts(int page, int size);
+    Page<ProductResponse> getAllProducts(int page, int size,String sort);
 
     ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto);
 }
