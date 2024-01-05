@@ -24,17 +24,15 @@ public class ProfileController {
     @PutMapping("/basic-info")
     public ResponseEntity<GenericResponse> updateBasicInformation(
             @Validated @RequestBody BasicInformationRequest dto,
-            Principal principal
-    ) {
+            Principal principal) {
         return ResponseEntity.ok(profileService.updateBasicInformation(dto, principal));
     }
 
     @CrossOrigin
     @GetMapping("/basic-info")
     public ResponseEntity<User> getBasicInformation(
-            Principal principal
-    ) {
-       User user = profileService.getUserProfile(principal);
+            Principal principal) {
+        User user = profileService.getUserProfile(principal);
         return ResponseEntity.ok(user);
     }
 
@@ -42,8 +40,7 @@ public class ProfileController {
     @PostMapping("/password")
     public ResponseEntity<GenericResponse> updateUserPassword(
             @Validated @RequestBody UserPasswordRequest dto,
-            Principal principal
-    ) throws BadRequestException {
+            Principal principal) throws BadRequestException {
 
         GenericResponse response = profileService.updateUserPassword(dto, principal);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
