@@ -112,8 +112,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    public Page<ProductResponse> getAllProducts(int page, int size,String sort) {
-        if(sort== null) sort = "createdAt";
+    public Page<ProductResponse> getAllProducts(int page, int size, String sort) {
+        if (sort == null) sort = "createdAt";
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sort).ascending());
         Page<Product> productPage = productRepository.findAll(pageRequest);
 
@@ -130,7 +130,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto) {
+    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto, List<MultipartFile> files, MultipartFile coverImage) {
         try {
             Product existingProduct = productRepository.getReferenceById(id);
 
@@ -158,6 +158,19 @@ public class ProductServiceImpl implements ProductService {
                 var newCategory = categoryRepository.findByCategoryName(updatedProductDto.getCategory()).orElseThrow();
                 existingProduct.setCategory(newCategory);
                 existingProduct.setUpdatedAt(LocalDateTime.now());
+            }
+            if (files != null) {
+                List<String> imageUrls = files.stream()
+                        .map(this.cloudinaryImage::upload)
+                        .toList();
+                existingProduct.setImageUrl(imageUrls);
+                existingProduct.setUpdatedAt(LocalDateTime.now());
+            }
+            if (coverImage != null) {
+                String coverImageUrl = cloudinaryImage.uploadCoverImage(coverImage);
+                existingProduct.setCoverImage(coverImageUrl);
+                existingProduct.setUpdatedAt(LocalDateTime.now());
+
             }
 
             Product updatedProduct = productRepository.save(existingProduct);
