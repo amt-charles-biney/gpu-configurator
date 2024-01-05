@@ -112,8 +112,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    public Page<ProductResponse> getAllProducts(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("productPrice").ascending());
+    public Page<ProductResponse> getAllProducts(int page, int size,String sort) {
+        if(sort== null) sort = "createdAt";
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sort).ascending());
         Page<Product> productPage = productRepository.findAll(pageRequest);
 
         return productPage.map(product -> ProductResponse.builder()

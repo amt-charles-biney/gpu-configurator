@@ -46,12 +46,14 @@ public class ProductController {
     @GetMapping("/v1/admin/product")
     public ResponseEntity<PageResponseDto> getAllProducts(
             @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String sort
+    ) {
 
         PageResponseDto productsResponse = new PageResponseDto();
 
         if (page != null && size != null) {
-            Page<ProductResponse> products = productService.getAllProducts(page, size);
+            Page<ProductResponse> products = productService.getAllProducts(page, size, sort);
             productsResponse.setProducts(products.getContent());
             productsResponse.setTotal(products.getTotalElements());
         } else {
