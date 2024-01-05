@@ -45,7 +45,7 @@ public class ProductController {
     @CrossOrigin
     @GetMapping("/v1/admin/product")
     public ResponseEntity<PageResponseDto> getAllProducts(
-            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
 
         PageResponseDto productsResponse = new PageResponseDto();
