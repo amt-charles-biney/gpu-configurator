@@ -70,9 +70,13 @@ public class ProductController {
     @PatchMapping("/v1/admin/product/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable("id") UUID id,
-            @Valid @ModelAttribute ProductUpdateDto updatedProductDto
+            @Valid @ModelAttribute ProductUpdateDto updatedProductDto,
+            @RequestPart("coverImage") MultipartFile coverImage,
+            @RequestParam("file") List<MultipartFile> files
             ) {
 
+        updatedProductDto.setCoverImage(coverImage);
+        updatedProductDto.setFiles(files);
         ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto);
 
         return ResponseEntity.ok(updatedProduct);
