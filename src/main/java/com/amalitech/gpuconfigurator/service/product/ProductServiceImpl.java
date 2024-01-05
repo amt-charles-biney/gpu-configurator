@@ -159,8 +159,8 @@ public class ProductServiceImpl implements ProductService {
                 existingProduct.setInStock(updatedProductDto.getInStock());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
-            if(updatedProductDto.getBrand() != null){
-                existingProduct.setProductBrand(updatedProductDto.getBrand());
+            if(updatedProductDto.getProductBrand() != null){
+                existingProduct.setProductBrand(updatedProductDto.getProductBrand());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
             if (updatedProductDto.getCategory() != null) {
