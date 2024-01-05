@@ -23,12 +23,13 @@ public class ProfileServiceImpl implements ProfileService {
     private final ContactService contactService;
 
     @Override
-    public void updateBasicInformation(BasicInformationRequest dto, Principal principal) {
+    public GenericResponse updateBasicInformation(BasicInformationRequest dto, Principal principal) {
         var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setContact(contactService.saveOrUpdate(user, dto.getContact()));
         userRepository.save(user);
+        return new GenericResponse(200, "Basic information updated successfully");
     }
 
     public User getUserProfile(Principal principal) throws UsernameNotFoundException {

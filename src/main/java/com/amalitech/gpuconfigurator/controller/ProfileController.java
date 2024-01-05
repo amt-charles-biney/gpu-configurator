@@ -22,12 +22,11 @@ public class ProfileController {
 
     @CrossOrigin
     @PutMapping("/basic-info")
-    public ResponseEntity<String> updateBasicInformation(
+    public ResponseEntity<GenericResponse> updateBasicInformation(
             @Validated @RequestBody BasicInformationRequest dto,
             Principal principal
     ) {
-        profileService.updateBasicInformation(dto, principal);
-        return ResponseEntity.ok("Basic information updated successfully");
+        return ResponseEntity.ok(profileService.updateBasicInformation(dto, principal));
     }
 
     @CrossOrigin

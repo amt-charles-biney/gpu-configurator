@@ -9,7 +9,7 @@ import org.apache.coyote.BadRequestException;
 import java.security.Principal;
 
 public interface ProfileService {
-    void updateBasicInformation(BasicInformationRequest dto, Principal principal);
+    GenericResponse updateBasicInformation(BasicInformationRequest dto, Principal principal);
 
     User getUserProfile(Principal principal);
 
