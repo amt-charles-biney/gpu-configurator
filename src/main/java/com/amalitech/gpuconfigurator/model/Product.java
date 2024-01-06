@@ -47,7 +47,7 @@ public class Product {
     ))
     private Category category;
 
-    @Column(name = "product_featured", columnDefinition = "BOOLEAN DEFAULT false")
+    @Column(name = "product_featured")
     private Boolean featured;
 
     @Column(name = "image_url", nullable = false)
@@ -71,6 +71,7 @@ public class Product {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         productAvailability = true;
+        featured = false;
     }
 
 }
