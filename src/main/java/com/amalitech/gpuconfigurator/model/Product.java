@@ -44,6 +44,9 @@ public class Product {
     ))
     private Category category;
 
+    @Column(name = "product_featured")
+    private Boolean featured;
+
     @Column(name = "image_url", nullable = false)
     private List<String> imageUrl;
 
@@ -67,6 +70,7 @@ public class Product {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         productAvailability = true;
+        featured = false;
     }
 
 }
