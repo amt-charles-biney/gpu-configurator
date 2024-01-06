@@ -39,4 +39,23 @@ public class FeaturedServiceImpl implements FeaturedService {
         }
     }
 
+    @Override
+    public FeaturedResponseDto removeFeaturedProduct(UUID id) {
+        try {
+            Product product = productRepository.findById(id).orElseThrow(
+                    ()-> new NotFoundException("Product does not exist")
+            );
+
+            if(Boolean.FALSE.equals(product.getFeatured())){
+                return FeaturedResponseDto.builder().message("Product is not featured").build();
+            }
+            product.setFeatured(false);
+            productRepository.save(product);
+            return FeaturedResponseDto.builder().message("Product is no more featured").build();
+
+        }catch (NotFoundException e){
+            throw new NotFoundException("Product does not exist");
+        }
+    }
+
 }
