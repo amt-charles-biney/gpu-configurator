@@ -1,11 +1,14 @@
 package com.amalitech.gpuconfigurator.exception;
 
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,13 +19,13 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @RestControllerAdvice
 public class CustomExceptionHandler {
 
-    private static final String setProperty = "error_message";
-
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUncheckedExceptions(Exception e) {
+
         if (e instanceof MaxUploadSizeExceededException ||
                 e instanceof BadRequestException ||
                 e instanceof DataIntegrityViolationException ||
@@ -35,12 +38,19 @@ public class CustomExceptionHandler {
     private ProblemDetail buildProblemDetail(int statusCode, String detail, String message) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(statusCode));
         errorDetail.setDetail(detail);
+        String setProperty = "Bad Request";
         errorDetail.setProperty(setProperty, message);
+        return errorDetail;
+    }
+    @ExceptionHandler({MessagingException.class})
+    public ProblemDetail handleEmailSendingException(MessagingException e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(500));
+        errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
 
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, DataIntegrityViolationException.class, BadRequestException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
@@ -56,21 +66,18 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
-    @ExceptionHandler({CloudinaryUploadException.class})
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ProblemDetail handleCloudinaryUploadException(CloudinaryUploadException e) {
-        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(500));
-        errorDetail.setDetail("Error uploading image to Cloudinary");
-        errorDetail.setProperty(setProperty, e.getMessage());
+    @ExceptionHandler(BadCredentialsException.class)
+    public ProblemDetail handleBadCredentialException(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(401));
+        errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ProblemDetail notFoundException(NotFoundException e) {
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ProblemDetail usernameNotFoundException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
         errorDetail.setDetail(e.getMessage());
-        errorDetail.setProperty(setProperty, e.getMessage());
         return errorDetail;
     }
+
 }

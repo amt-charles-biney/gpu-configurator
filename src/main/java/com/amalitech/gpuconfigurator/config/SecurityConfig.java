@@ -26,6 +26,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/admin/**").hasAnyAuthority("ADMIN")
                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
                 .permitAll()
+                .requestMatchers("/api/v1/**").permitAll()
                 .anyRequest()
                 .authenticated());
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

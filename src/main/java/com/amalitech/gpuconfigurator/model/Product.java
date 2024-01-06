@@ -47,8 +47,14 @@ public class Product {
     ))
     private Category category;
 
+    @Column(name = "product_featured", columnDefinition = "BOOLEAN DEFAULT false")
+    private Boolean featured;
+
     @Column(name = "image_url", nullable = false)
     private List<String> imageUrl;
+
+    @Column(name = "product_brand", nullable = false)
+    private String productBrand;
 
     @Column(name = "cover_image_url", nullable = false)
     private String coverImage;
