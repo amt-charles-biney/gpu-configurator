@@ -21,13 +21,13 @@ public class FeaturedProductController {
     }
 
     @CrossOrigin
-    @PostMapping("/v1/featured/{id}")
+    @PostMapping("/v1/admin/featured/{id}")
     public FeaturedResponseDto addFeaturedProduct(@PathVariable("id") UUID id){
         return featuredService.addFeaturedProduct(id);
     }
 
     @CrossOrigin
-    @PutMapping("/v1/featured/{id}")
+    @PutMapping("/v1/admin/featured/{id}")
     public FeaturedResponseDto removeFeaturedProduct(@PathVariable("id") UUID id){
         return featuredService.removeFeaturedProduct(id);
     }
