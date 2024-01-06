@@ -27,7 +27,6 @@ public class ProductController {
     @CrossOrigin
     @PostMapping("/v1/admin/product")
     @ResponseStatus(HttpStatus.CREATED)
-
     public CreateProductResponseDto addProduct(@Valid @ModelAttribute ProductDto request,
                                                @RequestParam("file") List<MultipartFile> files, @RequestParam("coverImage") MultipartFile coverImage) {
         return productService.createProduct(request, files, coverImage);
@@ -82,6 +81,7 @@ public class ProductController {
 
     @CrossOrigin
     @DeleteMapping("/v1/admin/product/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteProduct(@PathVariable("id") UUID id) {
         productService.deleteProductById(id);
     }
