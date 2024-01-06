@@ -26,4 +26,10 @@ public class FeaturedProductController {
     public FeaturedResponseDto addFeaturedProduct(@PathVariable("id") UUID id){
         return featuredService.addFeaturedProduct(id);
     }
+
+    @CrossOrigin
+    @PutMapping("/v1/featured/{id}")
+    public FeaturedResponseDto removeFeaturedProduct(@PathVariable("id") UUID id){
+        return featuredService.removeFeaturedProduct(id);
+    }
 }

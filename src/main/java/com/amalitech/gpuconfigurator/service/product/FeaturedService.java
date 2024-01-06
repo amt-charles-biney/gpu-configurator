@@ -10,4 +10,6 @@ public interface FeaturedService {
     List<Product> getAllFeaturedProduct();
 
     FeaturedResponseDto addFeaturedProduct(UUID id);
+
+    FeaturedResponseDto removeFeaturedProduct(UUID id);
 }
