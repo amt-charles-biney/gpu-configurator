@@ -23,6 +23,4 @@ public class ValidationErrorMessages {
     public static final String EMAIL_NULL = "Email name must not be null ";
     public static final String NEW_PASSWORD_NOT_BLANK = "New password cannot be blank ";
     public static final String CONFIRM_PASSWORD_NOT_BLANK = "Confirm password cannot be blank ";
-
-    public static final String CATEGORY_NAME = "Category name cannot be blank ";
 }
