@@ -1,8 +1,7 @@
 package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.FeaturedResponseDto;
-import com.amalitech.gpuconfigurator.model.Product;
-import com.amalitech.gpuconfigurator.service.product.FeaturedService;
+import com.amalitech.gpuconfigurator.service.featured.FeaturedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
