@@ -2,8 +2,11 @@ package com.amalitech.gpuconfigurator.controller;
 
 
 import com.amalitech.gpuconfigurator.dto.product.*;
+import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
+import com.amalitech.gpuconfigurator.service.product.FilteringService;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
+import com.amalitech.gpuconfigurator.util.ResponseMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,7 @@ public class ProductController {
 
     private final ProductServiceImpl productService;
     private final UploadImageService cloudinaryImage;
+    private final FilteringService filteringService;
 
 
     @CrossOrigin
@@ -66,29 +70,62 @@ public class ProductController {
     }
 
 
+//    @CrossOrigin
+//    @GetMapping("/v1/product")
+//    public ResponseEntity<PageResponseDto> getAllProductUsers(
+//            @RequestParam(defaultValue = "0") Integer page,
+//            @RequestParam(required = false) Integer size,
+//            @RequestParam(required = false) String sort
+//    ) {
+//
+//        PageResponseDto productsResponse = new PageResponseDto();
+//
+//        if (page != null && size != null) {
+//            Page<ProductResponse> products = productService.getAllProducts(page, size, sort);
+//            productsResponse.setProducts(products.getContent());
+//            productsResponse.setTotal(products.getTotalElements());
+//        } else {
+//            List<ProductResponse> products = productService.getAllProducts();
+//            productsResponse.setProducts(products);
+//            productsResponse.setTotal(products.size());
+//        }
+//
+//        return ResponseEntity.ok(productsResponse);
+//    }
+
     @CrossOrigin
     @GetMapping("/v1/product")
     public ResponseEntity<PageResponseDto> getAllProductUsers(
-            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(required = false) Integer size,
-            @RequestParam(required = false) String sort
-    ) {
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String price) {
 
         PageResponseDto productsResponse = new PageResponseDto();
 
-        if (page != null && size != null) {
-            Page<ProductResponse> products = productService.getAllProducts(page, size, sort);
-            productsResponse.setProducts(products.getContent());
-            productsResponse.setTotal(products.getTotalElements());
+        List<ProductResponse> products;
+
+        if (brand != null || price != null ) {
+            List<Product> filteredProducts = filteringService.filterProduct(brand, price);
+            products = new ResponseMapper().getProductResponses(filteredProducts);
+            productsResponse.setProducts(products);
+            productsResponse.setTotal(products.size());
+        } else if (page != null && size != null) {
+
+            Page<ProductResponse> pagedProducts = productService.getAllProducts(page, size, sort);
+            products = pagedProducts.getContent();
+            productsResponse.setTotal(pagedProducts.getTotalElements());
+
         } else {
-            List<ProductResponse> products = productService.getAllProducts();
+            products = productService.getAllProducts();
             productsResponse.setProducts(products);
             productsResponse.setTotal(products.size());
         }
 
+        productsResponse.setProducts(products);
         return ResponseEntity.ok(productsResponse);
     }
-
 
 
     @CrossOrigin
@@ -97,9 +134,9 @@ public class ProductController {
             @PathVariable("id") UUID id,
             @ModelAttribute ProductUpdateDto updatedProductDto,
             @RequestParam(value = "file", required = false) List<MultipartFile> files,
-            @RequestParam(value = "coverImage",required = false) MultipartFile coverImage
+            @RequestParam(value = "coverImage", required = false) MultipartFile coverImage
     ) {
-        ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto, files,coverImage);
+        ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto, files, coverImage);
         return ResponseEntity.ok(updatedProduct);
     }
 

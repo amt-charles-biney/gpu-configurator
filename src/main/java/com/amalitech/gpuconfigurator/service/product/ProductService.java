@@ -24,5 +24,6 @@ public interface ProductService {
 
     List<Product> getNewProducts();
 
+
     ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto, List<MultipartFile> files, MultipartFile coverImage);
 }

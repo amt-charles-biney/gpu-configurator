@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -122,7 +123,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-
     public Page<ProductResponse> getAllProducts(int page, int size, String sort) {
         if (sort == null) sort = "createdAt";
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sort).descending());
@@ -222,5 +222,6 @@ public class ProductServiceImpl implements ProductService {
         LocalDateTime timeRequest = LocalDateTime.now().minusHours(24);
         return productRepository.getBrandNewProducts(timeRequest).orElse(Collections.emptyList());
     }
+
 
 }
