@@ -208,7 +208,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public List<Product> getNewProducts(){
-        LocalDateTime timeRequest = LocalDateTime.now().minusHours(1);
+        LocalDateTime timeRequest = LocalDateTime.now().minusHours(24);
         return productRepository.getBrandNewProducts(timeRequest).orElse(Collections.emptyList());
     }
 
