@@ -67,6 +67,31 @@ public class ProductController {
 
 
     @CrossOrigin
+    @GetMapping("/v1/product")
+    public ResponseEntity<PageResponseDto> getAllProductUsers(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String sort
+    ) {
+
+        PageResponseDto productsResponse = new PageResponseDto();
+
+        if (page != null && size != null) {
+            Page<ProductResponse> products = productService.getAllProducts(page, size, sort);
+            productsResponse.setProducts(products.getContent());
+            productsResponse.setTotal(products.getTotalElements());
+        } else {
+            List<ProductResponse> products = productService.getAllProducts();
+            productsResponse.setProducts(products);
+            productsResponse.setTotal(products.size());
+        }
+
+        return ResponseEntity.ok(productsResponse);
+    }
+
+
+
+    @CrossOrigin
     @PatchMapping("/v1/admin/product/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable("id") UUID id,
