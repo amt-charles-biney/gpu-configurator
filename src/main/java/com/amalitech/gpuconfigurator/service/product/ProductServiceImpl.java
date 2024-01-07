@@ -88,6 +88,9 @@ public class ProductServiceImpl implements ProductService {
                         .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                         .coverImage(product.getCoverImage())
                         .imageUrl(product.getImageUrl())
+                        .category(AttributeResponseDto.builder().name(product.getCategory().getCategoryName())
+                                .id(String.valueOf(product.getCategory().getId()))
+                                .build())
                         .inStock(product.getInStock())
                         .build()).toList();
     }
@@ -125,6 +128,9 @@ public class ProductServiceImpl implements ProductService {
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                 .coverImage(product.getCoverImage())
                 .imageUrl(product.getImageUrl())
+                .category(AttributeResponseDto.builder().name(product.getCategory().getCategoryName())
+                        .id(String.valueOf(product.getCategory().getId()))
+                        .build())
                 .inStock(product.getInStock())
                 .build());
     }
