@@ -92,6 +92,10 @@ public class ProductServiceImpl implements ProductService {
                         .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                         .productBrand(product.getProductBrand())
                         .coverImage(product.getCoverImage())
+                        .category(AttributeResponseDto.builder()
+                                .name(product.getCategory().getCategoryName())
+                                .id(String.valueOf(product.getCategory().getId()))
+                                .build())
                         .imageUrl(product.getImageUrl())
                         .inStock(product.getInStock())
                         .build()).toList();
@@ -118,8 +122,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    public Page<ProductResponse> getAllProducts(int page, int size,String sort) {
-        if(sort == null) sort = "createdAt";
+
+    public Page<ProductResponse> getAllProducts(int page, int size, String sort) {
+        if (sort == null) sort = "createdAt";
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sort).descending());
         Page<Product> productPage = productRepository.findAll(pageRequest);
 
@@ -130,13 +135,18 @@ public class ProductServiceImpl implements ProductService {
                 .productDescription(product.getProductDescription())
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                 .coverImage(product.getCoverImage())
+                .category(AttributeResponseDto.builder()
+                        .name(product.getCategory().getCategoryName())
+                        .id(String.valueOf(product.getCategory().getId()))
+                        .build())
                 .imageUrl(product.getImageUrl())
                 .inStock(product.getInStock())
                 .build());
     }
 
+
     @Override
-    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto,List<MultipartFile> files, MultipartFile coverImage ) {
+    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto, List<MultipartFile> files, MultipartFile coverImage) {
         try {
             Product existingProduct = productRepository.getReferenceById(id);
 
@@ -160,7 +170,7 @@ public class ProductServiceImpl implements ProductService {
                 existingProduct.setInStock(updatedProductDto.getInStock());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
-            if(updatedProductDto.getProductBrand() != null){
+            if (updatedProductDto.getProductBrand() != null) {
                 existingProduct.setProductBrand(updatedProductDto.getProductBrand());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
@@ -207,7 +217,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
     }
 
-    public List<Product> getNewProducts(){
+    public List<Product> getNewProducts() {
         LocalDateTime timeRequest = LocalDateTime.now().minusHours(24);
         return productRepository.getBrandNewProducts(timeRequest).orElse(Collections.emptyList());
     }
