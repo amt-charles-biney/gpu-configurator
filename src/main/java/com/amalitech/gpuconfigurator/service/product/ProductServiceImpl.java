@@ -88,7 +88,6 @@ public class ProductServiceImpl implements ProductService {
                         .productName(product.getProductName())
                         .id(product.getId().toString())
                         .productId(product.getProductId())
-                        .productBrand(product.getProductBrand())
                         .productDescription(product.getProductDescription())
                         .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                         .productBrand(product.getProductBrand())
