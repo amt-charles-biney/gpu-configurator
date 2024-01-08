@@ -93,6 +93,7 @@ public class ProductServiceImpl implements ProductService {
                         .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                         .productBrand(product.getProductBrand())
                         .coverImage(product.getCoverImage())
+                        .isFeatured(product.getFeatured())
                         .category(AttributeResponseDto.builder()
                                 .name(product.getCategory().getCategoryName())
                                 .id(String.valueOf(product.getCategory().getId()))
@@ -117,6 +118,7 @@ public class ProductServiceImpl implements ProductService {
                 .productBrand(product.getProductBrand())
                 .coverImage(product.getCoverImage())
                 .inStock(product.getInStock())
+                .isFeatured(product.getFeatured())
                 .imageUrl(product.getImageUrl().stream().toList())
                 .category(new AttributeResponseDto(category.getCategoryName(), category.getId().toString()))
                 .build();
@@ -136,6 +138,7 @@ public class ProductServiceImpl implements ProductService {
                 .productDescription(product.getProductDescription())
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                 .coverImage(product.getCoverImage())
+                .isFeatured(product.getFeatured())
                 .category(AttributeResponseDto.builder()
                         .name(product.getCategory().getCategoryName())
                         .id(String.valueOf(product.getCategory().getId()))
