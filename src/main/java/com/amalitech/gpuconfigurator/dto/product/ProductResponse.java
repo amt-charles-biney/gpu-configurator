@@ -18,7 +18,10 @@ public record ProductResponse(
         AttributeResponseDto category,
         String productDescription,
 
+        Boolean isFeatured,
+
         boolean productAvailability,
+
 
         Integer inStock
 ) {
