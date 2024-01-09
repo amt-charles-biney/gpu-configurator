@@ -19,19 +19,19 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
-    @PostMapping("/v1/admin/category")
+    @PostMapping("/v1/admin/categories")
     @ResponseStatus(HttpStatus.CREATED)
     public Category createCategory(@RequestBody CategoryRequestDto request){
         return categoryService.createCategory(request);
     }
 
-    @GetMapping("/v1/admin/category")
+    @GetMapping("/v1/admin/categories")
     @ResponseStatus(HttpStatus.OK)
     public List<AllCategoryResponse> getAllCategories(){
         return categoryService.getAllCategories();
     }
 
-    @GetMapping("/v1/admin/category/{name}")
+    @GetMapping("/v1/admin/categories/{name}")
     @ResponseStatus(HttpStatus.OK)
     public Category getCategoryByName(@PathVariable("name") String name){
         return categoryService.getCategoryByName(name);
