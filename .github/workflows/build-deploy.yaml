@@ -56,7 +56,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/ubuntu/gpu-configurator
-            echo  ${{ secrets.env }} > .env
             sudo docker pull maximomugisha/gpu-configurator:latest
             sudo docker rm -f gpu-configurator
             sudo docker run --env-file .env -d  -p 8081:8081 --name gpu-configurator maximomugisha/gpu-configurator:latest
