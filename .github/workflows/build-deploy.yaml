@@ -2,9 +2,9 @@ name: Java CI/CD with Maven
 
 on:
   push:
-    branches: [ PresentationLayDev, "maximo/dev" ]
+    branches: [ dev, "maximo/dev" ]
   pull_request:
-    branches: [ PresentationLayDev ]
+    branches: [ dev ]
 
 jobs:
   build:
