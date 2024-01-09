@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -73,17 +75,25 @@ public class ProductController {
             @RequestParam(required = false) Integer size,
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String price) {
+            @RequestParam(required = false) String price,
+            @RequestParam(required = false) String productType,
+            @RequestParam(required = false) String processor
+    ) {
 
         PageResponseDto productsResponse = new PageResponseDto();
 
-        List<ProductResponse> products;
+        List<ProductResponse> products = new ArrayList<>();
 
-        if (brand != null || price != null) {
-            List<Product> filteredProducts = filteringService.filterProduct(brand, price);
-            products = new ResponseMapper().getProductResponses(filteredProducts);
-            productsResponse.setProducts(products);
-            productsResponse.setTotal(products.size());
+        if (brand != null || price != null || productType != null || processor != null) {
+            List<Product> filteredProducts = filteringService.filterProduct(brand, price, productType, processor);
+            if (!filteredProducts.isEmpty()) {
+                products = new ResponseMapper().getProductResponses(filteredProducts);
+                productsResponse.setProducts(products);
+                productsResponse.setTotal(products.size());
+            } else {
+                productsResponse.setProducts(Collections.emptyList());
+                productsResponse.setTotal(0);
+            }
         } else if (page != null && size != null) {
 
             Page<ProductResponse> pagedProducts = productService.getAllProducts(page, size, sort);
