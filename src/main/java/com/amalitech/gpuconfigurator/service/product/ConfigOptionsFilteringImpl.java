@@ -5,8 +5,6 @@ import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryConfig.CategoryConfigService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,5 +37,28 @@ public class ConfigOptionsFilteringImpl implements ConfigOptionsFiltering {
         }
         return productList;
     }
+
+    public List<UUID> getProcessor(String processor) {
+        List<Product> products = productRepository.findAll();
+        List<UUID> processorList = new ArrayList<>();
+
+        if (processor != null && !processor.isEmpty()) {
+            String[] processorNameList = processor.split(",");
+            for (Product product : products) {
+                CategoryConfigResponseDto configs = categoryConfigService.getCategoryConfigByCategory(String.valueOf(product.getCategory().getId()));
+                for (String name : processorNameList) {
+                    if (configs.options().containsKey("Processor") &&
+                            configs.options().get("Processor").stream()
+                                    .anyMatch(option -> option.name().equalsIgnoreCase(name.trim()))) {
+                        processorList.add(product.getId());
+                        break;
+                    }
+
+                }
+            }
+        }
+        return processorList;
+    }
+
 
 }
