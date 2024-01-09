@@ -40,6 +40,13 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
+    @CrossOrigin
+    @GetMapping("/v1/product/{productId}")
+    public ResponseEntity<ProductResponse> getProductByProductIdUser(@PathVariable("productId") String productId) {
+        ProductResponse product = productService.getProduct(productId);
+        return ResponseEntity.ok(product);
+    }
+
 
     @CrossOrigin
     @GetMapping("/v1/admin/product")
