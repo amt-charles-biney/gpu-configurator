@@ -73,7 +73,12 @@ public class FilteringServiceImpl implements FilteringService {
         }
 
         if (processor != null && !processor.isEmpty()) {
-            System.out.println("Hello");
+            List<UUID> matchingProcessorIds = configOptionsFiltering.getProcessor(processor);
+            if (!matchingProcessorIds.isEmpty()) {
+                spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProcessorIds));
+            } else {
+                return Collections.emptyList();
+            }
         }
 
         return productRepository.findAll(spec);

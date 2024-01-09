@@ -37,4 +37,27 @@ public class ConfigOptionsFilteringImpl implements ConfigOptionsFiltering {
         return productList;
     }
 
+    public List<UUID> getProcessor(String processor) {
+        List<Product> products = productRepository.findAll();
+        List<UUID> processorList = new ArrayList<>();
+
+        if (processor != null && !processor.isEmpty()) {
+            String[] processorNameList = processor.split(",");
+            for (Product product : products) {
+                CategoryConfigResponseDto configs = categoryConfigService.getCategoryConfigByCategory(String.valueOf(product.getCategory().getId()));
+                for (String name : processorNameList) {
+                    if (configs.options().containsKey("Processor") &&
+                            configs.options().get("Processor").stream()
+                                    .anyMatch(option -> option.name().equalsIgnoreCase(name.trim()))) {
+                        processorList.add(product.getId());
+                        break;
+                    }
+
+                }
+            }
+        }
+        return processorList;
+    }
+
+
 }
