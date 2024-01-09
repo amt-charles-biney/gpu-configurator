@@ -58,4 +58,4 @@ jobs:
             cd /home/ubuntu/gpu-configurator
             sudo docker pull maximomugisha/gpu-configurator:latest
             sudo docker rm -f gpu-configurator
-            sudo docker run --env-file .env -d  -p 8081:8081 --name gpu-configurator maximomugisha/gpu-configurator:latest
+            sudo docker run --env-file .env -d  -p 8080:8080 --name gpu-configurator maximomugisha/gpu-configurator:latest
