@@ -6,15 +6,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class FilteringServiceImpl implements FilteringService{
+public class FilteringServiceImpl implements FilteringService {
 
     private final ProductRepository productRepository;
+    private final ConfigOptionsFiltering configOptionsFiltering;
 
-    public List<Product> filterProduct(String brand, String price) {
+
+    public List<Product> filterProduct(String brand, String price, String productType, String processor) {
+
         Specification<Product> spec = Specification.where(null);
 
         if (brand != null && !brand.isEmpty()) {
@@ -56,6 +61,19 @@ public class FilteringServiceImpl implements FilteringService{
                     );
                 }
             }
+        }
+
+        if (productType != null && !productType.isEmpty()) {
+            List<UUID> matchingProductIds = configOptionsFiltering.getProductTypes(productType);
+            if (!matchingProductIds.isEmpty()) {
+                spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProductIds));
+            } else {
+                return Collections.emptyList();
+            }
+        }
+
+        if (processor != null && !processor.isEmpty()) {
+            System.out.println("Hello");
         }
 
         return productRepository.findAll(spec);
