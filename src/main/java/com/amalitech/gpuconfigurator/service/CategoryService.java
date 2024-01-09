@@ -9,8 +9,9 @@ import java.util.List;
 
 
 public interface CategoryService {
-     Category createCategory(CategoryRequestDto request);
-     Category getCategory(String categoryName);
+    Category createCategory(CategoryRequestDto request);
+
+    Category getCategory(String categoryName);
 
     List<AllCategoryResponse> getAllCategories();
 
