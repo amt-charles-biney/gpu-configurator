@@ -26,15 +26,15 @@ public class CategoryConfigController {
     }
 
     @CrossOrigin
-    @GetMapping("/v1/category/{categoryId}/config")
+    @GetMapping("/v1/admin/category/{categoryId}/config")
     public ResponseEntity<CategoryConfigResponseDto> getConfigs(@PathVariable String categoryId) {
         CategoryConfigResponseDto result = categoryConfigService.getCategoryConfigByCategory(categoryId);
         return ResponseEntity.ok(result);
     }
 
-//    @GetMapping("/v1/category/{categoryId}/config")
-//    public ResponseEntity<CategoryConfigResponseDto> getConfigsUser(@PathVariable String categoryId) {
-//        CategoryConfigResponseDto result = categoryConfigService.getCategoryConfigByCategory(categoryId);
-//        return ResponseEntity.ok(result);
-//    }
+    @GetMapping("/v1/category/{categoryId}/config")
+    public ResponseEntity<CategoryConfigResponseDto> getConfigsUser(@PathVariable String categoryId) {
+        CategoryConfigResponseDto result = categoryConfigService.getCategoryConfigByCategory(categoryId);
+        return ResponseEntity.ok(result);
+    }
 }

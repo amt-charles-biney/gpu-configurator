@@ -26,9 +26,16 @@ public class CategoryController {
     }
 
     @CrossOrigin
-    @GetMapping("/v1/category")
+    @GetMapping("/v1/admin/category")
     @ResponseStatus(HttpStatus.OK)
     public List<AllCategoryResponse> getAllCategories(){
+        return categoryService.getAllCategories();
+    }
+
+    @CrossOrigin
+    @GetMapping("/v1/category")
+    @ResponseStatus(HttpStatus.OK)
+    public List<AllCategoryResponse> getAllCategoriesUser(){
         return categoryService.getAllCategories();
     }
 
