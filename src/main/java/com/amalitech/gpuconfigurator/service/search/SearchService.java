@@ -1,9 +1,9 @@
 package com.amalitech.gpuconfigurator.service.search;
 
-import com.amalitech.gpuconfigurator.dto.search.ProductSearchResponseDto;
+import com.amalitech.gpuconfigurator.dto.product.PageResponseDto;
 
 public interface SearchService {
-    ProductSearchResponseDto findProducts(
+    PageResponseDto findProducts(
             String query,
             Integer pageNo,
             Integer pageSize,
