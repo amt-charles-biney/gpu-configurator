@@ -22,7 +22,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
-        http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/**", "/api/v1/search/products/**").permitAll()
+        http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/v1/admin/**").hasAnyAuthority("ADMIN")
                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
                 .permitAll()

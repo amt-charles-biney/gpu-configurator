@@ -4,8 +4,9 @@ import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import co.elastic.clients.json.JsonData;
-import com.amalitech.gpuconfigurator.dto.search.ProductSearchResponseDto;
+import com.amalitech.gpuconfigurator.dto.product.PageResponseDto;
 import com.amalitech.gpuconfigurator.model.ProductDocument;
+import com.amalitech.gpuconfigurator.util.ResponseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -24,7 +25,7 @@ public class SearchServiceImpl implements SearchService {
     private final ElasticsearchOperations elasticsearchOperations;
 
     @Override
-    public ProductSearchResponseDto findProducts(
+    public PageResponseDto findProducts(
             String query,
             Integer pageNo,
             Integer pageSize,
@@ -75,8 +76,8 @@ public class SearchServiceImpl implements SearchService {
         SearchHits<ProductDocument> searchHits = elasticsearchOperations.search(searchQuery, ProductDocument.class);
         var searchPage = SearchHitSupport.searchPageFor(searchHits, searchQuery.getPageable());
         var products = searchPage.get().map(SearchHit::getContent).collect(Collectors.toList());
-        ProductSearchResponseDto response = new ProductSearchResponseDto();
-        response.setProducts(products);
+        PageResponseDto response = new PageResponseDto();
+        response.setProducts(new ResponseMapper().getProductResponsesFromProductDocument(products));
         response.setTotal((long) products.size());
         return response;
     }
