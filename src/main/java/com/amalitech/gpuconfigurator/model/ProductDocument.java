@@ -26,7 +26,7 @@ public class ProductDocument {
 
     private Integer inStock;
 
-    private Boolean featured;
+    private Boolean isFeatured;
 
     private List<String> imageUrl;
 
