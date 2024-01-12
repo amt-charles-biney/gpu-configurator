@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
 import com.amalitech.gpuconfigurator.service.product.FilteringService;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
+import com.amalitech.gpuconfigurator.service.search.SearchService;
 import com.amalitech.gpuconfigurator.util.ResponseMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class ProductController {
     private final ProductServiceImpl productService;
     private final UploadImageService cloudinaryImage;
     private final FilteringService filteringService;
+    private final SearchService searchService;
 
 
     @CrossOrigin
@@ -111,8 +113,29 @@ public class ProductController {
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String price,
             @RequestParam(required = false) String productType,
-            @RequestParam(required = false) String processor
+            @RequestParam(required = false) String processor,
+            @RequestParam(required = false) String query
     ) {
+        if (query != null && !query.isBlank()) {
+            String[] brands = null;
+            String[] priceRanges = null;
+            if (brand != null && !brand.isBlank()) {
+                brands = brand.strip().split(",");
+            }
+            if (price != null && !price.isBlank()) {
+                priceRanges = price.strip().split(",");
+            }
+            return ResponseEntity.ok(
+                    searchService.findProducts(
+                            query,
+                            page,
+                            size == null ? 10 : size,
+                            sort == null ? "createdAt" : sort,
+                            brands,
+                            priceRanges
+                    )
+            );
+        }
 
         PageResponseDto productsResponse = new PageResponseDto();
 
