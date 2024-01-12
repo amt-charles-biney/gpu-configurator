@@ -42,6 +42,10 @@ public class ResponseMapper {
                         .productDescription(product.getProductDescription())
                         .productAvailability(product.getProductAvailability())
                         .inStock(product.getInStock())
+                        .category(AttributeResponseDto.builder()
+                                .name(product.getCategory().getName())
+                                .id(String.valueOf(product.getCategory().getId()))
+                                .build())
                         .build())
                 .toList();
     }
