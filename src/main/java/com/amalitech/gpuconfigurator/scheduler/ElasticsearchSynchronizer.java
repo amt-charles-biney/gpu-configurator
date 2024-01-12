@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.scheduler;
 
+import com.amalitech.gpuconfigurator.mapper.CategoryMapper;
 import com.amalitech.gpuconfigurator.mapper.ProductMapper;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.ProductDocumentRepository;
@@ -26,6 +27,7 @@ public class ElasticsearchSynchronizer {
     private final ProductDocumentRepository productElasticsearchRepository;
     private final ProductRepository productJpaRepository;
     private final ProductMapper productMapper;
+    private final CategoryMapper categoryMapper;
 
     private static Predicate getUpdatedAtPredicate(CriteriaBuilder criteriaBuilder, Root<?> root) {
         return criteriaBuilder.between(
@@ -53,7 +55,9 @@ public class ElasticsearchSynchronizer {
         }
 
         for (Product product : productList) {
-            productElasticsearchRepository.save(productMapper.toProductDocument(product));
+            var productDocument = productMapper.toProductDocument(product);
+            productDocument.setCategory(categoryMapper.toCategoryDocument(product.getCategory()));
+            productElasticsearchRepository.save(productDocument);
         }
     }
 }
