@@ -34,6 +34,8 @@ public class ProductDocument {
 
     private Boolean productAvailability;
 
+    private CategoryDocument category;
+
     @Field(type = FieldType.Date, format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime createdAt;
 
