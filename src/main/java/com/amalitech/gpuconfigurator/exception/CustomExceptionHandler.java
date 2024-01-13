@@ -58,4 +58,10 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ProblemDetail handleInvalidPasswordException(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
+        errorDetail.setDetail(e.getMessage());
+        return errorDetail;
+    }
 }

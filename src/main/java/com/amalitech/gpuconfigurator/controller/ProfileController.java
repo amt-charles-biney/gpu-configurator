@@ -3,10 +3,10 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
+import com.amalitech.gpuconfigurator.exception.InvalidPasswordException;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.service.profile.ProfileService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -40,7 +40,7 @@ public class ProfileController {
     @PostMapping("/password")
     public ResponseEntity<GenericResponse> updateUserPassword(
             @Validated @RequestBody UserPasswordRequest dto,
-            Principal principal) throws BadRequestException {
+            Principal principal) throws InvalidPasswordException {
 
         GenericResponse response = profileService.updateUserPassword(dto, principal);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
