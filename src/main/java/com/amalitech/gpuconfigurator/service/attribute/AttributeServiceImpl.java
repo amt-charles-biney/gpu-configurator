@@ -120,11 +120,13 @@ public class AttributeServiceImpl implements AttributeService {
     public void deleteAttributeOptionByName(String name){ attributeOptionRepository.deleteByOptionName(name); }
 
     @Override
-    public AttributeOptionResponseDto updateAttributeOption(UUID id, @NotNull AttributeOptionDto atrDto) {
+    public AttributeOptionResponseDto updateAttributeOption(UUID id, @NotNull AttributeOptionDto attributeOptionDto) {
         AttributeOption updateAtr = attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTION_NOT_EXIST));
 
-        updateAtr.setPriceAdjustment(atrDto.price());
-        updateAtr.setOptionName(atrDto.name());
+        updateAtr.setPriceAdjustment(attributeOptionDto.price());
+        updateAtr.setOptionName(attributeOptionDto.name());
+        updateAtr.setMedia(attributeOptionDto.media());
+        updateAtr.setUnit(attributeOptionDto.unit());
         updateAtr.setUpdatedAt(LocalDateTime.now());
 
         AttributeOption savedAttribute =  attributeOptionRepository.save(updateAtr);
@@ -132,12 +134,14 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public AttributeOptionResponseDto createAttributeOption(UUID attributeId, @NotNull AttributeOptionDto atr) {
-        var attr = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+    public AttributeOptionResponseDto createAttributeOption(UUID attributeId, @NotNull AttributeOptionDto attributeOptionDtoResponse) {
+        var attribute = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
         var newAttributeOption = AttributeOption.builder()
-                .optionName(atr.name())
-                .priceAdjustment(atr.price())
-                .attribute(attr)
+                .optionName(attributeOptionDtoResponse.name())
+                .priceAdjustment(attributeOptionDtoResponse.price())
+                .media(attributeOptionDtoResponse.media())
+                .unit(attributeOptionDtoResponse.unit())
+                .attribute(attribute)
                 .build();
 
         AttributeOption savedAttribute = attributeOptionRepository.save(newAttributeOption);
@@ -153,13 +157,15 @@ public class AttributeServiceImpl implements AttributeService {
                 .collect(Collectors.toList());
     }
 
-    private AttributeOptionResponseDto createAttributeResponseType(@NotNull AttributeOption attr) {
+    private AttributeOptionResponseDto createAttributeResponseType(@NotNull AttributeOption attributeOption) {
         return AttributeOptionResponseDto
                 .builder()
-                .id(attr.getId().toString())
-                .optionName(attr.getOptionName())
-                .optionPrice(attr.getPriceAdjustment())
-                .attribute(new AttributeResponseDto(attr.getAttribute().getAttributeName(), attr.getAttribute().getId().toString()))
+                .id(attributeOption.getId().toString())
+                .optionName(attributeOption.getOptionName())
+                .optionPrice(attributeOption.getPriceAdjustment())
+                .optionUnit(attributeOption.getUnit())
+                .optionMedia(attributeOption.getMedia())
+                .attribute(new AttributeResponseDto(attributeOption.getAttribute().getAttributeName(), attributeOption.getAttribute().getId().toString()))
                 .build();
     }
 
