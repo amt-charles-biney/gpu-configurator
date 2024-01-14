@@ -164,10 +164,12 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     private AttributeResponse createAttributeResponseType(@NotNull Attribute attribute) {
+        List<AttributeOption> attributeOptions = attributeOptionRepository.findAllByAttributeId(attribute.getId()).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTIONS_NOT_EXIST));
         return AttributeResponse
                 .builder()
                 .id(attribute.getId())
                 .attributeName(attribute.getAttributeName())
+                .attributeOptions(this.streamAttributeOptions(attributeOptions))
                 .build();
     }
 

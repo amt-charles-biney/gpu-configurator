@@ -27,7 +27,7 @@ public class Attribute {
     private String attributeName;
 
     @JsonIgnore
-    @OneToMany(mappedBy="attribute", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy="attribute", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<AttributeOption> attributeOptions;
 
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
