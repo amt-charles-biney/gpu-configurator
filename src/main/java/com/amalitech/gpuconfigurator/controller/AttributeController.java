@@ -24,9 +24,9 @@ public class AttributeController {
     private final AttributeService attributeService;
 
     @PostMapping("/v1/admin/attributes")
-    public ResponseEntity<Attribute> createAttribute(@Validated  @RequestBody AttributeDto atr) {
-        Attribute attribute = attributeService.addAttribute(atr);
-        return ResponseEntity.status(HttpStatus.CREATED).body(attribute);
+    public ResponseEntity<Attribute> createAttribute(@Validated  @RequestBody AttributeDto attribute) {
+        Attribute attributeResponse = attributeService.addAttribute(attribute);
+        return ResponseEntity.status(HttpStatus.CREATED).body(attributeResponse);
     }
 
     @GetMapping("/v1/admin/attributes")
