@@ -113,7 +113,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public AttributeOption getAttributeOptionByName(String name) {
-        return attributeOptionRepository.findByOptionName(name).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTION_NOT_EXIST);
+        return attributeOptionRepository.findByOptionName(name).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTION_NOT_EXIST));
     }
 
     @Override
