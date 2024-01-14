@@ -8,5 +8,5 @@ import java.math.BigDecimal;
 public record AttributeOptionDto(
         @NotNull(message = "attribute option cannot be null")
                 @NotBlank(message = "attribute option cannot blank")
-        String name, BigDecimal price) {
+        String name, BigDecimal price, String media, Integer unit) {
 }
