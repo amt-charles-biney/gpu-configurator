@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "attributeOptions")
+@Table(name = "attribute_options")
 public class AttributeOption {
 
     @Id
