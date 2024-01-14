@@ -44,7 +44,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public AttributeResponse updateAttribute(UUID id, @NotNull AttributeDto attribute) {
-        Attribute updateAttribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute not found"));
+        Attribute updateAttribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
 
         updateAttribute.setAttributeName(attribute.attributeName());
         updateAttribute.setUpdatedAt(LocalDateTime.now());
@@ -55,24 +55,24 @@ public class AttributeServiceImpl implements AttributeService {
 
    @Override
    public Attribute getAttributeByName(String name) {
-       return attributeRepository.findByAttributeName(name).orElseThrow(() -> new EntityNotFoundException("attribute not found"));
+       return attributeRepository.findByAttributeName(name).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
    }
 
     @Override
     public AttributeResponse getAttributeById(UUID id) {
-        Attribute attribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute not found"));
+        Attribute attribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
         return this.createAttributeResponseType(attribute);
     }
 
     @Override
     public void deleteAttributeByName(String name) {
-        Attribute attribute = attributeRepository.findByAttributeName(name).orElseThrow(() -> new EntityNotFoundException("Attribute not found with name: " + name));
+        Attribute attribute = attributeRepository.findByAttributeName(name).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST + name));
         attributeRepository.delete(attribute);
     }
 
     @Override
     public GenericResponse deleteAttributeById(UUID attributeId) {
-        Attribute attribute = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException("Attribute not found with id: " + attributeId));
+        Attribute attribute = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST +  attributeId));
         attributeRepository.delete(attribute);
 
         return GenericResponse.builder().status(HttpStatus.ACCEPTED.value()).message("deleted attribute successfully").build();
@@ -80,7 +80,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public List<AttributeOptionResponseDto> getAllAttributeOptionByAttributeId(UUID id) {
-        List<AttributeOption> attr =  attributeOptionRepository.findAllByAttributeId(id).orElseThrow(() -> new EntityNotFoundException("could not find attributes options"));
+        List<AttributeOption> attr =  attributeOptionRepository.findAllByAttributeId(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTIONS_NOT_EXIST));
         return this.streamAttributeOptions(attr);
     }
 
@@ -88,7 +88,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public List<AttributeOption> getAllAttributeOptionByAttributeName(String name) {
         Attribute attributeByName = this.getAttributeByName(name);
-        return attributeOptionRepository.findAllByAttributeId(UUID.fromString(attributeByName.getAttributeName())).orElseThrow(() -> new EntityNotFoundException("could not find attributes options"));
+        return attributeOptionRepository.findAllByAttributeId(UUID.fromString(attributeByName.getAttributeName())).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTIONS_NOT_EXIST));
     }
 
     @Override
@@ -99,13 +99,13 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public AttributeOptionResponseDto getAttributeOptionById(UUID id) {
-        AttributeOption attribute = attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute with this id does not exist"));
+        AttributeOption attribute = attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
         return this.createAttributeResponseType(attribute);
     }
 
     @Override
     public GenericResponse deleteAttributeOption(UUID id) {
-        attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute with this id does not exist"));
+        attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
         attributeOptionRepository.deleteById(id);
 
         return GenericResponse.builder().status(HttpStatus.ACCEPTED.value()).message("deleted attribute option successfully").build();
@@ -113,7 +113,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public AttributeOption getAttributeOptionByName(String name) {
-        return attributeOptionRepository.findByOptionName(name).orElseThrow(() -> new EntityNotFoundException("option by this name does not exist"));
+        return attributeOptionRepository.findByOptionName(name).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTION_NOT_EXIST);
     }
 
     @Override
@@ -121,7 +121,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public AttributeOptionResponseDto updateAttributeOption(UUID id, @NotNull AttributeOptionDto atrDto) {
-        AttributeOption updateAtr = attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("attribute option does not exist"));
+        AttributeOption updateAtr = attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTION_NOT_EXIST));
 
         updateAtr.setPriceAdjustment(atrDto.price());
         updateAtr.setOptionName(atrDto.name());
@@ -133,7 +133,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public AttributeOptionResponseDto createAttributeOption(UUID attributeId, @NotNull AttributeOptionDto atr) {
-        var attr = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException("could not create option for this attribute type"));
+        var attr = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
         var newAttributeOption = AttributeOption.builder()
                 .optionName(atr.name())
                 .priceAdjustment(atr.price())
