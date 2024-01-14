@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.controller;
 
+import com.amalitech.gpuconfigurator.dto.ApiResponse;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeDto;
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionDto;
@@ -24,27 +25,31 @@ public class AttributeController {
     private final AttributeService attributeService;
 
     @PostMapping("/v1/admin/attributes")
-    public ResponseEntity<Attribute> createAttribute(@Validated  @RequestBody AttributeDto attribute) {
+    public ResponseEntity<ApiResponse<Attribute>> createAttribute(@Validated  @RequestBody AttributeDto attribute) {
         Attribute attributeResponse = attributeService.addAttribute(attribute);
-        return ResponseEntity.status(HttpStatus.CREATED).body(attributeResponse);
+        ApiResponse<Attribute> attributeApiResponse = new ApiResponse<Attribute>(attributeResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(attributeApiResponse);
     }
 
     @GetMapping("/v1/admin/attributes")
-    public ResponseEntity<List<AttributeResponse>> getAttributes() {
+    public ResponseEntity<ApiResponse<List<AttributeResponse>>> getAttributes() {
         List<AttributeResponse> attributes = attributeService.getAllAttributes();
-        return ResponseEntity.ok(attributes);
+        ApiResponse<List<AttributeResponse>> attributeResponse = new ApiResponse<List<AttributeResponse>>(attributes);
+        return ResponseEntity.ok(attributeResponse);
     }
 
     @GetMapping("/v1/admin/attributes/{attributeId}")
-    public ResponseEntity<AttributeResponse> getAttribute(@PathVariable String attributeId) {
+    public ResponseEntity<ApiResponse<AttributeResponse>> getAttribute(@PathVariable String attributeId) {
         AttributeResponse attribute = attributeService.getAttributeById(UUID.fromString(attributeId));
-        return ResponseEntity.ok(attribute);
+        ApiResponse<AttributeResponse> attributeResponse = new ApiResponse<AttributeResponse>(attribute);
+        return ResponseEntity.ok(attributeResponse);
     }
 
     @PutMapping("/v1/admin/attributes/{attributeId}")
-    public ResponseEntity<AttributeResponse> updateAttribute(@PathVariable String attributeId, @RequestBody  AttributeDto atr) {
+    public ResponseEntity<ApiResponse<AttributeResponse>> updateAttribute(@PathVariable String attributeId, @RequestBody  AttributeDto atr) {
         AttributeResponse attribute = attributeService.updateAttribute(UUID.fromString(attributeId), atr);
-        return ResponseEntity.status(HttpStatus.CREATED).body(attribute);
+        ApiResponse<AttributeResponse> attributeResponse = new ApiResponse<AttributeResponse>(attribute);
+        return ResponseEntity.status(HttpStatus.CREATED).body(attributeResponse);
     }
 
     @DeleteMapping("/v1/admin/attributes/{attributeId}")
@@ -54,32 +59,37 @@ public class AttributeController {
     }
 
     @PostMapping("/v1/admin/attributes/{attributeId}/options")
-    public ResponseEntity<AttributeOptionResponseDto> createAttributeOption(@PathVariable String attributeId, @Validated @RequestBody AttributeOptionDto atrOption) {
+    public ResponseEntity<ApiResponse<AttributeOptionResponseDto>> createAttributeOption(@PathVariable String attributeId, @Validated @RequestBody AttributeOptionDto atrOption) {
         AttributeOptionResponseDto option = attributeService.createAttributeOption(UUID.fromString(attributeId), atrOption);
-        return ResponseEntity.status(HttpStatus.CREATED).body(option);
+        ApiResponse<AttributeOptionResponseDto> optionResponse = new ApiResponse<AttributeOptionResponseDto>(option);
+        return ResponseEntity.status(HttpStatus.CREATED).body(optionResponse);
     }
 
     @GetMapping("/v1/admin/attributes/options")
-    public ResponseEntity<List<AttributeOptionResponseDto>> getAllOptions() {
+    public ResponseEntity<ApiResponse<List<AttributeOptionResponseDto>>> getAllOptions() {
          List<AttributeOptionResponseDto> attributeOptions = attributeService.getAllAttributeOptions();
-         return ResponseEntity.ok(attributeOptions);
+         ApiResponse<List<AttributeOptionResponseDto>> attributeOptionsResponse = new ApiResponse<List<AttributeOptionResponseDto>>(attributeOptions);
+         return ResponseEntity.ok(attributeOptionsResponse);
     }
 
     @GetMapping("/v1/admin/attributes/{attributeId}/options")
-    public ResponseEntity<List<AttributeOptionResponseDto>> getAllAttributeOptions(@PathVariable String attributeId) {
+    public ResponseEntity<ApiResponse<List<AttributeOptionResponseDto>>> getAllAttributeOptions(@PathVariable String attributeId) {
         List<AttributeOptionResponseDto> attributeOptions = attributeService.getAllAttributeOptionByAttributeId(UUID.fromString(attributeId));
-        return ResponseEntity.ok(attributeOptions);
+        ApiResponse<List<AttributeOptionResponseDto>> attributeOptionsResponse = new ApiResponse<List<AttributeOptionResponseDto>>(attributeOptions);
+        return ResponseEntity.ok(attributeOptionsResponse);
     }
 
     @GetMapping("/v1/admin/attributes/options/{optionId}")
-    public ResponseEntity<AttributeOptionResponseDto> getOption(@PathVariable String optionId) {
+    public ResponseEntity<ApiResponse<AttributeOptionResponseDto>> getOption(@PathVariable String optionId) {
         AttributeOptionResponseDto attributeOption = attributeService.getAttributeOptionById(UUID.fromString(optionId));
-        return ResponseEntity.ok(attributeOption);
+        ApiResponse<AttributeOptionResponseDto> attributeOptionResponse = new ApiResponse<AttributeOptionResponseDto>(attributeOption);
+        return ResponseEntity.ok(attributeOptionResponse);
     }
     @PutMapping("/v1/admin/attributes/options/{optionId}")
-    public ResponseEntity<AttributeOptionResponseDto> updateOption(@PathVariable String optionId, @RequestBody AttributeOptionDto attr) {
+    public ResponseEntity<ApiResponse<AttributeOptionResponseDto>> updateOption(@PathVariable String optionId, @RequestBody AttributeOptionDto attr) {
         AttributeOptionResponseDto attributeOption = attributeService.updateAttributeOption(UUID.fromString(optionId), attr);
-        return ResponseEntity.ok(attributeOption);
+        ApiResponse<AttributeOptionResponseDto> attributeOptionResponse = new ApiResponse<AttributeOptionResponseDto>(attributeOption);
+        return ResponseEntity.ok(attributeOptionResponse);
     }
 
     @DeleteMapping("/v1/admin/attributes/options/{optionId}")
