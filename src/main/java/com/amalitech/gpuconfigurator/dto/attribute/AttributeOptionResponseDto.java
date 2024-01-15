@@ -5,5 +5,5 @@ import lombok.Builder;
 import java.math.BigDecimal;
 
 @Builder
-public record AttributeOptionResponseDto(String id, String optionName, BigDecimal optionPrice, String optionMedia, String optionUnit, AttributeResponseDto attribute) {
+public record AttributeOptionResponseDto(String id, String optionName, AttributeVariantDto additionalInfo, BigDecimal optionPrice, String optionMedia, String optionUnit, AttributeResponseDto attribute) {
 }

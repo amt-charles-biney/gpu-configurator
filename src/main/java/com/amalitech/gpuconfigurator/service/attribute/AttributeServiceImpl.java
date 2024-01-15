@@ -37,6 +37,7 @@ public class AttributeServiceImpl implements AttributeService {
     public Attribute addAttribute(@NotNull AttributeDto attribute) {
         Attribute newAttribute =  Attribute.builder()
                 .attributeName(attribute.attributeName())
+                .isMeasured(attribute.isMeasured())
                 .build();
 
         return attributeRepository.save(newAttribute);
@@ -47,6 +48,7 @@ public class AttributeServiceImpl implements AttributeService {
         Attribute updateAttribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
 
         updateAttribute.setAttributeName(attribute.attributeName());
+        updateAttribute.setMeasured(attribute.isMeasured());
         updateAttribute.setUpdatedAt(LocalDateTime.now());
 
         Attribute savedAttribute = attributeRepository.save(updateAttribute);
@@ -127,6 +129,9 @@ public class AttributeServiceImpl implements AttributeService {
         updateAtr.setOptionName(attributeOptionDto.name());
         updateAtr.setMedia(attributeOptionDto.media());
         updateAtr.setUnit(attributeOptionDto.unit());
+        updateAtr.setBaseAmount(attributeOptionDto.baseAmount());
+        updateAtr.setMaxAmount(attributeOptionDto.maxAmount());
+        updateAtr.setPriceIncrement(attributeOptionDto.priceIncrement());
         updateAtr.setUpdatedAt(LocalDateTime.now());
 
         AttributeOption savedAttribute =  attributeOptionRepository.save(updateAtr);
@@ -136,6 +141,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public AttributeOptionResponseDto createAttributeOption(UUID attributeId, @NotNull AttributeOptionDto attributeOptionDtoResponse) {
         var attribute = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+
         var newAttributeOption = AttributeOption.builder()
                 .optionName(attributeOptionDtoResponse.name())
                 .priceAdjustment(attributeOptionDtoResponse.price())
@@ -144,9 +150,18 @@ public class AttributeServiceImpl implements AttributeService {
                 .attribute(attribute)
                 .build();
 
+        if(attribute.isMeasured()) {
+            newAttributeOption.setBaseAmount(attributeOptionDtoResponse.baseAmount());
+            newAttributeOption.setMaxAmount(attributeOptionDtoResponse.maxAmount());
+            newAttributeOption.setPriceIncrement(attributeOptionDtoResponse.priceIncrement());
+        }
+
         AttributeOption savedAttribute = attributeOptionRepository.save(newAttributeOption);
         return this.createAttributeResponseType(savedAttribute);
     }
+
+//    @Override
+//    public List<AttributeOptionResponseDto> createAllAttributeOptions()
 
 
 
@@ -164,6 +179,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .optionName(attributeOption.getOptionName())
                 .optionPrice(attributeOption.getPriceAdjustment())
                 .optionUnit(attributeOption.getUnit())
+                .additionalInfo(new AttributeVariantDto(attributeOption.getBaseAmount(), attributeOption.getMaxAmount(), attributeOption.getPriceIncrement()))
                 .optionMedia(attributeOption.getMedia())
                 .attribute(new AttributeResponseDto(attributeOption.getAttribute().getAttributeName(), attributeOption.getAttribute().getId().toString()))
                 .build();
