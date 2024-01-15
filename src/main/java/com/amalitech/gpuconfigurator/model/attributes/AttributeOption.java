@@ -35,6 +35,15 @@ public class AttributeOption {
     @Column(name="unit")
     private String unit;
 
+    @Column(name="base_amount")
+    private Float baseAmount;
+
+    @Column(name="max_amount")
+    private Float maxAmount;
+
+    @Column(name="price_increment")
+    private Float priceIncrement;
+
     @ManyToOne
     @JoinColumn(name = "attribute_id", nullable = false)
     private Attribute attribute;
