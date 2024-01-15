@@ -7,6 +7,7 @@ import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionResponseDto;
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +23,7 @@ public interface AttributeService {
 
     AttributeResponse getAttributeById(UUID id);
 
-    void deleteAttributeByName(String name);
+    GenericResponse deleteAttributeByName(String name);
 
     GenericResponse deleteAttributeById(UUID attributeId);
 
@@ -43,4 +44,8 @@ public interface AttributeService {
     AttributeOptionResponseDto updateAttributeOption(UUID id, AttributeOptionDto atrDto);
 
     AttributeOptionResponseDto createAttributeOption(UUID attributeId, AttributeOptionDto atr);
+
+    List<AttributeOptionResponseDto> createAllAttributeOptions(UUID attributeId, @NotNull List<AttributeOptionDto> attributeOptionDtoList);
+
+    GenericResponse deleteBulkAttributes(List<String> selectedAttributes);
 }
