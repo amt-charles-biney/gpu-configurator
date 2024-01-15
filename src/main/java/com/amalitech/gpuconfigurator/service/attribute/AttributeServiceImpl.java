@@ -7,6 +7,7 @@ import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -45,7 +46,8 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public AttributeResponse updateAttribute(UUID id, @NotNull AttributeDto attribute) {
-        Attribute updateAttribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+        Attribute updateAttribute = attributeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
 
         updateAttribute.setAttributeName(attribute.attributeName());
         updateAttribute.setMeasured(attribute.isMeasured());
@@ -57,32 +59,39 @@ public class AttributeServiceImpl implements AttributeService {
 
    @Override
    public Attribute getAttributeByName(String name) {
-       return attributeRepository.findByAttributeName(name).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+       return attributeRepository.findByAttributeName(name)
+               .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
    }
 
     @Override
     public AttributeResponse getAttributeById(UUID id) {
-        Attribute attribute = attributeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+        Attribute attribute = attributeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+
         return this.createAttributeResponseType(attribute);
     }
 
     @Override
-    public void deleteAttributeByName(String name) {
-        Attribute attribute = attributeRepository.findByAttributeName(name).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST + name));
+    public GenericResponse deleteAttributeByName(String name) {
+        Attribute attribute = attributeRepository.findByAttributeName(name)
+                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST + name));
         attributeRepository.delete(attribute);
+        return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted attribute by name successful");
     }
 
     @Override
     public GenericResponse deleteAttributeById(UUID attributeId) {
-        Attribute attribute = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST +  attributeId));
+        Attribute attribute = attributeRepository.findById(attributeId)
+                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST +  attributeId));
         attributeRepository.delete(attribute);
 
-        return GenericResponse.builder().status(HttpStatus.ACCEPTED.value()).message("deleted attribute successfully").build();
+        return new GenericResponse(HttpStatus.ACCEPTED.value(),"deleted attribute successfully");
     }
 
     @Override
     public List<AttributeOptionResponseDto> getAllAttributeOptionByAttributeId(UUID id) {
-        List<AttributeOption> attr =  attributeOptionRepository.findAllByAttributeId(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTIONS_NOT_EXIST));
+        List<AttributeOption> attr =  attributeOptionRepository.findAllByAttributeId(id)
+                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTIONS_NOT_EXIST));
         return this.streamAttributeOptions(attr);
     }
 
@@ -90,7 +99,8 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public List<AttributeOption> getAllAttributeOptionByAttributeName(String name) {
         Attribute attributeByName = this.getAttributeByName(name);
-        return attributeOptionRepository.findAllByAttributeId(UUID.fromString(attributeByName.getAttributeName())).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTIONS_NOT_EXIST));
+        return attributeOptionRepository.findAllByAttributeId(UUID.fromString(attributeByName.getAttributeName()))
+                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTIONS_NOT_EXIST));
     }
 
     @Override
@@ -101,7 +111,8 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public AttributeOptionResponseDto getAttributeOptionById(UUID id) {
-        AttributeOption attribute = attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+        AttributeOption attribute = attributeOptionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
         return this.createAttributeResponseType(attribute);
     }
 
@@ -109,13 +120,16 @@ public class AttributeServiceImpl implements AttributeService {
     public GenericResponse deleteAttributeOption(UUID id) {
         attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
         attributeOptionRepository.deleteById(id);
-
-        return GenericResponse.builder().status(HttpStatus.ACCEPTED.value()).message("deleted attribute option successfully").build();
+        return GenericResponse.builder()
+                .status(HttpStatus.ACCEPTED.value())
+                .message("deleted attribute option successfully")
+                .build();
     }
 
     @Override
     public AttributeOption getAttributeOptionByName(String name) {
-        return attributeOptionRepository.findByOptionName(name).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTION_NOT_EXIST));
+        return attributeOptionRepository.findByOptionName(name)
+                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTION_NOT_EXIST));
     }
 
     @Override
@@ -160,10 +174,34 @@ public class AttributeServiceImpl implements AttributeService {
         return this.createAttributeResponseType(savedAttribute);
     }
 
-//    @Override
-//    public List<AttributeOptionResponseDto> createAllAttributeOptions()
+    @Override
+    @Transactional
+    public List<AttributeOptionResponseDto> createAllAttributeOptions(UUID attributeId, @NotNull List<AttributeOptionDto> attributeOptionDtoList) {
+        Attribute attribute = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+        List<AttributeOption> attributeOptionList = attributeOptionDtoList.stream().map(attributes -> AttributeOption.builder()
+                .optionName(attributes.name())
+                .priceAdjustment(attributes.price())
+                .media(attributes.media())
+                .unit(attributes.unit())
+                .attribute(attribute)
+                .baseAmount(attributes.baseAmount())
+                .maxAmount(attributes.maxAmount())
+                .priceIncrement(attributes.priceIncrement())
+                .build()).toList();
 
+        List<AttributeOption> savedAttributeOptions = attributeOptionRepository.saveAll(attributeOptionList);
+        return savedAttributeOptions.stream().map(this::createAttributeResponseType).toList();
+    }
 
+    @Override
+    public GenericResponse deleteBulkAttributes(List<String> selectedAttributes){
+        List<UUID> selectedAttributesUUID = selectedAttributes.stream()
+                .map(UUID::fromString)
+                .collect(Collectors.toList());
+
+        attributeRepository.deleteAllById(selectedAttributesUUID);
+        return new GenericResponse(HttpStatus.ACCEPTED.value(),"deleted bulk attributes successful");
+    }
 
     private List<AttributeOptionResponseDto> streamAttributeOptions(@NotNull List<AttributeOption> instance) {
         return instance
@@ -181,7 +219,11 @@ public class AttributeServiceImpl implements AttributeService {
                 .optionUnit(attributeOption.getUnit())
                 .additionalInfo(new AttributeVariantDto(attributeOption.getBaseAmount(), attributeOption.getMaxAmount(), attributeOption.getPriceIncrement()))
                 .optionMedia(attributeOption.getMedia())
-                .attribute(new AttributeResponseDto(attributeOption.getAttribute().getAttributeName(), attributeOption.getAttribute().getId().toString()))
+                .attribute(
+                        new AttributeResponseDto(
+                        attributeOption.getAttribute().getAttributeName(),
+                        attributeOption.getAttribute().getId().toString(),
+                        attributeOption.getAttribute().isMeasured()))
                 .build();
     }
 
@@ -195,6 +237,4 @@ public class AttributeServiceImpl implements AttributeService {
                 .attributeOptions(this.streamAttributeOptions(attributeOptions))
                 .build();
     }
-
-
 }
