@@ -65,6 +65,13 @@ public class AttributeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(optionResponse);
     }
 
+    @DeleteMapping("/v1/admin/attributes/all")
+    public ResponseEntity<GenericResponse> deleteAllAttributes(@RequestBody List<String> attributes) {
+        GenericResponse deletedBulkAttributes = attributeService.deleteBulkAttributes(attributes);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(deletedBulkAttributes);
+    }
+
+
     @GetMapping("/v1/admin/attributes/options")
     public ResponseEntity<ApiResponse<List<AttributeOptionResponseDto>>> getAllOptions() {
          List<AttributeOptionResponseDto> attributeOptions = attributeService.getAllAttributeOptions();
@@ -97,8 +104,4 @@ public class AttributeController {
         GenericResponse attributeOption = attributeService.deleteAttributeOption(UUID.fromString(optionId));
         return ResponseEntity.ok(attributeOption);
     }
-
-
-
-
 }
