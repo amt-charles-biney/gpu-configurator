@@ -175,6 +175,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .builder()
                 .id(attribute.getId())
                 .attributeName(attribute.getAttributeName())
+                .isMeasured(attribute.isMeasured())
                 .attributeOptions(this.streamAttributeOptions(attributeOptions))
                 .build();
     }

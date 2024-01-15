@@ -26,7 +26,7 @@ public class Attribute {
     @Column(nullable = false, unique = true)
     private String attributeName;
 
-    @Column(nullable = false)
+    @Column
     private boolean isMeasured = false;
 
     @JsonIgnore
