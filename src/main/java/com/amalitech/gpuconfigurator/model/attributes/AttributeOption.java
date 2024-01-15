@@ -33,7 +33,7 @@ public class AttributeOption {
     private String media;
 
     @Column(name="unit")
-    private Integer unit;
+    private String unit;
 
     @ManyToOne
     @JoinColumn(name = "attribute_id", nullable = false)
