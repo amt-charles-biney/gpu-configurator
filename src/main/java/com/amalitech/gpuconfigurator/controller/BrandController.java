@@ -37,6 +37,13 @@ public class BrandController {
     }
 
     @CrossOrigin
+    @GetMapping("/v1/brand")
+    public ResponseEntity<List<BrandDto>> getAllBrandsUser() {
+        List<BrandDto> brands = brandService.getAllBrands();
+        return ResponseEntity.ok(brands);
+    }
+
+    @CrossOrigin
     @DeleteMapping("/v1/admin/brand/{brandId}")
     public ResponseEntity<GenericResponse> deleteBrand(@PathVariable String brandId) {
         GenericResponse deletedBrand = brandService.deleteBrand(UUID.fromString(brandId));

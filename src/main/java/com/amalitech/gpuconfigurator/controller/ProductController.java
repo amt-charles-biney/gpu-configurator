@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
 import com.amalitech.gpuconfigurator.service.product.FilteringService;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
+import com.amalitech.gpuconfigurator.service.search.SearchService;
 import com.amalitech.gpuconfigurator.util.ResponseMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +29,7 @@ public class ProductController {
     private final ProductServiceImpl productService;
     private final UploadImageService cloudinaryImage;
     private final FilteringService filteringService;
+    private final SearchService searchService;
 
 
     @CrossOrigin
@@ -41,6 +45,13 @@ public class ProductController {
     @CrossOrigin
     @GetMapping("/v1/admin/product/{productId}")
     public ResponseEntity<ProductResponse> getProductByProductId(@PathVariable("productId") String productId) {
+        ProductResponse product = productService.getProduct(productId);
+        return ResponseEntity.ok(product);
+    }
+
+    @CrossOrigin
+    @GetMapping("/v1/product/{productId}")
+    public ResponseEntity<ProductResponse> getProductByProductIdUser(@PathVariable("productId") String productId) {
         ProductResponse product = productService.getProduct(productId);
         return ResponseEntity.ok(product);
     }
@@ -100,17 +111,47 @@ public class ProductController {
             @RequestParam(required = false) Integer size,
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String price) {
+            @RequestParam(required = false) String price,
+            @RequestParam(required = false) String productType,
+            @RequestParam(required = false) String processor,
+            @RequestParam(required = false) String query
+    ) {
+        if (query != null && !query.isBlank()) {
+            String[] brands = null;
+            String[] priceRanges = null;
+            if (brand != null && !brand.isBlank()) {
+                brands = brand.strip().split(",");
+            }
+            if (price != null && !price.isBlank()) {
+                priceRanges = price.strip().split(",");
+            }
+            return ResponseEntity.ok(
+                    searchService.findProducts(
+                            query,
+                            page,
+                            size == null ? 10 : size,
+                            sort == null ? "createdAt" : sort,
+                            brands,
+                            priceRanges
+                    )
+            );
+        }
 
         PageResponseDto productsResponse = new PageResponseDto();
 
-        List<ProductResponse> products;
+        List<ProductResponse> products = new ArrayList<>();
 
-        if (brand != null || price != null ) {
-            List<Product> filteredProducts = filteringService.filterProduct(brand, price);
-            products = new ResponseMapper().getProductResponses(filteredProducts);
-            productsResponse.setProducts(products);
-            productsResponse.setTotal(products.size());
+        if (brand != null || price != null || productType != null || processor != null) {
+            List<Product> filteredProducts = filteringService.filterProduct(brand, price, productType, processor);
+            if (!filteredProducts.isEmpty()) {
+                products = new ResponseMapper().getProductResponses(filteredProducts);
+                productsResponse.setProducts(products);
+                productsResponse.setTotal(products.size());
+            } else {
+                productsResponse.setProducts(Collections.emptyList());
+                productsResponse.setTotal(0);
+            }
+
         } else if (page != null && size != null) {
 
             Page<ProductResponse> pagedProducts = productService.getAllProducts(page, size, sort);

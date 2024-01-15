@@ -31,4 +31,11 @@ public class CategoryConfigController {
         CategoryConfigResponseDto result = categoryConfigService.getCategoryConfigByCategory(categoryId);
         return ResponseEntity.ok(result);
     }
+
+    @CrossOrigin
+    @GetMapping("/v1/category/{categoryId}/config")
+    public ResponseEntity<CategoryConfigResponseDto> getConfigsUser(@PathVariable String categoryId) {
+        CategoryConfigResponseDto result = categoryConfigService.getCategoryConfigByCategory(categoryId);
+        return ResponseEntity.ok(result);
+    }
 }

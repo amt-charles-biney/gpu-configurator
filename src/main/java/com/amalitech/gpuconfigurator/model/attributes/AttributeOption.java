@@ -16,18 +16,24 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "attributeOptions")
+@Table(name = "attribute_options")
 public class AttributeOption {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "optionName", nullable = false)
+    @Column(name = "option_name", nullable = false)
     private String optionName;
 
-    @Column(name = "priceAdjustment")
+    @Column(name = "price_adjustment")
     private BigDecimal priceAdjustment;
+
+    @Column(name = "media")
+    private String media;
+
+    @Column(name="unit")
+    private Integer unit;
 
     @ManyToOne
     @JoinColumn(name = "attribute_id", nullable = false)
