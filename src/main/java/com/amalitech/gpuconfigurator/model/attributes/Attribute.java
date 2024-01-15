@@ -26,6 +26,9 @@ public class Attribute {
     @Column(nullable = false, unique = true)
     private String attributeName;
 
+    @Column(nullable = false)
+    private boolean isMeasured = false;
+
     @JsonIgnore
     @OneToMany(mappedBy="attribute", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<AttributeOption> attributeOptions;
