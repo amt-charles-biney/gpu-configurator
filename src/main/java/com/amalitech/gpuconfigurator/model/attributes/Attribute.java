@@ -40,4 +40,11 @@ public class Attribute {
 
     private LocalDateTime deletedAt;
 
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
+
 }
