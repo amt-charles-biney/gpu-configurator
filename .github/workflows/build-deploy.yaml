@@ -2,7 +2,7 @@ name: Java CI/CD with Maven
 
 on:
   push:
-    branches: [ dev, "maximo/dev" ]
+    branches: [ dev, "PresentationLayDev" ]
   pull_request:
     branches: [ dev ]
 
@@ -56,6 +56,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/ubuntu/gpu-configurator
+            sudo docker system prune --force
             sudo docker pull maximomugisha/gpu-configurator:latest
             sudo docker rm -f gpu-configurator
             sudo docker run --env-file .env -d  -p 8080:8080 --name gpu-configurator maximomugisha/gpu-configurator:latest
