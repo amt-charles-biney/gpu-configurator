@@ -141,7 +141,6 @@ public class AttributeServiceImpl implements AttributeService {
 
         updateAtr.setPriceAdjustment(attributeOptionDto.price());
         updateAtr.setOptionName(attributeOptionDto.name());
-        updateAtr.setMedia(attributeOptionDto.media());
         updateAtr.setUnit(attributeOptionDto.unit());
         updateAtr.setBaseAmount(attributeOptionDto.baseAmount());
         updateAtr.setMaxAmount(attributeOptionDto.maxAmount());
@@ -159,7 +158,6 @@ public class AttributeServiceImpl implements AttributeService {
         var newAttributeOption = AttributeOption.builder()
                 .optionName(attributeOptionDtoResponse.name())
                 .priceAdjustment(attributeOptionDtoResponse.price())
-                .media(attributeOptionDtoResponse.media())
                 .unit(attributeOptionDtoResponse.unit())
                 .attribute(attribute)
                 .build();
@@ -181,7 +179,6 @@ public class AttributeServiceImpl implements AttributeService {
         List<AttributeOption> attributeOptionList = attributeOptionDtoList.stream().map(attributes -> AttributeOption.builder()
                 .optionName(attributes.name())
                 .priceAdjustment(attributes.price())
-                .media(attributes.media())
                 .unit(attributes.unit())
                 .attribute(attribute)
                 .baseAmount(attributes.baseAmount())
