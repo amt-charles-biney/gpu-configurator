@@ -1,10 +1,14 @@
 FROM maven:3.9.6 AS build
 
 WORKDIR /code
+COPY pom.xml .
 COPY . /code
 
-# Build the application
-RUN mvn clean package -DskipTests
+# Build the application cache dependancies
+RUN --mount=type=cache,target=/root/.m2 mvn clean package  -DskipTests
+
+# # Build the application
+# RUN mvn clean package -DskipTests
 
 # Use Adoptium JDK 16 as the base image for the final image
 FROM openjdk:21-jdk-slim

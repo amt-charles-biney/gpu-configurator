@@ -30,6 +30,7 @@ services:
       - db
     env_file: .env
     environment:
+      - DOCKER_BUILDKIT=1
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${DOCKER_DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${DOCKER_DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${DOCKER_DB_PASSWORD}
