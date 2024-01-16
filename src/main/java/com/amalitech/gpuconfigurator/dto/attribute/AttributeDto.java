@@ -7,6 +7,8 @@ public record AttributeDto(
         @NotNull(message = "attribute should not be null")
                 @NotBlank(message = "attribute should not be blank")
        String attributeName,
-        Boolean isMeasured
+        Boolean isMeasured,
+
+        String description
 ) {
 }
