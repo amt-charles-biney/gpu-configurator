@@ -2,10 +2,7 @@ package com.amalitech.gpuconfigurator.service.product;
 
 
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
-import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
-import com.amalitech.gpuconfigurator.dto.product.ProductDto;
-import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
-import com.amalitech.gpuconfigurator.dto.product.ProductUpdateDto;
+import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
@@ -94,7 +91,7 @@ public class ProductServiceImpl implements ProductService {
                         .productBrand(product.getProductBrand())
                         .coverImage(product.getCoverImage())
                         .isFeatured(product.getFeatured())
-                        .category(AttributeResponseDto.builder()
+                        .category(ProductResponseDto.builder()
                                 .name(product.getCategory().getCategoryName())
                                 .id(String.valueOf(product.getCategory().getId()))
                                 .build())
@@ -120,7 +117,7 @@ public class ProductServiceImpl implements ProductService {
                 .inStock(product.getInStock())
                 .isFeatured(product.getFeatured())
                 .imageUrl(product.getImageUrl().stream().toList())
-                .category(new AttributeResponseDto(category.getCategoryName(), category.getId().toString()))
+                .category(new ProductResponseDto(category.getCategoryName(), category.getId().toString()))
                 .build();
     }
 
@@ -139,7 +136,7 @@ public class ProductServiceImpl implements ProductService {
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                 .coverImage(product.getCoverImage())
                 .isFeatured(product.getFeatured())
-                .category(AttributeResponseDto.builder()
+                .category(ProductResponseDto.builder()
                         .name(product.getCategory().getCategoryName())
                         .id(String.valueOf(product.getCategory().getId()))
                         .build())

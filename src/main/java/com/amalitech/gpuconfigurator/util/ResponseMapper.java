@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.util;
 
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
+import com.amalitech.gpuconfigurator.dto.product.ProductResponseDto;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.ProductDocument;
 
@@ -19,7 +20,7 @@ public class ResponseMapper {
                         .productBrand(product.getProductBrand())
                         .coverImage(product.getCoverImage())
                         .productId(product.getProductId())
-                        .category(AttributeResponseDto.builder().name(product.getCategory().getCategoryName())
+                        .category(ProductResponseDto.builder().name(product.getCategory().getCategoryName())
                                 .id(String.valueOf(product.getCategory().getId()))
                                 .build())
                         .productDescription(product.getProductDescription())
@@ -42,7 +43,7 @@ public class ResponseMapper {
                         .productDescription(product.getProductDescription())
                         .productAvailability(product.getProductAvailability())
                         .inStock(product.getInStock())
-                        .category(AttributeResponseDto.builder()
+                        .category(ProductResponseDto.builder()
                                 .name(product.getCategory().getName())
                                 .id(String.valueOf(product.getCategory().getId()))
                                 .build())
