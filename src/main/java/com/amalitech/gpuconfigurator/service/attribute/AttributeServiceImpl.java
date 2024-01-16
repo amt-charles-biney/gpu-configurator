@@ -39,7 +39,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     @Transactional
     public List<AttributeOptionResponseDto> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) {
-        Attribute createAttribute = this.addAttribute(new AttributeDto(createAttributesRequest.attributeName(), createAttributesRequest.isMeasured()));
+        Attribute createAttribute = this.addAttribute(new AttributeDto(createAttributesRequest.attributeName(), createAttributesRequest.isMeasured(), createAttributesRequest.description()));
         return this.createAllAttributeOptions(createAttribute.getId(), createAttributesRequest.variantOptions());
     }
 
@@ -48,6 +48,7 @@ public class AttributeServiceImpl implements AttributeService {
         Attribute newAttribute =  Attribute.builder()
                 .attributeName(attribute.attributeName())
                 .isMeasured(attribute.isMeasured())
+                .description(attribute.description())
                 .build();
 
         return attributeRepository.save(newAttribute);
@@ -60,6 +61,7 @@ public class AttributeServiceImpl implements AttributeService {
 
         updateAttribute.setAttributeName(attribute.attributeName());
         updateAttribute.setMeasured(attribute.isMeasured());
+        updateAttribute.setDescription(attribute.description());
         updateAttribute.setUpdatedAt(LocalDateTime.now());
 
         Attribute savedAttribute = attributeRepository.save(updateAttribute);
@@ -241,6 +243,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .id(attribute.getId())
                 .attributeName(attribute.getAttributeName())
                 .isMeasured(attribute.isMeasured())
+                .description(attribute.getDescription())
                 .attributeOptions(this.streamAttributeOptions(attributeOptions))
                 .build();
     }
