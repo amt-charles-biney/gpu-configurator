@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.model.configuration;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,4 +33,14 @@ public class ConfigOptions {
 
     @Column(name = "option_price")
     private BigDecimal optionPrice;
+
+//    @JsonIgnore
+//    @ManyToOne
+//    @JoinColumn(
+//            name = "configuration_id",
+//            nullable = false,
+//            referencedColumnName = "id",
+//            foreignKey = @ForeignKey(name = "configuration_id_fk")
+//    )
+//    private Configuration configuration;
 }

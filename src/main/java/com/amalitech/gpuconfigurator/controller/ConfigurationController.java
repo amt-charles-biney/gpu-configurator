@@ -14,10 +14,11 @@ public class ConfigurationController {
 
     private final ConfigurationService configurationService;
 
+
     @CrossOrigin
     @PostMapping("/v1/configuration")
     @ResponseStatus(HttpStatus.CREATED)
-    public ConfigurationResponseDto createConfiguration(@RequestBody ConfigurationRequestDto request){
-        return configurationService.addConfiguration(request);
+    public ConfigurationResponseDto createConfiguration(@RequestBody ConfigurationRequestDto request) {
+        return configurationService.createConfiguration(request);
     }
 }

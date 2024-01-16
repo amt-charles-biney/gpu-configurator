@@ -1,11 +1,12 @@
 package com.amalitech.gpuconfigurator.dto.configuration;
 
 
+import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @Builder
-public record ConfigurationResponseDto(String id,BigDecimal totalPrice, ProductDetailsDto product,Map<String, List<configOptionDto>> configured ) {}
+public record ConfigurationResponseDto(String id, BigDecimal totalPrice, String productId,BigDecimal productPrice, BigDecimal configuredPrice , List<ConfigOptions> configured) {
+}

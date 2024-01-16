@@ -4,5 +4,6 @@ import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationRequestDto;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 
 public interface ConfigurationService {
-    ConfigurationResponseDto addConfiguration(ConfigurationRequestDto request);
+
+    ConfigurationResponseDto createConfiguration(ConfigurationRequestDto request);
 }
