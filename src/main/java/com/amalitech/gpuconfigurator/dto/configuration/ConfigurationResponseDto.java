@@ -8,4 +8,4 @@ import java.util.List;
 import java.util.Map;
 
 @Builder
-public record ConfigurationResponseDto(BigDecimal totalPrice, ProductDetailsDto product,Map<String, List<configOptionDto>> configured ) {}
+public record ConfigurationResponseDto(String id,BigDecimal totalPrice, ProductDetailsDto product,Map<String, List<configOptionDto>> configured ) {}

@@ -54,10 +54,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                                         .optionType(option.getType())
                                         .optionPrice(option.getPrice())
                                         .optionName(option.getName())
+                                        .isIncluded(option.getIsIncluded())
                                         .build(),
                                 Collectors.toList())));
 
         BigDecimal optionsTotalPrice = compatibleOptions.stream()
+                .filter(CompatibleOption::getIsIncluded)
                 .map(CompatibleOption::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -82,12 +84,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             compatibleGroupedByType.put(configOptionType, filteredOptions);
         }
 
+
         Configuration configuration = new Configuration();
         configuration.setConfigured(configurationOptionsRepository.findAll());
         configuration.setTotalPrice(totalPrice);
         configurationRepository.save(configuration);
 
         return ConfigurationResponseDto.builder()
+                .id(String.valueOf(configuration.getId()))
                 .totalPrice(totalPrice)
                 .product(productDetails)
                 .configured(compatibleGroupedByType)
