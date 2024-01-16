@@ -25,7 +25,7 @@ public class AttributeController {
     private final AttributeService attributeService;
 
     @PostMapping("/v1/admin/attributes")
-    public ResponseEntity<ApiResponse<Attribute>> createAttribute(@Validated  @RequestBody AttributeDto attribute) {
+    public ResponseEntity<ApiResponse<Attribute>> createAttribute(@Validated @RequestBody AttributeDto attribute) {
         Attribute attributeResponse = attributeService.addAttribute(attribute);
         ApiResponse<Attribute> attributeApiResponse = new ApiResponse<Attribute>(attributeResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(attributeApiResponse);
@@ -46,9 +46,9 @@ public class AttributeController {
     }
 
     @PutMapping("/v1/admin/attributes/{attributeId}")
-    public ResponseEntity<ApiResponse<AttributeResponse>> updateAttribute(@PathVariable String attributeId, @RequestBody  AttributeDto atr) {
-        AttributeResponse attribute = attributeService.updateAttribute(UUID.fromString(attributeId), atr);
-        ApiResponse<AttributeResponse> attributeResponse = new ApiResponse<AttributeResponse>(attribute);
+    public ResponseEntity<ApiResponse<AttributeResponse>> updateAttribute(@PathVariable String attributeId, @RequestBody  AttributeDto attribute) {
+        AttributeResponse attributeDtoResponse = attributeService.updateAttribute(UUID.fromString(attributeId), attribute);
+        ApiResponse<AttributeResponse> attributeResponse = new ApiResponse<AttributeResponse>(attributeDtoResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(attributeResponse);
     }
 
@@ -59,11 +59,18 @@ public class AttributeController {
     }
 
     @PostMapping("/v1/admin/attributes/{attributeId}/options")
-    public ResponseEntity<ApiResponse<AttributeOptionResponseDto>> createAttributeOption(@PathVariable String attributeId, @Validated @RequestBody AttributeOptionDto atrOption) {
-        AttributeOptionResponseDto option = attributeService.createAttributeOption(UUID.fromString(attributeId), atrOption);
+        public ResponseEntity<ApiResponse<AttributeOptionResponseDto>> createAttributeOption(@PathVariable String attributeId, @Validated @ModelAttribute AttributeOptionDto attributeOptionDto) {
+        AttributeOptionResponseDto option = attributeService.createAttributeOption(UUID.fromString(attributeId), attributeOptionDto);
         ApiResponse<AttributeOptionResponseDto> optionResponse = new ApiResponse<AttributeOptionResponseDto>(option);
         return ResponseEntity.status(HttpStatus.CREATED).body(optionResponse);
     }
+
+    @DeleteMapping("/v1/admin/attributes/all")
+    public ResponseEntity<GenericResponse> deleteAllAttributes(@RequestBody List<String> attributes) {
+        GenericResponse deletedBulkAttributes = attributeService.deleteBulkAttributes(attributes);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(deletedBulkAttributes);
+    }
+
 
     @GetMapping("/v1/admin/attributes/options")
     public ResponseEntity<ApiResponse<List<AttributeOptionResponseDto>>> getAllOptions() {
@@ -86,8 +93,8 @@ public class AttributeController {
         return ResponseEntity.ok(attributeOptionResponse);
     }
     @PutMapping("/v1/admin/attributes/options/{optionId}")
-    public ResponseEntity<ApiResponse<AttributeOptionResponseDto>> updateOption(@PathVariable String optionId, @RequestBody AttributeOptionDto attr) {
-        AttributeOptionResponseDto attributeOption = attributeService.updateAttributeOption(UUID.fromString(optionId), attr);
+    public ResponseEntity<ApiResponse<AttributeOptionResponseDto>> updateOption(@PathVariable String optionId, @ModelAttribute AttributeOptionDto attributeOptionDto) {
+        AttributeOptionResponseDto attributeOption = attributeService.updateAttributeOption(UUID.fromString(optionId), attributeOptionDto);
         ApiResponse<AttributeOptionResponseDto> attributeOptionResponse = new ApiResponse<AttributeOptionResponseDto>(attributeOption);
         return ResponseEntity.ok(attributeOptionResponse);
     }
@@ -97,8 +104,4 @@ public class AttributeController {
         GenericResponse attributeOption = attributeService.deleteAttributeOption(UUID.fromString(optionId));
         return ResponseEntity.ok(attributeOption);
     }
-
-
-
-
 }
