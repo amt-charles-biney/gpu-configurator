@@ -2,10 +2,7 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.ApiResponse;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeDto;
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionDto;
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionResponseDto;
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
+import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.service.attribute.AttributeService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +25,13 @@ public class AttributeController {
     public ResponseEntity<ApiResponse<Attribute>> createAttribute(@Validated @RequestBody AttributeDto attribute) {
         Attribute attributeResponse = attributeService.addAttribute(attribute);
         ApiResponse<Attribute> attributeApiResponse = new ApiResponse<Attribute>(attributeResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(attributeApiResponse);
+    }
+
+    @PostMapping("/v1/admin/attributes/bulk")
+    public ResponseEntity<ApiResponse<List<AttributeOptionResponseDto>>> createAllAttributeandAttributeOptionsBulk(@Validated @RequestBody CreateAttributesRequest createAttributesRequest) {
+        List<AttributeOptionResponseDto> attributeResponse = attributeService.createAttributeAndAttributeOptions(createAttributesRequest);
+        ApiResponse<List<AttributeOptionResponseDto>> attributeApiResponse = new ApiResponse<List<AttributeOptionResponseDto>>(attributeResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(attributeApiResponse);
     }
 
