@@ -16,9 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +37,13 @@ public class AttributeServiceImpl implements AttributeService {
         return attributes.stream()
                 .map(this::createAttributeResponseType)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<AttributeOptionResponseDto> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) {
+        Attribute createAttribute = this.addAttribute(new AttributeDto(createAttributesRequest.attributeName(), createAttributesRequest.isMeasured()));
+        return this.createAllAttributeOptions(createAttribute.getId(), createAttributesRequest.variantOptions());
     }
 
     @Override
@@ -185,13 +194,14 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     @Transactional
-    public List<AttributeOptionResponseDto> createAllAttributeOptions(UUID attributeId, @NotNull List<AttributeOptionDto> attributeOptionDtoList) {
+    public List<AttributeOptionResponseDto> createAllAttributeOptions(UUID attributeId, @NotNull List<CreateAttributeOptionRequest> attributeOptionDtoList) {
         Attribute attribute = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
         List<AttributeOption> attributeOptionList = attributeOptionDtoList.stream().map(attributes -> AttributeOption.builder()
                 .optionName(attributes.name())
                 .priceAdjustment(attributes.price())
                 .unit(attributes.unit())
                 .attribute(attribute)
+                .media(attributes.media())
                 .baseAmount(attributes.baseAmount())
                 .maxAmount(attributes.maxAmount())
                 .priceIncrement(attributes.priceIncrement())

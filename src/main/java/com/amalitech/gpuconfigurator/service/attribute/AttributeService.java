@@ -1,12 +1,10 @@
 package com.amalitech.gpuconfigurator.service.attribute;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeDto;
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionDto;
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionResponseDto;
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
+import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
@@ -14,6 +12,9 @@ import java.util.UUID;
 
 public interface AttributeService {
     List<AttributeResponse> getAllAttributes();
+
+    @Transactional
+    List<AttributeOptionResponseDto> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest);
 
     Attribute addAttribute(AttributeDto attribute);
 
@@ -45,7 +46,8 @@ public interface AttributeService {
 
     AttributeOptionResponseDto createAttributeOption(UUID attributeId, AttributeOptionDto atr);
 
-    List<AttributeOptionResponseDto> createAllAttributeOptions(UUID attributeId, @NotNull List<AttributeOptionDto> attributeOptionDtoList);
+    @Transactional
+    List<AttributeOptionResponseDto> createAllAttributeOptions(UUID attributeId, @NotNull List<CreateAttributeOptionRequest> attributeOptionDtoList);
 
     GenericResponse deleteBulkAttributes(List<String> selectedAttributes);
 }
