@@ -6,12 +6,14 @@ import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
+import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +26,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     private final AttributeRepository attributeRepository;
     private final AttributeOptionRepository attributeOptionRepository;
+    private final UploadImageServiceImpl cloudinaryUploadService;
 
     @Override
     public List<AttributeResponse> getAllAttributes() {
@@ -155,12 +158,20 @@ public class AttributeServiceImpl implements AttributeService {
     public AttributeOptionResponseDto createAttributeOption(UUID attributeId, @NotNull AttributeOptionDto attributeOptionDtoResponse) {
         var attribute = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
 
+        MultipartFile media = attributeOptionDtoResponse.media();
+
+
         var newAttributeOption = AttributeOption.builder()
                 .optionName(attributeOptionDtoResponse.name())
                 .priceAdjustment(attributeOptionDtoResponse.price())
                 .unit(attributeOptionDtoResponse.unit())
                 .attribute(attribute)
                 .build();
+
+        if(!media.isEmpty()) {
+            String getCloudinaryUrl = cloudinaryUploadService.uploadCoverImage(media);
+            newAttributeOption.setMedia(getCloudinaryUrl);
+        }
 
         if(attribute.isMeasured()) {
             newAttributeOption.setBaseAmount(attributeOptionDtoResponse.baseAmount());
