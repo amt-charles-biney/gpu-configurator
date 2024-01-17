@@ -29,6 +29,9 @@ public class Attribute {
     @Column
     private boolean isMeasured = false;
 
+    @Column(name = "unit")
+    private String unit;
+
     @Column
     private String description;
 

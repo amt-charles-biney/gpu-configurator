@@ -32,9 +32,6 @@ public class AttributeOption {
     @Column(name = "media")
     private String media;
 
-    @Column(name="unit")
-    private String unit;
-
     @Column(name="base_amount")
     private Float baseAmount;
 
