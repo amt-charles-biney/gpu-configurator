@@ -11,6 +11,7 @@ import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ConfigurationService {

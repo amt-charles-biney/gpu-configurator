@@ -10,6 +10,7 @@ import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.ConfigurationRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
+import com.amalitech.gpuconfigurator.service.category.CategoryConfig.CategoryConfigService;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import java.util.UUID;
 public class ConfigurationServiceImpl implements ConfigurationService {
     private final CompatibleOptionService compatibleOptionService;
     private final ProductRepository productRepository;
+    private final CategoryConfigService categoryConfigService;
     private final CategoryConfigRepository categoryConfigRepository;
     private final ConfigurationRepository configurationRepository;
 
@@ -70,6 +72,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .configured(configOptions)
                 .build();
     }
+
 
 
 }

@@ -23,4 +23,5 @@ public class ConfigurationController {
         return configurationService.createConfiguration(request);
     }
 
+
 }
