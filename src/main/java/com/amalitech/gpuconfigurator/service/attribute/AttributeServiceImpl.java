@@ -38,9 +38,11 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     @Transactional
-    public List<AttributeOptionResponseDto> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) {
+    public AttributeResponse createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) {
         Attribute createAttribute = this.addAttribute(new AttributeDto(createAttributesRequest.attributeName(), createAttributesRequest.isMeasured(), createAttributesRequest.description(), createAttributesRequest.unit()));
-        return this.createAllAttributeOptions(createAttribute.getId(), createAttributesRequest.variantOptions());
+        List<AttributeOptionResponseDto> attributeResponse = this.createAllAttributeOptions(createAttribute.getId(), createAttributesRequest.variantOptions());
+
+        return this.createAttributeResponseType(createAttribute);
     }
 
     @Override

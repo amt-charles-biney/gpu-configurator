@@ -31,9 +31,9 @@ public class AttributeController {
 
     @CrossOrigin
     @PostMapping("/v1/admin/attributes/bulk")
-    public ResponseEntity<ApiResponse<List<AttributeOptionResponseDto>>> createAllAttributeandAttributeOptionsBulk(@Validated @RequestBody CreateAttributesRequest createAttributesRequest) {
-        List<AttributeOptionResponseDto> attributeResponse = attributeService.createAttributeAndAttributeOptions(createAttributesRequest);
-        ApiResponse<List<AttributeOptionResponseDto>> attributeApiResponse = new ApiResponse<List<AttributeOptionResponseDto>>(attributeResponse);
+    public ResponseEntity<ApiResponse<AttributeResponse>> createAllAttributeandAttributeOptionsBulk(@Validated @RequestBody CreateAttributesRequest createAttributesRequest) {
+        AttributeResponse attributeResponse = attributeService.createAttributeAndAttributeOptions(createAttributesRequest);
+        ApiResponse<AttributeResponse> attributeApiResponse = new ApiResponse<AttributeResponse>(attributeResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(attributeApiResponse);
     }
 
