@@ -1,6 +1,5 @@
 package com.amalitech.gpuconfigurator.model.configuration;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,5 +32,11 @@ public class ConfigOptions {
 
     @Column(name = "option_price")
     private BigDecimal optionPrice;
+
+    @Column(name = "is_included")
+    private boolean isIncluded;
+
+    @Column(name = "warranty")
+    private boolean warranty;
 
 }
