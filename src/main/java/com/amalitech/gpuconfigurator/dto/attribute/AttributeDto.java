@@ -9,6 +9,7 @@ public record AttributeDto(
        String attributeName,
         Boolean isMeasured,
 
-        String description
+        String description,
+        String unit
 ) {
 }

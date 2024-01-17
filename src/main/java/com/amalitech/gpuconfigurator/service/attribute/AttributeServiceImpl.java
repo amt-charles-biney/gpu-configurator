@@ -42,7 +42,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     @Transactional
     public List<AttributeOptionResponseDto> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) {
-        Attribute createAttribute = this.addAttribute(new AttributeDto(createAttributesRequest.attributeName(), createAttributesRequest.isMeasured(), createAttributesRequest.description()));
+        Attribute createAttribute = this.addAttribute(new AttributeDto(createAttributesRequest.attributeName(), createAttributesRequest.isMeasured(), createAttributesRequest.description(), createAttributesRequest.unit()));
         return this.createAllAttributeOptions(createAttribute.getId(), createAttributesRequest.variantOptions());
     }
 
@@ -52,6 +52,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .attributeName(attribute.attributeName())
                 .isMeasured(attribute.isMeasured())
                 .description(attribute.description())
+                .unit(attribute.unit())
                 .build();
 
         return attributeRepository.save(newAttribute);
@@ -65,6 +66,7 @@ public class AttributeServiceImpl implements AttributeService {
         updateAttribute.setAttributeName(attribute.attributeName());
         updateAttribute.setMeasured(attribute.isMeasured());
         updateAttribute.setDescription(attribute.description());
+        updateAttribute.setUnit(attribute.unit());
         updateAttribute.setUpdatedAt(LocalDateTime.now());
 
         Attribute savedAttribute = attributeRepository.save(updateAttribute);
@@ -155,7 +157,6 @@ public class AttributeServiceImpl implements AttributeService {
 
         updateAtr.setPriceAdjustment(attributeOptionDto.price());
         updateAtr.setOptionName(attributeOptionDto.name());
-        updateAtr.setUnit(attributeOptionDto.unit());
         updateAtr.setBaseAmount(attributeOptionDto.baseAmount());
         updateAtr.setMaxAmount(attributeOptionDto.maxAmount());
         updateAtr.setPriceIncrement(attributeOptionDto.priceIncrement());
@@ -175,7 +176,6 @@ public class AttributeServiceImpl implements AttributeService {
         var newAttributeOption = AttributeOption.builder()
                 .optionName(attributeOptionDtoResponse.name())
                 .priceAdjustment(attributeOptionDtoResponse.price())
-                .unit(attributeOptionDtoResponse.unit())
                 .attribute(attribute)
                 .build();
 
@@ -201,7 +201,6 @@ public class AttributeServiceImpl implements AttributeService {
         List<AttributeOption> attributeOptionList = attributeOptionDtoList.stream().map(attributes -> AttributeOption.builder()
                 .optionName(attributes.name())
                 .priceAdjustment(attributes.price())
-                .unit(attributes.unit())
                 .attribute(attribute)
                 .media(attributes.media())
                 .baseAmount(attributes.baseAmount())
@@ -236,7 +235,6 @@ public class AttributeServiceImpl implements AttributeService {
                 .id(attributeOption.getId().toString())
                 .optionName(attributeOption.getOptionName())
                 .optionPrice(attributeOption.getPriceAdjustment())
-                .optionUnit(attributeOption.getUnit())
                 .additionalInfo(new AttributeVariantDto(attributeOption.getBaseAmount(), attributeOption.getMaxAmount(), attributeOption.getPriceIncrement()))
                 .optionMedia(attributeOption.getMedia())
                 .attribute(
@@ -255,6 +253,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .attributeName(attribute.getAttributeName())
                 .isMeasured(attribute.isMeasured())
                 .description(attribute.getDescription())
+                .unit(attribute.getUnit())
                 .attributeOptions(this.streamAttributeOptions(attributeOptions))
                 .build();
     }
