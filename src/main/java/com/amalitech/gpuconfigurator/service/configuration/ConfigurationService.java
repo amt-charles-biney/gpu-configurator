@@ -8,6 +8,7 @@ import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationRequestDto;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
+import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 
 import java.util.List;
@@ -18,5 +19,6 @@ public interface ConfigurationService {
 
     ConfigurationResponseDto createConfiguration(ConfigurationRequestDto request);
 
-    ConfigurationResponseDto configuration(String productId, UUID categoryId);
+
+    ConfigurationResponseDto configuration(String productId,String components,Boolean warranty);
 }

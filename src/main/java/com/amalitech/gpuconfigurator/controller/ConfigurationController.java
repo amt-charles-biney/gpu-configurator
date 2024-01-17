@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -27,13 +25,14 @@ public class ConfigurationController {
 
 
     @CrossOrigin
-    @GetMapping("/v1/configuration")
+    @GetMapping("/v1/config/{productId}")
     @ResponseStatus(HttpStatus.OK)
     public ConfigurationResponseDto configuration(
-            @RequestParam(required = false) String productId,
-            @RequestParam(required = false)UUID categoryId
-            ){
-        return configurationService.configuration(productId, categoryId);
+            @PathVariable("productId") String productId,
+            @RequestParam(required = false) String components,
+           @RequestParam(required = false) Boolean warranty
+            ) {
+        return configurationService.configuration(productId, components,warranty);
     }
 
 }
