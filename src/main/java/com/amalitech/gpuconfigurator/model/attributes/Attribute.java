@@ -26,6 +26,12 @@ public class Attribute {
     @Column(nullable = false, unique = true)
     private String attributeName;
 
+    @Column
+    private boolean isMeasured = false;
+
+    @Column
+    private String description;
+
     @JsonIgnore
     @OneToMany(mappedBy="attribute", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<AttributeOption> attributeOptions;
@@ -36,5 +42,12 @@ public class Attribute {
     private LocalDateTime updatedAt;
 
     private LocalDateTime deletedAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 
 }

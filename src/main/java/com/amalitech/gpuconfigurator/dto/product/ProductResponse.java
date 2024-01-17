@@ -16,7 +16,7 @@ public record ProductResponse(
         String productBrand,
         String coverImage,
         String productId,
-        AttributeResponseDto category,
+        ProductResponseDto category,
         String productDescription,
         boolean isFeatured,
 
