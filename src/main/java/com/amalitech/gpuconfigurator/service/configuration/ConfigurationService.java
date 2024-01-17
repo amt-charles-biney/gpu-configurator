@@ -18,4 +18,5 @@ public interface ConfigurationService {
 
     ConfigurationResponseDto createConfiguration(ConfigurationRequestDto request);
 
+    ConfigurationResponseDto configuration(String productId, UUID categoryId);
 }
