@@ -8,5 +8,5 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
-public record ConfigurationResponseDto(String id, BigDecimal totalPrice, String productId,BigDecimal productPrice, BigDecimal configuredPrice , List<ConfigOptions> configured) {
+public record ConfigurationResponseDto( BigDecimal totalPrice, String productId,BigDecimal productPrice, BigDecimal configuredPrice , List<ConfigOptions> configured) {
 }

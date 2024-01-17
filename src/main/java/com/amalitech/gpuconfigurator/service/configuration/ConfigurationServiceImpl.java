@@ -63,7 +63,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         configurationRepository.save(configuration);
 
         return ConfigurationResponseDto.builder()
-                .id(String.valueOf(configuration.getId()))
                 .productId(String.valueOf(configuration.getProduct().getId()))
                 .totalPrice(totalPrice)
                 .configuredPrice(optionalTotal)
@@ -71,6 +70,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .configured(configOptions)
                 .build();
     }
+
 
 }
 
