@@ -14,7 +14,7 @@ public interface AttributeService {
     List<AttributeResponse> getAllAttributes();
 
     @Transactional
-    List<AttributeOptionResponseDto> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest);
+    List<AttributeResponse> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest);
 
     Attribute addAttribute(AttributeDto attribute);
 
