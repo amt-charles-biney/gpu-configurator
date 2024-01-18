@@ -25,15 +25,20 @@ public class CompatibleOptionService {
     }
 
     public GenericResponse addCompatibleOption(CompatibleOptionDTO option) {
-        CompatibleOption compatibleOption = CompatibleOption.builder().isCompatible(option.isCompatible()).price(option.price()).name(option.name()).type(option.type()).isIncluded(option.isIncluded()).isCompatible(option.isCompatible()).categoryConfig(option.categoryConfig()).build();
+        CompatibleOption compatibleOption = CompatibleOption.builder()
+                .name(option.name())
+                .price(option.price())
+                .type(option.type())
+                .isIncluded(option.isIncluded())
+                .isCompatible(option.isCompatible())
+                .categoryConfig(option.categoryConfig())
+                .baseAmount(option.baseAmount())
+                .priceIncrement(option.priceIncrement())
+                .isMeasured(option.isMeasured())
+                .media(option.media())
+                .build();
         compatibleOptionRepository.save(compatibleOption);
         return new GenericResponse(201, "compatible option created");
-    }
-
-    public GenericResponse updateCompatible(String id, CompatibleOptionDTO compatibleOptionDTO) {
-        CompatibleOption compatible = compatibleOptionRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("could not update option"));
-
-        return new GenericResponse(201, "compatibility is " + compatible);
     }
 
     public GenericResponse deleteAllCompatibleOptions() {
