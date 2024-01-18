@@ -47,6 +47,15 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
+    @Transactional
+    public List<AttributeResponse> bulkUpdateAttributeAndAttributeOptions(@NotNull UpdateAttributeDto updateAttributeDto) {
+        AttributeDto attributeDto = new AttributeDto(updateAttributeDto.attributeName(), updateAttributeDto.isMeasured(), updateAttributeDto.description(), updateAttributeDto.unit());
+        this.updateAllAttributeOptions(updateAttributeDto.variantOptions());
+        AttributeResponse getUpdateAttribute = this.updateAttribute(UUID.fromString(updateAttributeDto.id()), attributeDto);
+        return this.getAllAttributes();
+    }
+
+    @Override
     public Attribute addAttribute(@NotNull AttributeDto attribute) {
         Attribute newAttribute =  Attribute.builder()
                 .attributeName(attribute.attributeName())
@@ -164,6 +173,25 @@ public class AttributeServiceImpl implements AttributeService {
 
         AttributeOption savedAttribute =  attributeOptionRepository.save(updateAtr);
         return this.createAttributeResponseType(savedAttribute);
+    }
+
+    @Override
+    public void updateAllAttributeOptions(@NotNull List<UpdateAttributeOptionDto> attributeOptionDtos) {
+        for(UpdateAttributeOptionDto attributeOption : attributeOptionDtos) {
+
+            AttributeOption updateAttribute = attributeOptionRepository.findById(UUID.fromString(attributeOption.id()))
+                    .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTION_NOT_EXIST));
+
+            updateAttribute.setPriceAdjustment(attributeOption.price());
+            updateAttribute.setOptionName(attributeOption.name());
+            updateAttribute.setBaseAmount(attributeOption.baseAmount());
+            updateAttribute.setMaxAmount(attributeOption.maxAmount());
+            updateAttribute.setPriceIncrement(attributeOption.priceIncrement());
+            updateAttribute.setMedia(attributeOption.media());
+            updateAttribute.setUpdatedAt(LocalDateTime.now());
+
+            AttributeOption savedAttribute =  attributeOptionRepository.save(updateAttribute);
+        }
     }
 
     @Override

@@ -38,6 +38,14 @@ public class AttributeController {
     }
 
     @CrossOrigin
+    @PutMapping("/v1/admin/attributes/bulk")
+    public ResponseEntity<ApiResponse<List<AttributeResponse>>> updateAllAttributendAttributeOptions(@Validated @RequestBody UpdateAttributeDto updateAttributeDto) {
+        List<AttributeResponse> attributeResponse = attributeService.bulkUpdateAttributeAndAttributeOptions(updateAttributeDto);
+        ApiResponse<List<AttributeResponse>> attributeApiResponse = new ApiResponse<List<AttributeResponse>>(attributeResponse);
+        return ResponseEntity.ok(attributeApiResponse);
+    }
+
+    @CrossOrigin
     @GetMapping("/v1/admin/attributes")
     public ResponseEntity<ApiResponse<List<AttributeResponse>>> getAttributes() {
         List<AttributeResponse> attributes = attributeService.getAllAttributes();
