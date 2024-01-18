@@ -16,6 +16,9 @@ public interface AttributeService {
     @Transactional
     List<AttributeResponse> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest);
 
+    @Transactional
+    List<AttributeResponse> bulkUpdateAttributeAndAttributeOptions(UpdateAttributeDto updateAttributeDto);
+
     Attribute addAttribute(AttributeDto attribute);
 
     AttributeResponse updateAttribute(UUID id, AttributeDto attribute);
@@ -43,6 +46,8 @@ public interface AttributeService {
     void deleteAttributeOptionByName(String name);
 
     AttributeOptionResponseDto updateAttributeOption(UUID id, AttributeOptionDto atrDto);
+
+    void updateAllAttributeOptions(List<UpdateAttributeOptionDto> attributeOptionDtos);
 
     AttributeOptionResponseDto createAttributeOption(UUID attributeId, AttributeOptionDto atr);
 
