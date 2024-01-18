@@ -38,10 +38,17 @@ public class CompatibleOption {
 
     private String unit;
 
+    private Boolean isMeasured;
+
+    private Float baseAmount;
+
+    private Float maxAmount;
+
+    private Float priceIncrement;
+
     private Boolean isCompatible;
 
     private Boolean isIncluded;
-
 
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
