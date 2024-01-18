@@ -34,7 +34,6 @@ public class Configuration {
 
 
     @OneToMany(
-//            mappedBy = "configuration",
             orphanRemoval = true,
             cascade = CascadeType.ALL
     )
