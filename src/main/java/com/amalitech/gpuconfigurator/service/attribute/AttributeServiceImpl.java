@@ -16,11 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -41,11 +39,11 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     @Transactional
-    public AttributeResponse createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) {
+    public List<AttributeResponse> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) {
         Attribute createAttribute = this.addAttribute(new AttributeDto(createAttributesRequest.attributeName(), createAttributesRequest.isMeasured(), createAttributesRequest.description(), createAttributesRequest.unit()));
         List<AttributeOptionResponseDto> attributeResponse = this.createAllAttributeOptions(createAttribute.getId(), createAttributesRequest.variantOptions());
 
-        return this.createAttributeResponseType(createAttribute);
+        return this.getAllAttributes();
     }
 
     @Override
