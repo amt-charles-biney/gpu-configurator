@@ -1,6 +1,5 @@
 package com.amalitech.gpuconfigurator.controller;
 
-import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationRequestDto;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.service.configuration.ConfigurationService;
 import lombok.RequiredArgsConstructor;
@@ -15,24 +14,16 @@ public class ConfigurationController {
 
     private final ConfigurationService configurationService;
 
-
-    @CrossOrigin
-    @PostMapping("/v1/configuration")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ConfigurationResponseDto createConfiguration(@RequestBody ConfigurationRequestDto request) {
-        return configurationService.createConfiguration(request);
-    }
-
-
     @CrossOrigin
     @GetMapping("/v1/config/{productId}")
     @ResponseStatus(HttpStatus.OK)
     public ConfigurationResponseDto configuration(
             @PathVariable("productId") String productId,
             @RequestParam(required = false) String components,
-           @RequestParam(required = false) Boolean warranty
-            ) {
-        return configurationService.configuration(productId, components,warranty);
+            @RequestParam(required = false) Boolean warranty,
+            @RequestParam(required = false) Boolean save
+    ) {
+        return configurationService.configuration(productId, components, warranty, save);
     }
 
 }
