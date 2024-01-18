@@ -91,7 +91,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         List<ConfigOptions> configOptions;
 
-        if (componentIds.length > 0) {
+        if (components != null && !components.isEmpty()) {
             configOptions = compatibleOptions.stream()
                     .filter(option -> Arrays.asList(componentIds).contains(String.valueOf(option.getId())))
                     .map(option -> ConfigOptions.builder()
