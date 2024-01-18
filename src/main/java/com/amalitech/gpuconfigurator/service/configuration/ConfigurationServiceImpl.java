@@ -91,26 +91,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         List<ConfigOptions> configOptions;
 
-        if (warranty != null && warranty && componentIds.length > 0) {
-            configOptions = compatibleOptions.stream()
-                    .filter(option -> Arrays.asList(componentIds).contains(String.valueOf(option.getId())) && option.getWarranty())
-                    .map(option -> ConfigOptions.builder()
-                            .optionId(String.valueOf(option.getId()))
-                            .optionName(option.getName())
-                            .optionPrice(option.getPrice())
-                            .warranty(true)
-                            .optionType(option.getType())
-                            .isIncluded(option.getIsIncluded())
-                            .build())
-                    .toList();
-        } else if (componentIds.length > 0) {
+        if (componentIds.length > 0) {
             configOptions = compatibleOptions.stream()
                     .filter(option -> Arrays.asList(componentIds).contains(String.valueOf(option.getId())))
                     .map(option -> ConfigOptions.builder()
                             .optionId(String.valueOf(option.getId()))
                             .optionName(option.getName())
                             .optionPrice(option.getPrice())
-                            .warranty(true)
                             .optionType(option.getType())
                             .isIncluded(option.getIsIncluded())
                             .build())
@@ -144,6 +131,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return ConfigurationResponseDto.builder()
                 .productId(String.valueOf(configuration.getProduct().getId()))
                 .totalPrice(totalPrice.add(vat))
+                .warranty(warranty)
                 .vat(vat)
                 .configuredPrice(optionalTotal)
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))

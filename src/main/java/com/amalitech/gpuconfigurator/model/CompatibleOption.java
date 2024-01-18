@@ -42,7 +42,6 @@ public class CompatibleOption {
 
     private Boolean isIncluded;
 
-    private Boolean warranty;
 
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
