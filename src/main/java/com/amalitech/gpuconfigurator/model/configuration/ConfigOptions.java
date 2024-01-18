@@ -36,4 +36,7 @@ public class ConfigOptions {
     @Column(name = "is_included")
     private boolean isIncluded;
 
+    @Column(name = "is_measured")
+    private Boolean isMeasured;
+
 }

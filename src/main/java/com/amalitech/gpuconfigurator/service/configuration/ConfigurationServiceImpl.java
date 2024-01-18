@@ -59,21 +59,42 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .toList();
 
 
-
-        } else if (!component_is_sizable.isEmpty()) {
+        } else if (component_is_sizable != null && !component_is_sizable.isEmpty()) {
             configOptions = compatibleOptions.stream()
                     .filter(option -> Arrays.stream(component_is_sizableList)
                             .map(pair -> pair.split("_")[0])
                             .anyMatch(id -> id.equals(String.valueOf(option.getId()))))
-                    .map(option -> ConfigOptions.builder()
-                            .optionId(String.valueOf(option.getId()))
-                            .optionName(option.getName())
-                            .optionPrice(option.getPrice().multiply(option.getPriceIncrement()))
-                            .optionType(option.getType())
-                            .isIncluded(option.getIsIncluded())
-                            .build())
-                    .toList();
+                    .map(option -> {
+                        if (Boolean.TRUE.equals(option.getIsMeasured())) {
+                            String size = Arrays.stream(component_is_sizableList)
+                                    .filter(pair -> pair.split("_")[0].equals(String.valueOf(option.getId())))
+                                    .findFirst()
+                                    .map(pair -> pair.split("_")[1])
+                                    .orElseGet(() -> String.valueOf(option.getBaseAmount()));
 
+                            BigDecimal sizeMultiplier = new BigDecimal(size).divide(option.getBaseAmount());
+                            BigDecimal calculatedPrice = option.getPrice().multiply(sizeMultiplier).multiply(BigDecimal.valueOf(1.5));
+
+                            return ConfigOptions.builder()
+                                    .optionId(String.valueOf(option.getId()))
+                                    .optionName(option.getName())
+                                    .optionPrice(calculatedPrice)
+                                    .optionType(option.getType())
+                                    .isIncluded(option.getIsIncluded())
+                                    .isMeasured(option.getIsMeasured())
+                                    .build();
+                        } else {
+                            return ConfigOptions.builder()
+                                    .optionId(String.valueOf(option.getId()))
+                                    .optionName(option.getName())
+                                    .optionPrice(option.getPrice())
+                                    .optionType(option.getType())
+                                    .isIncluded(option.getIsIncluded())
+                                    .isMeasured(option.getIsMeasured())
+                                    .build();
+                        }
+                    })
+                    .toList();
 
         } else {
             configOptions = compatibleOptions.stream()
