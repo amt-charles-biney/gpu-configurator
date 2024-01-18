@@ -40,11 +40,11 @@ public class CompatibleOption {
 
     private Boolean isMeasured;
 
-    private Float baseAmount;
+    private BigDecimal baseAmount;
 
-    private Float maxAmount;
+    private BigDecimal maxAmount;
 
-    private Float priceIncrement;
+    private BigDecimal priceIncrement;
 
     private Boolean isCompatible;
 

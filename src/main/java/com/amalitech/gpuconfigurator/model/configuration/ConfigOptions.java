@@ -36,13 +36,4 @@ public class ConfigOptions {
     @Column(name = "is_included")
     private boolean isIncluded;
 
-//    @JsonIgnore
-//    @ManyToOne
-//    @JoinColumn(
-//            name = "configuration_id",
-//            nullable = false,
-//            referencedColumnName = "id",
-//            foreignKey = @ForeignKey(name = "configuration_id_fk")
-//    )
-//    private Configuration configuration;
 }

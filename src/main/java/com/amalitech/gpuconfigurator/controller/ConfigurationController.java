@@ -21,9 +21,10 @@ public class ConfigurationController {
             @PathVariable("productId") String productId,
             @RequestParam(required = false) String components,
             @RequestParam(required = false) Boolean warranty,
-            @RequestParam(required = false) Boolean save
+            @RequestParam(required = false) Boolean save,
+            @RequestParam(required = false) String component_is_sizable
     ) {
-        return configurationService.configuration(productId, components, warranty, save);
+        return configurationService.configuration(productId, components, warranty, save,component_is_sizable);
     }
 
 }

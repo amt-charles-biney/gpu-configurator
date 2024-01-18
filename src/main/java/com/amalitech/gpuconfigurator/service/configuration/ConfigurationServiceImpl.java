@@ -29,8 +29,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
 
     @Override
-    public ConfigurationResponseDto configuration(String productId, String components, Boolean warranty, Boolean save) {
+    public ConfigurationResponseDto configuration(String productId, String components, Boolean warranty, Boolean save, String component_is_sizable) {
         String[] componentIds = components != null ? components.split(",") : new String[0];
+        String[] component_is_sizableList = component_is_sizable.split(",");
+
 
         Product product = productRepository.findById(UUID.fromString(productId))
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
@@ -55,6 +57,24 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                             .isIncluded(option.getIsIncluded())
                             .build())
                     .toList();
+
+
+
+        } else if (!component_is_sizable.isEmpty()) {
+            configOptions = compatibleOptions.stream()
+                    .filter(option -> Arrays.stream(component_is_sizableList)
+                            .map(pair -> pair.split("_")[0])
+                            .anyMatch(id -> id.equals(String.valueOf(option.getId()))))
+                    .map(option -> ConfigOptions.builder()
+                            .optionId(String.valueOf(option.getId()))
+                            .optionName(option.getName())
+                            .optionPrice(option.getPrice().multiply(option.getPriceIncrement()))
+                            .optionType(option.getType())
+                            .isIncluded(option.getIsIncluded())
+                            .build())
+                    .toList();
+
+
         } else {
             configOptions = compatibleOptions.stream()
                     .filter(CompatibleOption::getIsIncluded)
@@ -66,13 +86,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                             .isIncluded(option.getIsIncluded())
                             .build())
                     .toList();
+
+
         }
+
 
         BigDecimal optionalTotal = configOptions.stream()
                 .map(ConfigOptions::getOptionPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         totalPrice = totalPrice.add(optionalTotal);
+
         BigDecimal vat = BigDecimal.valueOf(25).divide(BigDecimal.valueOf(100)).multiply(totalPrice);
 
         Configuration configuration = Configuration.builder()
@@ -81,7 +105,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .configuredOptions(configOptions)
                 .build();
 
-        if(save != null && save){
+        if (save != null && save) {
             configurationRepository.save(configuration);
         }
 
