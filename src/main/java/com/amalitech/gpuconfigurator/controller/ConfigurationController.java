@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -21,4 +22,17 @@ public class ConfigurationController {
     public ConfigurationResponseDto createConfiguration(@RequestBody ConfigurationRequestDto request) {
         return configurationService.createConfiguration(request);
     }
+
+
+    @CrossOrigin
+    @GetMapping("/v1/config/{productId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ConfigurationResponseDto configuration(
+            @PathVariable("productId") String productId,
+            @RequestParam(required = false) String components,
+           @RequestParam(required = false) Boolean warranty
+            ) {
+        return configurationService.configuration(productId, components,warranty);
+    }
+
 }

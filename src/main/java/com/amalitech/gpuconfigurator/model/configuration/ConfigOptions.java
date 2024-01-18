@@ -34,6 +34,12 @@ public class ConfigOptions {
     @Column(name = "option_price")
     private BigDecimal optionPrice;
 
+    @Column(name = "is_included")
+    private boolean isIncluded;
+
+    @Column(name = "warranty")
+    private boolean warranty;
+
 //    @JsonIgnore
 //    @ManyToOne
 //    @JoinColumn(
