@@ -69,6 +69,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                                     .baseAmount(option.getBaseAmount())
                                     .isIncluded(option.getIsIncluded())
                                     .isMeasured(option.getIsMeasured())
+                                    .size(size)
                                     .build();
                         } else {
                             return ConfigOptions.builder()
@@ -78,6 +79,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                                     .optionType(option.getType())
                                     .baseAmount(option.getBaseAmount())
                                     .isIncluded(option.getIsIncluded())
+                                    .size("1")
                                     .isMeasured(option.getIsMeasured())
                                     .build();
                         }
@@ -94,6 +96,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                             .optionType(option.getType())
                             .baseAmount(option.getBaseAmount())
                             .isIncluded(option.getIsIncluded())
+                            .size("1")
                             .build())
                     .toList();
 
