@@ -124,9 +124,12 @@ public class AttributeController {
     }
 
     @CrossOrigin
-    @DeleteMapping("/v1/admin/attributes/options/{optionId}")
-    public ResponseEntity<GenericResponse> deleteOption(@PathVariable String optionId) {
-        GenericResponse attributeOption = attributeService.deleteAttributeOption(UUID.fromString(optionId));
-        return ResponseEntity.ok(attributeOption);
+    @DeleteMapping("/v1/admin/attributes/{attributeId}/options/{optionId}")
+    public ResponseEntity<GenericResponse> deleteOption(
+            @PathVariable UUID attributeId,
+            @PathVariable UUID optionId
+    ) {
+        var response = attributeService.deleteAttributeOption(attributeId, optionId);
+        return ResponseEntity.ok(response);
     }
 }
