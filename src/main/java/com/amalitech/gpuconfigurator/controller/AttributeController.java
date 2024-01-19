@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.ApiResponse;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
+import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.service.attribute.AttributeService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class AttributeController {
 
     @CrossOrigin
     @PostMapping("/v1/admin/attributes")
-    public ResponseEntity<ApiResponse<Attribute>> createAttribute(@Validated @RequestBody AttributeDto attribute) {
+    public ResponseEntity<ApiResponse<Attribute>> createAttribute(@Validated @RequestBody AttributeDto attribute) throws AttributeNameAlreadyExistsException {
         Attribute attributeResponse = attributeService.addAttribute(attribute);
         ApiResponse<Attribute> attributeApiResponse = new ApiResponse<Attribute>(attributeResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(attributeApiResponse);
@@ -31,7 +32,7 @@ public class AttributeController {
 
     @CrossOrigin
     @PostMapping("/v1/admin/attributes/bulk")
-    public ResponseEntity<ApiResponse<List<AttributeResponse>>> createAllAttributeandAttributeOptionsBulk(@Validated @RequestBody CreateAttributesRequest createAttributesRequest) {
+    public ResponseEntity<ApiResponse<List<AttributeResponse>>> createAllAttributeandAttributeOptionsBulk(@Validated @RequestBody CreateAttributesRequest createAttributesRequest) throws AttributeNameAlreadyExistsException {
         List<AttributeResponse> attributeResponse = attributeService.createAttributeAndAttributeOptions(createAttributesRequest);
         ApiResponse<List<AttributeResponse>> attributeApiResponse = new ApiResponse<List<AttributeResponse>>(attributeResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(attributeApiResponse);

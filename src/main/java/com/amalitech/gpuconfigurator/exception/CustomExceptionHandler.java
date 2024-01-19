@@ -87,4 +87,11 @@ public class CustomExceptionHandler {
         errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
+
+    @ExceptionHandler(AttributeNameAlreadyExistsException.class)
+    public ProblemDetail handleAttributeNameAlreadyExistsException(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
+        errorDetail.setDetail(e.getMessage());
+        return errorDetail;
+    }
 }
