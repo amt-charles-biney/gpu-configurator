@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.attribute;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
+import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
@@ -39,7 +40,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     @Transactional
-    public List<AttributeResponse> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) {
+    public List<AttributeResponse> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) throws AttributeNameAlreadyExistsException {
         Attribute createAttribute = this.addAttribute(new AttributeDto(createAttributesRequest.attributeName(), createAttributesRequest.isMeasured(), createAttributesRequest.description(), createAttributesRequest.unit()));
         List<AttributeOptionResponseDto> attributeResponse = this.createAllAttributeOptions(createAttribute.getId(), createAttributesRequest.variantOptions());
 
@@ -56,15 +57,24 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public Attribute addAttribute(@NotNull AttributeDto attribute) {
-        Attribute newAttribute =  Attribute.builder()
-                .attributeName(attribute.attributeName())
-                .isMeasured(attribute.isMeasured())
-                .description(attribute.description())
-                .unit(attribute.unit())
-                .build();
+    public Attribute addAttribute(@NotNull AttributeDto attribute) throws AttributeNameAlreadyExistsException {
+        try {
+            Attribute newAttribute = Attribute.builder()
+                    .attributeName(attribute.attributeName())
+                    .isMeasured(attribute.isMeasured())
+                    .description(attribute.description())
+                    .unit(attribute.unit())
+                    .build();
 
-        return attributeRepository.save(newAttribute);
+            return attributeRepository.save(newAttribute);
+        } catch (Exception ex) {
+            if (ex.getMessage().contains("Key (attribute_name)=(" + attribute.attributeName() + ") already exists")) {
+                throw new AttributeNameAlreadyExistsException(
+                        "An attribute with name " + attribute.attributeName() + " already exists"
+                );
+            }
+            throw ex;
+        }
     }
 
     @Override
