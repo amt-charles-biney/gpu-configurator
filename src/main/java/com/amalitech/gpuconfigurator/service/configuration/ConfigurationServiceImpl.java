@@ -58,14 +58,15 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                                     .map(pair -> pair.split("_")[1])
                                     .orElseGet(() -> String.valueOf(option.getBaseAmount()));
 
-                            BigDecimal sizeMultiplier = new BigDecimal(size).divide(option.getBaseAmount());
-                            BigDecimal calculatedPrice = option.getPrice().multiply(sizeMultiplier).multiply(BigDecimal.valueOf(1.5));
+                            BigDecimal sizeMultiplier = new BigDecimal(size).divide(option.getBaseAmount()).subtract(new BigDecimal(1));
+                            BigDecimal calculatedPrice = option.getPrice().multiply(sizeMultiplier).multiply(new BigDecimal(option.getPriceFactor()));
 
                             return ConfigOptions.builder()
                                     .optionId(String.valueOf(option.getId()))
                                     .optionName(option.getName())
                                     .optionPrice(calculatedPrice)
                                     .optionType(option.getType())
+                                    .baseAmount(option.getBaseAmount())
                                     .isIncluded(option.getIsIncluded())
                                     .isMeasured(option.getIsMeasured())
                                     .build();
@@ -75,6 +76,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                                     .optionName(option.getName())
                                     .optionPrice(option.getPrice())
                                     .optionType(option.getType())
+                                    .baseAmount(option.getBaseAmount())
                                     .isIncluded(option.getIsIncluded())
                                     .isMeasured(option.getIsMeasured())
                                     .build();
@@ -90,6 +92,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                             .optionName(option.getName())
                             .optionPrice(option.getPrice())
                             .optionType(option.getType())
+                            .baseAmount(option.getBaseAmount())
                             .isIncluded(option.getIsIncluded())
                             .build())
                     .toList();

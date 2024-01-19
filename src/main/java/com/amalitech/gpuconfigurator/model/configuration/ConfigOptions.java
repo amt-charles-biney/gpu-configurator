@@ -39,4 +39,7 @@ public class ConfigOptions {
     @Column(name = "is_measured")
     private Boolean isMeasured;
 
+    @Column(name = "base_amount")
+    private BigDecimal baseAmount;
+
 }

@@ -9,5 +9,5 @@ import java.math.BigDecimal;
 public record CompatibleOptionDTO(String name, String type, CategoryConfig categoryConfig, BigDecimal price,
                                   String media, String unit, Boolean isCompatible, Boolean isIncluded,
                                   Boolean isMeasured, BigDecimal baseAmount, BigDecimal maxAmount,
-                                  BigDecimal priceIncrement) {
+                                  Double priceFactor) {
 }

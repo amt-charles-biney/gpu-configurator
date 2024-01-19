@@ -44,7 +44,7 @@ public class CompatibleOption {
 
     private BigDecimal maxAmount;
 
-    private BigDecimal priceIncrement;
+    private Double priceFactor;
 
     private Boolean isCompatible;
 

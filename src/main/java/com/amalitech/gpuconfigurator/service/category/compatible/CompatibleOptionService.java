@@ -33,7 +33,7 @@ public class CompatibleOptionService {
                 .isCompatible(option.isCompatible())
                 .categoryConfig(option.categoryConfig())
                 .baseAmount(option.baseAmount())
-                .priceIncrement(option.priceIncrement())
+                .priceFactor(option.priceFactor())
                 .isMeasured(option.isMeasured())
                 .media(option.media())
                 .build();
