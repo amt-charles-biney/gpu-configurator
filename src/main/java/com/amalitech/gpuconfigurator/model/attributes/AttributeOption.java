@@ -39,7 +39,7 @@ public class AttributeOption {
     private Float maxAmount;
 
     @Column(name="price_increment")
-    private Float priceIncrement;
+    private Double priceFactor;
 
     @ManyToOne
     @JoinColumn(name = "attribute_id", nullable = false)
