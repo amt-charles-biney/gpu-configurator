@@ -29,8 +29,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
 
     @Override
-    public ConfigurationResponseDto configuration(String productId, String components, Boolean warranty, Boolean save) {
-        String[] componentIds = components != null ? components.split(",") : new String[0];
+    public ConfigurationResponseDto configuration(String productId, Boolean warranty, Boolean save, String components) {
+
 
         Product product = productRepository.findById(UUID.fromString(productId))
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
@@ -45,16 +45,43 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         List<ConfigOptions> configOptions;
 
         if (components != null && !components.isEmpty()) {
+            String[] component_is_sizableList = components.split(",");
             configOptions = compatibleOptions.stream()
-                    .filter(option -> Arrays.asList(componentIds).contains(String.valueOf(option.getId())))
-                    .map(option -> ConfigOptions.builder()
-                            .optionId(String.valueOf(option.getId()))
-                            .optionName(option.getName())
-                            .optionPrice(option.getPrice())
-                            .optionType(option.getType())
-                            .isIncluded(option.getIsIncluded())
-                            .build())
+                    .filter(option -> Arrays.stream(component_is_sizableList)
+                            .map(pair -> pair.split("_")[0])
+                            .anyMatch(id -> id.equals(String.valueOf(option.getId()))))
+                    .map(option -> {
+                        if (Boolean.TRUE.equals(option.getIsMeasured())) {
+                            String size = Arrays.stream(component_is_sizableList)
+                                    .filter(pair -> pair.split("_")[0].equals(String.valueOf(option.getId())))
+                                    .findFirst()
+                                    .map(pair -> pair.split("_")[1])
+                                    .orElseGet(() -> String.valueOf(option.getBaseAmount()));
+
+                            BigDecimal sizeMultiplier = new BigDecimal(size).divide(option.getBaseAmount());
+                            BigDecimal calculatedPrice = option.getPrice().multiply(sizeMultiplier).multiply(BigDecimal.valueOf(1.5));
+
+                            return ConfigOptions.builder()
+                                    .optionId(String.valueOf(option.getId()))
+                                    .optionName(option.getName())
+                                    .optionPrice(calculatedPrice)
+                                    .optionType(option.getType())
+                                    .isIncluded(option.getIsIncluded())
+                                    .isMeasured(option.getIsMeasured())
+                                    .build();
+                        } else {
+                            return ConfigOptions.builder()
+                                    .optionId(String.valueOf(option.getId()))
+                                    .optionName(option.getName())
+                                    .optionPrice(option.getPrice())
+                                    .optionType(option.getType())
+                                    .isIncluded(option.getIsIncluded())
+                                    .isMeasured(option.getIsMeasured())
+                                    .build();
+                        }
+                    })
                     .toList();
+
         } else {
             configOptions = compatibleOptions.stream()
                     .filter(CompatibleOption::getIsIncluded)
@@ -66,13 +93,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                             .isIncluded(option.getIsIncluded())
                             .build())
                     .toList();
+
+
         }
+
 
         BigDecimal optionalTotal = configOptions.stream()
                 .map(ConfigOptions::getOptionPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         totalPrice = totalPrice.add(optionalTotal);
+
         BigDecimal vat = BigDecimal.valueOf(25).divide(BigDecimal.valueOf(100)).multiply(totalPrice);
 
         Configuration configuration = Configuration.builder()
@@ -81,7 +112,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .configuredOptions(configOptions)
                 .build();
 
-        if(save != null && save){
+        if (save != null && save) {
             configurationRepository.save(configuration);
         }
 
