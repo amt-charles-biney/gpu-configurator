@@ -39,7 +39,7 @@ public interface AttributeService {
 
     AttributeOptionResponseDto getAttributeOptionById(UUID id);
 
-    GenericResponse deleteAttributeOption(UUID id);
+    GenericResponse deleteAttributeOption(UUID attributeId, UUID optionId);
 
     AttributeOption getAttributeOptionByName(String name);
 
