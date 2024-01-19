@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -112,6 +113,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         BigDecimal vat = BigDecimal.valueOf(25).divide(BigDecimal.valueOf(100)).multiply(totalPrice);
 
+        BigDecimal totalPriceWithVat = totalPrice.add(vat);
+
+        totalPriceWithVat = totalPriceWithVat.setScale(2, RoundingMode.HALF_UP);
+
         Configuration configuration = Configuration.builder()
                 .totalPrice(totalPrice)
                 .product(product)
@@ -124,7 +129,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         return ConfigurationResponseDto.builder()
                 .productId(String.valueOf(configuration.getProduct().getId()))
-                .totalPrice(totalPrice.add(vat))
+                .totalPrice(totalPriceWithVat)
                 .warranty(warranty)
                 .vat(vat)
                 .configuredPrice(optionalTotal)
