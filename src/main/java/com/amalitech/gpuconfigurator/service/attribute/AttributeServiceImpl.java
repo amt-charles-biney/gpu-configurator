@@ -139,11 +139,14 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public GenericResponse deleteAttributeOption(UUID id) {
-        attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
-        attributeOptionRepository.deleteById(id);
+    public GenericResponse deleteAttributeOption(UUID attributeId, UUID optionId) {
+        var attribute = attributeRepository.findById(attributeId)
+                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+        attribute.getAttributeOptions()
+                .removeIf(option -> option.getId().equals(optionId));
+        attributeRepository.save(attribute);
         return GenericResponse.builder()
-                .status(HttpStatus.ACCEPTED.value())
+                .status(HttpStatus.OK.value())
                 .message("deleted attribute option successfully")
                 .build();
     }
