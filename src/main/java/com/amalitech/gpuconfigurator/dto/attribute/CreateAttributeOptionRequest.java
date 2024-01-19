@@ -10,6 +10,6 @@ import java.math.BigDecimal;
 @Builder
 public record CreateAttributeOptionRequest(  @NotNull(message = "attribute option cannot be null")
                                              @NotBlank(message = "attribute option cannot blank")
-                                             String name, BigDecimal price, String media, Float baseAmount, Float maxAmount, Float priceIncrement) {
+                                             String name, BigDecimal price, String media, Float baseAmount, Float maxAmount, Double priceFactor) {
 }
 
