@@ -181,7 +181,7 @@ public class AttributeServiceImpl implements AttributeService {
         updateAtr.setOptionName(attributeOptionDto.name());
         updateAtr.setBaseAmount(attributeOptionDto.baseAmount());
         updateAtr.setMaxAmount(attributeOptionDto.maxAmount());
-        updateAtr.setPriceIncrement(attributeOptionDto.priceIncrement());
+        updateAtr.setPriceFactor(attributeOptionDto.priceFactor());
         updateAtr.setUpdatedAt(LocalDateTime.now());
 
         AttributeOption savedAttribute =  attributeOptionRepository.save(updateAtr);
@@ -199,7 +199,7 @@ public class AttributeServiceImpl implements AttributeService {
             updateAttribute.setOptionName(attributeOption.name());
             updateAttribute.setBaseAmount(attributeOption.baseAmount());
             updateAttribute.setMaxAmount(attributeOption.maxAmount());
-            updateAttribute.setPriceIncrement(attributeOption.priceIncrement());
+            updateAttribute.setPriceFactor(attributeOption.priceFactor());
             updateAttribute.setMedia(attributeOption.media());
             updateAttribute.setUpdatedAt(LocalDateTime.now());
 
@@ -228,7 +228,7 @@ public class AttributeServiceImpl implements AttributeService {
         if(attribute.isMeasured()) {
             newAttributeOption.setBaseAmount(attributeOptionDtoResponse.baseAmount());
             newAttributeOption.setMaxAmount(attributeOptionDtoResponse.maxAmount());
-            newAttributeOption.setPriceIncrement(attributeOptionDtoResponse.priceIncrement());
+            newAttributeOption.setPriceFactor(attributeOptionDtoResponse.priceFactor());
         }
 
         AttributeOption savedAttribute = attributeOptionRepository.save(newAttributeOption);
@@ -246,7 +246,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .media(attributes.media())
                 .baseAmount(attributes.baseAmount())
                 .maxAmount(attributes.maxAmount())
-                .priceIncrement(attributes.priceIncrement())
+                .priceFactor(attributes.priceFactor())
                 .build()).toList();
 
         List<AttributeOption> savedAttributeOptions = attributeOptionRepository.saveAll(attributeOptionList);
@@ -257,7 +257,7 @@ public class AttributeServiceImpl implements AttributeService {
     public GenericResponse deleteBulkAttributes(List<String> selectedAttributes){
         List<UUID> selectedAttributesUUID = selectedAttributes.stream()
                 .map(UUID::fromString)
-                .collect(Collectors.toList());
+                .toList();
 
         attributeRepository.deleteAllById(selectedAttributesUUID);
         return new GenericResponse(HttpStatus.ACCEPTED.value(),"deleted bulk attributes successful");
@@ -267,7 +267,7 @@ public class AttributeServiceImpl implements AttributeService {
         return instance
                 .stream()
                 .map(this::createAttributeResponseType)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private AttributeOptionResponseDto createAttributeResponseType(@NotNull AttributeOption attributeOption) {
@@ -276,7 +276,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .id(attributeOption.getId().toString())
                 .optionName(attributeOption.getOptionName())
                 .optionPrice(attributeOption.getPriceAdjustment())
-                .additionalInfo(new AttributeVariantDto(attributeOption.getBaseAmount(), attributeOption.getMaxAmount(), attributeOption.getPriceIncrement()))
+                .additionalInfo(new AttributeVariantDto(attributeOption.getBaseAmount(), attributeOption.getMaxAmount(), attributeOption.getPriceFactor()))
                 .optionMedia(attributeOption.getMedia())
                 .attribute(
                         new AttributeResponseDto(
