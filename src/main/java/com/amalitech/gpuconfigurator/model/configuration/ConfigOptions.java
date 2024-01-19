@@ -38,4 +38,7 @@ public class ConfigOptions {
 
 
 
+    @Column(name = "base_amount")
+    private BigDecimal baseAmount;
+
 }

@@ -38,6 +38,16 @@ public class CompatibleOption {
 
     private String unit;
 
+
+    private Boolean isMeasured;
+
+    private BigDecimal baseAmount;
+
+    private BigDecimal maxAmount;
+
+    private Double priceFactor;
+
+
     private Boolean isCompatible;
 
     private Boolean isIncluded;
