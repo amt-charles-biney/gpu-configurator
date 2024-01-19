@@ -4,5 +4,5 @@ import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 
 public interface ConfigurationService {
 
-    ConfigurationResponseDto configuration(String productId, String components, Boolean warranty, Boolean save, String component_is_sizable);
+    ConfigurationResponseDto configuration(String productId, Boolean warranty, Boolean save, String components);
 }

@@ -29,9 +29,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
 
     @Override
-    public ConfigurationResponseDto configuration(String productId, String components, Boolean warranty, Boolean save, String component_is_sizable) {
-        String[] componentIds = components != null ? components.split(",") : new String[0];
-        String[] component_is_sizableList = component_is_sizable.split(",");
+    public ConfigurationResponseDto configuration(String productId, Boolean warranty, Boolean save, String components) {
 
 
         Product product = productRepository.findById(UUID.fromString(productId))
@@ -47,19 +45,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         List<ConfigOptions> configOptions;
 
         if (components != null && !components.isEmpty()) {
-            configOptions = compatibleOptions.stream()
-                    .filter(option -> Arrays.asList(componentIds).contains(String.valueOf(option.getId())))
-                    .map(option -> ConfigOptions.builder()
-                            .optionId(String.valueOf(option.getId()))
-                            .optionName(option.getName())
-                            .optionPrice(option.getPrice())
-                            .optionType(option.getType())
-                            .isIncluded(option.getIsIncluded())
-                            .build())
-                    .toList();
-
-
-        } else if (component_is_sizable != null && !component_is_sizable.isEmpty()) {
+            String[] component_is_sizableList = components.split(",");
             configOptions = compatibleOptions.stream()
                     .filter(option -> Arrays.stream(component_is_sizableList)
                             .map(pair -> pair.split("_")[0])
