@@ -24,27 +24,17 @@ public interface AttributeService {
 
     AttributeResponse updateAttribute(UUID id, AttributeDto attribute);
 
-    Attribute getAttributeByName(String name);
-
     AttributeResponse getAttributeById(UUID id);
-
-    GenericResponse deleteAttributeByName(String name);
 
     GenericResponse deleteAttributeById(UUID attributeId);
 
     List<AttributeOptionResponseDto> getAllAttributeOptionByAttributeId(UUID id);
-
-    List<AttributeOption> getAllAttributeOptionByAttributeName(String name);
 
     List<AttributeOptionResponseDto> getAllAttributeOptions();
 
     AttributeOptionResponseDto getAttributeOptionById(UUID id);
 
     GenericResponse deleteAttributeOption(UUID attributeId, UUID optionId);
-
-    AttributeOption getAttributeOptionByName(String name);
-
-    void deleteAttributeOptionByName(String name);
 
     AttributeOptionResponseDto updateAttributeOption(UUID id, AttributeOptionDto atrDto);
 

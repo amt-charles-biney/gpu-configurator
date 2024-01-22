@@ -2,13 +2,19 @@ package com.amalitech.gpuconfigurator.dto.attribute;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
+@Builder
 public record AttributeDto(
-        @NotNull(message = "attribute should not be null")
-                @NotBlank(message = "attribute should not be blank")
+        @NotNull(message = AttributeConstant.ATTRIBUTE_NOT_NULL)
+                @NotBlank(message = AttributeConstant.ATTRIBUTE_NOT_BLANK)
        String attributeName,
-        Boolean isMeasured,
 
+        @NotNull(message = AttributeConstant.ATTRIBUTE_NOT_NULL)
+                @NotBlank(message = AttributeConstant.ATTRIBUTE_NOT_BLANK)
+        Boolean isMeasured,
+        @NotNull(message = AttributeConstant.ATTRIBUTE_NOT_NULL)
+                @NotBlank(message = AttributeConstant.ATTRIBUTE_NOT_BLANK)
         String description,
         String unit
 ) {
