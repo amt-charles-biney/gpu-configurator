@@ -18,4 +18,5 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
     @Query("SELECT s FROM Category s WHERE s.categoryName = ?1 ")
     List<Category> findByCategoryNameList(String categoryName);
 
+    boolean existsByCategoryName(String name);
 }

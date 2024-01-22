@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +18,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public Category createCategory(CategoryRequestDto request) {
-        var category = Category.builder().categoryName(request.name()).build();
+    public Category createCategory(CategoryRequestDto request) throws DataIntegrityViolationException {
+        if(categoryRepository.existsByCategoryName(request.name())) throw new DataIntegrityViolationException("category already exists");
+
+        var category = Category
+                .builder()
+                .categoryName(request.name())
+                .build();
+
         return categoryRepository.save(category);
     }
 

@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.controller;
 
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigRequest;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigResponseDto;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionDTO;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
@@ -19,9 +20,9 @@ public class CategoryConfigController {
     private final CategoryConfigService categoryConfigService;
 
     @CrossOrigin
-    @PostMapping("/v1/admin/category/{categoryId}/config")
-    public ResponseEntity<GenericResponse> addConfig(@PathVariable String categoryId, @RequestBody List<CompatibleOptionDTO> categoryConfigDto) {
-        GenericResponse result = categoryConfigService.createCategoryConfig(UUID.fromString(categoryId), categoryConfigDto);
+    @PostMapping("/v1/admin/category/config")
+    public ResponseEntity<GenericResponse> addConfig(@RequestBody CategoryConfigRequest categoryConfigDto) {
+        GenericResponse result = categoryConfigService.createCategoryConfig(categoryConfigDto);
         return ResponseEntity.ok(result);
     }
 

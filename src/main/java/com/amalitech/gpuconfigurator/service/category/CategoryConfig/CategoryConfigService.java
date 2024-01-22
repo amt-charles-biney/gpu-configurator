@@ -2,14 +2,13 @@ package com.amalitech.gpuconfigurator.service.category.CategoryConfig;
 
 import com.amalitech.gpuconfigurator.dto.*;
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigResponseDto;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionDTO;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
+import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +25,12 @@ import java.util.stream.Collectors;
 public class CategoryConfigService {
 
     private final CategoryConfigRepository categoryConfigRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryServiceImpl categoryService;
     private final CompatibleOptionService compatibleOptionService;
 
     @Transactional
-    public GenericResponse createCategoryConfig(UUID id, List<CompatibleOptionDTO> compatibleOptions) {
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("category not found"));
+    public GenericResponse createCategoryConfig(CategoryConfigRequest request) {
+        Category category = categoryService.createCategory(new CategoryRequestDto(request.name()));
 
         CategoryConfig config = CategoryConfig
                 .builder()
@@ -40,7 +39,7 @@ public class CategoryConfigService {
 
         CategoryConfig savedCategoryConfig = categoryConfigRepository.save(config);
 
-        List<CompatibleOption> compatibleOptionRequestToResponse = compatibleOptions
+        List<CompatibleOption> compatibleOptionRequestToResponse = request.config()
                 .stream()
                 .map(option -> CompatibleOption
                         .builder()
