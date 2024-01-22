@@ -41,10 +41,19 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     @Transactional
     public List<AttributeResponse> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) throws AttributeNameAlreadyExistsException {
-        Attribute createAttribute = this.addAttribute(new AttributeDto(createAttributesRequest.attributeName(), createAttributesRequest.isMeasured(), createAttributesRequest.description(), createAttributesRequest.unit()));
-        List<AttributeOptionResponseDto> attributeResponse = this.createAllAttributeOptions(createAttribute.getId(), createAttributesRequest.variantOptions());
+        try {
+            Attribute createAttribute = this.addAttribute(new AttributeDto(createAttributesRequest.attributeName(), createAttributesRequest.isMeasured(), createAttributesRequest.description(), createAttributesRequest.unit()));
+            List<AttributeOptionResponseDto> attributeResponse = this.createAllAttributeOptions(createAttribute.getId(), createAttributesRequest.variantOptions());
 
-        return this.getAllAttributes();
+            return this.getAllAttributes();
+        } catch (Exception ex) {
+            if (ex.getMessage().contains("Key (attribute_name)=(" + createAttributesRequest.attributeName() + ") already exists")) {
+                throw new AttributeNameAlreadyExistsException(
+                        "An attribute with name " + createAttributesRequest.attributeName() + " already exists"
+                );
+            }
+            throw ex;
+        }
     }
 
     @Override
