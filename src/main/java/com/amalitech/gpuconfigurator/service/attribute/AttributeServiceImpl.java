@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -38,24 +39,41 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     @Transactional
     public List<AttributeResponse> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) throws AttributeNameAlreadyExistsException {
-        Attribute createAttribute = this.addAttribute(new AttributeDto(createAttributesRequest.attributeName(), createAttributesRequest.isMeasured(), createAttributesRequest.description(), createAttributesRequest.unit()));
-        List<AttributeOptionResponseDto> attributeResponse = this.createAllAttributeOptions(createAttribute.getId(), createAttributesRequest.variantOptions());
+        AttributeDto attributeDto = AttributeDto
+                .builder()
+                .attributeName(createAttributesRequest.attributeName())
+                .description(createAttributesRequest.description())
+                .isMeasured(createAttributesRequest.isMeasured())
+                .unit(createAttributesRequest.unit())
+                .build();
 
+        Attribute createAttribute = this.addAttribute(attributeDto);
+
+        this.createAllAttributeOptions(createAttribute.getId(), createAttributesRequest.variantOptions());
         return this.getAllAttributes();
     }
 
     @Override
     @Transactional
     public List<AttributeResponse> bulkUpdateAttributeAndAttributeOptions(@NotNull UpdateAttributeDto updateAttributeDto) {
-        AttributeDto attributeDto = new AttributeDto(updateAttributeDto.attributeName(), updateAttributeDto.isMeasured(), updateAttributeDto.description(), updateAttributeDto.unit());
+
+        AttributeDto attributeDto = AttributeDto
+                .builder()
+                .attributeName(updateAttributeDto.attributeName())
+                .description(updateAttributeDto.description())
+                .isMeasured(updateAttributeDto.isMeasured())
+                .unit(updateAttributeDto.unit())
+                .build();
+
         this.updateAllAttributeOptions(updateAttributeDto.variantOptions());
-        AttributeResponse getUpdateAttribute = this.updateAttribute(UUID.fromString(updateAttributeDto.id()), attributeDto);
+        this.updateAttribute(UUID.fromString(updateAttributeDto.id()), attributeDto);
+
         return this.getAllAttributes();
     }
 
     @Override
     public Attribute addAttribute(@NotNull AttributeDto attribute) throws AttributeNameAlreadyExistsException {
-        try {
+        if(attributeRepository.existsByAttributeName(attribute.attributeName())) throw new DataIntegrityViolationException("duplicate name already exists");
             Attribute newAttribute = Attribute.builder()
                     .attributeName(attribute.attributeName())
                     .isMeasured(attribute.isMeasured())
@@ -64,14 +82,6 @@ public class AttributeServiceImpl implements AttributeService {
                     .build();
 
             return attributeRepository.save(newAttribute);
-        } catch (Exception ex) {
-            if (ex.getMessage().contains("Key (attribute_name)=(" + attribute.attributeName() + ") already exists")) {
-                throw new AttributeNameAlreadyExistsException(
-                        "An attribute with name " + attribute.attributeName() + " already exists"
-                );
-            }
-            throw ex;
-        }
     }
 
     @Override
@@ -89,11 +99,6 @@ public class AttributeServiceImpl implements AttributeService {
         return this.createAttributeResponseType(savedAttribute);
    }
 
-   @Override
-   public Attribute getAttributeByName(String name) {
-       return attributeRepository.findByAttributeName(name)
-               .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
-   }
 
     @Override
     public AttributeResponse getAttributeById(UUID id) {
@@ -101,14 +106,6 @@ public class AttributeServiceImpl implements AttributeService {
                 .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
 
         return this.createAttributeResponseType(attribute);
-    }
-
-    @Override
-    public GenericResponse deleteAttributeByName(String name) {
-        Attribute attribute = attributeRepository.findByAttributeName(name)
-                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST + name));
-        attributeRepository.delete(attribute);
-        return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted attribute by name successful");
     }
 
     @Override
@@ -127,13 +124,6 @@ public class AttributeServiceImpl implements AttributeService {
         return this.streamAttributeOptions(attr);
     }
 
-
-    @Override
-    public List<AttributeOption> getAllAttributeOptionByAttributeName(String name) {
-        Attribute attributeByName = this.getAttributeByName(name);
-        return attributeOptionRepository.findAllByAttributeId(UUID.fromString(attributeByName.getAttributeName()))
-                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTIONS_NOT_EXIST));
-    }
 
     @Override
     public List<AttributeOptionResponseDto> getAllAttributeOptions() {
@@ -155,20 +145,12 @@ public class AttributeServiceImpl implements AttributeService {
         attribute.getAttributeOptions()
                 .removeIf(option -> option.getId().equals(optionId));
         attributeRepository.save(attribute);
+
         return GenericResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("deleted attribute option successfully")
                 .build();
     }
-
-    @Override
-    public AttributeOption getAttributeOptionByName(String name) {
-        return attributeOptionRepository.findByOptionName(name)
-                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTION_NOT_EXIST));
-    }
-
-    @Override
-    public void deleteAttributeOptionByName(String name){ attributeOptionRepository.deleteByOptionName(name); }
 
     @Override
     public AttributeOptionResponseDto updateAttributeOption(UUID id, @NotNull AttributeOptionDto attributeOptionDto) {
