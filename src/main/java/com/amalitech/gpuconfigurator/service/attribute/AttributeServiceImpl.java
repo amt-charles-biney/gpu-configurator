@@ -73,7 +73,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public Attribute addAttribute(@NotNull AttributeDto attribute) throws AttributeNameAlreadyExistsException {
-        if(attributeRepository.existsByAttributeName(attribute.attributeName())) throw new DataIntegrityViolationException("duplicate name already exists");
+        if(attributeRepository.existsByAttributeName(attribute.attributeName())) throw new AttributeNameAlreadyExistsException("duplicate name already exists");
             Attribute newAttribute = Attribute.builder()
                     .attributeName(attribute.attributeName())
                     .isMeasured(attribute.isMeasured())
@@ -118,27 +118,6 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public List<AttributeOptionResponseDto> getAllAttributeOptionByAttributeId(UUID id) {
-        List<AttributeOption> attr =  attributeOptionRepository.findAllByAttributeId(id)
-                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTIONS_NOT_EXIST));
-        return this.streamAttributeOptions(attr);
-    }
-
-
-    @Override
-    public List<AttributeOptionResponseDto> getAllAttributeOptions() {
-        List<AttributeOption> attributeOptions = attributeOptionRepository.findAll();
-        return this.streamAttributeOptions(attributeOptions);
-    }
-
-    @Override
-    public AttributeOptionResponseDto getAttributeOptionById(UUID id) {
-        AttributeOption attribute = attributeOptionRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
-        return this.createAttributeResponseType(attribute);
-    }
-
-    @Override
     public GenericResponse deleteAttributeOption(UUID attributeId, UUID optionId) {
         var attribute = attributeRepository.findById(attributeId)
                 .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
@@ -150,21 +129,6 @@ public class AttributeServiceImpl implements AttributeService {
                 .status(HttpStatus.OK.value())
                 .message("deleted attribute option successfully")
                 .build();
-    }
-
-    @Override
-    public AttributeOptionResponseDto updateAttributeOption(UUID id, @NotNull AttributeOptionDto attributeOptionDto) {
-        AttributeOption updateAtr = attributeOptionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTION_NOT_EXIST));
-
-        updateAtr.setPriceAdjustment(attributeOptionDto.price());
-        updateAtr.setOptionName(attributeOptionDto.name());
-        updateAtr.setBaseAmount(attributeOptionDto.baseAmount());
-        updateAtr.setMaxAmount(attributeOptionDto.maxAmount());
-        updateAtr.setPriceFactor(attributeOptionDto.priceFactor());
-        updateAtr.setUpdatedAt(LocalDateTime.now());
-
-        AttributeOption savedAttribute =  attributeOptionRepository.save(updateAtr);
-        return this.createAttributeResponseType(savedAttribute);
     }
 
     @Override
@@ -184,26 +148,6 @@ public class AttributeServiceImpl implements AttributeService {
 
             AttributeOption savedAttribute =  attributeOptionRepository.save(updateAttribute);
         }
-    }
-
-    @Override
-    public AttributeOptionResponseDto createAttributeOption(UUID attributeId, @NotNull AttributeOptionDto attributeOptionDtoResponse) {
-        var attribute = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
-
-        var newAttributeOption = AttributeOption.builder()
-                .optionName(attributeOptionDtoResponse.name())
-                .priceAdjustment(attributeOptionDtoResponse.price())
-                .attribute(attribute)
-                .build();
-
-        if(attribute.isMeasured()) {
-            newAttributeOption.setBaseAmount(attributeOptionDtoResponse.baseAmount());
-            newAttributeOption.setMaxAmount(attributeOptionDtoResponse.maxAmount());
-            newAttributeOption.setPriceFactor(attributeOptionDtoResponse.priceFactor());
-        }
-
-        AttributeOption savedAttribute = attributeOptionRepository.save(newAttributeOption);
-        return this.createAttributeResponseType(savedAttribute);
     }
 
     @Override

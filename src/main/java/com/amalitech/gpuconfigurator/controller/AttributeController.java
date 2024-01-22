@@ -23,14 +23,6 @@ public class AttributeController {
     private final AttributeService attributeService;
 
     @CrossOrigin
-    @PostMapping("/v1/admin/attributes")
-    public ResponseEntity<ApiResponse<Attribute>> createAttribute(@Validated @RequestBody AttributeDto attribute) throws AttributeNameAlreadyExistsException {
-        Attribute attributeResponse = attributeService.addAttribute(attribute);
-        ApiResponse<Attribute> attributeApiResponse = new ApiResponse<Attribute>(attributeResponse);
-        return ResponseEntity.status(HttpStatus.CREATED).body(attributeApiResponse);
-    }
-
-    @CrossOrigin
     @PostMapping("/v1/admin/attributes/bulk")
     public ResponseEntity<ApiResponse<List<AttributeResponse>>> createAllAttributeandAttributeOptionsBulk(@Validated @RequestBody CreateAttributesRequest createAttributesRequest) throws AttributeNameAlreadyExistsException {
         List<AttributeResponse> attributeResponse = attributeService.createAttributeAndAttributeOptions(createAttributesRequest);
@@ -63,14 +55,6 @@ public class AttributeController {
     }
 
     @CrossOrigin
-    @PutMapping("/v1/admin/attributes/{attributeId}")
-    public ResponseEntity<ApiResponse<AttributeResponse>> updateAttribute(@PathVariable String attributeId, @RequestBody  AttributeDto attribute) {
-        AttributeResponse attributeDtoResponse = attributeService.updateAttribute(UUID.fromString(attributeId), attribute);
-        ApiResponse<AttributeResponse> attributeResponse = new ApiResponse<AttributeResponse>(attributeDtoResponse);
-        return ResponseEntity.status(HttpStatus.CREATED).body(attributeResponse);
-    }
-
-    @CrossOrigin
     @DeleteMapping("/v1/admin/attributes/{attributeId}")
     public ResponseEntity<GenericResponse> deleteAttribute(@PathVariable String attributeId) {
         GenericResponse deleteResponse = attributeService.deleteAttributeById(UUID.fromString(attributeId));
@@ -78,50 +62,10 @@ public class AttributeController {
     }
 
     @CrossOrigin
-    @PostMapping("/v1/admin/attributes/{attributeId}/options")
-        public ResponseEntity<ApiResponse<AttributeOptionResponseDto>> createAttributeOption(@PathVariable String attributeId, @Validated @ModelAttribute AttributeOptionDto attributeOptionDto) {
-        AttributeOptionResponseDto option = attributeService.createAttributeOption(UUID.fromString(attributeId), attributeOptionDto);
-        ApiResponse<AttributeOptionResponseDto> optionResponse = new ApiResponse<AttributeOptionResponseDto>(option);
-        return ResponseEntity.status(HttpStatus.CREATED).body(optionResponse);
-    }
-
-    @CrossOrigin
     @DeleteMapping("/v1/admin/attributes/all")
     public ResponseEntity<GenericResponse> deleteAllAttributes(@RequestBody List<String> attributes) {
         GenericResponse deletedBulkAttributes = attributeService.deleteBulkAttributes(attributes);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(deletedBulkAttributes);
-    }
-
-
-    @CrossOrigin
-    @GetMapping("/v1/admin/attributes/options")
-    public ResponseEntity<ApiResponse<List<AttributeOptionResponseDto>>> getAllOptions() {
-         List<AttributeOptionResponseDto> attributeOptions = attributeService.getAllAttributeOptions();
-         ApiResponse<List<AttributeOptionResponseDto>> attributeOptionsResponse = new ApiResponse<List<AttributeOptionResponseDto>>(attributeOptions);
-         return ResponseEntity.ok(attributeOptionsResponse);
-    }
-
-    @CrossOrigin
-    @GetMapping("/v1/admin/attributes/{attributeId}/options")
-    public ResponseEntity<ApiResponse<List<AttributeOptionResponseDto>>> getAllAttributeOptions(@PathVariable String attributeId) {
-        List<AttributeOptionResponseDto> attributeOptions = attributeService.getAllAttributeOptionByAttributeId(UUID.fromString(attributeId));
-        ApiResponse<List<AttributeOptionResponseDto>> attributeOptionsResponse = new ApiResponse<List<AttributeOptionResponseDto>>(attributeOptions);
-        return ResponseEntity.ok(attributeOptionsResponse);
-    }
-
-    @CrossOrigin
-    @GetMapping("/v1/admin/attributes/options/{optionId}")
-    public ResponseEntity<ApiResponse<AttributeOptionResponseDto>> getOption(@PathVariable String optionId) {
-        AttributeOptionResponseDto attributeOption = attributeService.getAttributeOptionById(UUID.fromString(optionId));
-        ApiResponse<AttributeOptionResponseDto> attributeOptionResponse = new ApiResponse<AttributeOptionResponseDto>(attributeOption);
-        return ResponseEntity.ok(attributeOptionResponse);
-    }
-    @CrossOrigin
-    @PutMapping("/v1/admin/attributes/options/{optionId}")
-    public ResponseEntity<ApiResponse<AttributeOptionResponseDto>> updateOption(@PathVariable String optionId, @ModelAttribute AttributeOptionDto attributeOptionDto) {
-        AttributeOptionResponseDto attributeOption = attributeService.updateAttributeOption(UUID.fromString(optionId), attributeOptionDto);
-        ApiResponse<AttributeOptionResponseDto> attributeOptionResponse = new ApiResponse<AttributeOptionResponseDto>(attributeOption);
-        return ResponseEntity.ok(attributeOptionResponse);
     }
 
     @CrossOrigin
