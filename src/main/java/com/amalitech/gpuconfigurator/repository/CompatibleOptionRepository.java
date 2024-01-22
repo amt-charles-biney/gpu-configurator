@@ -10,4 +10,6 @@ import java.util.UUID;
 @Repository
 public interface CompatibleOptionRepository extends JpaRepository<CompatibleOption, UUID> {
     List<CompatibleOption> getByCategoryConfigId(UUID id);
+
+    List<CompatibleOption> findAllByCategoryConfigId(UUID configId);
 }

@@ -2,8 +2,10 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigRequest;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigResponseDto;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryListResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionDTO;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.service.category.CategoryConfig.CategoryConfigService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,13 @@ public class CategoryConfigController {
     @GetMapping("/v1/category/{categoryId}/config")
     public ResponseEntity<CategoryConfigResponseDto> getConfigsUser(@PathVariable String categoryId) {
         CategoryConfigResponseDto result = categoryConfigService.getCategoryConfigByCategory(categoryId);
+        return ResponseEntity.ok(result);
+    }
+
+    @CrossOrigin
+    @GetMapping("/v1/category/config")
+    public ResponseEntity<List<CategoryListResponse>> getAllCategoryConfig() {
+        List<CategoryListResponse> result = categoryConfigService.getCategoryListResponses();
         return ResponseEntity.ok(result);
     }
 }
