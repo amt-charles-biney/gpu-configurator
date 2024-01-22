@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.service.category.CategoryConfig;
+package com.amalitech.gpuconfigurator.service.categoryConfig;
 
 import com.amalitech.gpuconfigurator.dto.*;
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
@@ -8,6 +8,7 @@ import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
+import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import jakarta.persistence.EntityNotFoundException;
@@ -27,6 +28,7 @@ public class CategoryConfigService {
     private final CategoryConfigRepository categoryConfigRepository;
     private final CategoryServiceImpl categoryService;
     private final CompatibleOptionService compatibleOptionService;
+    private final ProductRepository productRepository;
 
     @Transactional
     public GenericResponse createCategoryConfig(CategoryConfigRequest request) {
@@ -98,5 +100,32 @@ public class CategoryConfigService {
                 .category(categoryResponse)
                 .options(compatibleGroupedByType)
                 .build();
+    }
+
+    public List<CategoryListResponse> getCategoryListResponses() {
+        List<CategoryConfig> categoryConfigs = categoryConfigRepository.findAll();
+
+        return categoryConfigs.stream().map(
+                config -> CategoryListResponse.builder()
+                        .id(config.getCategory().getId().toString())
+                        .name(config.getCategory().getCategoryName())
+                        .config(this.extractAttributesFromCompatibleOptions(config.getId()))
+                        .productCount(this.extractProductCount(config.getCategory().getId()))
+                        .build()
+        ).toList();
+    }
+
+    public List<String> extractAttributesFromCompatibleOptions(UUID categoryConfigId) {
+        List<CompatibleOption> compatibleOptions = compatibleOptionService.getAllCompatibleOptionsByCategoryConfig(categoryConfigId);
+        List<String> uniqueTypes = compatibleOptions.stream()
+                .map(CompatibleOption::getType)
+                .distinct()
+                .collect(Collectors.toList());
+
+        return uniqueTypes;
+    }
+
+    public Long extractProductCount(UUID category) {
+        return productRepository.countProductsByCategoryId(category);
     }
 }

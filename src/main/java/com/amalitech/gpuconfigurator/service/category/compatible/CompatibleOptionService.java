@@ -24,6 +24,10 @@ public class CompatibleOptionService {
         compatibleOptionRepository.saveAll(compatibleOptions);
     }
 
+    public List<CompatibleOption> getAllCompatibleOptionsByCategoryConfig(UUID configId) {
+        return compatibleOptionRepository.findAllByCategoryConfigId(configId);
+    }
+
     public GenericResponse addCompatibleOption(CompatibleOptionDTO option) {
         CompatibleOption compatibleOption = CompatibleOption.builder()
                 .name(option.name())
