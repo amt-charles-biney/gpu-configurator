@@ -45,7 +45,7 @@ class FeaturedProductControllerTest {
 
     @Test
     void getAllFeaturedProduct() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/admin/feature"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/featured"))
                 .andExpect(status().isOk());
     }
 
