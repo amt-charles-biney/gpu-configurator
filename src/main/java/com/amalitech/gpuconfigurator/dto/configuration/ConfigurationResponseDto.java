@@ -10,6 +10,7 @@ import java.util.List;
 @Builder
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 public record ConfigurationResponseDto(String id, BigDecimal totalPrice, String productId,BigDecimal productPrice, BigDecimal configuredPrice , List<ConfigOptions> configured) {
 =======
 public record ConfigurationResponseDto( BigDecimal totalPrice, String productId,BigDecimal productPrice, BigDecimal configuredPrice , List<ConfigOptions> configured, BigDecimal vat) {
@@ -17,4 +18,9 @@ public record ConfigurationResponseDto( BigDecimal totalPrice, String productId,
 =======
 public record ConfigurationResponseDto( BigDecimal totalPrice, String productId,BigDecimal productPrice, BigDecimal configuredPrice , List<ConfigOptions> configured, BigDecimal vat, Boolean warranty) {
 >>>>>>> ae0e1a8 (feat: configuration)
+=======
+public record ConfigurationResponseDto(String Id,BigDecimal totalPrice, String productId, BigDecimal productPrice,
+                                       BigDecimal configuredPrice, List<ConfigOptions> configured, BigDecimal vat,
+                                       Boolean warranty) {
+>>>>>>> 99421c5 (fix: totalprice)
 }
