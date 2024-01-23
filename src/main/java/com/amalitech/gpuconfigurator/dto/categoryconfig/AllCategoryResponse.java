@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.dto.categoryconfig;
 
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,5 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class AllCategoryResponse {
     private UUID id;
-    private String categoryName;
+
+    @NotNull(message = "category name is null")
+    private String name;
 }

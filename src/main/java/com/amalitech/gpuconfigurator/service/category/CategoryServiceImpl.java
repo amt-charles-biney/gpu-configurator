@@ -18,6 +18,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    @Override
     public Category createCategory(CategoryRequestDto request) throws DataIntegrityViolationException {
         if(categoryRepository.existsByCategoryName(request.name())) throw new DataIntegrityViolationException("category already exists");
 
@@ -30,6 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
+    @Override
     public Category getCategory(String categoryName) {
         return categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new NotFoundException("Category not found"));
     }
