@@ -31,98 +31,139 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public ConfigurationResponseDto configuration(String productId, Boolean warranty, Boolean save, String components) {
+        Product product = getProductById(productId);
+        BigDecimal totalPrice = calculateTotalPrice(product);
+        CategoryConfig categoryConfig = getCategoryConfig(product);
+        List<CompatibleOption> compatibleOptions = getCompatibleOptions(categoryConfig);
+        List<ConfigOptions> configOptions = getConfigOptions(components, compatibleOptions);
 
-
-        Product product = productRepository.findById(UUID.fromString(productId))
-                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
-
-        BigDecimal totalPrice = BigDecimal.valueOf(product.getProductPrice());
-
-        CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(product.getCategory().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Configuration does not exist for the specified category"));
-
-        List<CompatibleOption> compatibleOptions = compatibleOptionService.getByCategoryConfigId(categoryConfig.getId());
-
-        List<ConfigOptions> configOptions;
-
-        if (components != null && !components.isEmpty()) {
-            String[] component_is_sizableList = components.split(",");
-            configOptions = compatibleOptions.stream()
-                    .filter(option -> Arrays.stream(component_is_sizableList)
-                            .map(pair -> pair.split("_")[0])
-                            .anyMatch(id -> id.equals(String.valueOf(option.getId()))))
-                    .map(option -> {
-                        if (Boolean.TRUE.equals(option.getIsMeasured())) {
-                            String size = Arrays.stream(component_is_sizableList)
-                                    .filter(pair -> pair.split("_")[0].equals(String.valueOf(option.getId())))
-                                    .findFirst()
-                                    .map(pair -> pair.split("_")[1])
-                                    .orElseGet(() -> String.valueOf(option.getBaseAmount()));
-
-                            BigDecimal sizeMultiplier = new BigDecimal(size).divide(option.getBaseAmount()).subtract(new BigDecimal(1));
-                            BigDecimal calculatedPrice = option.getPrice().multiply(sizeMultiplier).multiply(new BigDecimal(option.getPriceFactor()));
-
-                            return ConfigOptions.builder()
-                                    .optionId(String.valueOf(option.getId()))
-                                    .optionName(option.getName())
-                                    .optionPrice(calculatedPrice)
-                                    .optionType(option.getType())
-                                    .baseAmount(option.getBaseAmount())
-                                    .isIncluded(option.getIsIncluded())
-                                    .isMeasured(option.getIsMeasured())
-                                    .size(size)
-                                    .build();
-                        } else {
-                            return ConfigOptions.builder()
-                                    .optionId(String.valueOf(option.getId()))
-                                    .optionName(option.getName())
-                                    .optionPrice(option.getPrice())
-                                    .optionType(option.getType())
-                                    .baseAmount(option.getBaseAmount())
-                                    .isIncluded(option.getIsIncluded())
-                                    .size("1")
-                                    .isMeasured(option.getIsMeasured())
-                                    .build();
-                        }
-                    })
-                    .toList();
-
-        } else {
-            configOptions = compatibleOptions.stream()
-                    .filter(CompatibleOption::getIsIncluded)
-                    .map(option -> ConfigOptions.builder()
-                            .optionId(String.valueOf(option.getId()))
-                            .optionName(option.getName())
-                            .optionPrice(option.getPrice())
-                            .optionType(option.getType())
-                            .baseAmount(option.getBaseAmount())
-                            .isIncluded(option.getIsIncluded())
-                            .size("1")
-                            .build())
-                    .toList();
-
-
-        }
-
-
-        BigDecimal optionalTotal = configOptions.stream()
-                .map(ConfigOptions::getOptionPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+        BigDecimal optionalTotal = calculateOptionalTotal(configOptions);
         totalPrice = totalPrice.add(optionalTotal);
 
-        BigDecimal vat = BigDecimal.valueOf(25).divide(BigDecimal.valueOf(100)).multiply(totalPrice);
+        BigDecimal vat = calculateVat(totalPrice);
+        BigDecimal totalPriceWithVat = totalPrice.add(vat).setScale(2, RoundingMode.HALF_UP);
 
-        BigDecimal totalPriceWithVat = totalPrice.add(vat);
+        Configuration configuration = createConfiguration(product, configOptions);
 
-        totalPriceWithVat = totalPriceWithVat.setScale(2, RoundingMode.HALF_UP);
 
-        Configuration configuration = Configuration.builder()
-                .totalPrice(totalPrice)
+        return createResponseDto(configuration, totalPriceWithVat, warranty, vat, optionalTotal, product);
+    }
+
+    private Product getProductById(String productId) {
+        return productRepository.findById(UUID.fromString(productId))
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+    }
+
+    private BigDecimal calculateTotalPrice(Product product) {
+        return BigDecimal.valueOf(product.getProductPrice());
+    }
+
+    private CategoryConfig getCategoryConfig(Product product) {
+        return categoryConfigRepository.findByCategoryId(product.getCategory().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Configuration does not exist for the specified category"));
+    }
+
+    private List<CompatibleOption> getCompatibleOptions(CategoryConfig categoryConfig) {
+        return compatibleOptionService.getByCategoryConfigId(categoryConfig.getId());
+    }
+
+    private List<ConfigOptions> getConfigOptions(String components, List<CompatibleOption> compatibleOptions) {
+        return (components != null && !components.isEmpty()) ?
+                getConfigOptionsForComponents(components, compatibleOptions) :
+                getConfigOptionsWithoutComponents(compatibleOptions);
+    }
+
+    private List<ConfigOptions> getConfigOptionsForComponents(String components, List<CompatibleOption> compatibleOptions) {
+        String[] componentIsSizableList = components.split(",");
+        return compatibleOptions.stream()
+                .filter(option -> Arrays.stream(componentIsSizableList)
+                        .map(pair -> pair.split("_")[0])
+                        .anyMatch(id -> id.equals(String.valueOf(option.getId()))))
+                .map(option -> createConfigOption(option, componentIsSizableList))
+                .toList();
+    }
+
+    private List<ConfigOptions> getConfigOptionsWithoutComponents(List<CompatibleOption> compatibleOptions) {
+        return compatibleOptions.stream()
+                .filter(CompatibleOption::getIsIncluded)
+                .map(this::createConfigOptionWithoutSize)
+                .toList();
+    }
+
+    private ConfigOptions createConfigOption(CompatibleOption option, String[] componentIsSizableList) {
+        if (Boolean.TRUE.equals(option.getIsMeasured())) {
+            String size = Arrays.stream(componentIsSizableList)
+                    .filter(pair -> pair.split("_")[0].equals(String.valueOf(option.getId())))
+                    .findFirst()
+                    .map(pair -> pair.split("_")[1])
+                    .orElseGet(() -> String.valueOf(option.getBaseAmount()));
+
+            BigDecimal sizeMultiplier = new BigDecimal(size).divide(option.getBaseAmount()).subtract(new BigDecimal(1));
+            BigDecimal calculatedPrice = option.getPrice().multiply(sizeMultiplier).multiply(new BigDecimal(option.getPriceFactor()));
+
+            return ConfigOptions.builder()
+                    .optionId(String.valueOf(option.getId()))
+                    .optionName(option.getName())
+                    .optionPrice(calculatedPrice)
+                    .optionType(option.getType())
+                    .baseAmount(option.getBaseAmount())
+                    .isIncluded(option.getIsIncluded())
+                    .isMeasured(option.getIsMeasured())
+                    .size(size)
+                    .build();
+        } else {
+            return ConfigOptions.builder()
+                    .optionId(String.valueOf(option.getId()))
+                    .optionName(option.getName())
+                    .optionPrice(option.getPrice())
+                    .optionType(option.getType())
+                    .baseAmount(option.getBaseAmount())
+                    .isIncluded(option.getIsIncluded())
+                    .size("1")
+                    .isMeasured(option.getIsMeasured())
+                    .build();
+        }
+    }
+
+    private ConfigOptions createConfigOptionWithoutSize(CompatibleOption option) {
+        return ConfigOptions.builder()
+                .optionId(String.valueOf(option.getId()))
+                .optionName(option.getName())
+                .optionPrice(option.getPrice().setScale(2, RoundingMode.HALF_UP))
+                .optionType(option.getType())
+                .baseAmount(option.getBaseAmount())
+                .isIncluded(option.getIsIncluded())
+                .size("1")
+                .isMeasured(option.getIsMeasured())
+                .build();
+    }
+
+    private BigDecimal calculateOptionalTotal(List<ConfigOptions> configOptions) {
+        return configOptions.stream()
+                .map(ConfigOptions::getOptionPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
+    }
+
+
+    private BigDecimal calculateVat(BigDecimal totalPrice) {
+        return BigDecimal.valueOf(25).divide(BigDecimal.valueOf(100)).multiply(totalPrice).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private Configuration createConfiguration(Product product, List<ConfigOptions> configOptions) {
+        return Configuration.builder()
+                .totalPrice(calculateTotalPrice(product).setScale(2, RoundingMode.HALF_UP))
                 .product(product)
                 .configuredOptions(configOptions)
                 .build();
+    }
 
+    private void saveConfiguration(Configuration configuration) {
+        configurationRepository.save(configuration);
+    }
+
+    private ConfigurationResponseDto createResponseDto(Configuration configuration, BigDecimal totalPriceWithVat,
+                                                       Boolean warranty, BigDecimal vat, BigDecimal optionalTotal, Product product) {
 
         return ConfigurationResponseDto.builder()
                 .productId(String.valueOf(configuration.getProduct().getId()))
@@ -131,10 +172,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .vat(vat)
                 .configuredPrice(optionalTotal)
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))
-                .configured(configOptions)
+                .configured(configuration.getConfiguredOptions())
                 .build();
     }
-
 
 }
 
