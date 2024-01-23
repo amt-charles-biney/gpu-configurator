@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
+import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.service.configuration.ConfigurationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,20 @@ public class ConfigurationController {
             @RequestParam(required = false) String components
     ) {
         return configurationService.saveConfiguration(productId, warranty, save, components);
+    }
+
+    @CrossOrigin
+    @GetMapping("/v1/config/one/{configId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Configuration getOneConfiguration(@PathVariable("configId") String configId) {
+        return configurationService.getSpecificConfiguration(configId);
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/v1/admin/config/one/{configId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteConfiguration(@PathVariable("configId") String configId) {
+         configurationService.deleteSpecificConfiguration(configId);
     }
 
 }

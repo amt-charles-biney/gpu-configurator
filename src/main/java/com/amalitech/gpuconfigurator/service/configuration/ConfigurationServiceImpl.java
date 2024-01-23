@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service.configuration;
 
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
+import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.Product;
@@ -67,6 +68,16 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         saveConfiguration(configuration);
 
         return createResponseDto(configuration, totalPriceWithVat, warranty, vat, optionalTotal, product);
+    }
+
+    @Override
+    public Configuration getSpecificConfiguration(String configId) {
+        return configurationRepository.findById(UUID.fromString(configId)).orElseThrow(()-> new NotFoundException("Configuration Not found"));
+    }
+
+    @Override
+    public void deleteSpecificConfiguration(String configId) {
+        configurationRepository.deleteById(UUID.fromString(configId));
     }
 
     private Product getProductById(String productId) {

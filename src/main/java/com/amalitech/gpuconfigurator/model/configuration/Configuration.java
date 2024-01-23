@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.model.configuration;
 
 import com.amalitech.gpuconfigurator.model.Product;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +25,7 @@ public class Configuration {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(
             name = "product_id",
