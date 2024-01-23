@@ -22,7 +22,7 @@ public class CompatibleOption {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.EAGER)
     private CategoryConfig categoryConfig;
 
     @Column(nullable = false)

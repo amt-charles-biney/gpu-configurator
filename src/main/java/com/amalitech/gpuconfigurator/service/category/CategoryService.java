@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CategoryService {
     Category createCategory(CategoryRequestDto request) throws DataIntegrityViolationException;
@@ -19,4 +20,6 @@ public interface CategoryService {
     List<AllCategoryResponse> getAllCategories();
 
     Category getCategoryByName(String name);
+
+    void deleteAllById(List<UUID> categoryIds);
 }

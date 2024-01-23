@@ -7,7 +7,6 @@ import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -72,5 +71,9 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findByCategoryName(name).orElseThrow(()-> new NotFoundException(name+ " "+ "Not found"));
     }
 
+    @Override
+    public void deleteAllById(List<UUID> categoryIds) {
+        categoryRepository.deleteAllById(categoryIds);
+    }
 }
 

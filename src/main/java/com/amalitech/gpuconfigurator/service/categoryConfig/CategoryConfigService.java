@@ -148,6 +148,17 @@ public class CategoryConfigService {
     }
 
     @Transactional
+    public GenericResponse deleteCategoryAndCategoryConfig(List<String> categoryIds) {
+        List<UUID> categoryUUIDs = categoryIds.stream().map(UUID::fromString).toList();
+
+        categoryConfigRepository.deleteAllByCategoryId(categoryUUIDs);
+        categoryService.deleteAllById(categoryUUIDs);
+
+        return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted category successfully");
+
+    }
+
+    @Transactional
     public GenericResponse updateCategoryAndConfigs(CompatibleOptionEditResponse compatibleOptionEditResponse) {
         categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name());
         compatibleOptionService.updateBulkCompatibleOptions(compatibleOptionEditResponse.config());

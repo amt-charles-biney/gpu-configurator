@@ -61,4 +61,11 @@ public class CategoryConfigController {
         GenericResponse result = categoryConfigService.updateCategoryAndConfigs(compatibleOptionEditResponse);
         return ResponseEntity.ok(result);
     }
+
+    @CrossOrigin
+    @DeleteMapping("/v1/admin/category/config")
+    public ResponseEntity<GenericResponse> deleteAllCategory(@RequestBody List<String> categoryIds) {
+        GenericResponse result = categoryConfigService.deleteCategoryAndCategoryConfig(categoryIds);
+        return ResponseEntity.ok(result);
+    }
 }
