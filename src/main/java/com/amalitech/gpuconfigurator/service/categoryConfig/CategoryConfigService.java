@@ -13,6 +13,7 @@ import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -130,6 +131,7 @@ public class CategoryConfigService {
                         .priceIncrement(compatibleOption.getPriceIncrement())
                         .priceFactor(compatibleOption.getPriceFactor())
                         .unit(compatibleOption.getUnit())
+                        .name(compatibleOption.getName())
                         .type(compatibleOption.getType())
                         .maxAmount(compatibleOption.getMaxAmount())
                         .price(compatibleOption.getPrice())
@@ -143,6 +145,14 @@ public class CategoryConfigService {
                 .id(categoryConfig.getCategory().getId().toString())
                 .config(compatibleOptionResponseDtoList)
                 .build();
+    }
+
+    @Transactional
+    public GenericResponse updateCategoryAndConfigs(CompatibleOptionEditResponse compatibleOptionEditResponse) {
+        categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name());
+        compatibleOptionService.updateBulkCompatibleOptions(compatibleOptionEditResponse.config());
+
+        return new GenericResponse(HttpStatus.ACCEPTED.value(), "updated category and config");
     }
 
 

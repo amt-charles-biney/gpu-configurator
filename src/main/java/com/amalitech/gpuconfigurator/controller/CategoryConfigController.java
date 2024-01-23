@@ -54,4 +54,11 @@ public class CategoryConfigController {
         CompatibleOptionEditResponse result = categoryConfigService.getCategoryAndCompatibleOption(UUID.fromString(categoryId));
         return ResponseEntity.ok(result);
     }
+
+    @CrossOrigin
+    @PutMapping("/v1/admin/category/config/{categoryId}")
+    public ResponseEntity<GenericResponse> update(@RequestBody CompatibleOptionEditResponse compatibleOptionEditResponse) {
+        GenericResponse result = categoryConfigService.updateCategoryAndConfigs(compatibleOptionEditResponse);
+        return ResponseEntity.ok(result);
+    }
 }

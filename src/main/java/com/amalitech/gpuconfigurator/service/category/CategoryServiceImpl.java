@@ -2,14 +2,18 @@ package com.amalitech.gpuconfigurator.service.category;
 
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.AllCategoryResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryResponse;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -34,6 +38,21 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category getCategory(String categoryName) {
         return categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new NotFoundException("Category not found"));
+    }
+
+    @Override
+    public CategoryResponse updateCategory(String categoryId, String name) {
+        Category category = categoryRepository.findById(UUID.fromString(categoryId)).orElseThrow(() -> new EntityNotFoundException("category not found"));
+
+        category.setCategoryName(name);
+        Category savedCategory = categoryRepository.save(category);
+
+        return CategoryResponse
+                .builder()
+                .name(savedCategory.getCategoryName())
+                .id(savedCategory.getId().toString())
+                .build();
+
     }
 
     @Override
