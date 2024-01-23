@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.model;
 
+import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,6 +48,9 @@ public class Product {
             name = "category_id_fk"
     ))
     private Category category;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Configuration> configurations = new ArrayList<>();
 
     @Column(name = "product_featured")
     private Boolean featured;

@@ -24,7 +24,7 @@ public class Configuration {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(
             name = "product_id",
             referencedColumnName = "id",

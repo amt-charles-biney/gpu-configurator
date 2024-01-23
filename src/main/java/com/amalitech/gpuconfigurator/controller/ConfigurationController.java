@@ -26,4 +26,16 @@ public class ConfigurationController {
         return configurationService.configuration(productId, warranty, save, components);
     }
 
+    @CrossOrigin
+    @PostMapping("/v1/config/{productId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ConfigurationResponseDto createConfiguration(
+            @PathVariable("productId") String productId,
+            @RequestParam(required = false) Boolean warranty,
+            @RequestParam(required = false) Boolean save,
+            @RequestParam(required = false) String components
+    ) {
+        return configurationService.saveConfiguration(productId, warranty, save, components);
+    }
+
 }
