@@ -64,7 +64,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         BigDecimal vat = calculateVat(totalPrice);
         BigDecimal totalPriceWithVat = totalPrice.add(vat).setScale(2, RoundingMode.HALF_UP);
 
-        Configuration configuration = createConfiguration(product, configOptions);
+        Configuration configuration = createConfiguration(product ,configOptions);
+        configuration.setTotalPrice(totalPriceWithVat);
         saveConfiguration(configuration);
 
         return createResponseDto(configuration, totalPriceWithVat, warranty, vat, optionalTotal, product);
@@ -72,7 +73,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public Configuration getSpecificConfiguration(String configId) {
-        return configurationRepository.findById(UUID.fromString(configId)).orElseThrow(()-> new NotFoundException("Configuration Not found"));
+        return configurationRepository.findById(UUID.fromString(configId)).orElseThrow(() -> new NotFoundException("Configuration Not found"));
     }
 
     @Override
@@ -181,7 +182,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return BigDecimal.valueOf(25).divide(BigDecimal.valueOf(100)).multiply(totalPrice).setScale(2, RoundingMode.HALF_UP);
     }
 
-    private Configuration createConfiguration(Product product, List<ConfigOptions> configOptions) {
+    private Configuration createConfiguration(Product product ,List<ConfigOptions> configOptions) {
         return Configuration.builder()
                 .totalPrice(calculateTotalPrice(product).setScale(2, RoundingMode.HALF_UP))
                 .product(product)
@@ -196,6 +197,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private ConfigurationResponseDto createResponseDto(Configuration configuration, BigDecimal totalPriceWithVat,
                                                        Boolean warranty, BigDecimal vat, BigDecimal optionalTotal, Product product) {
         return ConfigurationResponseDto.builder()
+                .Id(String.valueOf(configuration.getId()))
                 .productId(String.valueOf(configuration.getProduct().getId()))
                 .totalPrice(totalPriceWithVat)
                 .warranty(warranty)
