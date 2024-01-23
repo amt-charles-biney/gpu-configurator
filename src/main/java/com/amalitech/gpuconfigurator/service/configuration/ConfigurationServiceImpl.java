@@ -123,9 +123,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .configuredOptions(configOptions)
                 .build();
 
-        if (save != null && save) {
-            configurationRepository.save(configuration);
-        }
+
 
         return ConfigurationResponseDto.builder()
                 .productId(String.valueOf(configuration.getProduct().getId()))
