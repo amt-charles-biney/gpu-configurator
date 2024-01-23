@@ -45,6 +45,26 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         Configuration configuration = createConfiguration(product, configOptions);
 
+        return createResponseDto(configuration, totalPriceWithVat, warranty, vat, optionalTotal, product);
+    }
+
+    @Override
+    public ConfigurationResponseDto saveConfiguration(String productId, Boolean warranty, Boolean save, String components) {
+
+        Product product = getProductById(productId);
+        BigDecimal totalPrice = calculateTotalPrice(product);
+        CategoryConfig categoryConfig = getCategoryConfig(product);
+        List<CompatibleOption> compatibleOptions = getCompatibleOptions(categoryConfig);
+        List<ConfigOptions> configOptions = getConfigOptions(components, compatibleOptions);
+
+        BigDecimal optionalTotal = calculateOptionalTotal(configOptions);
+        totalPrice = totalPrice.add(optionalTotal);
+
+        BigDecimal vat = calculateVat(totalPrice);
+        BigDecimal totalPriceWithVat = totalPrice.add(vat).setScale(2, RoundingMode.HALF_UP);
+
+        Configuration configuration = createConfiguration(product, configOptions);
+        saveConfiguration(configuration);
 
         return createResponseDto(configuration, totalPriceWithVat, warranty, vat, optionalTotal, product);
     }
@@ -99,7 +119,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .orElseGet(() -> String.valueOf(option.getBaseAmount()));
 
             BigDecimal sizeMultiplier = new BigDecimal(size).divide(option.getBaseAmount()).subtract(new BigDecimal(1));
-            BigDecimal calculatedPrice = option.getPrice().multiply(sizeMultiplier).multiply(new BigDecimal(option.getPriceFactor()));
+            BigDecimal calculatedPrice = option.getPrice().multiply(sizeMultiplier).multiply(BigDecimal.valueOf(option.getPriceFactor()));
 
             return ConfigOptions.builder()
                     .optionId(String.valueOf(option.getId()))
