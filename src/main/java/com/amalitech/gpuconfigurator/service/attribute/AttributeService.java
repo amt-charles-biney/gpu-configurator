@@ -28,19 +28,9 @@ public interface AttributeService {
 
     GenericResponse deleteAttributeById(UUID attributeId);
 
-    List<AttributeOptionResponseDto> getAllAttributeOptionByAttributeId(UUID id);
-
-    List<AttributeOptionResponseDto> getAllAttributeOptions();
-
-    AttributeOptionResponseDto getAttributeOptionById(UUID id);
-
     GenericResponse deleteAttributeOption(UUID attributeId, UUID optionId);
 
-    AttributeOptionResponseDto updateAttributeOption(UUID id, AttributeOptionDto atrDto);
-
     void updateAllAttributeOptions(List<UpdateAttributeOptionDto> attributeOptionDtos);
-
-    AttributeOptionResponseDto createAttributeOption(UUID attributeId, AttributeOptionDto atr);
 
     @Transactional
     List<AttributeOptionResponseDto> createAllAttributeOptions(UUID attributeId, @NotNull List<CreateAttributeOptionRequest> attributeOptionDtoList);
