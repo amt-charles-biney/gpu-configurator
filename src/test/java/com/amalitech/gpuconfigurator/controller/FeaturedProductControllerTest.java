@@ -4,7 +4,6 @@ import com.amalitech.gpuconfigurator.dto.FeaturedResponseDto;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
-import com.amalitech.gpuconfigurator.service.product.FeaturedService;
 import com.amalitech.gpuconfigurator.service.product.FeaturedServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +45,7 @@ class FeaturedProductControllerTest {
 
     @Test
     void getAllFeaturedProduct() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/admin/feature"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/featured"))
                 .andExpect(status().isOk());
     }
 
