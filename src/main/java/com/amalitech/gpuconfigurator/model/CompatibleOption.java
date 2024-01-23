@@ -46,6 +46,8 @@ public class CompatibleOption {
 
     private Float priceIncrement;
 
+    private Double priceFactor;
+
     private Boolean isCompatible;
 
     private Boolean isIncluded;
