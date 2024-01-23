@@ -115,6 +115,37 @@ public class CategoryConfigService {
         ).toList();
     }
 
+    public CompatibleOptionEditResponse getCategoryAndCompatibleOption(UUID categoryId) {
+        CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(categoryId).orElseThrow(() -> new EntityNotFoundException("config category not found"));
+
+        List<CompatibleOption> compatibleOptions = compatibleOptionService.getAllCompatibleOptionsByCategoryConfig(categoryConfig.getId());
+
+        List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList = compatibleOptions
+                .stream()
+                .map(compatibleOption -> CompatibleOptionResponseDto
+                .builder()
+                        .id(compatibleOption.getId().toString())
+                        .isCompatible(compatibleOption.getIsCompatible())
+                        .isIncluded(compatibleOption.getIsIncluded())
+                        .priceIncrement(compatibleOption.getPriceIncrement())
+                        .priceFactor(compatibleOption.getPriceFactor())
+                        .unit(compatibleOption.getUnit())
+                        .type(compatibleOption.getType())
+                        .maxAmount(compatibleOption.getMaxAmount())
+                        .price(compatibleOption.getPrice())
+                        .media(compatibleOption.getMedia())
+                        .baseAmount(compatibleOption.getBaseAmount())
+                        .isMeasured(compatibleOption.getIsMeasured())
+                .build()).toList();
+
+        return CompatibleOptionEditResponse.builder()
+                .name(categoryConfig.getCategory().getCategoryName())
+                .id(categoryConfig.getCategory().getId().toString())
+                .config(compatibleOptionResponseDtoList)
+                .build();
+    }
+
+
     public List<String> extractAttributesFromCompatibleOptions(UUID categoryConfigId) {
         List<CompatibleOption> compatibleOptions = compatibleOptionService.getAllCompatibleOptionsByCategoryConfig(categoryConfigId);
         List<String> uniqueTypes = compatibleOptions.stream()
