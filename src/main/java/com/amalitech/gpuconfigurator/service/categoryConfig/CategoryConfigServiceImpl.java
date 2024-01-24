@@ -23,13 +23,14 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryConfigService {
+public class CategoryConfigServiceImpl implements CategoryConfigService {
 
     private final CategoryConfigRepository categoryConfigRepository;
     private final CategoryServiceImpl categoryService;
     private final CompatibleOptionServiceImpl compatibleOptionServiceImpl;
     private final ProductRepository productRepository;
 
+    @Override
     @Transactional
     public GenericResponse createCategoryConfig(CategoryConfigRequest request) {
         Category category = categoryService.createCategory(new CategoryRequestDto(request.name()));
@@ -63,15 +64,17 @@ public class CategoryConfigService {
         return new GenericResponse(201, "category config created successfully " + config.getId());
     }
 
+    @Override
     public CategoryConfig getCategoryConfig(String id) {
         return categoryConfigRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("no config found"));
     }
 
+    @Override
     public CategoryConfigResponseDto getCategoryConfigByCategory(String id) {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("config does not exist"));
         List<CompatibleOption> compatibleOptions = compatibleOptionServiceImpl.getByCategoryConfigId(categoryConfig.getId());
 
-        AttributeResponseDto categoryResponse = AttributeResponseDto
+        CategoryResponse categoryResponse = CategoryResponse
                 .builder()
                 .id(categoryConfig.getCategory().getId().toString())
                 .name(categoryConfig.getCategory().getCategoryName())
@@ -102,6 +105,7 @@ public class CategoryConfigService {
                 .build();
     }
 
+    @Override
     public List<CategoryListResponse> getCategoryListResponses() {
         List<CategoryConfig> categoryConfigs = categoryConfigRepository.findAll();
 
@@ -115,6 +119,7 @@ public class CategoryConfigService {
         ).toList();
     }
 
+    @Override
     public CompatibleOptionEditResponse getCategoryAndCompatibleOption(UUID categoryId) {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(categoryId).orElseThrow(() -> new EntityNotFoundException("config category not found"));
 
@@ -146,6 +151,7 @@ public class CategoryConfigService {
                 .build();
     }
 
+    @Override
     @Transactional
     public GenericResponse deleteCategoryAndCategoryConfig(List<String> categoryIds) {
         List<UUID> categoryUUIDs = categoryIds.stream().map(UUID::fromString).toList();
@@ -157,6 +163,7 @@ public class CategoryConfigService {
 
     }
 
+    @Override
     @Transactional
     public GenericResponse updateCategoryAndConfigs(CompatibleOptionEditResponse compatibleOptionEditResponse) {
         categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name());
