@@ -7,7 +7,5 @@ import java.math.BigDecimal;
 
 @Builder
 public record CompatibleOptionDTO(String name, String type, CategoryConfig categoryConfig, BigDecimal price,
-                                  String media, String unit, Boolean isCompatible, Boolean isIncluded,
-                                  Boolean isMeasured, BigDecimal baseAmount, BigDecimal maxAmount,
-                                  Double priceFactor) {
+                                  String media, String unit, Boolean isCompatible, Boolean isIncluded, Double priceFactor, Boolean isMeasured, Float baseAmount, Float maxAmount, Float priceIncrement) {
 }

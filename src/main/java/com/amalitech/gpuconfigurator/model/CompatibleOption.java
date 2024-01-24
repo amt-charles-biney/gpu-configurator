@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,7 +24,8 @@ public class CompatibleOption {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private CategoryConfig categoryConfig;
 
     @Column(nullable = false)
@@ -40,9 +43,11 @@ public class CompatibleOption {
 
     private Boolean isMeasured;
 
-    private BigDecimal baseAmount;
+    private Float baseAmount;
 
-    private BigDecimal maxAmount;
+    private Float maxAmount;
+
+    private Float priceIncrement;
 
     private Double priceFactor;
 
@@ -56,4 +61,9 @@ public class CompatibleOption {
     private LocalDateTime updatedAt;
 
     private LocalDateTime deletedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

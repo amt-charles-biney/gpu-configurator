@@ -2,14 +2,17 @@ package com.amalitech.gpuconfigurator.service.category;
 
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.AllCategoryResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryResponse;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -18,6 +21,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    @Override
     public Category createCategory(CategoryRequestDto request) throws DataIntegrityViolationException {
         if(categoryRepository.existsByCategoryName(request.name())) throw new DataIntegrityViolationException("category already exists");
 
@@ -30,8 +34,24 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
+    @Override
     public Category getCategory(String categoryName) {
         return categoryRepository.findByCategoryName(categoryName).orElseThrow(()-> new NotFoundException("Category not found"));
+    }
+
+    @Override
+    public CategoryResponse updateCategory(String categoryId, String name) {
+        Category category = categoryRepository.findById(UUID.fromString(categoryId)).orElseThrow(() -> new EntityNotFoundException("category not found"));
+
+        category.setCategoryName(name);
+        Category savedCategory = categoryRepository.save(category);
+
+        return CategoryResponse
+                .builder()
+                .name(savedCategory.getCategoryName())
+                .id(savedCategory.getId().toString())
+                .build();
+
     }
 
     @Override
@@ -51,5 +71,9 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findByCategoryName(name).orElseThrow(()-> new NotFoundException(name+ " "+ "Not found"));
     }
 
+    @Override
+    public void deleteAllById(List<UUID> categoryIds) {
+        categoryRepository.deleteAllById(categoryIds);
+    }
 }
 

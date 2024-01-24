@@ -24,6 +24,6 @@ public class CategoryConfig {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Category category;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "categoryConfig")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "categoryConfig", orphanRemoval = true)
     private List<CompatibleOption> compatibleOptions;
 }

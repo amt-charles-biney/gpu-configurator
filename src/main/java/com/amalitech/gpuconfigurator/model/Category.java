@@ -28,6 +28,9 @@ public class Category {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @OneToMany(
             mappedBy = "category",
             cascade = CascadeType.ALL,
@@ -43,7 +46,4 @@ public class Category {
         createdAt = LocalDateTime.now();
     }
 
-
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
 }
