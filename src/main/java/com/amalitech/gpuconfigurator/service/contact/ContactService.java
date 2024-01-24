@@ -5,5 +5,5 @@ import com.amalitech.gpuconfigurator.model.Contact;
 import com.amalitech.gpuconfigurator.model.User;
 
 public interface ContactService {
-    Contact saveOrUpdate(User user, ContactRequest dto);
+    Contact createOrUpdate(User user, ContactRequest dto);
 }
