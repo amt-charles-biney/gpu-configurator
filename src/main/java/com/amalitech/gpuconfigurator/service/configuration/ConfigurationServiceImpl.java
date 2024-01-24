@@ -130,7 +130,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .map(pair -> pair.split("_")[1])
                     .orElseGet(() -> String.valueOf(option.getBaseAmount()));
 
-            BigDecimal sizeMultiplier = new BigDecimal(size).divide(option.getBaseAmount()).subtract(new BigDecimal(1));
+            BigDecimal sizeMultiplier = new BigDecimal(size).divide(BigDecimal.valueOf(option.getBaseAmount())).subtract(new BigDecimal(1));
             BigDecimal calculatedPrice = option.getPrice().multiply(sizeMultiplier).multiply(BigDecimal.valueOf(option.getPriceFactor()));
 
             return ConfigOptions.builder()
@@ -138,7 +138,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .optionName(option.getName())
                     .optionPrice(calculatedPrice)
                     .optionType(option.getType())
-                    .baseAmount(option.getBaseAmount())
+                    .baseAmount(BigDecimal.valueOf(option.getBaseAmount()))
                     .isIncluded(option.getIsIncluded())
                     .isMeasured(option.getIsMeasured())
                     .size(size)
@@ -149,7 +149,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .optionName(option.getName())
                     .optionPrice(option.getPrice())
                     .optionType(option.getType())
-                    .baseAmount(option.getBaseAmount())
+                    .baseAmount(BigDecimal.valueOf(option.getBaseAmount()))
                     .isIncluded(option.getIsIncluded())
                     .size("1")
                     .isMeasured(option.getIsMeasured())
@@ -163,7 +163,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .optionName(option.getName())
                 .optionPrice(option.getPrice().setScale(2, RoundingMode.HALF_UP))
                 .optionType(option.getType())
-                .baseAmount(option.getBaseAmount())
+                .baseAmount(BigDecimal.valueOf(option.getBaseAmount()))
                 .isIncluded(option.getIsIncluded())
                 .size("1")
                 .isMeasured(option.getIsMeasured())

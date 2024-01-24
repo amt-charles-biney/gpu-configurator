@@ -71,7 +71,7 @@ public class CategoryConfigService {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("config does not exist"));
         List<CompatibleOption> compatibleOptions = compatibleOptionService.getByCategoryConfigId(categoryConfig.getId());
 
-        AttributeResponseDto categoryResponse = AttributeResponseDto
+        CategoryResponse categoryResponse = CategoryResponse
                 .builder()
                 .id(categoryConfig.getCategory().getId().toString())
                 .name(categoryConfig.getCategory().getCategoryName())
