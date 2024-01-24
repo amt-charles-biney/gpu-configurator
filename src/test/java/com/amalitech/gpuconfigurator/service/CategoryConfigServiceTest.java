@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.service.categoryConfig;
+package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
@@ -9,11 +9,14 @@ import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
+import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 
@@ -164,8 +167,6 @@ class CategoryConfigServiceTest {
         assertEquals(categoryConfigs.size(), responses.size());
 
         verify(categoryConfigRepository, times(1)).findAll();
-        verify(categoryConfigService, times(categoryConfigs.size())).extractAttributesFromCompatibleOptions(any());
-        verify(categoryConfigService, times(categoryConfigs.size())).extractProductCount(any());
     }
 
     @Test

@@ -1,12 +1,12 @@
-package com.amalitech.gpuconfigurator.service.category.compatible;
+package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionDTO;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.repository.CompatibleOptionRepository;
+import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class CompatibleOptionServiceImplTest {
+class CompatibleOptionServiceTest {
 
     @Mock
     private CompatibleOptionRepository compatibleOptionRepository;
