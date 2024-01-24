@@ -48,7 +48,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new InvalidPasswordException(ProfileConstants.PASSWORDS_NOT_EQUAL);
         }
         if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
-            throw new InvalidPasswordException(ProfileConstants.INVALID_CURRENT_PASSWORD);
+            throw new InvalidPasswordException(ProfileConstants.INCORRECT_CURRENT_PASSWORD);
         }
 
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
