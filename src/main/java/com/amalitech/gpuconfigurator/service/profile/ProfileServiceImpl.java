@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.profile;
 
+import com.amalitech.gpuconfigurator.constant.ProfileConstants;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
@@ -25,11 +26,14 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public GenericResponse updateBasicInformation(BasicInformationRequest dto, Principal principal) {
         var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
-        user.setContact(contactService.saveOrUpdate(user, dto.getContact()));
+        user.setContact(contactService.createOrUpdate(user, dto.getContact()));
+
         userRepository.save(user);
-        return new GenericResponse(200, "Basic information updated successfully");
+
+        return new GenericResponse(200, ProfileConstants.BASIC_INFORMATION_UPDATE_SUCCESS);
     }
 
     public User getUserProfile(Principal principal) throws UsernameNotFoundException {
@@ -39,14 +43,16 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public GenericResponse updateUserPassword(UserPasswordRequest dto, Principal principal) throws InvalidPasswordException {
         var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+
         if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
-            throw new InvalidPasswordException("Password and password confirmation are not equal");
+            throw new InvalidPasswordException(ProfileConstants.PASSWORDS_NOT_EQUAL);
         }
         if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
-            throw new InvalidPasswordException("Invalid current password");
+            throw new InvalidPasswordException(ProfileConstants.INVALID_CURRENT_PASSWORD);
         }
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
-        return new GenericResponse(201, "password updated successfully");
+
+        return new GenericResponse(201, ProfileConstants.PASSWORD_UPDATE_SUCCESS);
     }
 }

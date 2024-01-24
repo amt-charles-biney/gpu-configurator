@@ -16,18 +16,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @RestControllerAdvice
 public class CustomExceptionHandler {
-    @ExceptionHandler({MessagingException.class})
+    @ExceptionHandler({ MessagingException.class })
     public ProblemDetail handleEmailSendingException(MessagingException e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(500));
         errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
 
-
-    @ExceptionHandler({MethodArgumentNotValidException.class, BadRequestException.class})
+    @ExceptionHandler({ MethodArgumentNotValidException.class, BadRequestException.class })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
@@ -43,14 +41,14 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
-    @ExceptionHandler({BadCredentialsException.class})
+    @ExceptionHandler({ BadCredentialsException.class })
     public ProblemDetail handleBadCredentialException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(401));
         errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
 
-    @ExceptionHandler({UsernameNotFoundException.class, NotFoundException.class})
+    @ExceptionHandler({ UsernameNotFoundException.class, NotFoundException.class })
     public ProblemDetail usernameNotFoundException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
         errorDetail.setDetail(e.getMessage());
@@ -60,6 +58,13 @@ public class CustomExceptionHandler {
     @ExceptionHandler(AttributeNameAlreadyExistsException.class)
     public ProblemDetail AttributeNameAlreadyExistsException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
+        errorDetail.setDetail(e.getMessage());
+        return errorDetail;
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ProblemDetail handleInvalidPasswordException(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
