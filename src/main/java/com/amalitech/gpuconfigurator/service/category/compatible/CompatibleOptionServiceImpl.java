@@ -16,15 +16,17 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CompatibleOptionService {
+public class CompatibleOptionServiceImpl implements CompatibleOptionService {
 
     private final CompatibleOptionRepository compatibleOptionRepository;
 
+    @Override
     @Transactional
     public void addBulkCompatibleOptions(List<CompatibleOption> compatibleOptions) {
         compatibleOptionRepository.saveAll(compatibleOptions);
     }
 
+    @Override
     @Transactional
     public void updateBulkCompatibleOptions(List<CompatibleOptionResponseDto> compatibleOptionResponseDtos) {
 
@@ -48,10 +50,12 @@ public class CompatibleOptionService {
         }
     }
 
+    @Override
     public List<CompatibleOption> getAllCompatibleOptionsByCategoryConfig(UUID configId) {
         return compatibleOptionRepository.findAllByCategoryConfigId(configId);
     }
 
+    @Override
     public GenericResponse addCompatibleOption(CompatibleOptionDTO option) {
         CompatibleOption compatibleOption = CompatibleOption.builder()
                 .name(option.name())
@@ -70,16 +74,19 @@ public class CompatibleOptionService {
         return new GenericResponse(201, "compatible option created");
     }
 
+    @Override
     public GenericResponse deleteAllCompatibleOptions() {
         compatibleOptionRepository.deleteAll();
         return new GenericResponse(201, "deleted all compatible options");
     }
 
+    @Override
     public GenericResponse deleteCompatibleOption(String id) {
         compatibleOptionRepository.deleteById(UUID.fromString(id));
         return new GenericResponse(201, "deleted compatible option");
     }
 
+    @Override
     public List<CompatibleOption> getByCategoryConfigId(UUID id) {
         return compatibleOptionRepository.getByCategoryConfigId(id);
     }
