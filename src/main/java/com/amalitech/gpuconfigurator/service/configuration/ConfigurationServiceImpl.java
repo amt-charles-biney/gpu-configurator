@@ -64,7 +64,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         BigDecimal vat = calculateVat(totalPrice);
         BigDecimal totalPriceWithVat = totalPrice.add(vat).setScale(2, RoundingMode.HALF_UP);
 
-        Configuration configuration = createConfiguration(product ,configOptions);
+        Configuration configuration = createConfiguration(product, configOptions);
         configuration.setTotalPrice(totalPriceWithVat);
         saveConfiguration(configuration);
 
@@ -149,7 +149,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .optionName(option.getName())
                     .optionPrice(option.getPrice())
                     .optionType(option.getType())
-                    .baseAmount(option.getBaseAmount())
+                    .baseAmount(BigDecimal.valueOf(0))
                     .isIncluded(option.getIsIncluded())
                     .size("1")
                     .isMeasured(option.getIsMeasured())
@@ -163,7 +163,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .optionName(option.getName())
                 .optionPrice(option.getPrice().setScale(2, RoundingMode.HALF_UP))
                 .optionType(option.getType())
-                .baseAmount(option.getBaseAmount())
+                .baseAmount(BigDecimal.valueOf(0))
                 .isIncluded(option.getIsIncluded())
                 .size("1")
                 .isMeasured(option.getIsMeasured())
@@ -182,7 +182,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return BigDecimal.valueOf(25).divide(BigDecimal.valueOf(100)).multiply(totalPrice).setScale(2, RoundingMode.HALF_UP);
     }
 
-    private Configuration createConfiguration(Product product ,List<ConfigOptions> configOptions) {
+    private Configuration createConfiguration(Product product, List<ConfigOptions> configOptions) {
         return Configuration.builder()
                 .totalPrice(calculateTotalPrice(product).setScale(2, RoundingMode.HALF_UP))
                 .product(product)
@@ -199,6 +199,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         return ConfigurationResponseDto.builder()
                 .Id(String.valueOf(configuration.getId()))
+                .productName(product.getProductName())
                 .productId(String.valueOf(configuration.getProduct().getId()))
                 .totalPrice(totalPriceWithVat)
                 .warranty(warranty)
