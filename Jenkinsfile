@@ -111,5 +111,4 @@ post {
                       attachLog: true,
                       to: 'maximo.mugisha@amalitech.org'
         }
-    }
 }
