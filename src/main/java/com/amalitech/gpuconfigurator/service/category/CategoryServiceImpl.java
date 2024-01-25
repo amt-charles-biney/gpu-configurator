@@ -6,7 +6,6 @@ import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryResponse;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
-import com.cloudinary.api.exceptions.BadRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,8 +22,8 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public Category createCategory(CategoryRequestDto request) throws BadRequest {
-        if(categoryRepository.existsByCategoryName(request.name())) throw new BadRequest("category already exists");
+    public Category createCategory(CategoryRequestDto request) throws DataIntegrityViolationException {
+        if(categoryRepository.existsByCategoryName(request.name())) throw new DataIntegrityViolationException("category already exists");
 
         var category = Category
                 .builder()
