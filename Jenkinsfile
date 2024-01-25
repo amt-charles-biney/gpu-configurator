@@ -67,12 +67,12 @@ pipeline {
                         sh 'cp $EC2_SSH_KEY ./sshkey'
                         sh 'chmod 600 sshkey'
                         sh """
-                            ssh -i "sshkey" $USERNAME@$HOST_IP \
-                            cd /home/ubuntu/gpu-configurator 
-                            sudo docker system prune --force 
-                            sudo docker pull maximomugisha/gpu-configurator:latest
-                            sudo docker rm -f gpu-configurator
-                            sudo docker run --env-file .env -d  -p 8080:8080 --name gpu-configurator maximomugisha/gpu-configurator:latest
+                            ssh -i sshkey $USERNAME@$HOST_IP '\
+                            cd /home/ubuntu/gpu-configurator && \
+                            sudo docker system prune --force && \
+                            sudo docker pull amalitechservices/gpu-configurator:latest && \
+                            sudo docker rm -f gpu-configurator && \
+                            sudo docker run --env-file .env -d  -p 8080:8080 --name gpu-configurator amalitechservices/gpu-configurator:latest'
                         """
 
                     }
