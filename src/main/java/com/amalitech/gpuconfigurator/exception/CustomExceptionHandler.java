@@ -28,7 +28,7 @@ public class CustomExceptionHandler {
     }
 
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, DataIntegrityViolationException.class, BadRequestException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, BadRequestException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
@@ -44,7 +44,7 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
+    @ExceptionHandler({BadCredentialsException.class, DataIntegrityViolationException.class})
     public ProblemDetail handleBadCredentialException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(401));
         errorDetail.setDetail(e.getMessage());
