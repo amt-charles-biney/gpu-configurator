@@ -120,12 +120,14 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     }
 
     @Override
-    public CompatibleOptionEditResponse getCategoryAndCompatibleOption(UUID categoryId) {
+    public CompatibleOptionGetResponse getCategoryAndCompatibleOption(UUID categoryId) {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(categoryId).orElseThrow(() -> new EntityNotFoundException("config category not found"));
 
         List<CompatibleOption> compatibleOptions = compatibleOptionServiceImpl.getAllCompatibleOptionsByCategoryConfig(categoryConfig.getId());
+        List<CompatibleOption> compatibleOptionIsCompatible = compatibleOptions.stream().filter(compatibleOption -> compatibleOption.getIsCompatible()).toList();
+        List<CompatibleOption> compatibleOptionNotCompatible = compatibleOptions.stream().filter(compatibleOption -> !compatibleOption.getIsCompatible()).toList();
 
-        List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList = compatibleOptions
+        List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList = compatibleOptionIsCompatible
                 .stream()
                 .map(compatibleOption -> CompatibleOptionResponseDto
                 .builder()
@@ -144,10 +146,25 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                         .isMeasured(compatibleOption.getIsMeasured())
                 .build()).toList();
 
-        return CompatibleOptionEditResponse.builder()
+        Map<String, List<InCompatibleCategory>> incompatibleCategoryMap = compatibleOptionNotCompatible.stream()
+                .collect(Collectors.groupingBy(
+                        CompatibleOption::getType,
+                        Collectors.mapping(compatibleOption -> InCompatibleCategory.builder()
+                                        .optionName(compatibleOption.getName())
+                                        .optionMedia(compatibleOption.getMedia())
+                                        .optionPrice(compatibleOption.getPrice())
+                                        .id(compatibleOption.getId().toString())
+                                        .attribute(new AttributeResponseDto(compatibleOption.getType(), null, compatibleOption.getIsMeasured(), compatibleOption.getUnit()))
+                                        .additionalInfo(new AdditionalInfoDto(compatibleOption.getBaseAmount(), compatibleOption.getMaxAmount(), compatibleOption.getPriceFactor()))
+                                        .build(),
+                                Collectors.toList())
+                ));
+
+        return CompatibleOptionGetResponse.builder()
                 .name(categoryConfig.getCategory().getCategoryName())
                 .id(categoryConfig.getCategory().getId().toString())
                 .config(compatibleOptionResponseDtoList)
+                .incompatible(incompatibleCategoryMap)
                 .build();
     }
 

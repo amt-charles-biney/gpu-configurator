@@ -1,10 +1,7 @@
 package com.amalitech.gpuconfigurator.controller;
 
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigRequest;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigResponseDto;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryListResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionEditResponse;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -50,8 +47,8 @@ public class CategoryConfigController {
 
     @CrossOrigin
     @GetMapping("/v1/admin/category/config/{categoryId}")
-    public ResponseEntity<CompatibleOptionEditResponse> getAllCategoryConfigById(@PathVariable String categoryId) {
-        CompatibleOptionEditResponse result = categoryConfigServiceImpl.getCategoryAndCompatibleOption(UUID.fromString(categoryId));
+    public ResponseEntity<CompatibleOptionGetResponse> getAllCategoryConfigById(@PathVariable String categoryId) {
+        CompatibleOptionGetResponse result = categoryConfigServiceImpl.getCategoryAndCompatibleOption(UUID.fromString(categoryId));
         return ResponseEntity.ok(result);
     }
 
