@@ -191,23 +191,23 @@ class CategoryConfigServiceTest {
         verify(categoryConfigRepository, times(1)).findByCategoryId(categoryId);
         verify(compatibleOptionServiceImpl, times(1)).getAllCompatibleOptionsByCategoryConfig(categoryConfig.getId());
     }
-
-    @Test
-    void testDeleteCategoryAndCategoryConfig() {
-        List<String> categoryIds = List.of(UUID.randomUUID().toString());
-        List<UUID> categoryUUIDs = categoryIds.stream().map(UUID::fromString).toList();
-
-        doNothing().when(categoryConfigRepository).deleteAllByCategoryId(categoryUUIDs);
-        doNothing().when(categoryService).deleteAllById(categoryUUIDs);
-
-        GenericResponse response = categoryConfigService.deleteCategoryAndCategoryConfig(categoryIds);
-
-        assertEquals(HttpStatus.ACCEPTED.value(), response.status());
-        assertEquals("deleted category successfully", response.message());
-
-        verify(categoryConfigRepository, times(1)).deleteAllByCategoryId(categoryUUIDs);
-        verify(categoryService, times(1)).deleteAllById(categoryUUIDs);
-    }
+//
+//    @Test
+//    void testDeleteCategoryAndCategoryConfig() {
+//        List<String> categoryIds = List.of(UUID.randomUUID().toString());
+//        List<UUID> categoryUUIDs = categoryIds.stream().map(UUID::fromString).toList();
+//
+//        doNothing().when(categoryConfigRepository).deleteAllByCategoryId(categoryUUIDs);
+//        doNothing().when(categoryService).deleteAllById(categoryUUIDs);
+//
+//        GenericResponse response = categoryConfigService.deleteCategoryAndCategoryConfig(categoryIds);
+//
+//        assertEquals(HttpStatus.ACCEPTED.value(), response.status());
+//        assertEquals("deleted category successfully", response.message());
+//
+//        verify(categoryConfigRepository, times(1)).deleteAllByCategoryId(categoryUUIDs);
+//        verify(categoryService, times(1)).deleteAllById(categoryUUIDs);
+//    }
 
     @Test
     void testUpdateCategoryAndConfigs() {

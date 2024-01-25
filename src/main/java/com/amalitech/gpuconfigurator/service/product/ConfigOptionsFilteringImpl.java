@@ -3,7 +3,7 @@ package com.amalitech.gpuconfigurator.service.product;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigResponseDto;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
-import com.amalitech.gpuconfigurator.service.category.CategoryConfig.CategoryConfigService;
+import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class ConfigOptionsFilteringImpl implements ConfigOptionsFiltering {
 
     private final ProductRepository productRepository;
-    private final CategoryConfigService categoryConfigService;
+    private final CategoryConfigServiceImpl categoryConfigService;
 
 
     public List<UUID> getProductTypes(String productType) {
