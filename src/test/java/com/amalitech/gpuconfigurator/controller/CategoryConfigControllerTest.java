@@ -18,9 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -106,7 +104,8 @@ class CategoryConfigControllerTest {
     @Test
     void testGetAllCategoryConfigById() throws Exception {
         String categoryId = UUID.randomUUID().toString();
-        CompatibleOptionEditResponse response = new CompatibleOptionEditResponse("CategoryName", categoryId, Collections.emptyList());
+        Map<String, List<InCompatibleCategory>> incompatibleCategoryMap = new HashMap<>();
+        CompatibleOptionGetResponse response = new CompatibleOptionGetResponse("CategoryName", categoryId, Collections.emptyList(), incompatibleCategoryMap);
 
         Mockito.when(categoryConfigService.getCategoryAndCompatibleOption(UUID.fromString(categoryId))).thenReturn(response);
 
