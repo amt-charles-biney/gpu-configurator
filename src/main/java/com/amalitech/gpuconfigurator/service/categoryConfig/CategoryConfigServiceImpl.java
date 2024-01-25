@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service.categoryConfig;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
@@ -84,8 +85,8 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .build();
 
         Map<String, List<CompatibleOptionResponseDto>> compatibleGroupedByType = compatibleOptions.stream()
-                .collect(Collectors.groupingBy(CompatibleOption::getType,                           // Group by 'type'
-                        Collectors.mapping(option -> CompatibleOptionResponseDto.builder()      // Map each group to a list of CompatibleOptionResponseDto
+                .collect(Collectors.groupingBy(CompatibleOption::getType,
+                        Collectors.mapping(option -> CompatibleOptionResponseDto.builder()
                                         .id(option.getId().toString())
                                         .type(option.getType())
                                         .price(option.getPrice())
