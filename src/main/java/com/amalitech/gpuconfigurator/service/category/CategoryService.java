@@ -5,13 +5,12 @@ import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryRequestDto;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryResponse;
 import com.amalitech.gpuconfigurator.model.Category;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CategoryService {
-    Category createCategory(CategoryRequestDto request) throws DataIntegrityViolationException;
+    Category createCategory(CategoryRequestDto request);
 
     Category getCategory(String categoryName);
 
