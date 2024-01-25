@@ -179,7 +179,7 @@ class CategoryConfigServiceTest {
         List<CompatibleOption> compatibleOptions = List.of(compatibleOption);
         when(compatibleOptionServiceImpl.getAllCompatibleOptionsByCategoryConfig(categoryConfig.getId())).thenReturn(compatibleOptions);
 
-        CompatibleOptionEditResponse response = categoryConfigService.getCategoryAndCompatibleOption(categoryId);
+        CompatibleOptionGetResponse response = categoryConfigService.getCategoryAndCompatibleOption(categoryId);
 
         assertEquals(categoryConfig.getCategory().getId().toString(), response.id());
         assertEquals(categoryConfig.getCategory().getCategoryName(), response.name());
