@@ -98,17 +98,17 @@ pipeline {
 
 }
 
-post {
-        success {
-            emailext subject: 'CI/CD Pipeline Notification',
-                      body: 'Your build was successful! ✨ 🍰 ✨',
-                      to: 'maximo.mugisha@amalitech.org',
-                      attachLog: true
-        }
-        failure {
-            emailext subject: 'CI/CD Pipeline Notification. ',
-                      body: 'Your build failed. Please investigate.❌ ❌ ❌ ',
-                      attachLog: true,
-                      to: 'maximo.mugisha@amalitech.org'
-        }
-}
+// post {
+//         success {
+//             emailext subject: 'CI/CD Pipeline Notification',
+//                       body: 'Your build was successful! ✨ 🍰 ✨',
+//                       to: 'maximo.mugisha@amalitech.org',
+//                       attachLog: true
+//         }
+//         failure {
+//             emailext subject: 'CI/CD Pipeline Notification. ',
+//                       body: 'Your build failed. Please investigate.❌ ❌ ❌ ',
+//                       attachLog: true,
+//                       to: 'maximo.mugisha@amalitech.org'
+//         }
+// }
