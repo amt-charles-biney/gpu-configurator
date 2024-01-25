@@ -1,15 +1,17 @@
 package com.amalitech.gpuconfigurator.service.categoryConfig;
 
-import com.amalitech.gpuconfigurator.dto.*;
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
+import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
+import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     private final CategoryServiceImpl categoryService;
     private final CompatibleOptionServiceImpl compatibleOptionServiceImpl;
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     @Transactional
@@ -128,7 +131,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
         List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList = compatibleOptions
                 .stream()
                 .map(compatibleOption -> CompatibleOptionResponseDto
-                .builder()
+                        .builder()
                         .id(compatibleOption.getId().toString())
                         .isCompatible(compatibleOption.getIsCompatible())
                         .isIncluded(compatibleOption.getIsIncluded())
@@ -142,7 +145,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                         .media(compatibleOption.getMedia())
                         .baseAmount(compatibleOption.getBaseAmount())
                         .isMeasured(compatibleOption.getIsMeasured())
-                .build()).toList();
+                        .build()).toList();
 
         return CompatibleOptionEditResponse.builder()
                 .name(categoryConfig.getCategory().getCategoryName())
@@ -156,8 +159,17 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     public GenericResponse deleteCategoryAndCategoryConfig(List<String> categoryIds) {
         List<UUID> categoryUUIDs = categoryIds.stream().map(UUID::fromString).toList();
 
+        List<Product> products = productRepository.findAll().stream().filter(product -> categoryUUIDs.contains(product.getCategory().getId())).toList();
+
+        Category newCate = categoryRepository.findByCategoryName("unassign").orElse(Category.builder().categoryName("unassign").build());
+
+        for (var product: products){
+            product.setCategory(newCate);
+        }
+        productRepository.saveAll(products);
+
         categoryConfigRepository.deleteAllByCategoryId(categoryUUIDs);
-        categoryService.deleteAllById(categoryUUIDs);
+//        categoryService.deleteAllById(categoryUUIDs);
 
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted category successfully");
 
@@ -175,12 +187,10 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
     public List<String> extractAttributesFromCompatibleOptions(UUID categoryConfigId) {
         List<CompatibleOption> compatibleOptions = compatibleOptionServiceImpl.getAllCompatibleOptionsByCategoryConfig(categoryConfigId);
-        List<String> uniqueTypes = compatibleOptions.stream()
+        return compatibleOptions.stream()
                 .map(CompatibleOption::getType)
                 .distinct()
-                .collect(Collectors.toList());
-
-        return uniqueTypes;
+                .toList();
     }
 
     public Long extractProductCount(UUID category) {
