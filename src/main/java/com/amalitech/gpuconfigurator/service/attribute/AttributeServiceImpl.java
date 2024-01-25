@@ -197,7 +197,9 @@ public class AttributeServiceImpl implements AttributeService {
                         new AttributeResponseDto(
                         attributeOption.getAttribute().getAttributeName(),
                         attributeOption.getAttribute().getId().toString(),
-                        attributeOption.getAttribute().isMeasured()))
+                        attributeOption.getAttribute().isMeasured(),
+                                attributeOption.getAttribute().getUnit()
+                        ))
                 .build();
     }
 
