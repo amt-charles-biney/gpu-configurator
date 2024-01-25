@@ -44,7 +44,7 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
+    @ExceptionHandler({BadCredentialsException.class})
     public ProblemDetail handleBadCredentialException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(401));
         errorDetail.setDetail(e.getMessage());
@@ -57,5 +57,4 @@ public class CustomExceptionHandler {
         errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
-
 }
