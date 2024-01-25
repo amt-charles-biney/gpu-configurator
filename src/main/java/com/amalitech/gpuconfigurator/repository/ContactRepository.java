@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.repository.product;
+package com.amalitech.gpuconfigurator.repository;
 
 import com.amalitech.gpuconfigurator.model.Contact;
 import org.springframework.data.jpa.repository.JpaRepository;

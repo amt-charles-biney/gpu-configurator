@@ -3,7 +3,7 @@ package com.amalitech.gpuconfigurator.service.contact;
 import com.amalitech.gpuconfigurator.dto.profile.ContactRequest;
 import com.amalitech.gpuconfigurator.model.Contact;
 import com.amalitech.gpuconfigurator.model.User;
-import com.amalitech.gpuconfigurator.repository.product.ContactRepository;
+import com.amalitech.gpuconfigurator.repository.ContactRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
