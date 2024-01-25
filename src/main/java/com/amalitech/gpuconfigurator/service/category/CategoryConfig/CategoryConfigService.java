@@ -1,13 +1,11 @@
 package com.amalitech.gpuconfigurator.service.category.CategoryConfig;
 
-import com.amalitech.gpuconfigurator.dto.*;
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
-import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
@@ -117,12 +115,11 @@ public class CategoryConfigService {
 
     public List<String> extractAttributesFromCompatibleOptions(UUID categoryConfigId) {
         List<CompatibleOption> compatibleOptions = compatibleOptionService.getAllCompatibleOptionsByCategoryConfig(categoryConfigId);
-        List<String> uniqueTypes = compatibleOptions.stream()
+
+        return compatibleOptions.stream()
                 .map(CompatibleOption::getType)
                 .distinct()
-                .collect(Collectors.toList());
-
-        return uniqueTypes;
+                .toList();
     }
 
     public Long extractProductCount(UUID category) {
