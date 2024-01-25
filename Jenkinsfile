@@ -67,7 +67,7 @@ pipeline {
                         sh 'cp $EC2_SSH_KEY ./sshkey'
                         sh 'chmod 600 sshkey'
                         sh """
-                            ssh -i sshkey $USERNAME@$HOST_IP '\
+                            ssh -i sshkey -o StrictHostKeyChecking=no $USERNAME@$HOST_IP '\
                             cd /home/ubuntu/gpu-configurator && \
                             sudo docker system prune --force && \
                             sudo docker pull amalitechservices/gpu-configurator:latest && \
