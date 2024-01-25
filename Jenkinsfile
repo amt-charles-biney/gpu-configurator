@@ -16,7 +16,7 @@ pipeline {
          when {
                 anyOf {
                     branch 'dev';
-                    branch 'PresentationLayDev';
+                    branch 'staging';
                 }
             }
         steps {
@@ -28,7 +28,7 @@ pipeline {
         when {
                 anyOf {
                     branch 'dev';
-                    branch 'PresentationLayDev';
+                    branch 'staging';
                 }
             }
         steps {
@@ -42,7 +42,7 @@ pipeline {
     stage('Push Docker Image to Registry') {
         when {
                 anyOf {
-                    branch 'PresentationLayDev';
+                    branch 'staging';
                     branch 'dev';
                 }
             }
@@ -56,7 +56,7 @@ pipeline {
         when {
                 anyOf {
                     branch 'dev';
-                    branch 'PresentationLayDev';
+                    branch 'staging';
                 }
             }
         steps {
@@ -85,7 +85,7 @@ pipeline {
             when {
                 anyOf {
                     branch 'dev';
-                    branch 'PresentationLayDev';
+                    branch 'staging';
                 }
             }
             steps{
