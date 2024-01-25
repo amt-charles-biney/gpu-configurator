@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.categoryconfig.AllCategoryResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryRequestDto;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryResponse;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.service.category.CategoryService;
 import org.junit.jupiter.api.DisplayName;
@@ -69,15 +70,15 @@ class CategoryControllerTest {
     @DisplayName("Test success for getting category by name")
     void getCategoryByNameTest() {
         String categoryName = "GPU";
-        Category expectedCategory = Category.builder()
-                .id(UUID.fromString("6c4a87df-6831-4d49-a924-42979ec657ba"))
-                .categoryName(categoryName)
+        CategoryResponse expectedCategory = CategoryResponse.builder()
+                .id("6c4a87df-6831-4d49-a924-42979ec657ba")
+                .name(categoryName)
                 .build();
 
         when(categoryService.getCategoryByName(categoryName)).thenReturn(expectedCategory);
-        Category response = categoryController.getCategoryByName(categoryName);
+        CategoryResponse response = categoryController.getCategoryByName(categoryName);
 
-        assertEquals(expectedCategory.getCategoryName(), response.getCategoryName());
+        assertEquals(expectedCategory.name(), response.name());
         assertEquals(expectedCategory, response);
         assertEquals(HttpStatus.OK.value(), 200);
     }
