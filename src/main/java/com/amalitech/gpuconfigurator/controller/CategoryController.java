@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.categoryconfig.AllCategoryResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryRequestDto;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryResponse;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class CategoryController {
     @CrossOrigin
     @GetMapping("/v1/admin/category/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public Category getCategoryByName(@PathVariable("name") String name){
+    public CategoryResponse getCategoryByName(@PathVariable("name") String name){
         return categoryService.getCategoryByName(name);
     }
 

@@ -68,8 +68,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category getCategoryByName(String name) {
-        return categoryRepository.findByCategoryName(name).orElseThrow(() -> new NotFoundException(name + " " + "Not found"));
+    public CategoryResponse getCategoryByName(String name) {
+        Category category = categoryRepository.findByCategoryName(name).orElseThrow(() -> new NotFoundException(name + " " + "Not found"));
+        return new CategoryResponse(category.getId().toString(), category.getCategoryName());
+
     }
 
     @Override
