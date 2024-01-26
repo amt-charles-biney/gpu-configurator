@@ -12,7 +12,6 @@ import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -181,13 +180,14 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
         Category newCate = categoryRepository.findByCategoryName("unassign").orElse(Category.builder().categoryName("unassign").build());
 
-        for (var product: products){
+        for (var product : products) {
             product.setCategory(newCate);
         }
         productRepository.saveAll(products);
 
         categoryConfigRepository.deleteAllByCategoryId(categoryUUIDs);
-//        categoryService.deleteAllById(categoryUUIDs);
+        categoryService.deleteAllById(categoryUUIDs);
+
 
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted category successfully");
 
