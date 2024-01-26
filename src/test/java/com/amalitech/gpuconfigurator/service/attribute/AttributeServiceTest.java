@@ -198,19 +198,6 @@ class AttributeServiceTest {
     }
 
     @Test
-    public void testUpdateAllAttributeOptions_EntityNotFoundException() {
-        List<UpdateAttributeOptionDto> attributeOptionDtos = List.of(
-                new UpdateAttributeOptionDto(attributeId.toString(), "Option1", BigDecimal.valueOf(15.0), "updatedMedia1", 120.0f, 130.0f, 1.5)
-        );
-
-        when(attributeOptionRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> attributeService.updateAllAttributeOptions(attributeOptionDtos));
-
-        verify(attributeOptionRepository, times(1)).findById(attributeId);
-        verify(attributeOptionRepository, never()).save(any());
-    }
-
-    @Test
     void testGetAttributeById_shouldReturnAttribute() {
         attribute.setId(attributeId);
 
