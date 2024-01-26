@@ -178,12 +178,12 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
         List<Product> products = productRepository.findAll().stream().filter(product -> categoryUUIDs.contains(product.getCategory().getId())).toList();
 
-        Category newCate = categoryRepository.findByCategoryName("unassign").orElse(Category.builder().categoryName("unassign").build());
-
-        for (var product : products) {
-            product.setCategory(newCate);
-        }
-        productRepository.saveAll(products);
+//        Category newCate = categoryRepository.findByCategoryName("unassign").orElse(Category.builder().categoryName("unassign").build());
+//
+//        for (var product : products) {
+//            product.setCategory(newCate);
+//        }
+//        productRepository.saveAll(products);
 
         categoryConfigRepository.deleteAllByCategoryId(categoryUUIDs);
         categoryService.deleteAllById(categoryUUIDs);
