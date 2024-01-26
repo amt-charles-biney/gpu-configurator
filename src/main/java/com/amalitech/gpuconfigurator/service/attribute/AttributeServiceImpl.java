@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.service.attribute;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
+import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
@@ -136,7 +137,10 @@ public class AttributeServiceImpl implements AttributeService {
         for(UpdateAttributeOptionDto attributeOption : attributeOptionDtos) {
 
             AttributeOption updateAttribute = attributeOptionRepository.findById(UUID.fromString(attributeOption.id()))
-                    .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTION_NOT_EXIST));
+                    .orElseGet(() -> {
+                        AttributeOption newOption = new AttributeOption();
+                        return newOption;
+                    });
 
             updateAttribute.setPriceAdjustment(attributeOption.price());
             updateAttribute.setOptionName(attributeOption.name());
