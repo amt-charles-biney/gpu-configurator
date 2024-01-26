@@ -41,6 +41,9 @@ public class Category {
     @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private CategoryConfig categoryConfig;
 
+    @Version
+    private Long version;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
