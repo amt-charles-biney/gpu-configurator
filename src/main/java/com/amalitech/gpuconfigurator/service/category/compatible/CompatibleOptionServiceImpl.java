@@ -31,7 +31,11 @@ public class CompatibleOptionServiceImpl implements CompatibleOptionService {
     public void updateBulkCompatibleOptions(List<CompatibleOptionResponseDto> compatibleOptionResponseDtos) {
 
         for(CompatibleOptionResponseDto updateDto: compatibleOptionResponseDtos) {
-            CompatibleOption existingOption = compatibleOptionRepository.findById(UUID.fromString(updateDto.id())).orElseThrow(() -> new EntityNotFoundException("compatible option does not exits"));
+            CompatibleOption existingOption = compatibleOptionRepository.findById(UUID.fromString(updateDto.id()))
+                    .orElseGet(() -> {
+                        CompatibleOption newOption = new CompatibleOption();
+                        return newOption;
+                    });
 
             existingOption.setName(updateDto.name());
             existingOption.setType(updateDto.type());
