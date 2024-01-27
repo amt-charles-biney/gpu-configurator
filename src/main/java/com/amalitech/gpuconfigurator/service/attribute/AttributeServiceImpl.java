@@ -2,8 +2,9 @@ package com.amalitech.gpuconfigurator.service.attribute;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionEditResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
-import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
@@ -12,7 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +36,38 @@ public class AttributeServiceImpl implements AttributeService {
                 .map(this::createAttributeResponseType)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public CompatibleOptionEditResponse getAllAttributeOptionsEditable() {
+        List<AttributeOption> attributeOptionList = attributeOptionRepository.findAll();
+
+        List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList =  attributeOptionList.stream().map(
+                attributeOption -> CompatibleOptionResponseDto.
+                        builder()
+                        .id(attributeOption.getId().toString())
+                        .name(attributeOption.getOptionName())
+                        .type(attributeOption.getAttribute().getAttributeName())
+                        .price(attributeOption.getPriceAdjustment())
+                        .media(attributeOption.getMedia())
+                        .unit(attributeOption.getAttribute().getUnit())
+                        .isMeasured(attributeOption.getAttribute().isMeasured())
+                        .priceFactor(attributeOption.getPriceFactor())
+                        .priceIncrement(null)
+                        .baseAmount(attributeOption.getBaseAmount())
+                        .maxAmount(attributeOption.getMaxAmount())
+                        .isCompatible(true)
+                        .isIncluded(false)
+                        .build()
+        ).toList();
+
+        return CompatibleOptionEditResponse
+                .builder()
+                .name("")
+                .id(null)
+                .config(compatibleOptionResponseDtoList)
+                .build();
+    }
+
 
     @Override
     @Transactional
