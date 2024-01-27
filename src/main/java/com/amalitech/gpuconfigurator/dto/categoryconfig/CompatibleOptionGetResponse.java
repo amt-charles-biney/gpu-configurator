@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Map;
 
 @Builder
-public record CompatibleOptionGetResponse(String name, String id, List<CompatibleOptionResponseDto> config, Map<String, List<InCompatibleCategory>> incompatible) {
+public record CompatibleOptionGetResponse(String name, String id, List<CompatibleOptionResponseDto> config) {
 }

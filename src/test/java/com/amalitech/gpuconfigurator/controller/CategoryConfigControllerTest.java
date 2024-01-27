@@ -104,8 +104,7 @@ class CategoryConfigControllerTest {
     @Test
     void testGetAllCategoryConfigById() throws Exception {
         String categoryId = UUID.randomUUID().toString();
-        Map<String, List<InCompatibleCategory>> incompatibleCategoryMap = new HashMap<>();
-        CompatibleOptionGetResponse response = new CompatibleOptionGetResponse("CategoryName", categoryId, Collections.emptyList(), incompatibleCategoryMap);
+        CompatibleOptionGetResponse response = new CompatibleOptionGetResponse("CategoryName", categoryId, Collections.emptyList());
 
         Mockito.when(categoryConfigService.getCategoryAndCompatibleOption(UUID.fromString(categoryId))).thenReturn(response);
 
