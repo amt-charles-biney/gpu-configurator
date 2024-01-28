@@ -33,7 +33,7 @@ public class Category {
 
     @OneToMany(
             mappedBy = "category",
-            cascade = CascadeType.ALL,
+            cascade = CascadeType.REMOVE,
             orphanRemoval = true
     )
     private List<Product> products = new ArrayList<>();
@@ -41,8 +41,6 @@ public class Category {
     @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private CategoryConfig categoryConfig;
 
-    @Version
-    private Long version;
 
     @PrePersist
     protected void onCreate() {
