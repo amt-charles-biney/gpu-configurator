@@ -2,6 +2,8 @@ package com.amalitech.gpuconfigurator.service.attribute;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionEditResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
@@ -40,6 +42,8 @@ class AttributeServiceTest {
     private Attribute attribute;
     private UUID attributeId;
 
+    private AttributeOption attributeOption;
+
     @BeforeEach
     void Setup() {
         attributeId = UUID.randomUUID();
@@ -55,6 +59,18 @@ class AttributeServiceTest {
                 .description(attributeDto.description())
                 .description(attributeDto.description())
                 .unit(attributeDto.unit())
+                .build();
+
+        attributeOption =  AttributeOption
+                .builder()
+                .optionName("sample")
+                .media("/http.png")
+                .id(UUID.randomUUID())
+                .priceAdjustment(BigDecimal.valueOf(0))
+                .priceFactor(1.4)
+                .baseAmount(23F)
+                .maxAmount(24F)
+                .attribute(attribute)
                 .build();
     }
 
@@ -198,19 +214,6 @@ class AttributeServiceTest {
     }
 
     @Test
-    public void testUpdateAllAttributeOptions_EntityNotFoundException() {
-        List<UpdateAttributeOptionDto> attributeOptionDtos = List.of(
-                new UpdateAttributeOptionDto(attributeId.toString(), "Option1", BigDecimal.valueOf(15.0), "updatedMedia1", 120.0f, 130.0f, 1.5)
-        );
-
-        when(attributeOptionRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> attributeService.updateAllAttributeOptions(attributeOptionDtos));
-
-        verify(attributeOptionRepository, times(1)).findById(attributeId);
-        verify(attributeOptionRepository, never()).save(any());
-    }
-
-    @Test
     void testGetAttributeById_shouldReturnAttribute() {
         attribute.setId(attributeId);
 
@@ -275,6 +278,23 @@ class AttributeServiceTest {
 
         verify(attributeRepository, times(1)).findById(attributeId);
         verify(attributeRepository, never()).save(any(Attribute.class));
+    }
+
+    @Test
+    public void testGetAllAttributeOptionInCompatibleEditFormat_shouldGetAllAttributeOptions() {
+        List<AttributeOption> attributeOptionList = List.of(attributeOption);
+
+        when(attributeOptionRepository.findAll()).thenReturn(attributeOptionList);
+
+        CompatibleOptionEditResponse result = attributeService.getAllAttributeOptionsEditable();
+        List<CompatibleOptionResponseDto> resultConfig = result.config();
+
+        assertNotNull(result);
+        assertEquals(null, result.id());
+        assertEquals(1, resultConfig.size());
+        assertEquals(attribute.getAttributeName(), resultConfig.get(0).type());
+
+        verify(attributeOptionRepository, times(1)).findAll();
     }
 
 

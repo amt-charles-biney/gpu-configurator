@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.exception;
 
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -48,7 +49,7 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
-    @ExceptionHandler({ UsernameNotFoundException.class, NotFoundException.class })
+    @ExceptionHandler({ UsernameNotFoundException.class, NotFoundException.class, EntityNotFoundException.class })
     public ProblemDetail usernameNotFoundException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
         errorDetail.setDetail(e.getMessage());
