@@ -159,7 +159,16 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     public GenericResponse deleteCategoryAndCategoryConfig(List<String> categoryIds) {
         List<UUID> categoryUUIDs = categoryIds.stream().map(UUID::fromString).toList();
 
-        categoryConfigRepository.deleteAllByCategoryId(categoryUUIDs);
+        List<Product> products = productRepository.findProductsByCategoryIds(categoryUUIDs);
+
+        var unassignedCategory = categoryRepository.findByCategoryName("unassigned").orElse(Category.builder().categoryName("unassigned").build());
+
+        for (var product : products) {
+            product.setCategory(unassignedCategory);
+        }
+
+//        categoryConfigRepository.deleteAllByCategoryId(categoryUUIDs);
+
         categoryService.deleteAllById(categoryUUIDs);
 
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted category successfully");
