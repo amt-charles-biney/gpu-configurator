@@ -2,10 +2,14 @@ package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleUpdateDto;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
+import com.amalitech.gpuconfigurator.model.attributes.Attribute;
+import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CompatibleOptionRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,10 +36,14 @@ class CompatibleOptionServiceTest {
     @InjectMocks
     private CompatibleOptionServiceImpl compatibleOptionService;
 
+    @Mock
+    private AttributeOptionRepository attributeOptionRepository;
+
     private CompatibleOption compatibleOption;
     private CategoryConfig categoryConfig;
     private Category category;
     private CompatibleOptionResponseDto compatibleOptionResponseDto;
+    private AttributeOption attributeOption;
 
     @BeforeEach
     void setUp() {
@@ -50,19 +58,27 @@ class CompatibleOptionServiceTest {
                 .compatibleOptions(new ArrayList<>())
                 .build();
 
-        compatibleOption = CompatibleOption.builder()
-                .categoryConfig(categoryConfig)
-                .name("SampleOption")
-                .type("SampleType")
-                .price(BigDecimal.valueOf(25.0))
-                .media("/sample.png")
-                .unit("SampleUnit")
-                .isMeasured(true)
+        attributeOption = AttributeOption.builder()
+                .optionName("SampleOption")
+                .priceAdjustment(BigDecimal.valueOf(25.0))
+                .attribute(Attribute.builder()
+                        .unit("SampleUnit")
+                        .isMeasured(true)
+                        .description("")
+                        .attributeName("DISK")
+                        .build())
+                .id(UUID.randomUUID())
                 .baseAmount(10.0F)
                 .maxAmount(50.0F)
-                .priceIncrement(5.0F)
                 .priceFactor(1.2)
+                .build();
+
+        compatibleOption = CompatibleOption.builder()
+                .categoryConfig(categoryConfig)
+                .isMeasured(true)
                 .isCompatible(true)
+                .size(2)
+                .attributeOption(attributeOption)
                 .isIncluded(true)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -97,50 +113,34 @@ class CompatibleOptionServiceTest {
 
     @Test
     void updateBulkCompatibleOptions_shouldUpdateBulkCompatibleOptions() {
-        CompatibleOptionResponseDto updateDto = CompatibleOptionResponseDto.builder()
+        CompatibleUpdateDto updateDto = CompatibleUpdateDto.builder()
                 .id(UUID.randomUUID().toString())
-                .name("Updated Option")
-                .type("Updated Type")
-                .price(new BigDecimal("75.00"))
-                .media("Updated Media")
-                .unit("Updated Unit")
                 .isCompatible(true)
                 .isIncluded(false)
                 .isMeasured(true)
-                .priceFactor(2.0)
-                .priceIncrement(3.0f)
-                .baseAmount(15.0f)
-                .maxAmount(150.0f)
+                .attributeOptionId(attributeOption.getId().toString())
+                .attributeId(attributeOption.getId().toString())
+                .size(24)
                 .build();
 
         CompatibleOption existingOption = CompatibleOption.builder()
                 .id(UUID.fromString(updateDto.id()))
-                .name("Original Option")
-                .type("Original Type")
-                .price(new BigDecimal("50.00"))
-                .media("Original Media")
-                .unit("Original Unit")
+                .attributeOption(attributeOption)
                 .isCompatible(true)
                 .isIncluded(true)
                 .isMeasured(true)
-                .priceFactor(1.5)
-                .priceIncrement(2.0f)
-                .baseAmount(10.0f)
-                .maxAmount(100.0f)
                 .build();
 
 
         when(compatibleOptionRepository.findById(UUID.fromString(updateDto.id()))).thenReturn(Optional.of(existingOption));
+        when(attributeOptionRepository.findById(UUID.fromString(updateDto.attributeOptionId()))).thenReturn(Optional.of(attributeOption));
 
         compatibleOptionService.updateBulkCompatibleOptions(Arrays.asList(updateDto));
 
         verify(compatibleOptionRepository, times(1)).save(existingOption);
 
-        assertEquals("Updated Option", existingOption.getName());
-        assertEquals("Updated Type", existingOption.getType());
-        assertEquals(new BigDecimal("75.00"), existingOption.getPrice());
-        assertEquals("Updated Media", existingOption.getMedia());
-        assertEquals("Updated Unit", existingOption.getUnit());
+        assertEquals(false, existingOption.getIsIncluded());
+        assertEquals(true, existingOption.getAttributeOption().getAttribute().isMeasured());
     }
 
     @Test
