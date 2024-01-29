@@ -128,31 +128,31 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .filter(pair -> pair.split("_")[0].equals(String.valueOf(option.getId())))
                     .findFirst()
                     .map(pair -> pair.split("_")[1])
-                    .orElseGet(() -> String.valueOf(option.getBaseAmount()));
+                    .orElseGet(() -> String.valueOf(option.getSize()));
 
-            BigDecimal sizeMultiplier = new BigDecimal(size).divide(BigDecimal.valueOf(option.getBaseAmount())).subtract(new BigDecimal(1));
-            BigDecimal calculatedPrice = option.getPrice().multiply(sizeMultiplier).multiply(BigDecimal.valueOf(option.getPriceFactor()));
+            BigDecimal sizeMultiplier = new BigDecimal(size).divide(BigDecimal.valueOf(option.getSize())).subtract(new BigDecimal(1));
+            BigDecimal calculatedPrice = option.getAttributeOption().getPriceAdjustment().multiply(sizeMultiplier).multiply(BigDecimal.valueOf(option.getAttributeOption().getPriceFactor()));
 
             return ConfigOptions.builder()
                     .optionId(String.valueOf(option.getId()))
-                    .optionName(option.getName())
+                    .optionName(option.getAttributeOption().getOptionName())
                     .optionPrice(calculatedPrice)
-                    .optionType(option.getType())
-                    .baseAmount(BigDecimal.valueOf(option.getBaseAmount()))
+                    .optionType(option.getAttributeOption().getAttribute().getAttributeName())
+                    .baseAmount(BigDecimal.valueOf(option.getSize()))
                     .isIncluded(option.getIsIncluded())
-                    .isMeasured(option.getIsMeasured())
+                    .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
                     .size(size)
                     .build();
         } else {
             return ConfigOptions.builder()
                     .optionId(String.valueOf(option.getId()))
-                    .optionName(option.getName())
-                    .optionPrice(option.getPrice())
-                    .optionType(option.getType())
+                    .optionName(option.getAttributeOption().getOptionName())
+                    .optionPrice(option.getAttributeOption().getPriceAdjustment())
+                    .optionType(option.getAttributeOption().getAttribute().getAttributeName())
                     .baseAmount(BigDecimal.valueOf(0))
                     .isIncluded(option.getIsIncluded())
                     .size("1")
-                    .isMeasured(option.getIsMeasured())
+                    .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
                     .build();
         }
     }
@@ -160,13 +160,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private ConfigOptions createConfigOptionWithoutSize(CompatibleOption option) {
         return ConfigOptions.builder()
                 .optionId(String.valueOf(option.getId()))
-                .optionName(option.getName())
-                .optionPrice(option.getPrice().setScale(2, RoundingMode.HALF_UP))
-                .optionType(option.getType())
+                .optionName(option.getAttributeOption().getOptionName())
+                .optionPrice(option.getAttributeOption().getPriceAdjustment().setScale(2, RoundingMode.HALF_UP))
+                .optionType(option.getAttributeOption().getAttribute().getAttributeName())
                 .baseAmount(BigDecimal.valueOf(0))
                 .isIncluded(option.getIsIncluded())
                 .size("1")
-                .isMeasured(option.getIsMeasured())
+                .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
                 .build();
     }
 
