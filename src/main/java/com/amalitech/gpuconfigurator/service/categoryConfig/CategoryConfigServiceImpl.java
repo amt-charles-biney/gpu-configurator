@@ -7,6 +7,7 @@ import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
+import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
@@ -144,7 +145,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                         .isMeasured(compatibleOption.getAttributeOption().getAttribute().isMeasured())
                         .attributeId(compatibleOption.getAttributeOption().getAttribute().getId().toString())
                         .attributeOptionId(compatibleOption.getAttributeOption().getId().toString())
-                        .build()).toList();
+                .build()).toList();
 
         return CompatibleOptionGetResponse.builder()
                 .name(categoryConfig.getCategory().getCategoryName())
