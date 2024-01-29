@@ -1,16 +1,18 @@
 package com.amalitech.gpuconfigurator.service.category.compatible;
 
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionDTO;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleUpdateDto;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 
+import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CompatibleOptionRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class CompatibleOptionServiceImpl implements CompatibleOptionService {
 
     private final CompatibleOptionRepository compatibleOptionRepository;
+    private final AttributeOptionRepository attributeOptionRepository;
 
     @Override
     @Transactional
@@ -28,23 +31,19 @@ public class CompatibleOptionServiceImpl implements CompatibleOptionService {
 
     @Override
     @Transactional
-    public void updateBulkCompatibleOptions(List<CompatibleOptionResponseDto> compatibleOptionResponseDtos) {
+    public void updateBulkCompatibleOptions(List<CompatibleUpdateDto> compatibleUpdateDtos) {
 
-        for(CompatibleOptionResponseDto updateDto: compatibleOptionResponseDtos) {
+        for(CompatibleUpdateDto updateDto: compatibleUpdateDtos) {
             CompatibleOption existingOption = compatibleOptionRepository.findById(UUID.fromString(updateDto.id())).orElseThrow(() -> new EntityNotFoundException("compatible option does not exits"));
+            AttributeOption attributeOption = attributeOptionRepository.findById(UUID.fromString(updateDto.attributeOptionId())).orElseThrow(() -> new EntityNotFoundException("attribute option not found"));
 
-            existingOption.setName(updateDto.name());
-            existingOption.setType(updateDto.type());
-            existingOption.setPrice(updateDto.price());
-            existingOption.setMedia(updateDto.media());
-            existingOption.setUnit(updateDto.unit());
             existingOption.setIsCompatible(updateDto.isCompatible());
             existingOption.setIsIncluded(updateDto.isIncluded());
             existingOption.setIsMeasured(updateDto.isMeasured());
-            existingOption.setPriceFactor(updateDto.priceFactor());
-            existingOption.setPriceIncrement(updateDto.priceIncrement());
-            existingOption.setBaseAmount(updateDto.baseAmount());
-            existingOption.setMaxAmount(updateDto.maxAmount());
+            existingOption.setAttributeOption(attributeOption);
+            existingOption.setIsMeasured(updateDto.isMeasured());
+            existingOption.setSize(updateDto.size());
+            existingOption.setUpdatedAt(LocalDateTime.now());
 
             compatibleOptionRepository.save(existingOption);
         }
@@ -53,25 +52,6 @@ public class CompatibleOptionServiceImpl implements CompatibleOptionService {
     @Override
     public List<CompatibleOption> getAllCompatibleOptionsByCategoryConfig(UUID configId) {
         return compatibleOptionRepository.findAllByCategoryConfigId(configId);
-    }
-
-    @Override
-    public GenericResponse addCompatibleOption(CompatibleOptionDTO option) {
-        CompatibleOption compatibleOption = CompatibleOption.builder()
-                .name(option.name())
-                .price(option.price())
-                .type(option.type())
-                .isIncluded(option.isIncluded())
-                .isCompatible(option.isCompatible())
-                .categoryConfig(option.categoryConfig())
-                .baseAmount(option.baseAmount())
-                .priceFactor(option.priceFactor())
-                .priceIncrement(option.priceIncrement())
-                .isMeasured(option.isMeasured())
-                .media(option.media())
-                .build();
-        compatibleOptionRepository.save(compatibleOption);
-        return new GenericResponse(201, "compatible option created");
     }
 
     @Override

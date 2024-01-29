@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.service.category.compatible;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionDTO;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleUpdateDto;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import jakarta.transaction.Transactional;
 
@@ -12,13 +13,10 @@ import java.util.UUID;
 public interface CompatibleOptionService {
     @Transactional
     void addBulkCompatibleOptions(List<CompatibleOption> compatibleOptions);
-
     @Transactional
-    void updateBulkCompatibleOptions(List<CompatibleOptionResponseDto> compatibleOptionResponseDtos);
+    void updateBulkCompatibleOptions(List<CompatibleUpdateDto> compatibleUpdateDtos);
 
     List<CompatibleOption> getAllCompatibleOptionsByCategoryConfig(UUID configId);
-
-    GenericResponse addCompatibleOption(CompatibleOptionDTO option);
 
     GenericResponse deleteAllCompatibleOptions();
 
