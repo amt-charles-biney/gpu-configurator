@@ -1,18 +1,15 @@
 package com.amalitech.gpuconfigurator.service.categoryConfig;
 
 import com.amalitech.gpuconfigurator.dto.*;
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
-import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
-import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
