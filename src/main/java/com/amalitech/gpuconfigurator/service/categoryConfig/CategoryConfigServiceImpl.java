@@ -167,7 +167,6 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
             product.setCategory(unassignedCategory);
         }
 
-//        categoryConfigRepository.deleteAllByCategoryId(categoryUUIDs);
 
         categoryService.deleteAllById(categoryUUIDs);
 
