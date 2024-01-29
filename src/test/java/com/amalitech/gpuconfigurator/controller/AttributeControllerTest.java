@@ -4,6 +4,7 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionEditResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
@@ -51,7 +52,7 @@ public class AttributeControllerTest {
     private AttributeResponse attributeResponse;
     private AttributeOptionResponseDto attributeOptionResponseDto;
     private CreateAttributesRequest createAttributesRequest;
-    private CompatibleOptionEditResponse compatibleOptionEditResponse;
+    private CompatibleOptionGetResponse compatibleOptionGetResponse;
     private CompatibleOptionResponseDto compatibleOptionResponseDto;
 
     private UUID attributeId;
@@ -112,9 +113,12 @@ public class AttributeControllerTest {
                 .priceIncrement(2.0f)
                 .baseAmount(10.0f)
                 .maxAmount(100.0f)
+                .attributeId(attributeId.toString())
+                .attributeOptionId(UUID.randomUUID().toString())
+                .size(20)
                 .build();
 
-        compatibleOptionEditResponse = CompatibleOptionEditResponse
+        compatibleOptionGetResponse = CompatibleOptionGetResponse
                 .builder()
                 .name("")
                 .id(null)
@@ -229,7 +233,7 @@ public class AttributeControllerTest {
     @Test
     public void testGetAttributesInCompatibleForm() throws Exception {
 
-        when(attributeService.getAllAttributeOptionsEditable()).thenReturn(compatibleOptionEditResponse);
+        when(attributeService.getAllAttributeOptionsEditable()).thenReturn(compatibleOptionGetResponse);
 
         mockMvc.perform(get("/api/v1/admin/attributes/config"))
                 .andExpect(status().isOk())
