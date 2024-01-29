@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.model;
 
+import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,32 +29,16 @@ public class CompatibleOption {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private CategoryConfig categoryConfig;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String type;
-
-    @Column(nullable = false)
-    private BigDecimal price;
-
-    private String media;
-
-    private String unit;
-
-    private Boolean isMeasured;
-
-    private Float baseAmount;
-
-    private Float maxAmount;
-
-    private Float priceIncrement;
-
-    private Double priceFactor;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private AttributeOption attributeOption;
 
     private Boolean isCompatible;
 
+    private Boolean isMeasured;
+
     private Boolean isIncluded;
+
+    private Integer size;
 
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
