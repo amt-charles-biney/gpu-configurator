@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.service.attribute;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionEditResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
@@ -55,6 +56,7 @@ class AttributeServiceTest {
                 .build();
 
         attribute = Attribute.builder()
+                .id(attributeId)
                 .attributeName(attributeDto.attributeName())
                 .description(attributeDto.description())
                 .description(attributeDto.description())
@@ -286,7 +288,7 @@ class AttributeServiceTest {
 
         when(attributeOptionRepository.findAll()).thenReturn(attributeOptionList);
 
-        CompatibleOptionEditResponse result = attributeService.getAllAttributeOptionsEditable();
+        CompatibleOptionGetResponse result = attributeService.getAllAttributeOptionsEditable();
         List<CompatibleOptionResponseDto> resultConfig = result.config();
 
         assertNotNull(result);
