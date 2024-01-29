@@ -44,6 +44,10 @@ public class AttributeOption {
     @Column(name="price_increment")
     private Double priceFactor;
 
+    @ManyToOne
+    @JoinColumn(name = "attribute_id", nullable = false)
+    private Attribute attribute;
+
     @OneToMany(mappedBy = "attributeOption", cascade = CascadeType.ALL)
     private List<CompatibleOption> compatibleOptions;
 
