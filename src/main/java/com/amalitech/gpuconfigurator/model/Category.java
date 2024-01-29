@@ -32,9 +32,9 @@ public class Category {
     private LocalDateTime deletedAt;
 
     @OneToMany(
-            mappedBy = "category",
-            cascade = CascadeType.REMOVE,
-            orphanRemoval = true
+            mappedBy = "category"
+//            cascade = CascadeType.REMOVE,
+//            orphanRemoval = true
     )
     private List<Product> products = new ArrayList<>();
 

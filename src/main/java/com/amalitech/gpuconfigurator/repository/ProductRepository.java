@@ -30,4 +30,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
 
     @Query("SELECT COUNT(p) FROM Product p WHERE p.category.id = :categoryId")
     long countProductsByCategoryId(@Param("categoryId") UUID categoryId);
+
+    @Query("SELECT p FROM Product p WHERE p.category.id IN :categoryIds")
+    List<Product> findProductsByCategoryIds(@Param("categoryIds") List<UUID> categoryIds);
+
 }
