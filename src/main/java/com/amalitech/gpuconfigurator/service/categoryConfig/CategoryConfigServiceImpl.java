@@ -31,6 +31,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     private final CompatibleOptionServiceImpl compatibleOptionService;
     private final ProductRepository productRepository;
     private final AttributeOptionRepository attributeOptionRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     @Transactional
