@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.service.attribute;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionEditResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
@@ -15,7 +16,7 @@ import java.util.UUID;
 public interface AttributeService {
     List<AttributeResponse> getAllAttributes();
 
-    CompatibleOptionEditResponse getAllAttributeOptionsEditable();
+    CompatibleOptionGetResponse getAllAttributeOptionsEditable();
 
     @Transactional
     List<AttributeResponse> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) throws AttributeNameAlreadyExistsException;
