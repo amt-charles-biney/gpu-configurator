@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.service.attribute;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionEditResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
@@ -38,7 +39,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public CompatibleOptionEditResponse getAllAttributeOptionsEditable() {
+    public CompatibleOptionGetResponse getAllAttributeOptionsEditable() {
         List<AttributeOption> attributeOptionList = attributeOptionRepository.findAll();
 
         List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList =  attributeOptionList.stream().map(
@@ -57,10 +58,13 @@ public class AttributeServiceImpl implements AttributeService {
                         .maxAmount(attributeOption.getMaxAmount())
                         .isCompatible(true)
                         .isIncluded(false)
+                        .attributeOptionId(attributeOption.getId().toString())
+                        .attributeId(attributeOption.getAttribute().getId().toString())
+                        .size((int) Math.round(attributeOption.getBaseAmount()))
                         .build()
         ).toList();
 
-        return CompatibleOptionEditResponse
+        return CompatibleOptionGetResponse
                 .builder()
                 .name("")
                 .id(null)
