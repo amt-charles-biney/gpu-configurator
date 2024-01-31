@@ -31,7 +31,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
 
     @Override
-    public ConfigurationResponseDto configuration(String productId, Boolean warranty, Boolean save, String components) {
+    public ConfigurationResponseDto configuration(String productId, Boolean warranty, String components) {
         Product product = getProductById(productId);
         BigDecimal totalPrice = calculateTotalPrice(product);
         CategoryConfig categoryConfig = getCategoryConfig(product);

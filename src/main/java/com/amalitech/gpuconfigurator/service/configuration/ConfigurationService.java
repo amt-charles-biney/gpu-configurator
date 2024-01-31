@@ -6,7 +6,7 @@ import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 
 public interface ConfigurationService {
 
-    ConfigurationResponseDto configuration(String productId, Boolean warranty, Boolean save, String components);
+    ConfigurationResponseDto configuration(String productId, Boolean warranty, String components);
 
     ConfigurationResponseDto saveConfiguration(String productId, Boolean warranty, Boolean save, String components);
 

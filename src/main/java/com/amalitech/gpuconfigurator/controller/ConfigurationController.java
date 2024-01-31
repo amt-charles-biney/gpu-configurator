@@ -22,10 +22,9 @@ public class ConfigurationController {
     public ConfigurationResponseDto configuration(
             @PathVariable("productId") String productId,
             @RequestParam(required = false) Boolean warranty,
-            @RequestParam(required = false) Boolean save,
             @RequestParam(required = false) String components
     ) {
-        return configurationService.configuration(productId, warranty, save, components);
+        return configurationService.configuration(productId, warranty, components);
     }
 
     @CrossOrigin
