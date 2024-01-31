@@ -114,7 +114,7 @@ class CompatibleOptionServiceTest {
     @Test
     void updateBulkCompatibleOptions_shouldUpdateBulkCompatibleOptions() {
         CompatibleUpdateDto updateDto = CompatibleUpdateDto.builder()
-                .id(UUID.randomUUID().toString())
+                .compatibleOptionId(UUID.randomUUID().toString())
                 .isCompatible(true)
                 .isIncluded(false)
                 .isMeasured(true)
@@ -124,7 +124,7 @@ class CompatibleOptionServiceTest {
                 .build();
 
         CompatibleOption existingOption = CompatibleOption.builder()
-                .id(UUID.fromString(updateDto.id()))
+                .id(UUID.fromString(updateDto.compatibleOptionId()))
                 .attributeOption(attributeOption)
                 .isCompatible(true)
                 .isIncluded(true)
@@ -132,10 +132,11 @@ class CompatibleOptionServiceTest {
                 .build();
 
 
-        when(compatibleOptionRepository.findById(UUID.fromString(updateDto.id()))).thenReturn(Optional.of(existingOption));
+        when(compatibleOptionRepository.findByCategoryConfigIdAndAttributeOptionId(categoryConfig.getId(), UUID.fromString(updateDto.attributeOptionId()))).thenReturn(Optional.of(existingOption));
         when(attributeOptionRepository.findById(UUID.fromString(updateDto.attributeOptionId()))).thenReturn(Optional.of(attributeOption));
 
-        compatibleOptionService.updateBulkCompatibleOptions(Arrays.asList(updateDto));
+
+        compatibleOptionService.updateBulkCompatibleOptions(categoryConfig, Arrays.asList(updateDto));
 
         verify(compatibleOptionRepository, times(1)).save(existingOption);
 
