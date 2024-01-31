@@ -33,8 +33,8 @@ public class CompatibleOptionServiceImpl implements CompatibleOptionService {
     @Transactional
     public void updateBulkCompatibleOptions(List<CompatibleUpdateDto> compatibleUpdateDtos) {
 
-        for(CompatibleUpdateDto updateDto: compatibleUpdateDtos) {
-            CompatibleOption existingOption = compatibleOptionRepository.findById(UUID.fromString(updateDto.id())).orElseThrow(() -> new EntityNotFoundException("compatible option does not exits"));
+        for (CompatibleUpdateDto updateDto : compatibleUpdateDtos) {
+            CompatibleOption existingOption = compatibleOptionRepository.findById(UUID.fromString(updateDto.compatibleOptionId())).orElseThrow(() -> new EntityNotFoundException("compatible option does not exits"));
             AttributeOption attributeOption = attributeOptionRepository.findById(UUID.fromString(updateDto.attributeOptionId())).orElseThrow(() -> new EntityNotFoundException("attribute option not found"));
 
             existingOption.setIsCompatible(updateDto.isCompatible());
