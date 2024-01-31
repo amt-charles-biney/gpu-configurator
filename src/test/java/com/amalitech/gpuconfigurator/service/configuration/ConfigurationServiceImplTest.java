@@ -12,26 +12,4 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class ConfigurationServiceImplTest {
 
-    @InjectMocks
-    private ConfigurationService configurationService;
-
-    @Test
-    void configuration() {
-
-        String productId = "pf91c34b-1705-4afd-8a1e-99d5fa21c249";
-        Boolean warranty = false;
-
-    }
-
-    @Test
-    void saveConfiguration() {
-    }
-
-    @Test
-    void getSpecificConfiguration() {
-    }
-
-    @Test
-    void deleteSpecificConfiguration() {
-    }
 }

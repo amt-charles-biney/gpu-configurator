@@ -83,7 +83,7 @@ class ConfigurationControllerTest {
                 .warranty(null)
                 .build();
 
-        when(configurationService.configuration(productId, warranty, save, components))
+        when(configurationService.configuration(productId, warranty, components))
                 .thenReturn(expectedResult);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/config/{productId}", productId)
@@ -101,7 +101,7 @@ class ConfigurationControllerTest {
                 .andExpect(jsonPath("$.configured[1].optionId").value("fde4787a-029b-4115-8237-f74b314119dc"))
                 .andExpect(jsonPath("$.vat").value("135.85"));
 
-        verify(configurationService, times(1)).configuration(productId, warranty, save, components);
+        verify(configurationService, times(1)).configuration(productId, warranty, components);
 
     }
 
