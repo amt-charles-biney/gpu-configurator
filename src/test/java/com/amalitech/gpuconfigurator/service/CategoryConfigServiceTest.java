@@ -112,7 +112,7 @@ class CategoryConfigServiceTest {
                 .name("SampleCategory")
                 .config(Arrays.asList(
                         CompatibleOptionResponseDto.builder()
-                                .id(UUID.randomUUID().toString())
+                                .compatibleOptionId(UUID.randomUUID().toString())
                                 .attributeId(attributeOption.getAttribute().getId().toString())
                                 .attributeOptionId(attributeOption.getId().toString())
                                 .size(29)

@@ -84,7 +84,7 @@ class CompatibleOptionServiceTest {
                 .build();
 
          compatibleOptionResponseDto = CompatibleOptionResponseDto.builder()
-                .id("123")
+                .compatibleOptionId("123")
                 .name("Sample Option")
                 .type("Type A")
                 .price(new BigDecimal("50.00"))
