@@ -45,7 +45,7 @@ public class AttributeServiceImpl implements AttributeService {
         List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList =  attributeOptionList.stream().map(
                 attributeOption -> CompatibleOptionResponseDto.
                         builder()
-                        .id(attributeOption.getId().toString())
+                        .compatibleOptionId(attributeOption.getId().toString())
                         .name(attributeOption.getOptionName())
                         .type(attributeOption.getAttribute().getAttributeName())
                         .price(attributeOption.getPriceAdjustment())
