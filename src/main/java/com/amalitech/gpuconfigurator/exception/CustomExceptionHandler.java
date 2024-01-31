@@ -2,7 +2,6 @@ package com.amalitech.gpuconfigurator.exception;
 
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.*;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,26 +31,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex,
-            HttpHeaders headers,
-            HttpStatus status,
-            WebRequest request) {
-        Map<String, Object> fieldErrors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            fieldErrors.put(fieldName, errorMessage);
-        });
-
-        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        errorDetail.setDetail("One or more validation errors occurred");
-        errorDetail.setProperty("field_errors", fieldErrors);
-
-        return ResponseEntity.badRequest().body(errorDetail);
-    }
 
     @ExceptionHandler({BadCredentialsException.class})
     public ResponseEntity<Object> handleBadCredentialException(Exception e) {
