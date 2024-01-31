@@ -83,7 +83,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
         Map<String, List<CompatibleOptionResponseDto>> compatibleGroupedByType = compatibleOptions.stream()
                 .collect(Collectors.groupingBy((option) -> option.getAttributeOption().getAttribute().getAttributeName(),
                         Collectors.mapping(option -> CompatibleOptionResponseDto.builder()
-                                        .id(option.getId().toString())
+                                .compatibleOptionId(option.getId().toString())
                                         .type(option.getAttributeOption().getAttribute().getAttributeName())
                                         .price(option.getAttributeOption().getPriceAdjustment())
                                         .name(option.getAttributeOption().getOptionName())
@@ -132,7 +132,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .stream()
                 .map(compatibleOption -> CompatibleOptionResponseDto
                         .builder()
-                        .id(compatibleOption.getId().toString())
+                        .compatibleOptionId(compatibleOption.getId().toString())
                         .isCompatible(compatibleOption.getIsCompatible())
                         .isIncluded(compatibleOption.getIsIncluded())
                         .priceIncrement(null)
