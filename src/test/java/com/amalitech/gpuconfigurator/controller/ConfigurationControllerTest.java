@@ -48,7 +48,6 @@ class ConfigurationControllerTest {
     void configuration() throws Exception {
         String productId = "56c35cf3-a72f-41d2-bd4f-0727133e0efe";
         Boolean warranty = true;
-        Boolean save = false;
         String components = "b65d7dc4-11e9-4f7e-b11a-ea81d885a73d,fde4787a-029b-4115-8237-f74b314119dc";
 
         ConfigurationResponseDto expectedResult = ConfigurationResponseDto.builder()
@@ -90,7 +89,6 @@ class ConfigurationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("utf-8")
                         .param("warranty", String.valueOf(warranty))
-                        .param("save", String.valueOf(save))
                         .param("components", components)
                 )
                 .andExpect(status().isOk())
