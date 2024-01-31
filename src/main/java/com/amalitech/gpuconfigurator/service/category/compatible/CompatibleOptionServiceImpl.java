@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.category.compatible;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleUpdateDto;
+import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -30,17 +32,28 @@ public class CompatibleOptionServiceImpl implements CompatibleOptionService {
     }
 
     @Override
-    @Transactional
     public void updateBulkCompatibleOptions(List<CompatibleUpdateDto> compatibleUpdateDtos) {
 
+    }
+
+    @Override
+    @Transactional
+    public void updateBulkCompatibleOptions(CategoryConfig categoryConfig, List<CompatibleUpdateDto> compatibleUpdateDtos) {
+
         for (CompatibleUpdateDto updateDto : compatibleUpdateDtos) {
-            CompatibleOption existingOption = compatibleOptionRepository.findById(UUID.fromString(updateDto.compatibleOptionId())).orElseThrow(() -> new EntityNotFoundException("compatible option does not exits"));
-            AttributeOption attributeOption = attributeOptionRepository.findById(UUID.fromString(updateDto.attributeOptionId())).orElseThrow(() -> new EntityNotFoundException("attribute option not found"));
+            // find the compatible option that has the categoryConfig id as well as the attribute option id
+            Optional<CompatibleOption> optionalExistingOption =
+                    compatibleOptionRepository.findByCategoryConfigIdAndAttributeOptionId(categoryConfig.getId(), UUID.fromString(updateDto.attributeOptionId()));
+
+            CompatibleOption existingOption = optionalExistingOption.orElse(new CompatibleOption());
+            AttributeOption attributeOption = attributeOptionRepository.findById(UUID.fromString(updateDto.attributeOptionId()))
+                            .orElseThrow(() -> new EntityNotFoundException("attribute option could not be found"));
 
             existingOption.setIsCompatible(updateDto.isCompatible());
             existingOption.setIsIncluded(updateDto.isIncluded());
             existingOption.setIsMeasured(updateDto.isMeasured());
             existingOption.setAttributeOption(attributeOption);
+            existingOption.setCategoryConfig(categoryConfig);
             existingOption.setIsMeasured(updateDto.isMeasured());
             existingOption.setSize(updateDto.size());
             existingOption.setUpdatedAt(LocalDateTime.now());
