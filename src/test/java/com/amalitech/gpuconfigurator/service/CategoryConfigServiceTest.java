@@ -259,8 +259,9 @@ class CategoryConfigServiceTest {
     @Test
     void testUpdateCategoryAndConfigs() {
 
+        when(categoryConfigRepository.findByCategoryId(any(UUID.class))).thenReturn(Optional.ofNullable(categoryConfig));
         when(categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name())).thenReturn(new CategoryResponse(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name()));
-        doNothing().when(compatibleOptionServiceImpl).updateBulkCompatibleOptions(compatibleOptionEditResponse.config());
+        doNothing().when(compatibleOptionServiceImpl).updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
 
         GenericResponse response = categoryConfigService.updateCategoryAndConfigs(compatibleOptionEditResponse);
 
@@ -268,7 +269,7 @@ class CategoryConfigServiceTest {
         assertEquals("updated category and config", response.message());
 
         verify(categoryService, times(1)).updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name());
-        verify(compatibleOptionServiceImpl, times(1)).updateBulkCompatibleOptions(compatibleOptionEditResponse.config());
+        verify(compatibleOptionServiceImpl, times(1)).updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
     }
 
     @Test
