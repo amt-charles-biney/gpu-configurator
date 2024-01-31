@@ -132,10 +132,11 @@ class CompatibleOptionServiceTest {
                 .build();
 
 
-        when(compatibleOptionRepository.findById(UUID.fromString(updateDto.compatibleOptionId()))).thenReturn(Optional.of(existingOption));
+        when(compatibleOptionRepository.findByCategoryConfigIdAndAttributeOptionId(categoryConfig.getId(), UUID.fromString(updateDto.attributeOptionId()))).thenReturn(Optional.of(existingOption));
         when(attributeOptionRepository.findById(UUID.fromString(updateDto.attributeOptionId()))).thenReturn(Optional.of(attributeOption));
 
-        compatibleOptionService.updateBulkCompatibleOptions(Arrays.asList(updateDto));
+
+        compatibleOptionService.updateBulkCompatibleOptions(categoryConfig, Arrays.asList(updateDto));
 
         verify(compatibleOptionRepository, times(1)).save(existingOption);
 
