@@ -180,8 +180,11 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     @Override
     @Transactional
     public GenericResponse updateCategoryAndConfigs(CompatibleOptionEditResponse compatibleOptionEditResponse) {
+        CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(UUID.fromString(compatibleOptionEditResponse.id()))
+                        .orElseThrow(() -> new EntityNotFoundException("configuration does not exist"));
+
         categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name());
-        compatibleOptionService.updateBulkCompatibleOptions(compatibleOptionEditResponse.config());
+        compatibleOptionService.updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
 
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "updated category and config");
     }
