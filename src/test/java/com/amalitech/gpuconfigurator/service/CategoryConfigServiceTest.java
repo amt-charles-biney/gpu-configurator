@@ -134,7 +134,7 @@ class CategoryConfigServiceTest {
 
         CompatibleUpdateDto compatibleUpdateDto = CompatibleUpdateDto.builder()
                 .attributeId(attributeOption.getAttribute().getId().toString())
-                .id(UUID.randomUUID().toString())
+                .compatibleOptionId(UUID.randomUUID().toString())
                 .attributeOptionId(attributeOption.getId().toString())
                 .isMeasured(true)
                 .isIncluded(false)
