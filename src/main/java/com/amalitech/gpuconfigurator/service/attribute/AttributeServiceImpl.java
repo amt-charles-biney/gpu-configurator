@@ -2,7 +2,6 @@ package com.amalitech.gpuconfigurator.service.attribute;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionEditResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
@@ -102,8 +101,8 @@ public class AttributeServiceImpl implements AttributeService {
                 .unit(updateAttributeDto.unit())
                 .build();
 
-        this.updateAllAttributeOptions(updateAttributeDto.variantOptions());
-        this.updateAttribute(UUID.fromString(updateAttributeDto.id()), attributeDto);
+        Attribute attribute = this.updateAttribute(UUID.fromString(updateAttributeDto.id()), attributeDto);
+        this.updateAllAttributeOptions(attribute, updateAttributeDto.variantOptions());
 
         return this.getAllAttributes();
     }
@@ -122,7 +121,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public AttributeResponse updateAttribute(UUID id, @NotNull AttributeDto attribute) {
+    public Attribute updateAttribute(UUID id, @NotNull AttributeDto attribute) {
         Attribute updateAttribute = attributeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
 
@@ -132,8 +131,7 @@ public class AttributeServiceImpl implements AttributeService {
         updateAttribute.setUnit(attribute.unit());
         updateAttribute.setUpdatedAt(LocalDateTime.now());
 
-        Attribute savedAttribute = attributeRepository.save(updateAttribute);
-        return this.createAttributeResponseType(savedAttribute);
+        return attributeRepository.save(updateAttribute);
    }
 
 
@@ -169,7 +167,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public void updateAllAttributeOptions(@NotNull List<UpdateAttributeOptionDto> attributeOptionDtos) {
+    public void updateAllAttributeOptions(Attribute attribute, List<UpdateAttributeOptionDto> attributeOptionDtos) {
         for(UpdateAttributeOptionDto attributeOption : attributeOptionDtos) {
 
             AttributeOption updateAttribute = attributeOptionRepository.findById(UUID.fromString(attributeOption.id()))
@@ -179,6 +177,7 @@ public class AttributeServiceImpl implements AttributeService {
                     });
 
             updateAttribute.setPriceAdjustment(attributeOption.price());
+            updateAttribute.setAttribute(attribute);
             updateAttribute.setOptionName(attributeOption.name());
             updateAttribute.setBaseAmount(attributeOption.baseAmount());
             updateAttribute.setMaxAmount(attributeOption.maxAmount());
