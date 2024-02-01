@@ -194,6 +194,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
         List<CompatibleOption> compatibleOptions = compatibleOptionService.getAllCompatibleOptionsByCategoryConfig(categoryConfigId);
 
         return compatibleOptions.stream()
+                .filter(option -> option.getIsIncluded())
                 .map(option -> option.getAttributeOption().getAttribute().getAttributeName())
                 .distinct()
                 .toList();
