@@ -209,7 +209,7 @@ class AttributeServiceTest {
 
         when(attributeOptionRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        attributeService.updateAllAttributeOptions(attributeOptionDtos);
+        attributeService.updateAllAttributeOptions(attribute, attributeOptionDtos);
 
         verify(attributeOptionRepository, times(2)).findById(any(UUID.class));
         verify(attributeOptionRepository, times(2)).save(any(AttributeOption.class));
@@ -257,16 +257,14 @@ class AttributeServiceTest {
 
         when(attributeRepository.findById(attributeId)).thenReturn(Optional.of(attribute));
         when(attributeRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
-        when(attributeOptionRepository.findAllByAttributeId(any(UUID.class))).thenReturn(Optional.of(attributeOptions));
 
-        AttributeResponse updatedAttribute = attributeService.updateAttribute(attributeId, attributeDto);
+        Attribute updatedAttribute = attributeService.updateAttribute(attributeId, attributeDto);
 
         assertNotNull(updatedAttribute);
-        assertEquals("updated", updatedAttribute.attributeName());
+        assertEquals("updated", updatedAttribute.getAttributeName());
 
         verify(attributeRepository, times(1)).findById(attributeId);
         verify(attributeRepository, times(1)).save(any(Attribute.class));
-        verify(attributeOptionRepository, times(1)).findAllByAttributeId(any(UUID.class));
     }
 
 
