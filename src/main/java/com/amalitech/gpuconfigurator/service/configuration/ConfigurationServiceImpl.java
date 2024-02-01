@@ -123,15 +123,23 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     private ConfigOptions createConfigOption(CompatibleOption option, String[] componentIsSizableList) {
-        if (Boolean.TRUE.equals(option.getIsMeasured())) {
+        Boolean isMeasured = option.getAttributeOption().getAttribute().isMeasured();
+        if (isMeasured) {
             String size = Arrays.stream(componentIsSizableList)
                     .filter(pair -> pair.split("_")[0].equals(String.valueOf(option.getId())))
                     .findFirst()
                     .map(pair -> pair.split("_")[1])
                     .orElseGet(() -> String.valueOf(option.getBaseAmount()));
 
-            BigDecimal sizeMultiplier = new BigDecimal(size).divide(option.getBaseAmount()).subtract(new BigDecimal(1));
-            BigDecimal calculatedPrice = option.getPrice().multiply(sizeMultiplier).multiply(BigDecimal.valueOf(option.getPriceFactor()));
+
+            BigDecimal sizeMultiplier = new BigDecimal(size)
+                    .divide(BigDecimal.valueOf(option.getSize()), 2, RoundingMode.HALF_UP)
+                    .subtract(BigDecimal.ONE);
+
+            BigDecimal calculatedPrice = option.getAttributeOption().getPriceAdjustment()
+                    .multiply(sizeMultiplier)
+                    .multiply(BigDecimal.valueOf(option.getAttributeOption().getPriceFactor()))
+                    .setScale(2, RoundingMode.HALF_UP);
 
             return ConfigOptions.builder()
                     .optionId(String.valueOf(option.getId()))
