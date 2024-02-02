@@ -2,6 +2,8 @@ package com.amalitech.gpuconfigurator.service.attribute;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
@@ -11,7 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,41 @@ public class AttributeServiceImpl implements AttributeService {
                 .map(this::createAttributeResponseType)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public CompatibleOptionGetResponse getAllAttributeOptionsEditable() {
+        List<AttributeOption> attributeOptionList = attributeOptionRepository.findAll();
+
+        List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList =  attributeOptionList.stream().map(
+                attributeOption -> CompatibleOptionResponseDto.
+                        builder()
+                        .compatibleOptionId(attributeOption.getId().toString())
+                        .name(attributeOption.getOptionName())
+                        .type(attributeOption.getAttribute().getAttributeName())
+                        .price(attributeOption.getPriceAdjustment())
+                        .media(attributeOption.getMedia())
+                        .unit(attributeOption.getAttribute().getUnit())
+                        .isMeasured(attributeOption.getAttribute().isMeasured())
+                        .priceFactor(attributeOption.getPriceFactor())
+                        .priceIncrement(null)
+                        .baseAmount(attributeOption.getBaseAmount())
+                        .maxAmount(attributeOption.getMaxAmount())
+                        .isCompatible(true)
+                        .isIncluded(false)
+                        .attributeOptionId(attributeOption.getId().toString())
+                        .attributeId(attributeOption.getAttribute().getId().toString())
+                        .size((int) Math.round(attributeOption.getBaseAmount()))
+                        .build()
+        ).toList();
+
+        return CompatibleOptionGetResponse
+                .builder()
+                .name("")
+                .id(null)
+                .config(compatibleOptionResponseDtoList)
+                .build();
+    }
+
 
     @Override
     @Transactional
@@ -65,8 +101,8 @@ public class AttributeServiceImpl implements AttributeService {
                 .unit(updateAttributeDto.unit())
                 .build();
 
-        this.updateAllAttributeOptions(updateAttributeDto.variantOptions());
-        this.updateAttribute(UUID.fromString(updateAttributeDto.id()), attributeDto);
+        Attribute attribute = this.updateAttribute(UUID.fromString(updateAttributeDto.id()), attributeDto);
+        this.updateAllAttributeOptions(attribute, updateAttributeDto.variantOptions());
 
         return this.getAllAttributes();
     }
@@ -85,7 +121,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public AttributeResponse updateAttribute(UUID id, @NotNull AttributeDto attribute) {
+    public Attribute updateAttribute(UUID id, @NotNull AttributeDto attribute) {
         Attribute updateAttribute = attributeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
 
@@ -95,8 +131,7 @@ public class AttributeServiceImpl implements AttributeService {
         updateAttribute.setUnit(attribute.unit());
         updateAttribute.setUpdatedAt(LocalDateTime.now());
 
-        Attribute savedAttribute = attributeRepository.save(updateAttribute);
-        return this.createAttributeResponseType(savedAttribute);
+        return attributeRepository.save(updateAttribute);
    }
 
 
@@ -132,13 +167,17 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public void updateAllAttributeOptions(@NotNull List<UpdateAttributeOptionDto> attributeOptionDtos) {
+    public void updateAllAttributeOptions(Attribute attribute, List<UpdateAttributeOptionDto> attributeOptionDtos) {
         for(UpdateAttributeOptionDto attributeOption : attributeOptionDtos) {
 
             AttributeOption updateAttribute = attributeOptionRepository.findById(UUID.fromString(attributeOption.id()))
-                    .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTION_NOT_EXIST));
+                    .orElseGet(() -> {
+                        AttributeOption newOption = new AttributeOption();
+                        return newOption;
+                    });
 
             updateAttribute.setPriceAdjustment(attributeOption.price());
+            updateAttribute.setAttribute(attribute);
             updateAttribute.setOptionName(attributeOption.name());
             updateAttribute.setBaseAmount(attributeOption.baseAmount());
             updateAttribute.setMaxAmount(attributeOption.maxAmount());
@@ -197,7 +236,9 @@ public class AttributeServiceImpl implements AttributeService {
                         new AttributeResponseDto(
                         attributeOption.getAttribute().getAttributeName(),
                         attributeOption.getAttribute().getId().toString(),
-                        attributeOption.getAttribute().isMeasured()))
+                        attributeOption.getAttribute().isMeasured(),
+                                attributeOption.getAttribute().getUnit()
+                        ))
                 .build();
     }
 

@@ -2,9 +2,9 @@ package com.amalitech.gpuconfigurator.service.attribute;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
-import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,6 +14,8 @@ import java.util.UUID;
 public interface AttributeService {
     List<AttributeResponse> getAllAttributes();
 
+    CompatibleOptionGetResponse getAllAttributeOptionsEditable();
+
     @Transactional
     List<AttributeResponse> createAttributeAndAttributeOptions(CreateAttributesRequest createAttributesRequest) throws AttributeNameAlreadyExistsException;
 
@@ -22,7 +24,7 @@ public interface AttributeService {
 
     Attribute addAttribute(AttributeDto attribute) throws AttributeNameAlreadyExistsException;
 
-    AttributeResponse updateAttribute(UUID id, AttributeDto attribute);
+    Attribute updateAttribute(UUID id, AttributeDto attribute);
 
     AttributeResponse getAttributeById(UUID id);
 
@@ -30,7 +32,7 @@ public interface AttributeService {
 
     GenericResponse deleteAttributeOption(UUID attributeId, UUID optionId);
 
-    void updateAllAttributeOptions(List<UpdateAttributeOptionDto> attributeOptionDtos);
+    void updateAllAttributeOptions(Attribute attribute, List<UpdateAttributeOptionDto> attributeOptionDtos);
 
     @Transactional
     List<AttributeOptionResponseDto> createAllAttributeOptions(UUID attributeId, @NotNull List<CreateAttributeOptionRequest> attributeOptionDtoList);

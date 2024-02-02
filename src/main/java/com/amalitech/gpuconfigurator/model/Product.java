@@ -1,4 +1,5 @@
 package com.amalitech.gpuconfigurator.model;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,7 +41,7 @@ public class Product {
     private Integer inStock;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(
             name = "category_id_fk"
     ))

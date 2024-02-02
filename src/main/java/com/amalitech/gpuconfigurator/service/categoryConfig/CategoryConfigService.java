@@ -1,10 +1,7 @@
 package com.amalitech.gpuconfigurator.service.categoryConfig;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigRequest;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigResponseDto;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryListResponse;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionEditResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +18,7 @@ public interface CategoryConfigService {
 
     List<CategoryListResponse> getCategoryListResponses();
 
-    CompatibleOptionEditResponse getCategoryAndCompatibleOption(UUID categoryId);
+    CompatibleOptionGetResponse getCategoryAndCompatibleOption(UUID categoryId);
 
     @Transactional
     GenericResponse deleteCategoryAndCategoryConfig(List<String> categoryIds);

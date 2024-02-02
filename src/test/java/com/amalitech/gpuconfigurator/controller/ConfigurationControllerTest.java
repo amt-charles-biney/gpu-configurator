@@ -48,7 +48,6 @@ class ConfigurationControllerTest {
     void configuration() throws Exception {
         String productId = "56c35cf3-a72f-41d2-bd4f-0727133e0efe";
         Boolean warranty = true;
-        Boolean save = false;
         String components = "b65d7dc4-11e9-4f7e-b11a-ea81d885a73d,fde4787a-029b-4115-8237-f74b314119dc";
 
         ConfigurationResponseDto expectedResult = ConfigurationResponseDto.builder()
@@ -83,14 +82,13 @@ class ConfigurationControllerTest {
                 .warranty(null)
                 .build();
 
-        when(configurationService.configuration(productId, warranty, save, components))
+        when(configurationService.configuration(productId, warranty, components))
                 .thenReturn(expectedResult);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/config/{productId}", productId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("utf-8")
                         .param("warranty", String.valueOf(warranty))
-                        .param("save", String.valueOf(save))
                         .param("components", components)
                 )
                 .andExpect(status().isOk())
@@ -101,7 +99,7 @@ class ConfigurationControllerTest {
                 .andExpect(jsonPath("$.configured[1].optionId").value("fde4787a-029b-4115-8237-f74b314119dc"))
                 .andExpect(jsonPath("$.vat").value("135.85"));
 
-        verify(configurationService, times(1)).configuration(productId, warranty, save, components);
+        verify(configurationService, times(1)).configuration(productId, warranty, components);
 
     }
 

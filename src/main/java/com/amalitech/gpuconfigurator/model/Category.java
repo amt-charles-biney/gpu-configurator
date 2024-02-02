@@ -32,14 +32,15 @@ public class Category {
     private LocalDateTime deletedAt;
 
     @OneToMany(
-            mappedBy = "category",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+            mappedBy = "category"
+//            cascade = CascadeType.REMOVE,
+//            orphanRemoval = true
     )
     private List<Product> products = new ArrayList<>();
 
     @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private CategoryConfig categoryConfig;
+
 
     @PrePersist
     protected void onCreate() {

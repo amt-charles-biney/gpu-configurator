@@ -1,17 +1,20 @@
 package com.amalitech.gpuconfigurator.service.categoryConfig;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.Product;
+import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
+import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,8 +32,9 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
     private final CategoryConfigRepository categoryConfigRepository;
     private final CategoryServiceImpl categoryService;
-    private final CompatibleOptionServiceImpl compatibleOptionServiceImpl;
+    private final CompatibleOptionServiceImpl compatibleOptionService;
     private final ProductRepository productRepository;
+    private final AttributeOptionRepository attributeOptionRepository;
     private final CategoryRepository categoryRepository;
 
     @Override
@@ -49,21 +53,14 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .stream()
                 .map(option -> CompatibleOption
                         .builder()
-                        .type(option.type())
-                        .price(option.price())
-                        .name(option.name())
-                        .media(option.media())
-                        .isMeasured(option.isMeasured())
-                        .priceFactor(option.priceFactor())
-                        .baseAmount(option.baseAmount())
-                        .maxAmount(option.maxAmount())
                         .isCompatible(option.isCompatible())
-                        .unit(option.unit())
                         .isIncluded(option.isIncluded())
+                        .attributeOption(this.getAttributeOption(option.attributeOptionId()))
+                        .size(option.size())
                         .categoryConfig(savedCategoryConfig)
                         .build()).toList();
 
-        compatibleOptionServiceImpl.addBulkCompatibleOptions(compatibleOptionRequestToResponse);
+        compatibleOptionService.addBulkCompatibleOptions(compatibleOptionRequestToResponse);
         return new GenericResponse(201, "category config created successfully " + config.getId());
     }
 
@@ -75,7 +72,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     @Override
     public CategoryConfigResponseDto getCategoryConfigByCategory(String id) {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("config does not exist"));
-        List<CompatibleOption> compatibleOptions = compatibleOptionServiceImpl.getByCategoryConfigId(categoryConfig.getId());
+        List<CompatibleOption> compatibleOptions = compatibleOptionService.getByCategoryConfigId(categoryConfig.getId());
 
         CategoryResponse categoryResponse = CategoryResponse
                 .builder()
@@ -84,20 +81,23 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .build();
 
         Map<String, List<CompatibleOptionResponseDto>> compatibleGroupedByType = compatibleOptions.stream()
-                .collect(Collectors.groupingBy(CompatibleOption::getType,                           // Group by 'type'
-                        Collectors.mapping(option -> CompatibleOptionResponseDto.builder()      // Map each group to a list of CompatibleOptionResponseDto
-                                        .id(option.getId().toString())
-                                        .type(option.getType())
-                                        .price(option.getPrice())
-                                        .name(option.getName())
-                                        .media(option.getMedia())
+                .collect(Collectors.groupingBy((option) -> option.getAttributeOption().getAttribute().getAttributeName(),
+                        Collectors.mapping(option -> CompatibleOptionResponseDto.builder()
+                                .compatibleOptionId(option.getId().toString())
+                                        .type(option.getAttributeOption().getAttribute().getAttributeName())
+                                        .price(option.getAttributeOption().getPriceAdjustment())
+                                        .name(option.getAttributeOption().getOptionName())
+                                        .media(option.getAttributeOption().getMedia())
                                         .isCompatible(option.getIsCompatible())
-                                        .maxAmount(option.getMaxAmount())
-                                        .priceFactor(option.getPriceFactor())
-                                        .isMeasured(option.getIsMeasured())
-                                        .baseAmount(option.getBaseAmount())
-                                        .unit(option.getUnit())
+                                        .maxAmount(option.getAttributeOption().getMaxAmount())
+                                        .priceFactor(option.getAttributeOption().getPriceFactor())
+                                        .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
+                                        .baseAmount(option.getAttributeOption().getBaseAmount())
+                                        .unit(option.getAttributeOption().getAttribute().getUnit())
                                         .isIncluded(option.getIsIncluded())
+                                        .size(option.getSize())
+                                        .attributeId(option.getAttributeOption().getAttribute().getId().toString())
+                                        .attributeOptionId(option.getAttributeOption().getId().toString())
                                         .build(),
                                 Collectors.toList())));
 
@@ -123,31 +123,34 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     }
 
     @Override
-    public CompatibleOptionEditResponse getCategoryAndCompatibleOption(UUID categoryId) {
+    public CompatibleOptionGetResponse getCategoryAndCompatibleOption(UUID categoryId) {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(categoryId).orElseThrow(() -> new EntityNotFoundException("config category not found"));
 
-        List<CompatibleOption> compatibleOptions = compatibleOptionServiceImpl.getAllCompatibleOptionsByCategoryConfig(categoryConfig.getId());
+        List<CompatibleOption> compatibleOptions = compatibleOptionService.getAllCompatibleOptionsByCategoryConfig(categoryConfig.getId());
 
         List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList = compatibleOptions
                 .stream()
                 .map(compatibleOption -> CompatibleOptionResponseDto
                         .builder()
-                        .id(compatibleOption.getId().toString())
+                        .compatibleOptionId(compatibleOption.getId().toString())
                         .isCompatible(compatibleOption.getIsCompatible())
                         .isIncluded(compatibleOption.getIsIncluded())
-                        .priceIncrement(compatibleOption.getPriceIncrement())
-                        .priceFactor(compatibleOption.getPriceFactor())
-                        .unit(compatibleOption.getUnit())
-                        .name(compatibleOption.getName())
-                        .type(compatibleOption.getType())
-                        .maxAmount(compatibleOption.getMaxAmount())
-                        .price(compatibleOption.getPrice())
-                        .media(compatibleOption.getMedia())
-                        .baseAmount(compatibleOption.getBaseAmount())
-                        .isMeasured(compatibleOption.getIsMeasured())
+                        .priceIncrement(null)
+                        .priceFactor(compatibleOption.getAttributeOption().getPriceFactor())
+                        .unit(compatibleOption.getAttributeOption().getAttribute().getUnit())
+                        .name(compatibleOption.getAttributeOption().getOptionName())
+                        .type(compatibleOption.getAttributeOption().getAttribute().getAttributeName())
+                        .maxAmount(compatibleOption.getAttributeOption().getMaxAmount())
+                        .size(compatibleOption.getSize())
+                        .price(compatibleOption.getAttributeOption().getPriceAdjustment())
+                        .media(compatibleOption.getAttributeOption().getMedia())
+                        .baseAmount(compatibleOption.getAttributeOption().getBaseAmount())
+                        .isMeasured(compatibleOption.getAttributeOption().getAttribute().isMeasured())
+                        .attributeId(compatibleOption.getAttributeOption().getAttribute().getId().toString())
+                        .attributeOptionId(compatibleOption.getAttributeOption().getId().toString())
                         .build()).toList();
 
-        return CompatibleOptionEditResponse.builder()
+        return CompatibleOptionGetResponse.builder()
                 .name(categoryConfig.getCategory().getCategoryName())
                 .id(categoryConfig.getCategory().getId().toString())
                 .config(compatibleOptionResponseDtoList)
@@ -159,17 +162,16 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     public GenericResponse deleteCategoryAndCategoryConfig(List<String> categoryIds) {
         List<UUID> categoryUUIDs = categoryIds.stream().map(UUID::fromString).toList();
 
-        List<Product> products = productRepository.findAll().stream().filter(product -> categoryUUIDs.contains(product.getCategory().getId())).toList();
+        List<Product> products = productRepository.findProductsByCategoryIds(categoryUUIDs);
 
-        Category newCate = categoryRepository.findByCategoryName("unassign").orElse(Category.builder().categoryName("unassign").build());
+        var unassignedCategory = categoryRepository.findByCategoryName("unassigned").orElse(Category.builder().categoryName("unassigned").build());
 
-        for (var product: products){
-            product.setCategory(newCate);
+        for (var product : products) {
+            product.setCategory(unassignedCategory);
         }
-        productRepository.saveAll(products);
 
-        categoryConfigRepository.deleteAllByCategoryId(categoryUUIDs);
-//        categoryService.deleteAllById(categoryUUIDs);
+
+        categoryService.deleteAllById(categoryUUIDs);
 
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted category successfully");
 
@@ -178,22 +180,30 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     @Override
     @Transactional
     public GenericResponse updateCategoryAndConfigs(CompatibleOptionEditResponse compatibleOptionEditResponse) {
+        CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(UUID.fromString(compatibleOptionEditResponse.id()))
+                        .orElseThrow(() -> new EntityNotFoundException("configuration does not exist"));
+
         categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name());
-        compatibleOptionServiceImpl.updateBulkCompatibleOptions(compatibleOptionEditResponse.config());
+        compatibleOptionService.updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
 
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "updated category and config");
     }
 
 
     public List<String> extractAttributesFromCompatibleOptions(UUID categoryConfigId) {
-        List<CompatibleOption> compatibleOptions = compatibleOptionServiceImpl.getAllCompatibleOptionsByCategoryConfig(categoryConfigId);
+        List<CompatibleOption> compatibleOptions = compatibleOptionService.getAllCompatibleOptionsByCategoryConfig(categoryConfigId);
+
         return compatibleOptions.stream()
-                .map(CompatibleOption::getType)
+                .filter(option -> option.getIsIncluded())
+                .map(option -> option.getAttributeOption().getAttribute().getAttributeName())
                 .distinct()
                 .toList();
     }
 
     public Long extractProductCount(UUID category) {
         return productRepository.countProductsByCategoryId(category);
+    }
+    public AttributeOption getAttributeOption (String id) {
+        return attributeOptionRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("could not find attribute option"));
     }
 }

@@ -3,6 +3,9 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionEditResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.attribute.AttributeServiceImpl;
@@ -33,8 +36,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @SpringBootTest
@@ -50,6 +52,8 @@ public class AttributeControllerTest {
     private AttributeResponse attributeResponse;
     private AttributeOptionResponseDto attributeOptionResponseDto;
     private CreateAttributesRequest createAttributesRequest;
+    private CompatibleOptionGetResponse compatibleOptionGetResponse;
+    private CompatibleOptionResponseDto compatibleOptionResponseDto;
 
     private UUID attributeId;
 
@@ -93,6 +97,32 @@ public class AttributeControllerTest {
                 .unit("SampleUnit")
                 .description("Sample Description")
                 .attributeOptions(List.of(attributeOptionResponseDto))
+                .build();
+
+        compatibleOptionResponseDto = CompatibleOptionResponseDto.builder()
+                .compatibleOptionId("123")
+                .name("Sample Option")
+                .type("Type A")
+                .price(new BigDecimal("50.00"))
+                .media("Sample Media")
+                .unit("Unit A")
+                .isCompatible(true)
+                .isIncluded(false)
+                .isMeasured(true)
+                .priceFactor(1.5)
+                .priceIncrement(2.0f)
+                .baseAmount(10.0f)
+                .maxAmount(100.0f)
+                .attributeId(attributeId.toString())
+                .attributeOptionId(UUID.randomUUID().toString())
+                .size(20)
+                .build();
+
+        compatibleOptionGetResponse = CompatibleOptionGetResponse
+                .builder()
+                .name("")
+                .id(null)
+                .config(List.of(compatibleOptionResponseDto))
                 .build();
     }
 
@@ -198,5 +228,17 @@ public class AttributeControllerTest {
         mockMvc.perform(delete("/api/v1/admin/attributes/{attributeId}", attributeId))
                 .andExpect(status().isOk());
 
+    }
+
+    @Test
+    public void testGetAttributesInCompatibleForm() throws Exception {
+
+        when(attributeService.getAllAttributeOptionsEditable()).thenReturn(compatibleOptionGetResponse);
+
+        mockMvc.perform(get("/api/v1/admin/attributes/config"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").doesNotExist())
+                .andExpect(jsonPath("$.name").value(""));
     }
 }

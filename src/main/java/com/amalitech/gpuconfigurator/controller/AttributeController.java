@@ -3,6 +3,8 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.ApiResponse;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionEditResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.service.attribute.AttributeService;
@@ -44,6 +46,13 @@ public class AttributeController {
         List<AttributeResponse> attributes = attributeService.getAllAttributes();
         ApiResponse<List<AttributeResponse>> attributeResponse = new ApiResponse<List<AttributeResponse>>(attributes);
         return ResponseEntity.ok(attributeResponse);
+    }
+
+    @CrossOrigin
+    @GetMapping("/v1/admin/attributes/config")
+    public ResponseEntity<CompatibleOptionGetResponse> getAllAttributesEditable() {
+        CompatibleOptionGetResponse compatibleOptionEditResponse = attributeService.getAllAttributeOptionsEditable();
+        return ResponseEntity.ok(compatibleOptionEditResponse);
     }
 
     @CrossOrigin
