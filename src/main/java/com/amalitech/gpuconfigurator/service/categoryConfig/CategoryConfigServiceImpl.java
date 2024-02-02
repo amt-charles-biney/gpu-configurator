@@ -91,7 +91,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                                         .isCompatible(option.getIsCompatible())
                                         .maxAmount(option.getAttributeOption().getMaxAmount())
                                         .priceFactor(option.getAttributeOption().getPriceFactor())
-                                        .isMeasured(option.getIsMeasured())
+                                        .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
                                         .baseAmount(option.getAttributeOption().getBaseAmount())
                                         .unit(option.getAttributeOption().getAttribute().getUnit())
                                         .isIncluded(option.getIsIncluded())
