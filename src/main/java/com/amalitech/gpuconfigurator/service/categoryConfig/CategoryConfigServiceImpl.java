@@ -96,7 +96,11 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                                         .attributeId(option.getAttributeOption().getAttribute().getId().toString())
                                         .attributeOptionId(option.getAttributeOption().getId().toString())
                                         .build(),
-                                Collectors.toList())));
+                                Collectors.toList())))
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().stream().anyMatch(option -> option.isCompatible() || option.isIncluded()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         return CategoryConfigResponseDto.builder()
                 .id(categoryConfig.getId().toString())
