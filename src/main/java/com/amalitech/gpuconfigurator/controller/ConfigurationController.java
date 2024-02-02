@@ -32,10 +32,9 @@ public class ConfigurationController {
     public ConfigurationResponseDto createConfiguration(
             @PathVariable("productId") String productId,
             @RequestParam(required = false) Boolean warranty,
-            @RequestParam(required = false) Boolean save,
             @RequestParam(required = false) String components
     ) {
-        return configurationService.saveConfiguration(productId, warranty, save, components);
+        return configurationService.saveConfiguration(productId, warranty, components);
     }
 
     @CrossOrigin
