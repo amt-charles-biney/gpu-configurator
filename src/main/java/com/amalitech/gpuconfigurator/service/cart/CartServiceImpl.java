@@ -1,10 +1,10 @@
 package com.amalitech.gpuconfigurator.service.cart;
 
 import com.amalitech.gpuconfigurator.dto.cart.CartItemsCountResponse;
+import com.amalitech.gpuconfigurator.model.Cart;
 import com.amalitech.gpuconfigurator.model.User;
-import com.amalitech.gpuconfigurator.repository.CartRepository;
 import com.amalitech.gpuconfigurator.repository.ConfigurationRepository;
-import com.amalitech.gpuconfigurator.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -17,16 +17,18 @@ public class CartServiceImpl implements CartService {
     private final ConfigurationRepository configuredProductRepository;
 
     @Override
-    public CartItemsCountResponse getCartItemsCount(Principal principal) {
+    public CartItemsCountResponse getCartItemsCount(Principal principal, HttpSession session) {
+        Cart cart;
         if (principal == null) {
-            return null;
+            cart = (Cart) session.getAttribute("cart");
+        } else {
+            var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+            cart = user.getCart();
         }
 
-        var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
-
         long cartItemsCount = 0;
-        if (user.getCart() != null) {
-            cartItemsCount = configuredProductRepository.countByCartId(user.getCart().getId());
+        if (cart != null) {
+            cartItemsCount = configuredProductRepository.countByCartId(cart.getId());
         }
 
         return CartItemsCountResponse.builder()

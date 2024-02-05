@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.cart.CartItemsCountResponse;
 import com.amalitech.gpuconfigurator.service.cart.CartService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,9 +20,7 @@ public class CartController {
 
     @CrossOrigin
     @GetMapping("/v1/carts/item-count")
-    public ResponseEntity<CartItemsCountResponse> getCartItemsCount(
-            Principal principal
-    ) {
-        return ResponseEntity.ok(cartService.getCartItemsCount(principal));
+    public ResponseEntity<CartItemsCountResponse> getCartItemsCount(Principal principal, HttpSession session) {
+        return ResponseEntity.ok(cartService.getCartItemsCount(principal, session));
     }
 }
