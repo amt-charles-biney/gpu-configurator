@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.cart.AddCartItemResponse;
 import com.amalitech.gpuconfigurator.dto.cart.CartItemsCountResponse;
+import com.amalitech.gpuconfigurator.dto.cart.DeleteCartItemResponse;
 import com.amalitech.gpuconfigurator.service.cart.CartService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +34,11 @@ public class CartController {
             HttpSession session
     ) {
         return ResponseEntity.ok(cartService.addCartItem(productId, warranty, components, principal, session));
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/v1/carts/delete-item/{configuredProductId}")
+    public ResponseEntity<DeleteCartItemResponse> deleteCartItem(@PathVariable UUID configuredProductId, Principal principal, HttpSession session) {
+        return ResponseEntity.ok(cartService.deleteCartItem(configuredProductId, principal, session));
     }
 }
