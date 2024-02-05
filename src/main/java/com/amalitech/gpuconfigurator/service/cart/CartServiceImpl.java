@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.cart;
 
 import com.amalitech.gpuconfigurator.dto.cart.AddCartItemResponse;
 import com.amalitech.gpuconfigurator.dto.cart.CartItemsCountResponse;
+import com.amalitech.gpuconfigurator.dto.cart.DeleteCartItemResponse;
 import com.amalitech.gpuconfigurator.model.Cart;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.CartRepository;
@@ -44,7 +45,7 @@ public class CartServiceImpl implements CartService {
         var configuredProductResponse = configuredProductService.saveConfiguration(productId.toString(), warranty, components);
 
         var user = this.getUser(principal);
-        Cart cart = getUserOrGuestCart(user, session).orElseGet(Cart::new);
+        Cart cart = this.getUserOrGuestCart(user, session).orElseGet(Cart::new);
 
         var optionalConfiguredProduct = configuredProductRepository.findById(UUID.fromString(configuredProductResponse.Id()));
         if (optionalConfiguredProduct.isPresent()) {
@@ -65,6 +66,20 @@ public class CartServiceImpl implements CartService {
                 .message("Configured product added to cart successfully")
                 .configuration(configuredProductResponse)
                 .build();
+    }
+
+    @Override
+    public DeleteCartItemResponse deleteCartItem(UUID configuredProductId, Principal principal, HttpSession session) {
+        var optionalCart = getUserOrGuestCart(this.getUser(principal), session);
+
+        if (optionalCart.isEmpty()) {
+            return DeleteCartItemResponse.builder().message("User has no items in cart").build();
+        }
+
+        var optionalConfiguredProduct = configuredProductRepository.findByIdAndCartId(configuredProductId, optionalCart.get().getId());
+        optionalConfiguredProduct.ifPresent(configuredProductRepository::delete);
+
+        return DeleteCartItemResponse.builder().message("Configured product deleted successfully").build();
     }
 
     private Optional<Cart> getUserOrGuestCart(User user, HttpSession session) {
