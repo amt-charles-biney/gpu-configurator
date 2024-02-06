@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.time.LocalDateTime;
 
+import java.util.Set;
 import java.util.UUID;
 
 import com.amalitech.gpuconfigurator.model.enums.Role;
@@ -51,6 +52,10 @@ public class User implements UserDetails {
     @JoinColumn(name = "contact_id", referencedColumnName = "id")
     private Contact contact;
   
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
