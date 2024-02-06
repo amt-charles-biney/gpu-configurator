@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -34,34 +35,13 @@ public class FilteringServiceImpl implements FilteringService {
                 );
             }
         }
+
         if (price != null && !price.isEmpty()) {
-            String[] priceList = price.split(",");
-            String productPrice = "productPrice";
-            for (String priceItem : priceList) {
-                if (priceItem.contains("-")) {
-                    String[] rangeValues = priceItem.split("-");
-                    if (rangeValues.length == 2) {
-                        spec = spec.and((root, query, criteriaBuilder) ->
-                                criteriaBuilder.between(root.get(productPrice), Double.parseDouble(rangeValues[0]), Double.parseDouble(rangeValues[1]))
-                        );
-                    }
-                } else if (priceItem.startsWith(">")) {
-                    double minValue = Double.parseDouble(priceItem.substring(1));
-                    spec = spec.and((root, query, criteriaBuilder) ->
-                            criteriaBuilder.greaterThan(root.get(productPrice), minValue)
-                    );
-                } else if (priceItem.startsWith("<")) {
-                    double maxValue = Double.parseDouble(priceItem.substring(1));
-                    spec = spec.and((root, query, criteriaBuilder) ->
-                            criteriaBuilder.lessThan(root.get(productPrice), maxValue)
-                    );
-                } else {
-                    spec = spec.and((root, query, criteriaBuilder) ->
-                            criteriaBuilder.equal(root.get(productPrice), Double.parseDouble(priceItem))
-                    );
-                }
-            }
+            List<Specification<Product>> newSpec = getSpecifications(price);
+
+            spec = spec.and(newSpec.stream().reduce(Specification::or).orElse(null));
         }
+
 
         if (productType != null && !productType.isEmpty()) {
             List<UUID> matchingProductIds = configOptionsFiltering.getProductTypes(productType);
@@ -82,6 +62,29 @@ public class FilteringServiceImpl implements FilteringService {
         }
 
         return productRepository.findAll(spec);
+    }
+
+    @NotNull
+    private static List<Specification<Product>> getSpecifications(String price) {
+        String[] priceList = price.split(",");
+        String productPrice = "productPrice";
+
+        List<Specification<Product>> newSpec = new ArrayList<>();
+
+        for (String priceItem : priceList) {
+            if (priceItem.startsWith(">")) {
+                double minValue = Double.parseDouble(priceItem.substring(1));
+                newSpec.add((root, query, criteriaBuilder) ->
+                        criteriaBuilder.greaterThan(root.get(productPrice), minValue)
+                );
+            } else {
+                var ranges = priceItem.split("-");
+                newSpec.add((root, query, criteriaBuilder) ->
+                        criteriaBuilder.between(root.get(productPrice), Double.parseDouble(ranges[0]), Double.parseDouble(ranges[1]))
+                );
+            }
+        }
+        return newSpec;
     }
 
 }
