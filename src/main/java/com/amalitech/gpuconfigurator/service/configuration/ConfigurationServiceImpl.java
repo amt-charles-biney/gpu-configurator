@@ -158,13 +158,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .optionType(option.getType())
                     .baseAmount(BigDecimal.valueOf(0))
                     .isIncluded(option.getIsIncluded())
-<<<<<<< HEAD
-                    .size("1")
-                    .isMeasured(option.getIsMeasured())
-=======
                     .size("")
                     .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
->>>>>>> 9134eb0 (refactor: made size empty and add bigdecimal null checks)
                     .build();
         }
     }
