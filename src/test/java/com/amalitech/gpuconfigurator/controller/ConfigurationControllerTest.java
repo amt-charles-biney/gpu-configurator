@@ -143,14 +143,13 @@ class ConfigurationControllerTest {
                 .warranty(null)
                 .build();
 
-        when(configurationService.saveConfiguration(productId, warranty, save, components))
+        when(configurationService.saveConfiguration(productId, warranty, components))
                 .thenReturn(expectedResult);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/config/{productId}", productId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("utf-8")
                         .param("warranty", String.valueOf(warranty))
-                        .param("save", String.valueOf(save))
                         .param("components", components)
                 )
                 .andExpect(status().isOk())
@@ -161,7 +160,7 @@ class ConfigurationControllerTest {
                 .andExpect(jsonPath("$.configured[1].optionId").value("fde4787a-029b-4115-8237-f74b314119dc"))
                 .andExpect(jsonPath("$.vat").value("135.85"));
 
-        verify(configurationService, times(1)).saveConfiguration(productId, warranty, save, components);
+        verify(configurationService, times(1)).saveConfiguration(productId, warranty, components);
     }
 
     @Test
