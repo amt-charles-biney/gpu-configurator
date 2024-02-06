@@ -1,6 +1,5 @@
 package com.amalitech.gpuconfigurator.dto.configuration;
 
-
 import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import lombok.Builder;
 
