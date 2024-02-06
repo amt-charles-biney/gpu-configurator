@@ -143,7 +143,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             return ConfigOptions.builder()
                     .optionId(String.valueOf(option.getId()))
                     .optionName(option.getAttributeOption().getOptionName())
-                    .optionPrice(option.getIsIncluded() ? calculatedPrice : BigDecimal.valueOf(option.getAttributeOption().getBaseAmount()).subtract(calculatedPrice))
+                    .optionPrice(option.getIsIncluded() ? calculatedPrice :calculatedPrice.subtract(BigDecimal.valueOf(option.getAttributeOption().getBaseAmount())))
                     .optionType(option.getAttributeOption().getAttribute().getAttributeName())
                     .baseAmount(BigDecimal.valueOf(option.getAttributeOption().getBaseAmount()))
                     .isIncluded(option.getIsIncluded())
