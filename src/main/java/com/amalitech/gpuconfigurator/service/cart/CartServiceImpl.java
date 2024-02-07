@@ -135,6 +135,7 @@ public class CartServiceImpl implements CartService {
                 .productName(product.getProductName())
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                 .productDescription(product.getProductDescription())
+                .productCoverImage(product.getCoverImage())
                 .totalPrice(configuredProduct.getTotalPrice())
                 .warranty(null)
                 .vat(null)
