@@ -33,7 +33,8 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartItemsCountResponse getCartItemsCount(Principal principal, HttpSession session) {
-        var optionalCart = this.getUserOrGuestCart(this.getUser(principal), session);
+        User user = this.getUser(principal);
+        var optionalCart = this.getUserOrGuestCart(user, session);
 
         long cartItemsCount = 0;
         if (optionalCart.isPresent()) {
@@ -50,8 +51,12 @@ public class CartServiceImpl implements CartService {
         var user = this.getUser(principal);
         Cart cart = this.getUserOrGuestCart(user, session).orElseGet(Cart::new);
 
+        if (cart.getId() == null) {
+            cart = cartRepository.save(cart);
+        }
+
         if (user == null) {
-            session.setAttribute("cart", cart);
+            session.setAttribute("cart_id", cart.getId());
         } else if (user.getCart() == null) {
             user.setCart(cart);
             userRepository.save(user);
@@ -67,7 +72,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public DeleteCartItemResponse deleteCartItem(UUID configuredProductId, Principal principal, HttpSession session) {
-        var optionalCart = getUserOrGuestCart(this.getUser(principal), session);
+        var optionalCart = this.getUserOrGuestCart(this.getUser(principal), session);
 
         if (optionalCart.isEmpty()) {
             return DeleteCartItemResponse.builder().message("User has no items in cart").build();
@@ -97,9 +102,21 @@ public class CartServiceImpl implements CartService {
 
     private Optional<Cart> getUserOrGuestCart(User user, HttpSession session) {
         if (user == null) {
-            return Optional.ofNullable((Cart) session.getAttribute("cart"));
+            return Optional.ofNullable(this.getGuestCart(session));
         }
-        return Optional.ofNullable(user.getCart());
+        return Optional.ofNullable(this.getUserCart(user));
+    }
+
+    private Cart getGuestCart(HttpSession session) {
+        UUID cartId = (UUID) session.getAttribute("cart_id");
+        if (cartId == null) {
+            return null;
+        }
+        return cartRepository.findById(cartId).orElse(null);
+    }
+
+    private Cart getUserCart(User user) {
+        return user.getCart();
     }
 
     private User getUser(Principal principal) {
