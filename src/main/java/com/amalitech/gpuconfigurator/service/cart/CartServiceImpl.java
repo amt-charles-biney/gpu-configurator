@@ -127,15 +127,18 @@ public class CartServiceImpl implements CartService {
     }
 
     private ConfigurationResponseDto mapToConfigurationResponseDto(Configuration configuredProduct) {
+        var product = configuredProduct.getProduct();
+
         return ConfigurationResponseDto.builder()
                 .Id(String.valueOf(configuredProduct.getId()))
-                .productName(configuredProduct.getProduct().getProductName())
-                .productId(configuredProduct.getProduct().getProductId())
+                .productId(product.getProductId())
+                .productName(product.getProductName())
+                .productPrice(BigDecimal.valueOf(product.getProductPrice()))
+                .productDescription(product.getProductDescription())
                 .totalPrice(configuredProduct.getTotalPrice())
                 .warranty(null)
                 .vat(null)
                 .configuredPrice(null)
-                .productPrice(BigDecimal.valueOf(configuredProduct.getProduct().getProductPrice()))
                 .configured(configuredProduct.getConfiguredOptions())
                 .build();
     }
