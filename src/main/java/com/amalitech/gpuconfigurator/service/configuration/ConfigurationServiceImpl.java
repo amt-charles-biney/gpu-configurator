@@ -149,7 +149,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .baseAmount(BigDecimal.valueOf(option.getAttributeOption().getBaseAmount()))
                     .isIncluded(option.getIsIncluded())
                     .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
-                    .size(size)
+                    .size(size.isEmpty() ? String.valueOf(option.getAttributeOption().getBaseAmount()) : size)
                     .build();
         } else {
             return ConfigOptions.builder()
