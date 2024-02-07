@@ -47,18 +47,8 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public AddCartItemResponse addCartItem(UUID productId, Boolean warranty, String components, Principal principal, HttpSession session) {
-        var configuredProductResponse = configuredProductService.saveConfiguration(productId.toString(), warranty, components);
-
         var user = this.getUser(principal);
         Cart cart = this.getUserOrGuestCart(user, session).orElseGet(Cart::new);
-
-        var optionalConfiguredProduct = configuredProductRepository.findById(UUID.fromString(configuredProductResponse.Id()));
-        if (optionalConfiguredProduct.isPresent()) {
-            var configuredProduct = optionalConfiguredProduct.get();
-            configuredProduct.setCart(cart);
-            configuredProductRepository.save(configuredProduct);
-        }
-        cartRepository.save(cart);
 
         if (user == null) {
             session.setAttribute("cart", cart);
@@ -66,6 +56,8 @@ public class CartServiceImpl implements CartService {
             user.setCart(cart);
             userRepository.save(user);
         }
+
+        var configuredProductResponse = configuredProductService.saveConfiguration(productId.toString(), warranty, components, cart);
 
         return AddCartItemResponse.builder()
                 .message("Configured product added to cart successfully")

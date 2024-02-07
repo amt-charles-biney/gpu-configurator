@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.configuration;
 
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
+import com.amalitech.gpuconfigurator.model.Cart;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.Product;
@@ -50,7 +51,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public ConfigurationResponseDto saveConfiguration(String productId, Boolean warranty, String components) {
+    public ConfigurationResponseDto saveConfiguration(String productId, Boolean warranty, String components, Cart cart) {
 
         Product product = getProductById(productId);
         BigDecimal totalPrice = calculateTotalPrice(product);
@@ -64,7 +65,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         BigDecimal vat = calculateVat(totalPrice);
         BigDecimal totalPriceWithVat = totalPrice.add(vat).setScale(2, RoundingMode.HALF_UP);
 
-        Configuration configuration = createConfiguration(product, configOptions);
+        Configuration configuration = createConfiguration(product, configOptions, cart);
         configuration.setTotalPrice(totalPriceWithVat);
         saveConfiguration(configuration);
 
@@ -194,6 +195,15 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .totalPrice(calculateTotalPrice(product).setScale(2, RoundingMode.HALF_UP))
                 .product(product)
                 .configuredOptions(configOptions)
+                .build();
+    }
+
+    private Configuration createConfiguration(Product product, List<ConfigOptions> configOptions, Cart cart) {
+        return Configuration.builder()
+                .totalPrice(calculateTotalPrice(product).setScale(2, RoundingMode.HALF_UP))
+                .product(product)
+                .configuredOptions(configOptions)
+                .cart(cart)
                 .build();
     }
 
