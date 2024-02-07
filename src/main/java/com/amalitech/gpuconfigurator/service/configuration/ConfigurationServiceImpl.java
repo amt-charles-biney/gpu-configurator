@@ -223,6 +223,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .configuredPrice(optionalTotal)
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                 .configured(configuration.getConfiguredOptions())
+                .productDescription(configuration.getProduct().getProductDescription())
                 .build();
     }
 
