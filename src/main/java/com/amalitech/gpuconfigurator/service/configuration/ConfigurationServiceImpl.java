@@ -147,8 +147,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .optionType(option.getAttributeOption().getAttribute().getAttributeName())
                     .baseAmount(BigDecimal.valueOf(option.getAttributeOption().getBaseAmount()))
                     .isIncluded(option.getIsIncluded())
-                    .isMeasured(option.getIsMeasured())
-                    .size(size)
+                    .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
+                    .size(size.isEmpty() ? String.valueOf(option.getAttributeOption().getBaseAmount()) : size)
                     .build();
         } else {
             return ConfigOptions.builder()
