@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -89,7 +90,7 @@ public class CartServiceImpl implements CartService {
         var optionalCart = this.getUserOrGuestCart(this.getUser(principal), session);
 
         if (optionalCart.isEmpty()) {
-            return new CartItemsResponse(null, 0);
+            return new CartItemsResponse(new ArrayList<>(), 0);
         }
 
         List<ConfigurationResponseDto> configuredProducts = configuredProductRepository.findByCartId(optionalCart.get().getId())
