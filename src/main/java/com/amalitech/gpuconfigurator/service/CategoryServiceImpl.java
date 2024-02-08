@@ -35,6 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> allCategories = categoryRepository.findAll();
 
         return allCategories.stream()
+                .filter(category -> !"unassigned".equals(category.getCategoryName()))
                 .map(category -> AllCategoryResponse.builder().categoryName(category.getCategoryName()).build())
                 .toList();
 
