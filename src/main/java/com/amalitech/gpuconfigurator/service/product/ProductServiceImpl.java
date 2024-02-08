@@ -156,6 +156,35 @@ public class ProductServiceImpl implements ProductService {
         return new PageImpl<>(productResponseList, pageRequest, productPage.getTotalElements());
     }
 
+    public Page<ProductResponse> getAllProductsAdmin(int page, int size, String sort) {
+        if (sort == null) {
+            sort = "createdAt";
+        }
+
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sort).descending());
+        Page<Product> productPage = productRepository.findAll(pageRequest);
+
+        return productPage
+                .map(product -> ProductResponse.builder()
+                        .productName(product.getProductName())
+                        .id(product.getId().toString())
+                        .productId(product.getProductId())
+                        .productBrand(product.getProductBrand())
+                        .productDescription(product.getProductDescription())
+                        .productPrice(BigDecimal.valueOf(product.getProductPrice()))
+                        .coverImage(product.getCoverImage())
+                        .isFeatured(product.getFeatured())
+                        .category(ProductResponseDto.builder()
+                                .name(product.getCategory().getCategoryName())
+                                .id(String.valueOf(product.getCategory().getId()))
+                                .build())
+                        .imageUrl(product.getImageUrl())
+                        .inStock(product.getInStock())
+                        .build());
+
+    }
+
+
 
     @Override
     public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto, List<MultipartFile> files, MultipartFile coverImage) {

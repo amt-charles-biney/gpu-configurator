@@ -68,7 +68,7 @@ public class ProductController {
         PageResponseDto productsResponse = new PageResponseDto();
 
         if (page != null && size != null) {
-            Page<ProductResponse> products = productService.getAllProducts(page, size, sort);
+            Page<ProductResponse> products = productService.getAllProductsAdmin(page, size, sort);
             productsResponse.setProducts(products.getContent());
             productsResponse.setTotal(products.getTotalElements());
         } else {
