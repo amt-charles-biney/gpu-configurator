@@ -3,8 +3,8 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
+import com.amalitech.gpuconfigurator.dto.profile.BasicInformationResponse;
 import com.amalitech.gpuconfigurator.exception.InvalidPasswordException;
-import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.service.profile.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +31,7 @@ public class ProfileController {
 
     @CrossOrigin
     @GetMapping("/basic-info")
-    public ResponseEntity<User> getBasicInformation(Principal principal) {
+    public ResponseEntity<BasicInformationResponse> getBasicInformation(Principal principal) {
         return ResponseEntity.ok(profileService.getUserProfile(principal));
     }
 
