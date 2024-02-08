@@ -15,6 +15,7 @@ import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -85,6 +87,7 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepository.findAll();
 
         return products.stream()
+                .filter(product -> "!unassigned".equals(product.getCategory().getCategoryName()))
                 .map(product -> ProductResponse.builder()
                         .productName(product.getProductName())
                         .id(product.getId().toString())
@@ -124,25 +127,35 @@ public class ProductServiceImpl implements ProductService {
 
 
     public Page<ProductResponse> getAllProducts(int page, int size, String sort) {
-        if (sort == null) sort = "createdAt";
+        if (sort == null) {
+            sort = "createdAt";
+        }
+
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sort).descending());
         Page<Product> productPage = productRepository.findAll(pageRequest);
 
-        return productPage.map(product -> ProductResponse.builder()
-                .productName(product.getProductName())
-                .id(product.getId().toString())
-                .productId(product.getProductId())
-                .productBrand(product.getProductBrand())
-                .productDescription(product.getProductDescription())
-                .productPrice(BigDecimal.valueOf(product.getProductPrice()))
-                .coverImage(product.getCoverImage())
-                .category(AttributeResponseDto.builder()
-                        .name(product.getCategory().getCategoryName())
-                        .id(String.valueOf(product.getCategory().getId()))
+
+        List<ProductResponse> productResponseList = productPage.getContent().stream()
+                .filter(product -> !"unassigned".equals(product.getCategory().getCategoryName()))
+                .map(product -> ProductResponse.builder()
+                        .productName(product.getProductName())
+                        .id(product.getId().toString())
+                        .productId(product.getProductId())
+                        .productBrand(product.getProductBrand())
+                        .productDescription(product.getProductDescription())
+                        .productPrice(BigDecimal.valueOf(product.getProductPrice()))
+                        .coverImage(product.getCoverImage())
+                        .isFeatured(product.getFeatured())
+                        .category(ProductResponseDto.builder()
+                                .name(product.getCategory().getCategoryName())
+                                .id(String.valueOf(product.getCategory().getId()))
+                                .build())
+                        .imageUrl(product.getImageUrl())
+                        .inStock(product.getInStock())
                         .build())
-                .imageUrl(product.getImageUrl())
-                .inStock(product.getInStock())
-                .build());
+                .toList();
+
+        return new PageImpl<>(productResponseList, pageRequest, productPage.getTotalElements());
     }
 
 
