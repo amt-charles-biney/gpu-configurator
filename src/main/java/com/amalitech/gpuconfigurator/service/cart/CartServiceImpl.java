@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
@@ -34,12 +35,11 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartItemsCountResponse getCartItemsCount(Principal principal, HttpSession session) {
         User user = this.getUser(principal);
-        var optionalCart = this.getUserOrGuestCart(user, session);
+        Optional<Cart> optionalCart = this.getUserOrGuestCart(user, session);
 
-        long cartItemsCount = 0;
-        if (optionalCart.isPresent()) {
-            cartItemsCount = configuredProductRepository.countByCartId(optionalCart.get().getId());
-        }
+        long cartItemsCount = optionalCart
+                .map(cart -> configuredProductRepository.countByCartId(optionalCart.get().getId()))
+                .orElse(0L);
 
         return CartItemsCountResponse.builder()
                 .count(cartItemsCount)
