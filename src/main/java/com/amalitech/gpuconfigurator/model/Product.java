@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.model;
 
+import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -46,6 +47,9 @@ public class Product {
             name = "category_id_fk"
     ))
     private Category category;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Configuration> configurations;
 
     @Column(name = "product_featured")
     private Boolean featured;
