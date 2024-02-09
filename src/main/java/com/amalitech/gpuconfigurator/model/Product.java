@@ -50,7 +50,7 @@ public class Product {
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Configuration> configurations = new ArrayList<>();
+    private List<Configuration> configurations;
 
     @Column(name = "product_featured")
     private Boolean featured;
