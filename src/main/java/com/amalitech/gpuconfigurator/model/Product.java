@@ -41,7 +41,7 @@ public class Product {
     private Integer inStock;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(
             name = "category_id_fk"
     ))

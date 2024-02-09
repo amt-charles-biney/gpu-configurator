@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.model.configuration;
 
+import com.amalitech.gpuconfigurator.model.Cart;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -40,6 +41,11 @@ public class Configuration {
             cascade = CascadeType.ALL
     )
     private List<ConfigOptions> configuredOptions = new ArrayList<>();
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;

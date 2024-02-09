@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.configuration;
 
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
+import com.amalitech.gpuconfigurator.model.Cart;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.Product;
@@ -50,7 +51,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public ConfigurationResponseDto saveConfiguration(String productId, Boolean warranty, Boolean save, String components) {
+    public ConfigurationResponseDto saveConfiguration(String productId, Boolean warranty, String components, Cart cart) {
 
         Product product = getProductById(productId);
         BigDecimal totalPrice = calculateTotalPrice(product);
@@ -64,7 +65,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         BigDecimal vat = calculateVat(totalPrice);
         BigDecimal totalPriceWithVat = totalPrice.add(vat).setScale(2, RoundingMode.HALF_UP);
 
-        Configuration configuration = createConfiguration(product, configOptions);
+        Configuration configuration = createConfiguration(product, configOptions, cart);
         configuration.setTotalPrice(totalPriceWithVat);
         saveConfiguration(configuration);
 
@@ -129,7 +130,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .filter(pair -> pair.split("_")[0].equals(String.valueOf(option.getId())))
                     .findFirst()
                     .map(pair -> pair.split("_")[1])
-                    .orElseGet(() -> String.valueOf(option.getSize()));
+                    .orElseGet(() -> option.getAttributeOption().getBaseAmount().toString());
 
             BigDecimal sizeMultiplier = new BigDecimal(size)
                     .divide(BigDecimal.valueOf(option.getSize()), 2, RoundingMode.HALF_UP)
@@ -143,12 +144,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             return ConfigOptions.builder()
                     .optionId(String.valueOf(option.getId()))
                     .optionName(option.getAttributeOption().getOptionName())
-                    .optionPrice(calculatedPrice)
+                    .optionPrice(option.getIsIncluded() ? calculatedPrice :calculatedPrice.subtract(option.getAttributeOption().getPriceAdjustment()))
                     .optionType(option.getAttributeOption().getAttribute().getAttributeName())
-                    .baseAmount(BigDecimal.valueOf(option.getSize()))
+                    .baseAmount(BigDecimal.valueOf(option.getAttributeOption().getBaseAmount()))
                     .isIncluded(option.getIsIncluded())
                     .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
-                    .size(size)
+                    .size(size.isEmpty() ? String.valueOf(option.getAttributeOption().getBaseAmount()) : size)
                     .build();
         } else {
             return ConfigOptions.builder()
@@ -158,7 +159,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .optionType(option.getAttributeOption().getAttribute().getAttributeName())
                     .baseAmount(BigDecimal.valueOf(0))
                     .isIncluded(option.getIsIncluded())
-                    .size("1")
+                    .size("")
                     .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
                     .build();
         }
@@ -170,9 +171,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .optionName(option.getAttributeOption().getOptionName())
                 .optionPrice(option.getAttributeOption().getPriceAdjustment().setScale(2, RoundingMode.HALF_UP))
                 .optionType(option.getAttributeOption().getAttribute().getAttributeName())
-                .baseAmount(BigDecimal.valueOf(0))
+                .baseAmount(option.getAttributeOption().getBaseAmount() != null ? BigDecimal.valueOf(option.getAttributeOption().getBaseAmount()) : new BigDecimal(0))
                 .isIncluded(option.getIsIncluded())
-                .size("1")
+                .size("")
                 .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
                 .build();
     }
@@ -197,6 +198,15 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .build();
     }
 
+    private Configuration createConfiguration(Product product, List<ConfigOptions> configOptions, Cart cart) {
+        return Configuration.builder()
+                .totalPrice(calculateTotalPrice(product).setScale(2, RoundingMode.HALF_UP))
+                .product(product)
+                .configuredOptions(configOptions)
+                .cart(cart)
+                .build();
+    }
+
     private void saveConfiguration(Configuration configuration) {
         configurationRepository.save(configuration);
     }
@@ -213,8 +223,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .configuredPrice(optionalTotal)
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                 .configured(configuration.getConfiguredOptions())
+                .productDescription(configuration.getProduct().getProductDescription())
                 .build();
     }
 
 }
-

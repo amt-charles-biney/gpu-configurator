@@ -33,8 +33,8 @@ public class Category {
 
     @OneToMany(
             mappedBy = "category"
-//            cascade = CascadeType.REMOVE,
-//            orphanRemoval = true
+//            cascade = CascadeType.REMOVE
+//            orphanRemoval = false
     )
     private List<Product> products = new ArrayList<>();
 
