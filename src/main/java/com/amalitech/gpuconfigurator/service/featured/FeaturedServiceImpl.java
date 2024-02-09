@@ -27,6 +27,10 @@ public class FeaturedServiceImpl implements FeaturedService {
                     ()-> new NotFoundException("Product does not exist")
             );
 
+            if(product.getCategory().getCategoryName().equals("unassigned")){
+                throw new NotFoundException("This product has no category");
+            }
+
             if(Boolean.TRUE.equals(product.getFeatured())){
                 return FeaturedResponseDto.builder().message("Product is already Featured").build();
             }
