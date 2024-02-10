@@ -16,6 +16,7 @@ public record AttributeDto(
         @NotNull(message = AttributeConstant.ATTRIBUTE_NOT_NULL)
                 @NotBlank(message = AttributeConstant.ATTRIBUTE_NOT_BLANK)
         String description,
-        String unit
+        String unit,
+        Boolean isRequired
 ) {
 }
