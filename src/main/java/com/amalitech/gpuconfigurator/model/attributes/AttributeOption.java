@@ -51,6 +51,8 @@ public class AttributeOption {
     @JoinColumn(name = "attribute_id", nullable = false)
     private Attribute attribute;
 
+    private Integer inStock;
+
     @Column(name = "incompatible_attribute_option")
     private List<UUID> incompatibleAttributeOptions = new ArrayList<>();
 
