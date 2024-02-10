@@ -54,6 +54,7 @@ class AttributeServiceTest {
                 .isMeasured(true)
                 .description("new disk")
                 .unit("gb")
+                .isRequired(false)
                 .build();
 
         attribute = Attribute.builder()
@@ -147,8 +148,8 @@ class AttributeServiceTest {
         attribute.setId(attributeId);
 
         List<CreateAttributeOptionRequest> attributeOptionDtoList = List.of(
-                new CreateAttributeOptionRequest("Option1", BigDecimal.valueOf(10.0), "Media1", 50.0f, 100.0f, 1.2, "nvidea", new ArrayList<>()),
-                new CreateAttributeOptionRequest("Option2", BigDecimal.valueOf(20.0), "Media2", 60.0f, 120.0f, 1.5, "nvidea", new ArrayList<>())
+                new CreateAttributeOptionRequest("Option1", BigDecimal.valueOf(10.0), "Media1", 50.0f, 100.0f, 1.2, "nvidea", new ArrayList<>(), 4),
+                new CreateAttributeOptionRequest("Option2", BigDecimal.valueOf(20.0), "Media2", 60.0f, 120.0f, 1.5, "nvidea", new ArrayList<>(), 4)
         );
 
         List<AttributeOption> attributeOptionList = attributeOptionDtoList.stream()
@@ -203,8 +204,8 @@ class AttributeServiceTest {
         UUID attribute1 = UUID.randomUUID();
         UUID attribute2 = UUID.randomUUID();
         List<UpdateAttributeOptionDto> attributeOptionDtos = List.of(
-                new UpdateAttributeOptionDto(attribute1.toString(), "Option1", BigDecimal.valueOf(15.0), "nvidea", new ArrayList<>(), "updatedMedia1", 120.0f, 130.0f, 1.5),
-                new UpdateAttributeOptionDto(attribute2.toString(), "Option2", BigDecimal.valueOf(25.0), "nvidea", new ArrayList<>(), "updatedMedia2", 130.0f, 12.0f, 1.5)
+                new UpdateAttributeOptionDto(attribute1.toString(), "Option1", BigDecimal.valueOf(15.0), "nvidea", new ArrayList<>(), "updatedMedia1", 120.0f, 130.0f, 1.5,2),
+                new UpdateAttributeOptionDto(attribute2.toString(), "Option2", BigDecimal.valueOf(25.0), "nvidea", new ArrayList<>(), "updatedMedia2", 130.0f, 12.0f, 1.5, 2)
         );
 
         when(attributeOptionRepository.findById(attribute1))
