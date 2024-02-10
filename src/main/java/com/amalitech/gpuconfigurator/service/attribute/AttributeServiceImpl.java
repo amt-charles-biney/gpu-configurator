@@ -47,48 +47,14 @@ public class AttributeServiceImpl implements AttributeService {
                 .optionPrice(attribute.getPriceAdjustment())
                 .additionalInfo(new AttributeVariantDto(attribute.getBaseAmount(), attribute.getMaxAmount(), attribute.getPriceFactor()))
                 .brand(attribute.getBrand())
-                .attribute(
-                        new AttributeResponseDto(
-                                attribute.getAttribute().getAttributeName(),
-                                attribute.getAttribute().getId().toString(),
-                                attribute.getAttribute().isMeasured()))
+                .attribute(AttributeResponseDto
+                        .builder()
+                        .id(attribute.getAttribute().getId().toString())
+                        .isMeasured(attribute.getAttribute().isMeasured())
+                        .name(attribute.getAttribute().getAttributeName())
+                        .build())
                 .build()).distinct().toList();
     }
-
-    @Override
-    public CompatibleOptionGetResponse getAllAttributeOptionsEditable() {
-        List<AttributeOption> attributeOptionList = attributeOptionRepository.findAll();
-
-        List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList =  attributeOptionList.stream().map(
-                attributeOption -> CompatibleOptionResponseDto.
-                        builder()
-                        .compatibleOptionId(attributeOption.getId().toString())
-                        .name(attributeOption.getOptionName())
-                        .type(attributeOption.getAttribute().getAttributeName())
-                        .price(attributeOption.getPriceAdjustment())
-                        .media(attributeOption.getMedia())
-                        .unit(attributeOption.getAttribute().getUnit())
-                        .isMeasured(attributeOption.getAttribute().isMeasured())
-                        .priceFactor(attributeOption.getPriceFactor())
-                        .priceIncrement(null)
-                        .baseAmount(attributeOption.getBaseAmount())
-                        .maxAmount(attributeOption.getMaxAmount())
-                        .isCompatible(true)
-                        .isIncluded(false)
-                        .attributeOptionId(attributeOption.getId().toString())
-                        .attributeId(attributeOption.getAttribute().getId().toString())
-                        .size((int) Math.round(attributeOption.getBaseAmount()))
-                        .build()
-        ).toList();
-
-        return CompatibleOptionGetResponse
-                .builder()
-                .name("")
-                .id(null)
-                .config(compatibleOptionResponseDtoList)
-                .build();
-    }
-
 
     @Override
     public CompatibleOptionGetResponse getAllAttributeOptionsEditable() {
