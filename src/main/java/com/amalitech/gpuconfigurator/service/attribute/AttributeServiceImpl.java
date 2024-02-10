@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -35,6 +36,23 @@ public class AttributeServiceImpl implements AttributeService {
         return attributes.stream()
                 .map(this::createAttributeResponseType)
                 .collect(Collectors.toList());
+    }
+
+    private List<IncompatibleAttributeResponse> getAllAttributesById(List<String> attributeUUIDStrings) {
+        List<UUID> attributeUUIDs = attributeUUIDStrings.stream().map(UUID::fromString).toList();
+        return attributeOptionRepository.findAllById(attributeUUIDs).stream().map(attribute -> IncompatibleAttributeResponse
+                .builder()
+                .id(attribute.getId().toString())
+                .optionName(attribute.getOptionName())
+                .optionPrice(attribute.getPriceAdjustment())
+                .additionalInfo(new AttributeVariantDto(attribute.getBaseAmount(), attribute.getMaxAmount(), attribute.getPriceFactor()))
+                .brand(attribute.getBrand())
+                .attribute(
+                        new AttributeResponseDto(
+                                attribute.getAttribute().getAttributeName(),
+                                attribute.getAttribute().getId().toString(),
+                                attribute.getAttribute().isMeasured()))
+                .build()).distinct().toList();
     }
 
     @Override
@@ -80,6 +98,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .attributeName(createAttributesRequest.attributeName())
                 .description(createAttributesRequest.description())
                 .isMeasured(createAttributesRequest.isMeasured())
+                .isRequired(createAttributesRequest.isRequired())
                 .unit(createAttributesRequest.unit())
                 .build();
 
@@ -99,6 +118,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .description(updateAttributeDto.description())
                 .isMeasured(updateAttributeDto.isMeasured())
                 .unit(updateAttributeDto.unit())
+                .isRequired(updateAttributeDto.isRequired())
                 .build();
 
         Attribute attribute = this.updateAttribute(UUID.fromString(updateAttributeDto.id()), attributeDto);
@@ -128,6 +148,7 @@ public class AttributeServiceImpl implements AttributeService {
         updateAttribute.setAttributeName(attribute.attributeName());
         updateAttribute.setMeasured(attribute.isMeasured());
         updateAttribute.setDescription(attribute.description());
+        updateAttribute.setRequired(attribute.isRequired());
         updateAttribute.setUnit(attribute.unit());
         updateAttribute.setUpdatedAt(LocalDateTime.now());
 
@@ -184,6 +205,8 @@ public class AttributeServiceImpl implements AttributeService {
             updateAttribute.setPriceFactor(attributeOption.priceFactor());
             updateAttribute.setMedia(attributeOption.media());
             updateAttribute.setUpdatedAt(LocalDateTime.now());
+            updateAttribute.setBrand(attributeOption.brand());
+            updateAttribute.setIncompatibleAttributeOptions(convertStringsToUUIDS(attributeOption.incompatibleAttributeOptions()));
 
             AttributeOption savedAttribute =  attributeOptionRepository.save(updateAttribute);
         }
@@ -200,7 +223,9 @@ public class AttributeServiceImpl implements AttributeService {
                 .media(attributes.media())
                 .baseAmount(attributes.baseAmount())
                 .maxAmount(attributes.maxAmount())
+                .brand(attributes.brand())
                 .priceFactor(attributes.priceFactor())
+                .incompatibleAttributeOptions(convertStringsToUUIDS(attributes.incompatibleAttributeOptions()))
                 .build()).toList();
 
         List<AttributeOption> savedAttributeOptions = attributeOptionRepository.saveAll(attributeOptionList);
@@ -224,6 +249,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .toList();
     }
 
+
     private AttributeOptionResponseDto createAttributeResponseType(@NotNull AttributeOption attributeOption) {
         return AttributeOptionResponseDto
                 .builder()
@@ -232,6 +258,8 @@ public class AttributeServiceImpl implements AttributeService {
                 .optionPrice(attributeOption.getPriceAdjustment())
                 .additionalInfo(new AttributeVariantDto(attributeOption.getBaseAmount(), attributeOption.getMaxAmount(), attributeOption.getPriceFactor()))
                 .optionMedia(attributeOption.getMedia())
+                .incompatibleAttributes(this.getAllAttributesById(convertUUIDsToStrings(attributeOption.getIncompatibleAttributeOptions())))
+                .brand(attributeOption.getBrand())
                 .attribute(
                         new AttributeResponseDto(
                         attributeOption.getAttribute().getAttributeName(),
@@ -247,9 +275,20 @@ public class AttributeServiceImpl implements AttributeService {
                 .id(attribute.getId())
                 .attributeName(attribute.getAttributeName())
                 .isMeasured(attribute.isMeasured())
+                .isRequired(attribute.isRequired())
                 .description(attribute.getDescription())
                 .unit(attribute.getUnit())
                 .attributeOptions(this.streamAttributeOptions(attributeOptions))
                 .build();
+    }
+
+    private List<String> convertUUIDsToStrings(List<UUID> uuids) {
+        if(uuids.isEmpty()) return new ArrayList<>();
+        return uuids.stream().map(String::valueOf).toList();
+    }
+
+    private List<UUID> convertStringsToUUIDS(List<String> uuidStrings) {
+        if(uuidStrings.isEmpty()) return new ArrayList<>();
+        return uuidStrings.stream().map(UUID::fromString).toList();
     }
 }
