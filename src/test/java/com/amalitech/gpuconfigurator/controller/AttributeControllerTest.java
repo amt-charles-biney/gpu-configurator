@@ -183,7 +183,8 @@ public class AttributeControllerTest {
                                 "/updated_media.png",
                                 25.0F,
                                 150.0F,
-                                2.0
+                                2.0,
+                                1
                         )
                 ),
                 true

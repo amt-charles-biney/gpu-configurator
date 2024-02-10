@@ -136,6 +136,7 @@ public class AttributeServiceImpl implements AttributeService {
                     .isMeasured(attribute.isMeasured())
                     .description(attribute.description())
                     .unit(attribute.unit())
+                    .isRequired(attribute.isRequired())
                     .build();
 
             return attributeRepository.save(newAttribute);
@@ -206,6 +207,7 @@ public class AttributeServiceImpl implements AttributeService {
             updateAttribute.setPriceFactor(attributeOption.priceFactor());
             updateAttribute.setMedia(attributeOption.media());
             updateAttribute.setUpdatedAt(LocalDateTime.now());
+            updateAttribute.setInStock(attributeOption.inStock());
             updateAttribute.setBrand(attributeOption.brand());
             updateAttribute.setIncompatibleAttributeOptions(convertStringsToUUIDS(attributeOption.incompatibleAttributeOptions()));
 
@@ -223,6 +225,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .attribute(attribute)
                 .media(attributes.media())
                 .baseAmount(attributes.baseAmount())
+                .inStock(attributes.inStock())
                 .maxAmount(attributes.maxAmount())
                 .brand(attributes.brand())
                 .priceFactor(attributes.priceFactor())
@@ -261,6 +264,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .optionMedia(attributeOption.getMedia())
                 .incompatibleAttributes(this.getAllAttributesById(convertUUIDsToStrings(attributeOption.getIncompatibleAttributeOptions())))
                 .brand(attributeOption.getBrand())
+                .inStock(attributeOption.getInStock())
                 .attribute(
                         new AttributeResponseDto(
                         attributeOption.getAttribute().getAttributeName(),

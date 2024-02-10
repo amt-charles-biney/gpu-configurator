@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -50,6 +51,8 @@ public class AttributeOption {
     @ManyToOne
     @JoinColumn(name = "attribute_id", nullable = false)
     private Attribute attribute;
+
+    private Integer inStock;
 
     @OneToMany(mappedBy = "attributeOption", cascade = CascadeType.ALL)
     private List<CompatibleOption> compatibleOptions;
