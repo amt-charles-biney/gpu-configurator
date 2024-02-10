@@ -47,11 +47,12 @@ public class AttributeServiceImpl implements AttributeService {
                 .optionPrice(attribute.getPriceAdjustment())
                 .additionalInfo(new AttributeVariantDto(attribute.getBaseAmount(), attribute.getMaxAmount(), attribute.getPriceFactor()))
                 .brand(attribute.getBrand())
-                .attribute(
-                        new AttributeResponseDto(
-                                attribute.getAttribute().getAttributeName(),
-                                attribute.getAttribute().getId().toString(),
-                                attribute.getAttribute().isMeasured()))
+                .attribute(AttributeResponseDto
+                        .builder()
+                        .id(attribute.getAttribute().getId().toString())
+                        .isMeasured(attribute.getAttribute().isMeasured())
+                        .name(attribute.getAttribute().getAttributeName())
+                        .build())
                 .build()).distinct().toList();
     }
 
