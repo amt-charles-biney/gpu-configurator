@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -32,6 +35,9 @@ public class AttributeOption {
     @Column(name = "media")
     private String media;
 
+    @Column(name = "brand")
+    private String brand;
+
     @Column(name="base_amount")
     private Float baseAmount;
 
@@ -44,6 +50,9 @@ public class AttributeOption {
     @ManyToOne
     @JoinColumn(name = "attribute_id", nullable = false)
     private Attribute attribute;
+
+    @Column(name = "incompatible_attribute_option")
+    private List<UUID> incompatibleAttributeOptions = new ArrayList<>();
 
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
