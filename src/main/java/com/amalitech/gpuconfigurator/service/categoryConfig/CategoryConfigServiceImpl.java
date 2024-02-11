@@ -80,26 +80,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .name(categoryConfig.getCategory().getCategoryName())
                 .build();
 
-        Map<String, List<CompatibleOptionResponseDto>> compatibleGroupedByType = compatibleOptions.stream()
-                .collect(Collectors.groupingBy((option) -> option.getAttributeOption().getAttribute().getAttributeName(),
-                        Collectors.mapping(option -> CompatibleOptionResponseDto.builder()
-                                .compatibleOptionId(option.getId().toString())
-                                        .type(option.getAttributeOption().getAttribute().getAttributeName())
-                                        .price(option.getAttributeOption().getPriceAdjustment())
-                                        .name(option.getAttributeOption().getOptionName())
-                                        .media(option.getAttributeOption().getMedia())
-                                        .isCompatible(option.getIsCompatible())
-                                        .maxAmount(option.getAttributeOption().getMaxAmount())
-                                        .priceFactor(option.getAttributeOption().getPriceFactor())
-                                        .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
-                                        .baseAmount(option.getAttributeOption().getBaseAmount())
-                                        .unit(option.getAttributeOption().getAttribute().getUnit())
-                                        .isIncluded(option.getIsIncluded())
-                                        .size(option.getSize())
-                                        .attributeId(option.getAttributeOption().getAttribute().getId().toString())
-                                        .attributeOptionId(option.getAttributeOption().getId().toString())
-                                        .build(),
-                                Collectors.toList())))
+        Map<String, List<CompatibleOptionResponseDto>> compatibleGroupedByType = mapToCompatibleOptionResponseDtoMap(compatibleOptions)
                 .entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().stream().anyMatch(option -> option.isCompatible() || option.isIncluded()))
@@ -204,16 +185,43 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     public Map<String, List<CategoryConfigDisplay>> extractAttributesFromCompatibleOptions(UUID categoryConfigId) {
         List<CompatibleOption> compatibleOptions = compatibleOptionService.getAllCompatibleOptionsByCategoryConfig(categoryConfigId);
 
-        return compatibleOptions.stream()
-                .collect(Collectors.groupingBy(
-                        option -> option.getAttributeOption().getAttribute().getAttributeName(),
-                        Collectors.mapping(
-                                option -> new CategoryConfigDisplay(option.getAttributeOption().getOptionName(), option.getIsIncluded()),
-                                Collectors.toList()
-                        )
+        return mapToCompatibleOptionResponseDtoMap(compatibleOptions)
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().stream().anyMatch(option -> option.isCompatible() || option.isIncluded()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().stream()
+                                .map(option -> new CategoryConfigDisplay(option.name(), option.isIncluded()))
+                                .collect(Collectors.toList())
                 ));
+
     }
 
+    private Map<String, List<CompatibleOptionResponseDto>>  mapToCompatibleOptionResponseDtoMap(List<CompatibleOption> compatibleOptions) {
+
+                return compatibleOptions.stream()
+                .collect(Collectors.groupingBy((option) -> option.getAttributeOption().getAttribute().getAttributeName(),
+                        Collectors.mapping(option -> CompatibleOptionResponseDto.builder()
+                                        .compatibleOptionId(option.getId().toString())
+                                        .type(option.getAttributeOption().getAttribute().getAttributeName())
+                                        .price(option.getAttributeOption().getPriceAdjustment())
+                                        .name(option.getAttributeOption().getOptionName())
+                                        .media(option.getAttributeOption().getMedia())
+                                        .isCompatible(option.getIsCompatible())
+                                        .maxAmount(option.getAttributeOption().getMaxAmount())
+                                        .priceFactor(option.getAttributeOption().getPriceFactor())
+                                        .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
+                                        .baseAmount(option.getAttributeOption().getBaseAmount())
+                                        .unit(option.getAttributeOption().getAttribute().getUnit())
+                                        .isIncluded(option.getIsIncluded())
+                                        .size(option.getSize())
+                                        .attributeId(option.getAttributeOption().getAttribute().getId().toString())
+                                        .attributeOptionId(option.getAttributeOption().getId().toString())
+                                        .build(),
+                                Collectors.toList())));
+
+    }
     public Long extractProductCount(UUID category) {
         return productRepository.countProductsByCategoryId(category);
     }
