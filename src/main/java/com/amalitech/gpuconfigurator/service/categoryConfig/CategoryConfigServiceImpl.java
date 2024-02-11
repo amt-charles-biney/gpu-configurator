@@ -151,10 +151,17 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                         .attributeOptionId(compatibleOption.getAttributeOption().getId().toString())
                 .build()).toList();
 
+        double totalPrice = compatibleOptionResponseDtoList
+                .stream()
+                .mapToDouble(compatibleOption ->  compatibleOption.price() != null ? compatibleOption.price().doubleValue() : 0.0)
+                .sum();
+
+
         return CompatibleOptionGetResponse.builder()
                 .name(categoryConfig.getCategory().getCategoryName())
                 .id(categoryConfig.getCategory().getId().toString())
                 .config(compatibleOptionResponseDtoList)
+                .configPrice(totalPrice)
                 .build();
     }
 
