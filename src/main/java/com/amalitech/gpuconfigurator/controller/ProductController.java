@@ -36,9 +36,8 @@ public class ProductController {
     @PostMapping("/v1/admin/product")
     @ResponseStatus(HttpStatus.CREATED)
 
-    public CreateProductResponseDto addProduct(@Valid @ModelAttribute ProductDto request,
-                                               @RequestParam("file") List<MultipartFile> files, @RequestParam("coverImage") MultipartFile coverImage) {
-        return productService.createProduct(request, files, coverImage);
+    public CreateProductResponseDto addProduct(@Valid @RequestBody ProductDto request) {
+        return productService.createProduct(request);
     }
 
 
@@ -173,11 +172,9 @@ public class ProductController {
     @PatchMapping("/v1/admin/product/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable("id") UUID id,
-            @ModelAttribute ProductUpdateDto updatedProductDto,
-            @RequestParam(value = "file", required = false) List<MultipartFile> files,
-            @RequestParam(value = "coverImage", required = false) MultipartFile coverImage
+            @ModelAttribute ProductUpdateDto updatedProductDto
     ) {
-        ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto, files, coverImage);
+        ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto);
         return ResponseEntity.ok(updatedProduct);
     }
 

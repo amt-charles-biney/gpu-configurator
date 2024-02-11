@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,8 +17,8 @@ public class CreateProductResponseDto {
     private String id;
     private String productName;
     private String productDescription;
-    private Double productPrice;
-    private String productBrand;
+    private BigDecimal productPrice;
+    private String productCase;
     private String productCategory;
     private String productId;
     private Boolean productAvailability;

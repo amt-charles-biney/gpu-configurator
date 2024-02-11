@@ -88,7 +88,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     private BigDecimal calculateTotalPrice(Product product) {
-        return BigDecimal.valueOf(product.getProductPrice());
+        return product.getTotalProductPrice();
     }
 
     private CategoryConfig getCategoryConfig(Product product) {
@@ -221,7 +221,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .warranty(warranty)
                 .vat(vat)
                 .configuredPrice(optionalTotal)
-                .productPrice(BigDecimal.valueOf(product.getProductPrice()))
+                .productPrice(product.getTotalProductPrice())
                 .configured(configuration.getConfiguredOptions())
                 .productDescription(configuration.getProduct().getProductDescription())
                 .build();
