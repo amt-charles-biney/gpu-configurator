@@ -104,7 +104,7 @@ class CategoryConfigControllerTest {
     @Test
     void testGetAllCategoryConfigById() throws Exception {
         String categoryId = UUID.randomUUID().toString();
-        CompatibleOptionGetResponse response = new CompatibleOptionGetResponse("CategoryName", categoryId, Collections.emptyList());
+        CompatibleOptionGetResponse response = new CompatibleOptionGetResponse("CategoryName", categoryId, Collections.emptyList(), 0.0);
 
         Mockito.when(categoryConfigService.getCategoryAndCompatibleOption(UUID.fromString(categoryId))).thenReturn(response);
 
@@ -112,7 +112,8 @@ class CategoryConfigControllerTest {
 
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(response.id()))
-                .andExpect(jsonPath("$.name").value(response.name()));
+                .andExpect(jsonPath("$.name").value(response.name()))
+                .andExpect(jsonPath("$.configPrice").value(response.configPrice()));
     }
 
     @Test
