@@ -13,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +47,30 @@ public class CaseServiceImpl implements CaseService {
         return mapCaseToCaseResponse(caseRepository.save(newCase));
     }
 
+    @Override
+    public CaseResponse updateCase(UUID caseId, CreateCaseRequest dto, MultipartFile coverImage, List<MultipartFile> images) {
+        var productCase = caseRepository.findById(caseId)
+                .orElseThrow(() -> new NotFoundException("Case with id " + caseId + " does not exist."));
+
+        Set<AttributeOption> incompatibleVariants = new HashSet<>(productCase.getIncompatibleVariants());
+
+        dto.getIncompatibleVariants().stream()
+                .map(variantId -> attributeOptionRepository.findById(variantId)
+                        .orElseThrow(() -> new NotFoundException("Variant with id " + variantId + " does not exist.")))
+                .forEach(incompatibleVariants::add);
+
+        String coverImageUrl = (coverImage == null ? productCase.getCoverImageUrl() : imageUploadService.uploadCoverImage(coverImage));
+        List<String> imageUrls = (images == null ? productCase.getImageUrls() : images.stream().map(imageUploadService::upload).toList());
+
+        productCase.setName(dto.getName());
+        productCase.setDescription(dto.getDescription());
+        productCase.setPrice(dto.getPrice());
+        productCase.setIncompatibleVariants(new ArrayList<>(incompatibleVariants));
+        productCase.setCoverImageUrl(coverImageUrl);
+        productCase.setImageUrls(imageUrls);
+
+        return mapCaseToCaseResponse(caseRepository.save(productCase));
+    }
 
     private CaseResponse mapCaseToCaseResponse(Case productCase) {
         var compatibleVariants = productCase.getIncompatibleVariants()
