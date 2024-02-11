@@ -194,14 +194,17 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     }
 
 
-    public List<String> extractAttributesFromCompatibleOptions(UUID categoryConfigId) {
+    public Map<String, List<CategoryConfigDisplay>> extractAttributesFromCompatibleOptions(UUID categoryConfigId) {
         List<CompatibleOption> compatibleOptions = compatibleOptionService.getAllCompatibleOptionsByCategoryConfig(categoryConfigId);
 
         return compatibleOptions.stream()
-                .filter(option -> option.getIsIncluded())
-                .map(option -> option.getAttributeOption().getAttribute().getAttributeName())
-                .distinct()
-                .toList();
+                .collect(Collectors.groupingBy(
+                        option -> option.getAttributeOption().getAttribute().getAttributeName(),
+                        Collectors.mapping(
+                                option -> new CategoryConfigDisplay(option.getAttributeOption().getOptionName(), option.getIsIncluded()),
+                                Collectors.toList()
+                        )
+                ));
     }
 
     public Long extractProductCount(UUID category) {

@@ -89,7 +89,7 @@ class CategoryConfigControllerTest {
     @Test
     void getAllCategoryConfig() throws Exception {
 
-        List<CategoryListResponse> responseList = Collections.singletonList(new CategoryListResponse("CategoryName", UUID.randomUUID().toString(), Collections.emptyList(), 0L));
+        List<CategoryListResponse> responseList = Collections.singletonList(new CategoryListResponse("CategoryName", UUID.randomUUID().toString(), Collections.emptyMap(), 0L));
 
         Mockito.when(categoryConfigService.getCategoryListResponses()).thenReturn(responseList);
 
