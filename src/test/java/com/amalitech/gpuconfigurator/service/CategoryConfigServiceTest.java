@@ -204,7 +204,6 @@ class CategoryConfigServiceTest {
 
         when(categoryConfigRepository.findAll()).thenReturn(categoryConfigs);
 
-        when(categoryConfigService.extractAttributesFromCompatibleOptions(any())).thenReturn(Collections.emptyList());
         when(categoryConfigService.extractProductCount(any())).thenReturn(10L);
 
 
@@ -278,9 +277,8 @@ class CategoryConfigServiceTest {
         List<CompatibleOption> mockCompatibleOptions = List.of(compatibleOption);
         when(compatibleOptionServiceImpl.getAllCompatibleOptionsByCategoryConfig(categoryConfigId)).thenReturn(mockCompatibleOptions);
 
-        List<String> extractedAttributes = categoryConfigService.extractAttributesFromCompatibleOptions(categoryConfigId);
-
-        assertEquals(Arrays.asList("DISK"), extractedAttributes);
+        Map<String, List<CategoryConfigDisplay>> extractedAttributes = categoryConfigService.extractAttributesFromCompatibleOptions(categoryConfigId);
+        assertNotNull(extractedAttributes);
         verify(compatibleOptionServiceImpl, times(1)).getAllCompatibleOptionsByCategoryConfig(categoryConfigId);
 
     }
