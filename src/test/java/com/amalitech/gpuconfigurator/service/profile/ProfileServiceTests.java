@@ -4,6 +4,7 @@ import com.amalitech.gpuconfigurator.constant.ProfileConstants;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
+import com.amalitech.gpuconfigurator.dto.profile.BasicInformationResponse;
 import com.amalitech.gpuconfigurator.dto.profile.ContactRequest;
 import com.amalitech.gpuconfigurator.exception.InvalidPasswordException;
 import com.amalitech.gpuconfigurator.model.Contact;
@@ -83,11 +84,13 @@ public class ProfileServiceTests {
         when(contactService.createOrUpdate(any(User.class), any(ContactRequest.class))).thenReturn(contact);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        GenericResponse response = profileService.updateBasicInformation(basicInformationRequestDto, authenticationToken);
+        BasicInformationResponse response = profileService.updateBasicInformation(basicInformationRequestDto, authenticationToken);
 
         verify(userRepository, times(1)).save(user);
-        Assertions.assertThat(response.status()).isEqualTo(HttpStatus.OK.value());
-        Assertions.assertThat(response.message()).isEqualTo(ProfileConstants.BASIC_INFORMATION_UPDATE_SUCCESS);
+
+        Assertions.assertThat("John").isEqualTo(response.getFirstName());
+        Assertions.assertThat("Doe").isEqualTo(response.getLastName());
+
         Assertions.assertThat(user.getFirstName()).isEqualTo("John");
         Assertions.assertThat(user.getLastName()).isEqualTo("Doe");
         Assertions.assertThat(user.getContact()).isEqualTo(contact);
@@ -103,11 +106,10 @@ public class ProfileServiceTests {
         user.setEmail("john.doe@example.com");
         when(authenticationToken.getPrincipal()).thenReturn(user);
 
-        User userResult = profileService.getUserProfile(authenticationToken);
+        BasicInformationResponse response = profileService.getUserProfile(authenticationToken);
 
-        Assertions.assertThat(userResult).isEqualTo(user);
-        Assertions.assertThat(userResult.getFirstName()).isEqualTo(user.getFirstName());
-        Assertions.assertThat(userResult.getEmail()).isEqualTo(user.getEmail());
+        Assertions.assertThat("John").isEqualTo(response.getFirstName());
+        Assertions.assertThat("john.doe@example.com").isEqualTo(response.getEmail());
     }
 
     @Test
