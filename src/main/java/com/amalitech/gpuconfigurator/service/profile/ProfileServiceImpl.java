@@ -33,7 +33,9 @@ public class ProfileServiceImpl implements ProfileService {
 
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
-        user.setContact(contactService.createOrUpdate(user, dto.getContact()));
+        if (dto.getContact() != null) {
+            user.setContact(contactService.createOrUpdate(user, dto.getContact()));
+        }
 
         userRepository.save(user);
 
