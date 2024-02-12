@@ -9,7 +9,7 @@ import com.amalitech.gpuconfigurator.exception.InvalidPasswordException;
 import java.security.Principal;
 
 public interface ProfileService {
-    GenericResponse updateBasicInformation(BasicInformationRequest dto, Principal principal);
+    BasicInformationResponse updateBasicInformation(BasicInformationRequest dto, Principal principal);
 
     BasicInformationResponse getUserProfile(Principal principal);
 

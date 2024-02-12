@@ -28,7 +28,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final ContactService contactService;
 
     @Override
-    public GenericResponse updateBasicInformation(BasicInformationRequest dto, Principal principal) {
+    public BasicInformationResponse updateBasicInformation(BasicInformationRequest dto, Principal principal) {
         var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
 
         user.setFirstName(dto.getFirstName());
@@ -39,7 +39,12 @@ public class ProfileServiceImpl implements ProfileService {
 
         userRepository.save(user);
 
-        return new GenericResponse(200, ProfileConstants.BASIC_INFORMATION_UPDATE_SUCCESS);
+        return BasicInformationResponse.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .contact(this.mapToContactResponse(user.getContact()))
+                .build();
     }
 
     public BasicInformationResponse getUserProfile(Principal principal) throws UsernameNotFoundException {

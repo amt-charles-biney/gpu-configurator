@@ -22,7 +22,7 @@ public class ProfileController {
 
     @CrossOrigin
     @PutMapping("/basic-info")
-    public ResponseEntity<GenericResponse> updateBasicInformation(
+    public ResponseEntity<BasicInformationResponse> updateBasicInformation(
             @Validated @RequestBody BasicInformationRequest dto,
             Principal principal
     ) {
