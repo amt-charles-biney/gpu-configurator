@@ -28,7 +28,7 @@ public class CaseResponse {
 
     private BigDecimal price;
 
-    private List<AttributeOption> incompatibleVariants;
+    private List<AttributeOptionResponse> incompatibleVariants;
 
     private LocalDateTime createdAt;
 
