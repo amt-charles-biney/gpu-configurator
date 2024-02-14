@@ -98,6 +98,7 @@ class CategoryConfigServiceTest {
                 .build();
 
         compatibleOption = CompatibleOption.builder()
+                .id(UUID.randomUUID())
                 .categoryConfig(categoryConfig)
                 .attributeOption(attributeOption)
                 .isMeasured(true)
