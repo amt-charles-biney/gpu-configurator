@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -39,7 +40,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         List<CompatibleOption> compatibleOptions = getCompatibleOptions(categoryConfig);
         List<ConfigOptions> configOptions = getConfigOptions(components, compatibleOptions);
 
+//        BigDecimal optionalTotal = calculateOptionalTotal(configOptions).subtract(product.getBaseConfigPrice());
+
         BigDecimal optionalTotal = calculateOptionalTotal(configOptions);
+
+
         totalPrice = totalPrice.add(optionalTotal);
 
         BigDecimal vat = calculateVat(totalPrice);
@@ -124,7 +129,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     private ConfigOptions createConfigOption(CompatibleOption option, String[] componentIsSizableList) {
-        Boolean isMeasured = option.getAttributeOption().getAttribute().isMeasured();
+        boolean isMeasured = option.getAttributeOption().getAttribute().isMeasured();
         if (isMeasured) {
             String size = Arrays.stream(componentIsSizableList)
                     .filter(pair -> pair.split("_")[0].equals(String.valueOf(option.getId())))
@@ -144,7 +149,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             return ConfigOptions.builder()
                     .optionId(String.valueOf(option.getId()))
                     .optionName(option.getAttributeOption().getOptionName())
-                    .optionPrice(option.getIsIncluded() ? calculatedPrice :calculatedPrice.subtract(option.getAttributeOption().getPriceAdjustment()))
+                    .optionPrice(option.getIsIncluded() ? calculatedPrice : calculatedPrice.subtract(option.getAttributeOption().getPriceAdjustment()))
                     .optionType(option.getAttributeOption().getAttribute().getAttributeName())
                     .baseAmount(BigDecimal.valueOf(option.getAttributeOption().getBaseAmount()))
                     .isIncluded(option.getIsIncluded())
@@ -180,7 +185,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private BigDecimal calculateOptionalTotal(List<ConfigOptions> configOptions) {
         return configOptions.stream()
-                .map(ConfigOptions::getOptionPrice)
+                .filter(configs -> !configs.isIncluded())
+                .map(ConfigOptions::getOptionPrice)us
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .setScale(2, RoundingMode.HALF_UP);
     }
@@ -221,6 +227,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .warranty(warranty)
                 .vat(vat)
                 .configuredPrice(optionalTotal)
+                .priceDifference(optionalTotal)
                 .productPrice(product.getTotalProductPrice())
                 .configured(configuration.getConfiguredOptions())
                 .productDescription(configuration.getProduct().getProductDescription())
