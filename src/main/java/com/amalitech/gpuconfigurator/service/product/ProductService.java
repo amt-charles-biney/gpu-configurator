@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
-    CreateProductResponseDto createProduct(ProductDto request, List<MultipartFile> files, MultipartFile coverImage);
+    CreateProductResponseDto createProduct(ProductDto request);
 
     List<ProductResponse> getAllProducts();
 
@@ -25,5 +25,5 @@ public interface ProductService {
     List<Product> getNewProducts();
 
 
-    ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto, List<MultipartFile> files, MultipartFile coverImage);
+    ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto);
 }

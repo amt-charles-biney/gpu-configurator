@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -32,11 +33,18 @@ public class Product {
     @Column(name = "product_description", nullable = false)
     private String productDescription;
 
-    @Column(name = "product_price", nullable = false)
-    private Double productPrice;
+    @Column(name = "service_charge", nullable = false)
+    private Double serviceCharge;
 
-    @Column(name = "product_brand", nullable = false)
-    private String productBrand;
+    @Column(name = "product_price", nullable = false)
+    private BigDecimal totalProductPrice;
+
+
+    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "case_id", referencedColumnName = "id", foreignKey = @ForeignKey(
+            name = "case_id_fk"
+    ))
+    private Case productCase;
 
     @Column(name = "product_instock", nullable = false)
     private Integer inStock;
@@ -53,13 +61,6 @@ public class Product {
 
     @Column(name = "product_featured")
     private Boolean featured;
-
-    @Column(name = "image_url", nullable = false)
-    private List<String> imageUrl;
-
-
-    @Column(name = "cover_image_url", nullable = false)
-    private String coverImage;
 
     @Column(name = "product_availability", nullable = false)
     private Boolean productAvailability;

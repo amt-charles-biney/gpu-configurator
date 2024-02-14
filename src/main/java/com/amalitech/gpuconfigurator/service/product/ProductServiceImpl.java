@@ -4,13 +4,18 @@ package com.amalitech.gpuconfigurator.service.product;
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
+import com.amalitech.gpuconfigurator.model.Case;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
+import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
+import com.amalitech.gpuconfigurator.service.cases.CaseService;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageServiceImpl;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,10 +25,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -34,27 +41,39 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryServiceImpl categoryService;
     private final CategoryRepository categoryRepository;
     private final UploadImageServiceImpl cloudinaryImage;
+    private final CaseRepository caseRepository;
 
 
     @Override
 
-    public CreateProductResponseDto createProduct(ProductDto request, List<MultipartFile> files, MultipartFile coverImage) {
+    public CreateProductResponseDto createProduct(ProductDto request) {
         Category category = categoryService.getCategory(request.getCategory());
 
-        List<String> imageUrls = files.stream()
-                .map(this.cloudinaryImage::upload)
-                .toList();
-        String coverImageUrl = cloudinaryImage.uploadCoverImage(coverImage);
+
+        Case productCase = caseRepository.findByName(request.getProductCase()).orElseThrow(() -> new EntityNotFoundException("No case found"));
+
+        BigDecimal totalConfigPrice = category.getCategoryConfig().getCompatibleOptions()
+                .stream()
+                .map(configs -> configs.getAttributeOption().getPriceAdjustment())
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
+
+
+        BigDecimal percentageOfServiceChargeMultiplyByCasePrice = BigDecimal.valueOf(request.getServiceCharge())
+                .divide(BigDecimal.valueOf(100))
+                .multiply(productCase.getPrice().add(totalConfigPrice)).setScale(2, RoundingMode.HALF_UP);
+
+
+        BigDecimal totalProductPrice = percentageOfServiceChargeMultiplyByCasePrice.add(totalConfigPrice).setScale(2, RoundingMode.HALF_UP);
+
 
         var product = Product
                 .builder()
                 .productName(request.getProductName())
                 .productDescription(request.getProductDescription())
-                .productPrice(request.getProductPrice())
-                .productBrand(request.getProductBrand())
+                .productCase(productCase)
+                .serviceCharge(request.getServiceCharge())
+                .totalProductPrice(totalProductPrice)
                 .category(category)
-                .imageUrl(imageUrls)
-                .coverImage(coverImageUrl)
                 .inStock(request.getInStock())
                 .productId(request.getProductId())
                 .build();
@@ -66,14 +85,13 @@ public class ProductServiceImpl implements ProductService {
                 .id(product.getId().toString())
                 .productName(product.getProductName())
                 .productDescription(product.getProductDescription())
-                .productPrice(product.getProductPrice())
+                .productPrice(product.getTotalProductPrice())
                 .productId(product.getProductId())
-                .productBrand(product.getProductBrand())
-                .productBrand(product.getProductBrand())
+                .productCase(product.getProductCase().getName())
                 .productAvailability(product.getProductAvailability())
                 .productCategory(category.getCategoryName())
-                .coverImage(product.getCoverImage())
-                .imageUrl(product.getImageUrl())
+                .coverImage(product.getProductCase().getCoverImageUrl())
+                .imageUrl(product.getProductCase().getImageUrls())
                 .inStock(product.getInStock())
                 .createdAt(product.getCreatedAt())
                 .build();
@@ -90,15 +108,15 @@ public class ProductServiceImpl implements ProductService {
                         .id(product.getId().toString())
                         .productId(product.getProductId())
                         .productDescription(product.getProductDescription())
-                        .productPrice(BigDecimal.valueOf(product.getProductPrice()))
-                        .productBrand(product.getProductBrand())
-                        .coverImage(product.getCoverImage())
+                        .productPrice(product.getTotalProductPrice())
+                        .productCase(product.getProductCase().getName())
+                        .coverImage(product.getProductCase().getCoverImageUrl())
                         .isFeatured(product.getFeatured())
                         .category(ProductResponseDto.builder()
                                 .name(product.getCategory().getCategoryName())
                                 .id(String.valueOf(product.getCategory().getId()))
                                 .build())
-                        .imageUrl(product.getImageUrl())
+                        .imageUrl(product.getProductCase().getImageUrls())
                         .inStock(product.getInStock())
                         .build()).toList();
     }
@@ -113,13 +131,13 @@ public class ProductServiceImpl implements ProductService {
                 .id(product.getId().toString())
                 .productId(product.getProductId())
                 .productDescription(product.getProductDescription())
-                .productPrice(BigDecimal.valueOf(product.getProductPrice()))
+                .productPrice(product.getTotalProductPrice())
                 .productAvailability(product.getProductAvailability())
-                .productBrand(product.getProductBrand())
-                .coverImage(product.getCoverImage())
+                .productCase(product.getProductCase().getName())
+                .coverImage(product.getProductCase().getCoverImageUrl())
                 .inStock(product.getInStock())
                 .isFeatured(product.getFeatured())
-                .imageUrl(product.getImageUrl().stream().toList())
+                .imageUrl(product.getProductCase().getImageUrls())
                 .category(new ProductResponseDto(category.getCategoryName(), category.getId().toString()))
                 .build();
     }
@@ -135,22 +153,7 @@ public class ProductServiceImpl implements ProductService {
 
         List<ProductResponse> productResponseList = productPage.getContent().stream()
                 .filter(product -> !"unassigned".equals(product.getCategory().getCategoryName()))
-                .map(product -> ProductResponse.builder()
-                        .productName(product.getProductName())
-                        .id(product.getId().toString())
-                        .productId(product.getProductId())
-                        .productBrand(product.getProductBrand())
-                        .productDescription(product.getProductDescription())
-                        .productPrice(BigDecimal.valueOf(product.getProductPrice()))
-                        .coverImage(product.getCoverImage())
-                        .isFeatured(product.getFeatured())
-                        .category(ProductResponseDto.builder()
-                                .name(product.getCategory().getCategoryName())
-                                .id(String.valueOf(product.getCategory().getId()))
-                                .build())
-                        .imageUrl(product.getImageUrl())
-                        .inStock(product.getInStock())
-                        .build())
+                .map(getProductProductResponseFunction())
                 .toList();
 
         return new PageImpl<>(productResponseList, pageRequest, productPage.getTotalElements());
@@ -165,29 +168,33 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> productPage = productRepository.findAll(pageRequest);
 
         return productPage
-                .map(product -> ProductResponse.builder()
-                        .productName(product.getProductName())
-                        .id(product.getId().toString())
-                        .productId(product.getProductId())
-                        .productBrand(product.getProductBrand())
-                        .productDescription(product.getProductDescription())
-                        .productPrice(BigDecimal.valueOf(product.getProductPrice()))
-                        .coverImage(product.getCoverImage())
-                        .isFeatured(product.getFeatured())
-                        .category(ProductResponseDto.builder()
-                                .name(product.getCategory().getCategoryName())
-                                .id(String.valueOf(product.getCategory().getId()))
-                                .build())
-                        .imageUrl(product.getImageUrl())
-                        .inStock(product.getInStock())
-                        .build());
+                .map(getProductProductResponseFunction());
 
     }
 
+    @NotNull
+    private static Function<Product, ProductResponse> getProductProductResponseFunction() {
+        return product -> ProductResponse.builder()
+                .productName(product.getProductName())
+                .id(product.getId().toString())
+                .productId(product.getProductId())
+                .productCase(product.getProductCase().getName())
+                .productDescription(product.getProductDescription())
+                .productPrice(product.getTotalProductPrice())
+                .coverImage(product.getProductCase().getCoverImageUrl())
+                .isFeatured(product.getFeatured())
+                .category(ProductResponseDto.builder()
+                        .name(product.getCategory().getCategoryName())
+                        .id(String.valueOf(product.getCategory().getId()))
+                        .build())
+                .imageUrl(product.getProductCase().getImageUrls())
+                .inStock(product.getInStock())
+                .build();
+    }
 
 
     @Override
-    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto, List<MultipartFile> files, MultipartFile coverImage) {
+    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto) {
         try {
             Product existingProduct = productRepository.getReferenceById(id);
 
@@ -199,8 +206,8 @@ public class ProductServiceImpl implements ProductService {
                 existingProduct.setProductDescription(updatedProductDto.getProductDescription());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
-            if (updatedProductDto.getProductPrice() != null) {
-                existingProduct.setProductPrice(updatedProductDto.getProductPrice());
+            if (updatedProductDto.getServiceCharge() != null) {
+                existingProduct.setServiceCharge(updatedProductDto.getServiceCharge());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
             if (updatedProductDto.getProductId() != null) {
@@ -211,27 +218,15 @@ public class ProductServiceImpl implements ProductService {
                 existingProduct.setInStock(updatedProductDto.getInStock());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
-            if (updatedProductDto.getProductBrand() != null) {
-                existingProduct.setProductBrand(updatedProductDto.getProductBrand());
+            if (updatedProductDto.getProductCase() != null) {
+                Case newCase = caseRepository.findByName(updatedProductDto.getProductCase()).orElseThrow(() -> new EntityNotFoundException("No case found"));
+                existingProduct.setProductCase(newCase);
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
             if (updatedProductDto.getCategory() != null) {
                 var newCategory = categoryRepository.findByCategoryName(updatedProductDto.getCategory()).orElseThrow();
                 existingProduct.setCategory(newCategory);
                 existingProduct.setUpdatedAt(LocalDateTime.now());
-            }
-            if (files != null) {
-                List<String> imageUrls = files.stream()
-                        .map(this.cloudinaryImage::upload)
-                        .toList();
-                existingProduct.setImageUrl(imageUrls);
-                existingProduct.setUpdatedAt(LocalDateTime.now());
-            }
-            if (coverImage != null) {
-                String coverImageUrl = cloudinaryImage.uploadCoverImage(coverImage);
-                existingProduct.setCoverImage(coverImageUrl);
-                existingProduct.setUpdatedAt(LocalDateTime.now());
-
             }
 
             Product updatedProduct = productRepository.save(existingProduct);
@@ -240,19 +235,6 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException("No product found");
         }
     }
-
-    private ProductResponse mapProductToProductResponse(Product updatedProduct) {
-        return ProductResponse.builder()
-                .id(String.valueOf(updatedProduct.getId()))
-                .productName(updatedProduct.getProductName())
-                .productId(updatedProduct.getProductId())
-                .productDescription(updatedProduct.getProductDescription())
-                .productPrice(BigDecimal.valueOf(updatedProduct.getProductPrice()))
-                .inStock(updatedProduct.getInStock())
-                .productAvailability(updatedProduct.getProductAvailability())
-                .build();
-    }
-
 
     public void deleteProductById(UUID id) {
         productRepository.deleteById(id);
@@ -263,5 +245,15 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.getBrandNewProducts(timeRequest).orElse(Collections.emptyList());
     }
 
-
+    private ProductResponse mapProductToProductResponse(Product updatedProduct) {
+        return ProductResponse.builder()
+                .id(String.valueOf(updatedProduct.getId()))
+                .productName(updatedProduct.getProductName())
+                .productId(updatedProduct.getProductId())
+                .productDescription(updatedProduct.getProductDescription())
+                .productPrice(updatedProduct.getTotalProductPrice())
+                .inStock(updatedProduct.getInStock())
+                .productAvailability(updatedProduct.getProductAvailability())
+                .build();
+    }
 }
