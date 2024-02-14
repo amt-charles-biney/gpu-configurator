@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.dto.cases;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class CreateCaseRequest {
     @NotBlank
     private String description;
 
+    @NotNull
     private BigDecimal price;
 
     private List<UUID> incompatibleVariants = new ArrayList<>();
