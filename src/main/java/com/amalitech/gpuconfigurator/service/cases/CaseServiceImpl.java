@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.cases;
 
+import com.amalitech.gpuconfigurator.dto.cases.AttributeOptionResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
@@ -50,6 +51,11 @@ public class CaseServiceImpl implements CaseService {
 
 
     private CaseResponse mapCaseToCaseResponse(Case productCase) {
+        var compatibleVariants = productCase.getIncompatibleVariants()
+                .stream()
+                .map(this::mapAttributeOptionToAttributeOptionResponse)
+                .toList();
+
         return CaseResponse.builder()
                 .id(productCase.getId())
                 .name(productCase.getName())
@@ -57,9 +63,20 @@ public class CaseServiceImpl implements CaseService {
                 .coverImageUrl(productCase.getCoverImageUrl())
                 .imageUrls(productCase.getImageUrls())
                 .price(productCase.getPrice())
-                .incompatibleVariants(productCase.getIncompatibleVariants())
+                .incompatibleVariants(compatibleVariants)
                 .createdAt(productCase.getCreatedAt())
                 .updatedAt(productCase.getUpdatedAt())
+                .build();
+    }
+
+    private AttributeOptionResponse mapAttributeOptionToAttributeOptionResponse(AttributeOption attributeOption) {
+        return AttributeOptionResponse.builder()
+                .id(attributeOption.getId())
+                .optionName(attributeOption.getOptionName())
+                .priceAdjustment(attributeOption.getPriceAdjustment())
+                .media(attributeOption.getMedia())
+                .baseAmount(attributeOption.getBaseAmount())
+                .priceFactor(attributeOption.getPriceFactor())
                 .build();
     }
 }
