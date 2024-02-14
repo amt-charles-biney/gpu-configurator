@@ -1,7 +1,6 @@
 package com.amalitech.gpuconfigurator.service.product;
 
 
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Case;
@@ -10,9 +9,7 @@ import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
-import com.amalitech.gpuconfigurator.service.cases.CaseService;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
-import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -20,9 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -31,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -40,7 +34,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryServiceImpl categoryService;
     private final CategoryRepository categoryRepository;
-    private final UploadImageServiceImpl cloudinaryImage;
     private final CaseRepository caseRepository;
 
 
@@ -50,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
         Category category = categoryService.getCategory(request.getCategory());
 
 
-        Case productCase = caseRepository.findByName(request.getProductCase()).orElseThrow(() -> new EntityNotFoundException("No case found"));
+        Case productCase = caseRepository.findById(UUID.fromString(request.getProductCaseId())).orElseThrow(() -> new EntityNotFoundException("No case found"));
 
         BigDecimal totalConfigPrice = category.getCategoryConfig().getCompatibleOptions()
                 .stream()

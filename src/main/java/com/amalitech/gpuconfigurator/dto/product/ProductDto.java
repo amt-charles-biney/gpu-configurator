@@ -36,7 +36,7 @@ public class ProductDto {
 
     private String category;
 
-    private String productCase;
+    private String productCaseId;
 
     private Integer inStock;
 }
