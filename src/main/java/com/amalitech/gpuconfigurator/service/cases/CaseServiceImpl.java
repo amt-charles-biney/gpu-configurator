@@ -48,6 +48,7 @@ public class CaseServiceImpl implements CaseService {
         return mapCaseToCaseResponse(caseRepository.save(newCase));
     }
 
+
     private CaseResponse mapCaseToCaseResponse(Case productCase) {
         return CaseResponse.builder()
                 .id(productCase.getId())
