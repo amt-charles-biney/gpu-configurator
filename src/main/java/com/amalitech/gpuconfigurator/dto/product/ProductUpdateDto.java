@@ -16,7 +16,6 @@ public class ProductUpdateDto {
     Double serviceCharge;
     String productId;
     Boolean availability;
-    Integer inStock;
     String category;
-    String productCase;
+    String productCaseId;
 }

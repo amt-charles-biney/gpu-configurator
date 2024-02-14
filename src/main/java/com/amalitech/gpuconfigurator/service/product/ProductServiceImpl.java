@@ -207,12 +207,8 @@ public class ProductServiceImpl implements ProductService {
                 existingProduct.setProductId(updatedProductDto.getProductId());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
-            if (updatedProductDto.getInStock() != null) {
-                existingProduct.setInStock(updatedProductDto.getInStock());
-                existingProduct.setUpdatedAt(LocalDateTime.now());
-            }
-            if (updatedProductDto.getProductCase() != null) {
-                Case newCase = caseRepository.findByName(updatedProductDto.getProductCase()).orElseThrow(() -> new EntityNotFoundException("No case found"));
+            if (updatedProductDto.getProductCaseId() != null) {
+                Case newCase = caseRepository.findById(UUID.fromString(updatedProductDto.getProductCaseId())).orElseThrow(() -> new EntityNotFoundException("No case found"));
                 existingProduct.setProductCase(newCase);
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
