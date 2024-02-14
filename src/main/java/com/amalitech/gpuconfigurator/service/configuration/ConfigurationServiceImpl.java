@@ -160,7 +160,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             return ConfigOptions.builder()
                     .optionId(String.valueOf(option.getId()))
                     .optionName(option.getAttributeOption().getOptionName())
-                    .optionPrice(option.getAttributeOption().getPriceAdjustment())
+                    .optionPrice(option.getIsIncluded() ? BigDecimal.ZERO : option.getAttributeOption().getPriceAdjustment())
                     .optionType(option.getAttributeOption().getAttribute().getAttributeName())
                     .baseAmount(BigDecimal.valueOf(0))
                     .isIncluded(option.getIsIncluded())
@@ -174,7 +174,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return ConfigOptions.builder()
                 .optionId(String.valueOf(option.getId()))
                 .optionName(option.getAttributeOption().getOptionName())
-                .optionPrice(option.getAttributeOption().getPriceAdjustment().setScale(2, RoundingMode.HALF_UP))
+                .optionPrice(BigDecimal.ZERO)
                 .optionType(option.getAttributeOption().getAttribute().getAttributeName())
                 .baseAmount(option.getAttributeOption().getBaseAmount() != null ? BigDecimal.valueOf(option.getAttributeOption().getBaseAmount()) : new BigDecimal(0))
                 .isIncluded(option.getIsIncluded())
@@ -185,8 +185,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private BigDecimal calculateOptionalTotal(List<ConfigOptions> configOptions) {
         return configOptions.stream()
-                .filter(configs -> !configs.isIncluded())
-                .map(ConfigOptions::getOptionPrice)us
+                .map(ConfigOptions::getOptionPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .setScale(2, RoundingMode.HALF_UP);
     }
@@ -227,7 +226,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .warranty(warranty)
                 .vat(vat)
                 .configuredPrice(optionalTotal)
-                .priceDifference(optionalTotal)
                 .productPrice(product.getTotalProductPrice())
                 .configured(configuration.getConfiguredOptions())
                 .productDescription(configuration.getProduct().getProductDescription())
