@@ -9,8 +9,11 @@ import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
+import com.amalitech.gpuconfigurator.repository.CompatibleOptionRepository;
 import com.amalitech.gpuconfigurator.repository.ConfigurationRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -130,7 +133,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private ConfigOptions createConfigOption(CompatibleOption option, String[] componentIsSizableList) {
         boolean isMeasured = option.getAttributeOption().getAttribute().isMeasured();
+        BigDecimal defaultPrice;
         if (isMeasured) {
+            defaultPrice = option.getAttributeOption().getPriceAdjustment();
             String size = Arrays.stream(componentIsSizableList)
                     .filter(pair -> pair.split("_")[0].equals(String.valueOf(option.getId())))
                     .findFirst()
@@ -146,10 +151,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .multiply(BigDecimal.valueOf(option.getAttributeOption().getPriceFactor()))
                     .setScale(2, RoundingMode.HALF_UP);
 
+            BigDecimal optionPrice = option.getIsIncluded() ? calculatedPrice : calculatedPrice.subtract(option.getAttributeOption().getPriceAdjustment());
             return ConfigOptions.builder()
                     .optionId(String.valueOf(option.getId()))
                     .optionName(option.getAttributeOption().getOptionName())
-                    .optionPrice(option.getIsIncluded() ? calculatedPrice : calculatedPrice.subtract(option.getAttributeOption().getPriceAdjustment()))
+                    .optionPrice((optionPrice.compareTo(BigDecimal.ZERO) == 0) ? BigDecimal.ZERO : optionPrice.subtract(defaultPrice))
+                    .priceDifference(optionPrice) //todo: calcualte
                     .optionType(option.getAttributeOption().getAttribute().getAttributeName())
                     .baseAmount(BigDecimal.valueOf(option.getAttributeOption().getBaseAmount()))
                     .isIncluded(option.getIsIncluded())
@@ -157,11 +164,16 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .size(size.isEmpty() ? String.valueOf(option.getAttributeOption().getBaseAmount()) : size)
                     .build();
         } else {
+
+            defaultPrice = option.getAttributeOption().getPriceAdjustment();
+
+
             return ConfigOptions.builder()
                     .optionId(String.valueOf(option.getId()))
                     .optionName(option.getAttributeOption().getOptionName())
                     .optionPrice(option.getIsIncluded() ? BigDecimal.ZERO : option.getAttributeOption().getPriceAdjustment())
                     .optionType(option.getAttributeOption().getAttribute().getAttributeName())
+                    .priceDifference(defaultPrice)  //todo: calcualte
                     .baseAmount(BigDecimal.valueOf(0))
                     .isIncluded(option.getIsIncluded())
                     .size("")

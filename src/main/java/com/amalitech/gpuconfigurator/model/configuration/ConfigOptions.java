@@ -33,6 +33,9 @@ public class ConfigOptions {
     @Column(name = "option_price")
     private BigDecimal optionPrice;
 
+    @Column(name = "price_difference")
+    private BigDecimal priceDifference;
+
     @Column(name = "is_included")
     private boolean isIncluded;
 
