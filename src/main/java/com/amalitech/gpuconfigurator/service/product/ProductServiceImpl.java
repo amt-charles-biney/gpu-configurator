@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Case;
 import com.amalitech.gpuconfigurator.model.Category;
+import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
@@ -47,6 +48,7 @@ public class ProductServiceImpl implements ProductService {
 
         BigDecimal totalConfigPrice = category.getCategoryConfig().getCompatibleOptions()
                 .stream()
+                .filter(CompatibleOption::getIsIncluded)
                 .map(configs -> configs.getAttributeOption().getPriceAdjustment())
                 .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
 
