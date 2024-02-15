@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -27,5 +28,16 @@ public class CaseController {
     ) {
         var response = caseService.createCase(dto, coverImage, images);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @CrossOrigin
+    @PutMapping("/v1/admin/cases/{caseId}")
+    public ResponseEntity<CaseResponse> updateCase(
+            @PathVariable UUID caseId,
+            @Valid CreateCaseRequest dto,
+            @RequestParam(required = false) MultipartFile coverImage,
+            @RequestParam(required = false) List<MultipartFile> images
+    ) {
+        return ResponseEntity.ok(caseService.updateCase(caseId, dto, coverImage, images));
     }
 }

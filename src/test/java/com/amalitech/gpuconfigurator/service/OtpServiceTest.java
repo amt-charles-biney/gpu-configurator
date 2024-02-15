@@ -17,8 +17,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
 public class OtpServiceTest {
 
     @InjectMocks
@@ -64,10 +65,16 @@ public class OtpServiceTest {
 
     @Test
     public void generateAndSaveOtp_shouldGenerateAndSaveOtp() {
+        Otp otp = Otp
+                .builder()
+                .email("kaycydickson@gmail.com")
+                .build();
+        when(otpRepository.save(any())).thenReturn(otp);
         String code = otpService.generateAndSaveOtp(user, OtpType.CREATE);
 
         assertNotNull(code);
         assertFalse(code.isEmpty());
+        verify(otpRepository, times(1)).save(any());
     }
 
     @Test

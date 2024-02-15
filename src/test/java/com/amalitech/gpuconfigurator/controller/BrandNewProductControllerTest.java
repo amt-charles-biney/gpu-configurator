@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -59,7 +60,7 @@ class BrandNewProductControllerTest {
                         .id(UUID.fromString("c6409193-44e8-4791-1232-c58f2e2aba4b"))
                         .productName("Product 2")
                         .productDescription("powerful gpu")
-                        .productPrice(20.00)
+                        .totalProductPrice(BigDecimal.valueOf(20.0))
                         .productAvailability(true)
                         .inStock(10)
                         .category(category)
@@ -70,7 +71,7 @@ class BrandNewProductControllerTest {
                         .id(UUID.fromString("c6409193-44e8-4791-1232-c58f2e2aba4b"))
                         .productName("Product 2")
                         .productDescription("powerful gpu")
-                        .productPrice(20.00)
+                        .totalProductPrice(BigDecimal.valueOf(20.0))
                         .productAvailability(true)
                         .inStock(10)
                         .category(category)
