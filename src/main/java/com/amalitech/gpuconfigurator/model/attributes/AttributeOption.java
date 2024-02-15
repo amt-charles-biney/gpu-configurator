@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -49,7 +52,7 @@ public class AttributeOption {
     private Double priceFactor;
 
     @ManyToOne
-    @JoinColumn(name = "attribute_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Attribute attribute;
 
     private Integer inStock;
@@ -60,6 +63,7 @@ public class AttributeOption {
     @Column(name = "incompatible_attribute_option")
     private List<UUID> incompatibleAttributeOptions = new ArrayList<>();
 
+    @CreationTimestamp
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
