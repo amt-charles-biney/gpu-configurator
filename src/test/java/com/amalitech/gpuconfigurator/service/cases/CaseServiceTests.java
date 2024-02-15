@@ -123,4 +123,33 @@ public class CaseServiceTests {
 
         Assertions.assertThat(exception.getMessage()).isNotEmpty();
     }
+
+    @Test
+    public void findById_whenValidCaseId_returnsCaseResponse() {
+        UUID caseId = UUID.randomUUID();
+
+        productCase.setId(caseId);
+
+        when(caseRepository.findById(any(UUID.class))).thenReturn(Optional.ofNullable(productCase));
+
+        CaseResponse result = caseService.findById(caseId);
+
+        verify(caseRepository, times(1)).findById(caseId);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getId()).isEqualTo(caseId);
+    }
+
+    @Test
+    public void findById_whenInvalidCaseId_throwsNotFoundException() {
+        UUID invalidId = UUID.randomUUID();
+
+        when(caseRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> caseService.findById(invalidId));
+
+        verify(caseRepository, times(1)).findById(invalidId);
+
+        Assertions.assertThat(exception.getMessage()).isNotEmpty();
+    }
 }
