@@ -7,5 +7,5 @@ import java.util.List;
 
 @Builder
 public record AttributeOptionResponseDto(String id, String optionName, AttributeVariantDto additionalInfo, BigDecimal optionPrice, String optionMedia, AttributeResponseDto attribute,
-                                         List<IncompatibleAttributeResponse> incompatibleAttributes, String brand, Integer inStock) {
+                                         List<IncompatibleAttributeResponse> incompatibleAttributeOptions, String brand, Integer inStock) {
 }

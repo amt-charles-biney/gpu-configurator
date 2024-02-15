@@ -1,10 +1,12 @@
 package com.amalitech.gpuconfigurator.controller;
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
 import com.amalitech.gpuconfigurator.service.cases.CaseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,15 @@ public class CaseController {
     }
 
     @CrossOrigin
+    @GetMapping("/v1/admin/cases")
+    public ResponseEntity<Page<CaseResponse>> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size
+    ) {
+        return ResponseEntity.ok(caseService.findAll(page, size));
+    }
+
+    @CrossOrigin
     @PutMapping("/v1/admin/cases/{caseId}")
     public ResponseEntity<CaseResponse> updateCase(
             @PathVariable UUID caseId,
@@ -39,5 +50,11 @@ public class CaseController {
             @RequestParam(required = false) List<MultipartFile> images
     ) {
         return ResponseEntity.ok(caseService.updateCase(caseId, dto, coverImage, images));
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/v1/admin/cases/{caseId}")
+    public ResponseEntity<GenericResponse> deleteById(@PathVariable UUID caseId) {
+        return ResponseEntity.ok(caseService.deleteById(caseId));
     }
 }
