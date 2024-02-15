@@ -15,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -122,5 +125,50 @@ public class CaseServiceTests {
         verify(caseRepository, never()).save(any(Case.class));
 
         Assertions.assertThat(exception.getMessage()).isNotEmpty();
+    }
+
+    @Test
+    public void findById_whenValidCaseId_returnsCaseResponse() {
+        UUID caseId = UUID.randomUUID();
+
+        productCase.setId(caseId);
+
+        when(caseRepository.findById(any(UUID.class))).thenReturn(Optional.ofNullable(productCase));
+
+        CaseResponse result = caseService.findById(caseId);
+
+        verify(caseRepository, times(1)).findById(caseId);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getId()).isEqualTo(caseId);
+    }
+
+    @Test
+    public void findById_whenInvalidCaseId_throwsNotFoundException() {
+        UUID invalidId = UUID.randomUUID();
+
+        when(caseRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> caseService.findById(invalidId));
+
+        verify(caseRepository, times(1)).findById(invalidId);
+
+        Assertions.assertThat(exception.getMessage()).isNotEmpty();
+    }
+
+    @Test
+    public void findAll_whenValidPageAndSize_returnsCaseResponsePage() {
+        List<Case> productCases = List.of(productCase);
+        Page<Case> casePage = new PageImpl<>(productCases);
+        int page = 0;
+        int size = 2;
+
+        when(caseRepository.findAll(any(Pageable.class))).thenReturn(casePage);
+
+        Page<CaseResponse> result = caseService.findAll(page, size);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getTotalElements()).isEqualTo(productCases.size());
+        Assertions.assertThat(result.getContent().size()).isEqualTo(productCases.size());
     }
 }
