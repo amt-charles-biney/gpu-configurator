@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.cases;
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
@@ -18,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -170,5 +172,33 @@ public class CaseServiceTests {
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getTotalElements()).isEqualTo(productCases.size());
         Assertions.assertThat(result.getContent().size()).isEqualTo(productCases.size());
+    }
+
+    @Test
+    public void deleteById_whenValidCaseId_returnsSuccessGenericResponse() {
+        UUID caseId = UUID.randomUUID();
+        when(caseRepository.findById(any(UUID.class))).thenReturn(Optional.ofNullable(productCase));
+        doNothing().when(caseRepository).delete(any(Case.class));
+
+        GenericResponse result = caseService.deleteById(caseId);
+
+        verify(caseRepository, times(1)).findById(caseId);
+        verify(caseRepository, times(1)).delete(productCase);
+
+        Assertions.assertThat(result.status()).isEqualTo(HttpStatus.OK.value());
+        Assertions.assertThat(result.message()).isEqualTo("Case deleted successfully.");
+    }
+
+    @Test
+    public void deleteById_whenInvalidCaseId_throwsNotFoundException() {
+        UUID caseId = UUID.randomUUID();
+        when(caseRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> caseService.deleteById(caseId));
+
+        verify(caseRepository, times(1)).findById(caseId);
+        verify(caseRepository, never()).delete(productCase);
+
+        Assertions.assertThat(exception.getMessage()).isNotEmpty();
     }
 }
