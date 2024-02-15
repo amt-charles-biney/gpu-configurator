@@ -262,7 +262,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .optionPrice(attributeOption.getPriceAdjustment())
                 .additionalInfo(new AttributeVariantDto(attributeOption.getBaseAmount(), attributeOption.getMaxAmount(), attributeOption.getPriceFactor()))
                 .optionMedia(attributeOption.getMedia())
-                .incompatibleAttributes(this.getAllAttributesById(convertUUIDsToStrings(attributeOption.getIncompatibleAttributeOptions())))
+                .incompatibleAttributeOptions(this.getAllAttributesById(convertUUIDsToStrings(attributeOption.getIncompatibleAttributeOptions())))
                 .brand(attributeOption.getBrand())
                 .inStock(attributeOption.getInStock())
                 .attribute(
