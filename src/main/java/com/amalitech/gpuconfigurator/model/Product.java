@@ -39,6 +39,9 @@ public class Product {
     @Column(name = "product_price", nullable = false)
     private BigDecimal totalProductPrice;
 
+    @Column(name = "base_config_price", nullable = false)
+    private BigDecimal baseConfigPrice;
+
 
     @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "case_id", referencedColumnName = "id", foreignKey = @ForeignKey(

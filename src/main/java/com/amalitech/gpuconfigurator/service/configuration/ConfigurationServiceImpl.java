@@ -9,8 +9,11 @@ import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
+import com.amalitech.gpuconfigurator.repository.CompatibleOptionRepository;
 import com.amalitech.gpuconfigurator.repository.ConfigurationRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -39,7 +43,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         List<CompatibleOption> compatibleOptions = getCompatibleOptions(categoryConfig);
         List<ConfigOptions> configOptions = getConfigOptions(components, compatibleOptions);
 
-        BigDecimal optionalTotal = calculateOptionalTotal(configOptions);
+        BigDecimal optionalTotal = calculateOptionalTotal(configOptions).subtract(product.getBaseConfigPrice());
+
+
         totalPrice = totalPrice.add(optionalTotal);
 
         BigDecimal vat = calculateVat(totalPrice);
@@ -123,8 +129,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .toList();
     }
 
+
     private ConfigOptions createConfigOption(CompatibleOption option, String[] componentIsSizableList) {
-        Boolean isMeasured = option.getAttributeOption().getAttribute().isMeasured();
+        boolean isMeasured = option.getAttributeOption().getAttribute().isMeasured();
         if (isMeasured) {
             String size = Arrays.stream(componentIsSizableList)
                     .filter(pair -> pair.split("_")[0].equals(String.valueOf(option.getId())))
@@ -141,10 +148,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .multiply(BigDecimal.valueOf(option.getAttributeOption().getPriceFactor()))
                     .setScale(2, RoundingMode.HALF_UP);
 
+            BigDecimal optionPrice = option.getIsIncluded() ? calculatedPrice : calculatedPrice.subtract(option.getAttributeOption().getPriceAdjustment());
+
             return ConfigOptions.builder()
                     .optionId(String.valueOf(option.getId()))
                     .optionName(option.getAttributeOption().getOptionName())
-                    .optionPrice(option.getIsIncluded() ? calculatedPrice :calculatedPrice.subtract(option.getAttributeOption().getPriceAdjustment()))
+                    .optionPrice((optionPrice.compareTo(BigDecimal.ZERO) == 0) ? option.getAttributeOption().getPriceAdjustment() : optionPrice)
                     .optionType(option.getAttributeOption().getAttribute().getAttributeName())
                     .baseAmount(BigDecimal.valueOf(option.getAttributeOption().getBaseAmount()))
                     .isIncluded(option.getIsIncluded())
@@ -165,6 +174,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
     }
 
+
     private ConfigOptions createConfigOptionWithoutSize(CompatibleOption option) {
         return ConfigOptions.builder()
                 .optionId(String.valueOf(option.getId()))
@@ -177,6 +187,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
                 .build();
     }
+
 
     private BigDecimal calculateOptionalTotal(List<ConfigOptions> configOptions) {
         return configOptions.stream()
@@ -213,6 +224,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private ConfigurationResponseDto createResponseDto(Configuration configuration, BigDecimal totalPriceWithVat,
                                                        Boolean warranty, BigDecimal vat, BigDecimal optionalTotal, Product product) {
+
         return ConfigurationResponseDto.builder()
                 .Id(String.valueOf(configuration.getId()))
                 .productName(product.getProductName())

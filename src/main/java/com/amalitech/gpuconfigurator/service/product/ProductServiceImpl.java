@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Case;
 import com.amalitech.gpuconfigurator.model.Category;
+import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
@@ -47,6 +48,7 @@ public class ProductServiceImpl implements ProductService {
 
         BigDecimal totalConfigPrice = category.getCategoryConfig().getCompatibleOptions()
                 .stream()
+                .filter(CompatibleOption::getIsIncluded)
                 .map(configs -> configs.getAttributeOption().getPriceAdjustment())
                 .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
 
@@ -66,6 +68,7 @@ public class ProductServiceImpl implements ProductService {
                 .productCase(productCase)
                 .serviceCharge(request.getServiceCharge())
                 .totalProductPrice(totalProductPrice)
+                .baseConfigPrice(totalConfigPrice)
                 .category(category)
                 .inStock(request.getInStock())
                 .productId(request.getProductId())
@@ -79,6 +82,8 @@ public class ProductServiceImpl implements ProductService {
                 .productName(product.getProductName())
                 .productDescription(product.getProductDescription())
                 .productPrice(product.getTotalProductPrice())
+                .productCasePrice(product.getProductCase().getPrice())
+                .baseConfigPrice(product.getBaseConfigPrice())
                 .productId(product.getProductId())
                 .productCase(product.getProductCase().getName())
                 .productAvailability(product.getProductAvailability())

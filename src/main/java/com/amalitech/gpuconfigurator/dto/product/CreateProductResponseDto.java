@@ -18,6 +18,8 @@ public class CreateProductResponseDto {
     private String productName;
     private String productDescription;
     private BigDecimal productPrice;
+    private BigDecimal productCasePrice;
+    private BigDecimal baseConfigPrice;
     private String productCase;
     private String productCategory;
     private String productId;
