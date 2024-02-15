@@ -14,4 +14,6 @@ public interface CaseService {
     CaseResponse updateCase(UUID caseId, CreateCaseRequest dto, MultipartFile coverImage, List<MultipartFile> images);
 
     Page<CaseResponse> findAll(int page, int size);
+
+    CaseResponse findById(UUID caseId);
 }

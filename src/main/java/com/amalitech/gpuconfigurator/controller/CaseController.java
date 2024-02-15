@@ -41,6 +41,12 @@ public class CaseController {
     }
 
     @CrossOrigin
+    @GetMapping("/v1/admin/cases/{caseId}")
+    public ResponseEntity<CaseResponse> findById(@PathVariable UUID caseId) {
+        return ResponseEntity.ok(caseService.findById(caseId));
+    }
+
+    @CrossOrigin
     @PutMapping("/v1/admin/cases/{caseId}")
     public ResponseEntity<CaseResponse> updateCase(
             @PathVariable UUID caseId,

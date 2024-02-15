@@ -59,6 +59,14 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    public CaseResponse findById(UUID caseId) {
+        Case productCase = caseRepository.findById(caseId)
+                .orElseThrow(() -> new NotFoundException("Case with id " + caseId + " does not exist."));
+
+        return mapCaseToCaseResponse(productCase);
+    }
+
+    @Override
     public CaseResponse updateCase(UUID caseId, CreateCaseRequest dto, MultipartFile coverImage, List<MultipartFile> images) {
         var productCase = caseRepository.findById(caseId)
                 .orElseThrow(() -> new NotFoundException("Case with id " + caseId + " does not exist."));
