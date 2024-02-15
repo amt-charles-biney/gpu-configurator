@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.controller;
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
 import com.amalitech.gpuconfigurator.service.cases.CaseService;
@@ -49,5 +50,11 @@ public class CaseController {
             @RequestParam(required = false) List<MultipartFile> images
     ) {
         return ResponseEntity.ok(caseService.updateCase(caseId, dto, coverImage, images));
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/v1/admin/cases/{caseId}")
+    public ResponseEntity<GenericResponse> deleteById(@PathVariable UUID caseId) {
+        return ResponseEntity.ok(caseService.deleteById(caseId));
     }
 }

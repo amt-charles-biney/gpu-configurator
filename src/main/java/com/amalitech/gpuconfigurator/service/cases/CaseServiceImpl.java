@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.cases;
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.cases.AttributeOptionResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -81,6 +83,19 @@ public class CaseServiceImpl implements CaseService {
         productCase.setImageUrls(imageUrls);
 
         return mapCaseToCaseResponse(caseRepository.save(productCase));
+    }
+
+    @Override
+    public GenericResponse deleteById(UUID caseId) {
+        Case productCase = caseRepository.findById(caseId)
+                .orElseThrow(() -> new NotFoundException("Case with id " + caseId + " does not exist."));
+
+        caseRepository.delete(productCase);
+
+        return GenericResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Case deleted successfully.")
+                .build();
     }
 
     private CaseResponse mapCaseToCaseResponse(Case productCase) {
