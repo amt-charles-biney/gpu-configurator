@@ -10,6 +10,9 @@ import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,6 +48,14 @@ public class CaseServiceImpl implements CaseService {
                 .build();
 
         return mapCaseToCaseResponse(caseRepository.save(newCase));
+    }
+
+    @Override
+    public Page<CaseResponse> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return caseRepository.findAll(pageable)
+                .map(this::mapCaseToCaseResponse);
     }
 
     @Override
