@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.cases;
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
 import org.springframework.data.domain.Page;
@@ -16,4 +17,6 @@ public interface CaseService {
     Page<CaseResponse> findAll(int page, int size);
 
     CaseResponse findById(UUID caseId);
+
+    GenericResponse deleteById(UUID caseId);
 }
