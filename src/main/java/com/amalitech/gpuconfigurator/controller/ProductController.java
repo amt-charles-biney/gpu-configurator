@@ -78,30 +78,6 @@ public class ProductController {
         return ResponseEntity.ok(productsResponse);
     }
 
-
-//    @CrossOrigin
-//    @GetMapping("/v1/product")
-//    public ResponseEntity<PageResponseDto> getAllProductUsers(
-//            @RequestParam(defaultValue = "0") Integer page,
-//            @RequestParam(required = false) Integer size,
-//            @RequestParam(required = false) String sort
-//    ) {
-//
-//        PageResponseDto productsResponse = new PageResponseDto();
-//
-//        if (page != null && size != null) {
-//            Page<ProductResponse> products = productService.getAllProducts(page, size, sort);
-//            productsResponse.setProducts(products.getContent());
-//            productsResponse.setTotal(products.getTotalElements());
-//        } else {
-//            List<ProductResponse> products = productService.getAllProducts();
-//            productsResponse.setProducts(products);
-//            productsResponse.setTotal(products.size());
-//        }
-//
-//        return ResponseEntity.ok(productsResponse);
-//    }
-
     @CrossOrigin
     @GetMapping("/v1/product")
     public ResponseEntity<PageResponseDto> getAllProductUsers(
