@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.controller;
 
 
+import com.amalitech.gpuconfigurator.dto.FeaturedResponseDto;
 import com.amalitech.gpuconfigurator.service.product.FeaturedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
