@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.dto.cases;
 
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,5 +24,10 @@ public class AttributeOptionResponse {
 
     private Float baseAmount;
 
+    private Float maxAmount;
+
     private Double priceFactor;
+
+    private AttributeResponseDto attribute;
 }
+
