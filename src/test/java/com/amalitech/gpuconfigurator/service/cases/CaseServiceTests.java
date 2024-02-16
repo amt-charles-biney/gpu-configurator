@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Case;
+import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
@@ -56,6 +57,8 @@ public class CaseServiceTests {
 
     private AttributeOption variant;
 
+    private Attribute attribute;
+
     private String coverImageUrl;
 
     private List<String> imageUrls;
@@ -83,8 +86,14 @@ public class CaseServiceTests {
         images.add(new MockMultipartFile("image2", new byte[0]));
         images.add(new MockMultipartFile("image3", new byte[0]));
 
+        attribute = Attribute.builder()
+                .id(UUID.randomUUID())
+                .attributeName("Test Attribute")
+                .build();
+
         variant = AttributeOption.builder()
                 .id(incompatibleVariantIds.getFirst())
+                .attribute(attribute)
                 .build();
 
         productCase = Case.builder()
