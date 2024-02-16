@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service.cases;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import com.amalitech.gpuconfigurator.dto.cases.AttributeOptionResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
@@ -132,7 +133,13 @@ public class CaseServiceImpl implements CaseService {
                 .priceAdjustment(attributeOption.getPriceAdjustment())
                 .media(attributeOption.getMedia())
                 .baseAmount(attributeOption.getBaseAmount())
+                .maxAmount(attributeOption.getMaxAmount())
                 .priceFactor(attributeOption.getPriceFactor())
+                .attribute(AttributeResponseDto.builder()
+                        .id(String.valueOf(attributeOption.getAttribute().getId()))
+                        .name(attributeOption.getAttribute().getAttributeName())
+                        .unit(attributeOption.getAttribute().getUnit())
+                        .build())
                 .build();
     }
 }
