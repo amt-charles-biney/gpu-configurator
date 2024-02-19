@@ -44,7 +44,7 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
+    @ExceptionHandler({BadCredentialsException.class})
     public ProblemDetail handleBadCredentialException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(401));
         errorDetail.setDetail(e.getMessage());
@@ -54,6 +54,13 @@ public class CustomExceptionHandler {
     @ExceptionHandler(UsernameNotFoundException.class)
     public ProblemDetail usernameNotFoundException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
+        errorDetail.setDetail(e.getMessage());
+        return errorDetail;
+    }
+
+    @ExceptionHandler(AttributeNameAlreadyExistsException.class)
+    public ProblemDetail AttributeNameAlreadyExistsException(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
         errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
