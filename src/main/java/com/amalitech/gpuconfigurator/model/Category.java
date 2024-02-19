@@ -25,6 +25,9 @@ public class Category {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    private String thumbnail;
+
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
