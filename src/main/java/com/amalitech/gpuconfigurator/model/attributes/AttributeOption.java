@@ -48,6 +48,8 @@ public class AttributeOption {
     @JoinColumn(name = "attribute_id", nullable = false)
     private Attribute attribute;
 
+    private Integer inStock;
+
     @OneToMany(mappedBy = "attributeOption", cascade = CascadeType.ALL)
     private List<CompatibleOption> compatibleOptions;
 

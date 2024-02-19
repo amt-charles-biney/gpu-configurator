@@ -18,7 +18,7 @@ public interface CategoryService {
 
     List<AllCategoryResponse> getAllCategories();
 
-    Category getCategoryByName(String name);
+    CategoryResponse getCategoryByName(String name);
 
     void deleteAllById(List<UUID> categoryIds);
 }
