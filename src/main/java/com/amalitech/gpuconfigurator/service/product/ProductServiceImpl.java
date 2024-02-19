@@ -3,14 +3,12 @@ package com.amalitech.gpuconfigurator.service.product;
 
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
-import com.amalitech.gpuconfigurator.model.Case;
-import com.amalitech.gpuconfigurator.model.Category;
-import com.amalitech.gpuconfigurator.model.CompatibleOption;
-import com.amalitech.gpuconfigurator.model.Product;
+import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
+import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +34,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryServiceImpl categoryService;
     private final CategoryRepository categoryRepository;
     private final CaseRepository caseRepository;
+    private final CategoryConfigServiceImpl categoryConfig;
 
 
     @Override
