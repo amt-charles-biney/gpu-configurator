@@ -71,6 +71,7 @@ class CategoryConfigServiceTest {
         attributeOption = AttributeOption.builder()
                 .optionName("SampleOption")
                 .priceAdjustment(BigDecimal.valueOf(25.0))
+                .inStock(0)
                 .attribute(Attribute.builder()
                         .unit("SampleUnit")
                         .isMeasured(true)
@@ -85,10 +86,10 @@ class CategoryConfigServiceTest {
                 .build();
 
 
-        categoryConfigRequest = new CategoryConfigRequest("TestCategory",
+        categoryConfigRequest = new CategoryConfigRequest("TestCategory", "./hello_world.jpg",
                 Collections.singletonList(compatibleOptionDTO));
 
-        category = Category.builder().id(UUID.randomUUID()).categoryName("TestCategory").build();
+        category = Category.builder().id(UUID.randomUUID()).thumbnail("./hello_world.jpg").categoryName("TestCategory").build();
         categoryConfig = CategoryConfig.builder().id(UUID.randomUUID()).category(category).build();
 
         categoryConfig = CategoryConfig.builder()
@@ -111,6 +112,7 @@ class CategoryConfigServiceTest {
         compatibleOptionGetResponse = CompatibleOptionGetResponse.builder()
                 .id(UUID.randomUUID().toString())
                 .name("SampleCategory")
+                .thumbnail("./hello_world.jpg")
                 .config(Arrays.asList(
                         CompatibleOptionResponseDto.builder()
                                 .compatibleOptionId(UUID.randomUUID().toString())
@@ -146,6 +148,7 @@ class CategoryConfigServiceTest {
         compatibleOptionEditResponse = CompatibleOptionEditResponse.builder()
                 .name("edit")
                 .id(UUID.randomUUID().toString())
+                .thumbnail("./hello_world.jpg")
                 .config(List.of(compatibleUpdateDto))
                 .build();
 
@@ -173,7 +176,7 @@ class CategoryConfigServiceTest {
         UUID categoryId = UUID.randomUUID();
         String categoryIdString = categoryId.toString();
         compatibleOption.setId(UUID.randomUUID());
-        when(categoryConfigRepository.findByCategoryId(categoryId)).thenReturn(Optional.of(categoryConfig));
+        when(categoryConfigRepository.findByCategoryId(categoryId)).thenReturn(Optional.ofNullable(categoryConfig));
 
         when(compatibleOptionServiceImpl.getByCategoryConfigId(categoryConfig.getId())).thenReturn(List.of(compatibleOption));
 
@@ -260,7 +263,7 @@ class CategoryConfigServiceTest {
     void testUpdateCategoryAndConfigs() {
 
         when(categoryConfigRepository.findByCategoryId(any(UUID.class))).thenReturn(Optional.ofNullable(categoryConfig));
-        when(categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name())).thenReturn(new CategoryResponse(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name()));
+        when(categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name(), compatibleOptionEditResponse.thumbnail())).thenReturn(new CategoryResponse(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name(), compatibleOptionEditResponse.thumbnail()));
         doNothing().when(compatibleOptionServiceImpl).updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
 
         GenericResponse response = categoryConfigService.updateCategoryAndConfigs(compatibleOptionEditResponse);
@@ -268,7 +271,7 @@ class CategoryConfigServiceTest {
         assertEquals(HttpStatus.ACCEPTED.value(), response.status());
         assertEquals("updated category and config", response.message());
 
-        verify(categoryService, times(1)).updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name());
+        verify(categoryService, times(1)).updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name(), compatibleOptionEditResponse.thumbnail());
         verify(compatibleOptionServiceImpl, times(1)).updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
     }
 
