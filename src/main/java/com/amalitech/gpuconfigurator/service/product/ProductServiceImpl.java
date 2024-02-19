@@ -194,7 +194,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto) {
         try {
-            Product existingProduct = productRepository.getReferenceById(id);
+            Product existingProduct = productRepository.findById(id).orElseThrow(() -> new NotFoundException("No product with this id" + " " + id));
 
             if (updatedProductDto.getProductName() != null) {
                 existingProduct.setProductName(updatedProductDto.getProductName());
