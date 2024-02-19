@@ -29,6 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
         var category = Category
                 .builder()
                 .categoryName(request.name())
+                .thumbnail(request.thumbnail())
                 .build();
 
         return categoryRepository.save(category);
@@ -41,10 +42,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse updateCategory(String categoryId, String name) {
+    public CategoryResponse updateCategory(String categoryId, String name, String thumbnail) {
         Category category = categoryRepository.findById(UUID.fromString(categoryId)).orElseThrow(() -> new EntityNotFoundException("category not found"));
 
         category.setCategoryName(name);
+        category.setThumbnail(thumbnail);
         Category savedCategory = categoryRepository.save(category);
 
         return CategoryResponse
@@ -68,8 +70,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category getCategoryByName(String name) {
-        return categoryRepository.findByCategoryName(name).orElseThrow(() -> new NotFoundException(name + " " + "Not found"));
+    public CategoryResponse getCategoryByName(String name) {
+        Category category = categoryRepository.findByCategoryName(name).orElseThrow(() -> new NotFoundException(name + " " + "Not found"));
+        return new CategoryResponse(category.getId().toString(), category.getCategoryName(), category.getThumbnail());
+
     }
 
     @Override
