@@ -82,12 +82,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .filter(entry -> entry.getValue().stream().anyMatch(option -> option.isCompatible() || option.isIncluded()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        Integer inStock = compatibleOptions.stream()
-                .map(CompatibleOption::getAttributeOption)
-                .filter(Objects::nonNull)
-                .map(AttributeOption::getInStock)
-                .min(Comparator.naturalOrder())
-                .orElse(0);
+        Integer inStock = getTotalLeastStock(compatibleOptions);
 
         return CategoryConfigResponseDto.builder()
                 .id(categoryConfig.getId().toString())
@@ -145,12 +140,14 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .mapToDouble(compatibleOption ->  compatibleOption.price() != null ? compatibleOption.price().doubleValue() : 0.0)
                 .sum();
 
+        Integer inStock = getTotalLeastStock(compatibleOptions);
 
         return CompatibleOptionGetResponse.builder()
                 .name(categoryConfig.getCategory().getCategoryName())
                 .thumbnail(categoryConfig.getCategory().getThumbnail())
                 .id(categoryConfig.getCategory().getId().toString())
                 .config(compatibleOptionResponseDtoList)
+                .inStock(inStock)
                 .configPrice(totalPrice)
                 .build();
     }
@@ -226,5 +223,14 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     }
     public AttributeOption getAttributeOption (String id) {
         return attributeOptionRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("could not find attribute option"));
+    }
+
+    public Integer getTotalLeastStock(List<CompatibleOption> compatibleOptions) {
+        return compatibleOptions.stream()
+                .map(CompatibleOption::getAttributeOption)
+                .filter(Objects::nonNull)
+                .map(AttributeOption::getInStock)
+                .min(Comparator.naturalOrder())
+                .orElse(0);
     }
 }
