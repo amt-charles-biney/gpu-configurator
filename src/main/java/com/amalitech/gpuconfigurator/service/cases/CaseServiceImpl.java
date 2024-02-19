@@ -74,7 +74,7 @@ public class CaseServiceImpl implements CaseService {
         var productCase = caseRepository.findById(caseId)
                 .orElseThrow(() -> new NotFoundException("Case with id " + caseId + " does not exist."));
 
-        Set<AttributeOption> incompatibleVariants = new HashSet<>(productCase.getIncompatibleVariants());
+        List<AttributeOption> incompatibleVariants = new ArrayList<>();
 
         dto.getIncompatibleVariants().stream()
                 .map(variantId -> attributeOptionRepository.findById(variantId)
@@ -87,7 +87,7 @@ public class CaseServiceImpl implements CaseService {
         productCase.setName(dto.getName());
         productCase.setDescription(dto.getDescription());
         productCase.setPrice(dto.getPrice());
-        productCase.setIncompatibleVariants(new ArrayList<>(incompatibleVariants));
+        productCase.setIncompatibleVariants(incompatibleVariants);
         productCase.setCoverImageUrl(coverImageUrl);
         productCase.setImageUrls(imageUrls);
 
