@@ -1,17 +1,16 @@
 package com.amalitech.gpuconfigurator.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,4 +38,17 @@ public class Contact {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Contact contact = (Contact) o;
+        return Objects.equals(id, contact.id) && Objects.equals(phoneNumber, contact.phoneNumber) && Objects.equals(country, contact.country) && Objects.equals(iso2Code, contact.iso2Code) && Objects.equals(dialCode, contact.dialCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, phoneNumber, country, iso2Code, dialCode);
+    }
 }
