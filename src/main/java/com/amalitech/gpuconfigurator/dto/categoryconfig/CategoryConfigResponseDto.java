@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Map;
 
 @Builder
-public record CategoryConfigResponseDto(String id, CategoryResponse category, Map<String, List<CompatibleOptionResponseDto>> options) {
+public record CategoryConfigResponseDto(String id, CategoryResponse category, Map<String, List<CompatibleOptionResponseDto>> options, Integer inStock) {
 }

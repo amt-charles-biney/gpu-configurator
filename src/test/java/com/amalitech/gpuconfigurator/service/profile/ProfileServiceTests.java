@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationResponse;
 import com.amalitech.gpuconfigurator.dto.profile.ContactRequest;
+import com.amalitech.gpuconfigurator.dto.profile.ContactResponse;
 import com.amalitech.gpuconfigurator.exception.InvalidPasswordException;
 import com.amalitech.gpuconfigurator.model.Contact;
 import com.amalitech.gpuconfigurator.model.User;
@@ -18,6 +19,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +30,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ProfileServiceTests {
+    private final ProjectionFactory projectionFactory = new SpelAwareProxyProjectionFactory();
+
     @InjectMocks
     private ProfileServiceImpl profileService;
 
@@ -43,12 +48,11 @@ public class ProfileServiceTests {
     private PasswordEncoder passwordEncoder;
 
     private Contact contact;
-
     private User user;
-
     private BasicInformationRequest basicInformationRequestDto;
-
     private UserPasswordRequest userPasswordRequestDto;
+    private BasicInformationResponse basicInformationResponse;
+    private ContactResponse contactResponse;
 
     @BeforeEach
     public void init() {
@@ -76,6 +80,18 @@ public class ProfileServiceTests {
                 .newPassword("new-password")
                 .confirmNewPassword("new-password")
                 .build();
+
+        contactResponse = projectionFactory.createProjection(ContactResponse.class);
+        contactResponse.setCountry("Ghana");
+        contactResponse.setDialCode("+233");
+        contactResponse.setPhoneNumber("0245678901");
+        contactResponse.setIso2Code("GH");
+
+        basicInformationResponse = projectionFactory.createProjection(BasicInformationResponse.class);
+        basicInformationResponse.setContact(contactResponse);
+        basicInformationResponse.setEmail("john.doe@example.com");
+        basicInformationResponse.setFirstName("John");
+        basicInformationResponse.setLastName("Doe");
     }
 
     @Test
@@ -83,13 +99,11 @@ public class ProfileServiceTests {
         when(authenticationToken.getPrincipal()).thenReturn(user);
         when(contactService.createOrUpdate(any(User.class), any(ContactRequest.class))).thenReturn(contact);
         when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userRepository.findBasicInformationByEmail(user.getEmail())).thenReturn(basicInformationResponse);
 
         BasicInformationResponse response = profileService.updateBasicInformation(basicInformationRequestDto, authenticationToken);
 
         verify(userRepository, times(1)).save(user);
-
-        Assertions.assertThat("John").isEqualTo(response.getFirstName());
-        Assertions.assertThat("Doe").isEqualTo(response.getLastName());
 
         Assertions.assertThat(user.getFirstName()).isEqualTo("John");
         Assertions.assertThat(user.getLastName()).isEqualTo("Doe");
@@ -104,12 +118,15 @@ public class ProfileServiceTests {
     public void getUserProfile_whenAuthenticatedUser_returnUserProfile() {
         user.setFirstName("John");
         user.setEmail("john.doe@example.com");
-        when(authenticationToken.getPrincipal()).thenReturn(user);
+        when(authenticationToken.getName()).thenReturn(user.getEmail());
+        when(userRepository.findBasicInformationByEmail(user.getEmail())).thenReturn(basicInformationResponse);
 
         BasicInformationResponse response = profileService.getUserProfile(authenticationToken);
 
-        Assertions.assertThat("John").isEqualTo(response.getFirstName());
-        Assertions.assertThat("john.doe@example.com").isEqualTo(response.getEmail());
+        Assertions.assertThat(response.getFirstName()).isEqualTo("John");
+        Assertions.assertThat(response.getLastName()).isEqualTo("Doe");
+        Assertions.assertThat(response.getEmail()).isEqualTo("john.doe@example.com");
+        Assertions.assertThat(response.getContact()).isEqualTo(contactResponse);
     }
 
     @Test
