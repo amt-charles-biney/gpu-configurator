@@ -3,14 +3,12 @@ package com.amalitech.gpuconfigurator.service.product;
 
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
-import com.amalitech.gpuconfigurator.model.Case;
-import com.amalitech.gpuconfigurator.model.Category;
-import com.amalitech.gpuconfigurator.model.CompatibleOption;
-import com.amalitech.gpuconfigurator.model.Product;
+import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
+import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +34,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryServiceImpl categoryService;
     private final CategoryRepository categoryRepository;
     private final CaseRepository caseRepository;
+    private final CategoryConfigServiceImpl categoryConfig;
 
 
     @Override
@@ -135,6 +134,7 @@ public class ProductServiceImpl implements ProductService {
                 .coverImage(product.getProductCase().getCoverImageUrl())
                 .inStock(product.getInStock())
                 .isFeatured(product.getFeatured())
+                .serviceCharge(product.getServiceCharge())
                 .imageUrl(product.getProductCase().getImageUrls())
                 .category(new ProductResponseDto(category.getCategoryName(), category.getId().toString()))
                 .build();
@@ -194,7 +194,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto) {
         try {
-            Product existingProduct = productRepository.getReferenceById(id);
+            Product existingProduct = productRepository.findById(id).orElseThrow(() -> new NotFoundException("No product with this id" + " " + id));
 
             if (updatedProductDto.getProductName() != null) {
                 existingProduct.setProductName(updatedProductDto.getProductName());
@@ -247,6 +247,7 @@ public class ProductServiceImpl implements ProductService {
                 .productDescription(updatedProduct.getProductDescription())
                 .productPrice(updatedProduct.getTotalProductPrice())
                 .inStock(updatedProduct.getInStock())
+                .serviceCharge(updatedProduct.getServiceCharge())
                 .productAvailability(updatedProduct.getProductAvailability())
                 .build();
     }

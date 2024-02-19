@@ -1,19 +1,16 @@
 package com.amalitech.gpuconfigurator.service.profile;
 
 import com.amalitech.gpuconfigurator.constant.ProfileConstants;
-import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
+import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationResponse;
-import com.amalitech.gpuconfigurator.dto.profile.ContactResponse;
 import com.amalitech.gpuconfigurator.exception.InvalidPasswordException;
-import com.amalitech.gpuconfigurator.model.Contact;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.service.contact.ContactService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,23 +35,13 @@ public class ProfileServiceImpl implements ProfileService {
 
         userRepository.save(user);
 
-        return BasicInformationResponse.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .contact(this.mapToContactResponse(user.getContact()))
-                .build();
+        return userRepository.findBasicInformationByEmail(user.getEmail());
     }
 
-    public BasicInformationResponse getUserProfile(Principal principal) throws UsernameNotFoundException {
-        var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+    public BasicInformationResponse getUserProfile(Principal principal) {
+        String email = principal.getName();
 
-        return BasicInformationResponse.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .contact(this.mapToContactResponse(user.getContact()))
-                .build();
+        return userRepository.findBasicInformationByEmail(email);
     }
 
     @Override
@@ -71,17 +58,5 @@ public class ProfileServiceImpl implements ProfileService {
         userRepository.save(user);
 
         return new GenericResponse(201, ProfileConstants.PASSWORD_UPDATE_SUCCESS);
-    }
-
-    private ContactResponse mapToContactResponse(Contact contact) {
-        if (contact == null) {
-            return null;
-        }
-        return ContactResponse.builder()
-                .country(contact.getCountry())
-                .dialCode(contact.getDialCode())
-                .iso2Code(contact.getIso2Code())
-                .phoneNumber(contact.getPhoneNumber())
-                .build();
     }
 }

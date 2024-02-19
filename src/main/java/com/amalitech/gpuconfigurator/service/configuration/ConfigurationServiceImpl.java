@@ -65,7 +65,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         List<CompatibleOption> compatibleOptions = getCompatibleOptions(categoryConfig);
         List<ConfigOptions> configOptions = getConfigOptions(components, compatibleOptions);
 
-        BigDecimal optionalTotal = calculateOptionalTotal(configOptions);
+        BigDecimal optionalTotal = calculateOptionalTotal(configOptions).subtract(product.getBaseConfigPrice());
+
         totalPrice = totalPrice.add(optionalTotal);
 
         BigDecimal vat = calculateVat(totalPrice);
