@@ -1,20 +1,19 @@
 package com.amalitech.gpuconfigurator.dto.profile;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public interface BasicInformationResponse {
+    String getFirstName();
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class BasicInformationResponse {
-    private String firstName;
+    void setFirstName(String firstName);
 
-    private String lastName;
+    String getLastName();
 
-    private String email;
+    void setLastName(String lastName);
 
-    private ContactResponse contact;
+    String getEmail();
+
+    void setEmail(String email);
+
+    ContactResponse getContact();
+
+    void setContact(ContactResponse contactResponse);
 }
