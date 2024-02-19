@@ -18,9 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +35,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     @Override
     @Transactional
     public GenericResponse createCategoryConfig(CategoryConfigRequest request) {
-        Category category = categoryService.createCategory(new CategoryRequestDto(request.name()));
+        Category category = categoryService.createCategory(new CategoryRequestDto(request.name(), request.thumbnail()));
 
         CategoryConfig config = CategoryConfig
                 .builder()
@@ -75,6 +73,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .builder()
                 .id(categoryConfig.getCategory().getId().toString())
                 .name(categoryConfig.getCategory().getCategoryName())
+                .thumbnail(categoryConfig.getCategory().getThumbnail())
                 .build();
 
         Map<String, List<CompatibleOptionResponseDto>> compatibleGroupedByType = mapToCompatibleOptionResponseDtoMap(compatibleOptions)
@@ -83,10 +82,18 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .filter(entry -> entry.getValue().stream().anyMatch(option -> option.isCompatible() || option.isIncluded()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
+        Integer inStock = compatibleOptions.stream()
+                .map(CompatibleOption::getAttributeOption)
+                .filter(Objects::nonNull)
+                .map(AttributeOption::getInStock)
+                .min(Comparator.naturalOrder())
+                .orElse(0);
+
         return CategoryConfigResponseDto.builder()
                 .id(categoryConfig.getId().toString())
                 .category(categoryResponse)
                 .options(compatibleGroupedByType)
+                .inStock(inStock)
                 .build();
     }
 
@@ -126,6 +133,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                         .size(compatibleOption.getSize())
                         .price(compatibleOption.getAttributeOption().getPriceAdjustment())
                         .media(compatibleOption.getAttributeOption().getMedia())
+                        .inStock(compatibleOption.getAttributeOption().getInStock())
                         .baseAmount(compatibleOption.getAttributeOption().getBaseAmount())
                         .isMeasured(compatibleOption.getAttributeOption().getAttribute().isMeasured())
                         .attributeId(compatibleOption.getAttributeOption().getAttribute().getId().toString())
@@ -140,6 +148,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
         return CompatibleOptionGetResponse.builder()
                 .name(categoryConfig.getCategory().getCategoryName())
+                .thumbnail(categoryConfig.getCategory().getThumbnail())
                 .id(categoryConfig.getCategory().getId().toString())
                 .config(compatibleOptionResponseDtoList)
                 .configPrice(totalPrice)
@@ -164,7 +173,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(UUID.fromString(compatibleOptionEditResponse.id()))
                         .orElseThrow(() -> new EntityNotFoundException("configuration does not exist"));
 
-        categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name());
+        categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name(), compatibleOptionEditResponse.thumbnail());
         compatibleOptionService.updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
 
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "updated category and config");
@@ -204,6 +213,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                                         .baseAmount(option.getAttributeOption().getBaseAmount())
                                         .unit(option.getAttributeOption().getAttribute().getUnit())
                                         .isIncluded(option.getIsIncluded())
+                                        .inStock(option.getAttributeOption().getInStock())
                                         .size(option.getSize())
                                         .attributeId(option.getAttributeOption().getAttribute().getId().toString())
                                         .attributeOptionId(option.getAttributeOption().getId().toString())
