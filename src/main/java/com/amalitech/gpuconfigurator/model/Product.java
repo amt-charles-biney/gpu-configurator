@@ -38,6 +38,12 @@ public class Product {
     @Column(name = "product_brand", nullable = false)
     private String productBrand;
 
+    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "case_id", referencedColumnName = "id", foreignKey = @ForeignKey(
+            name = "case_id_fk"
+    ))
+    private Case productCase;
+
     @Column(name = "product_instock", nullable = false)
     private Integer inStock;
 

@@ -48,6 +48,9 @@ public class Case {
     )
     private List<AttributeOption> incompatibleVariants;
 
+    @OneToMany(mappedBy = "productCase", cascade = {CascadeType.REMOVE})
+    private List<Product> products;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
