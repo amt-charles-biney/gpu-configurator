@@ -11,7 +11,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,6 +47,9 @@ public class Case {
             inverseJoinColumns = @JoinColumn(name = "incompatible_variant_id")
     )
     private List<AttributeOption> incompatibleVariants;
+
+    @OneToMany(mappedBy = "productCase", cascade = {CascadeType.REMOVE})
+    private List<Product> products;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
