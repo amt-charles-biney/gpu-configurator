@@ -8,6 +8,6 @@ import java.math.BigDecimal;
 public record CompatibleOptionResponseDto(String compatibleOptionId, String name, String type, BigDecimal price,
                                           String media, String unit, Boolean isCompatible, Boolean isIncluded,
                                           Boolean isMeasured, Double priceFactor, Integer size, String attributeId,
-                                          String attributeOptionId, Float priceIncrement, Float baseAmount,
+                                          String attributeOptionId, Float priceIncrement, Float baseAmount, Integer inStock,
                                           Float maxAmount) {
 }
