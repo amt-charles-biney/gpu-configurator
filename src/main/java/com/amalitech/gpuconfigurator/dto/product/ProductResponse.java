@@ -18,6 +18,9 @@ public record ProductResponse(
         String productId,
         ProductResponseDto category,
         String productDescription,
+
+        Double serviceCharge,
+
         boolean isFeatured,
 
         boolean productAvailability,

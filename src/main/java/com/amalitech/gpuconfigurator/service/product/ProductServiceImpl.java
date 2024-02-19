@@ -247,6 +247,7 @@ public class ProductServiceImpl implements ProductService {
                 .productDescription(updatedProduct.getProductDescription())
                 .productPrice(updatedProduct.getTotalProductPrice())
                 .inStock(updatedProduct.getInStock())
+                .serviceCharge(updatedProduct.getServiceCharge())
                 .productAvailability(updatedProduct.getProductAvailability())
                 .build();
     }
