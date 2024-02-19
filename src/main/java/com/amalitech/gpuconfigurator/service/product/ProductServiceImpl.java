@@ -135,6 +135,7 @@ public class ProductServiceImpl implements ProductService {
                 .coverImage(product.getProductCase().getCoverImageUrl())
                 .inStock(product.getInStock())
                 .isFeatured(product.getFeatured())
+                .serviceCharge(product.getServiceCharge())
                 .imageUrl(product.getProductCase().getImageUrls())
                 .category(new ProductResponseDto(category.getCategoryName(), category.getId().toString()))
                 .build();

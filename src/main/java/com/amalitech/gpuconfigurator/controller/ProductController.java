@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -109,7 +108,7 @@ public class ProductController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(required = false) Integer size,
             @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String productCase,
             @RequestParam(required = false) String price,
             @RequestParam(required = false) String productType,
             @RequestParam(required = false) String processor,
@@ -118,8 +117,8 @@ public class ProductController {
         if (query != null && !query.isBlank()) {
             String[] brands = null;
             String[] priceRanges = null;
-            if (brand != null && !brand.isBlank()) {
-                brands = brand.strip().split(",");
+            if (productCase != null && !productCase.isBlank()) {
+                brands = productCase.strip().split(",");
             }
             if (price != null && !price.isBlank()) {
                 priceRanges = price.strip().split(",");
@@ -140,8 +139,8 @@ public class ProductController {
 
         List<ProductResponse> products = new ArrayList<>();
 
-        if (brand != null || price != null || productType != null || processor != null) {
-            List<Product> filteredProducts = filteringService.filterProduct(brand, price, productType, processor);
+        if (productCase != null || price != null || productType != null || processor != null) {
+            List<Product> filteredProducts = filteringService.filterProduct(productCase, price, productType, processor);
             if (!filteredProducts.isEmpty()) {
                 products = new ResponseMapper().getProductResponses(filteredProducts);
                 productsResponse.setProducts(products);
