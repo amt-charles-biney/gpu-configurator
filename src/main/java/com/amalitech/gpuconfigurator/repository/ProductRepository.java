@@ -25,7 +25,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
     Optional<Product> getProductByProductId(String productId);
 
     @Query("SELECT p FROM Product p WHERE p.featured = true")
-    Optional<List<Product>> getFeaturedProduct();
+    Optional<List<FeaturedProductAbstraction>> getFeaturedProduct();
 
     @Query("SELECT p FROM Product p WHERE p.createdAt >= :startDate")
     Optional<List<Product>> getBrandNewProducts(@Param("startDate") LocalDateTime startDate);

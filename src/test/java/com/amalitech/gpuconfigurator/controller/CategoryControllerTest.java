@@ -35,7 +35,7 @@ class CategoryControllerTest {
     @Test
     @DisplayName("Test success for creating new category")
     void createCategory() {
-        CategoryRequestDto dto = new CategoryRequestDto("GPU");
+        CategoryRequestDto dto = new CategoryRequestDto("GPU","");
         Category expectedCategory = Category.builder()
                 .id(UUID.fromString("6c4a87df-6831-4d49-a924-42979ec657ba"))
                 .categoryName(dto.name())

@@ -7,6 +7,7 @@ import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
+import com.amalitech.gpuconfigurator.repository.FeaturedProductAbstraction;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -163,15 +164,25 @@ class FeaturedServiceImplTest {
 
     @Test
     void getAllFeaturedProduct() {
-        //given
-        List<Product> actualResponse = List.of(product);
-        actualResponse.get(0).setFeatured(true);
-        //when
+        // given
+        FeaturedProductAbstraction mockProduct = createMockFeaturedProduct(product.getProductName(), productCase);
+        List<FeaturedProductAbstraction> actualResponse = List.of(mockProduct);
+
+        // when
         when(productRepository.getFeaturedProduct()).thenReturn(Optional.of(actualResponse));
         var expectedResponse = featuredService.getAllFeaturedProduct();
-        //then
-        assertNotNull(expectedResponse);
 
+        // then
+        assertNotNull(expectedResponse);
+        // Add additional assertions based on your test requirements
+
+    }
+    private FeaturedProductAbstraction createMockFeaturedProduct(String productName, Case productCase) {
+        FeaturedProductAbstraction mockProduct = mock(FeaturedProductAbstraction.class);
+        when(mockProduct.getProductName()).thenReturn(productName);
+        when(mockProduct.getProductCase()).thenReturn(productCase);
+
+        return mockProduct;
     }
 
     @Test
