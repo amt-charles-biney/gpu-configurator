@@ -240,9 +240,13 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
     }
 
-    public List<Product> getNewProducts() {
+    public List<FeaturedProductDto> getNewProducts() {
         LocalDateTime timeRequest = LocalDateTime.now().minusHours(24);
-        return productRepository.getBrandNewProducts(timeRequest).orElse(Collections.emptyList());
+        var products = productRepository.getBrandNewProducts(timeRequest).orElse(Collections.emptyList());
+        return products.stream().map(product -> FeaturedProductDto.builder()
+                .productName(product.getProductName())
+                .coverImage(product.getProductCase().getCoverImageUrl())
+                .build()).toList();
     }
 
     private ProductResponse mapProductToProductResponse(Product updatedProduct) {

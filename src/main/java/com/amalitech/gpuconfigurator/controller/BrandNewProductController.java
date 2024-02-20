@@ -1,6 +1,6 @@
 package com.amalitech.gpuconfigurator.controller;
 
-import com.amalitech.gpuconfigurator.model.Product;
+import com.amalitech.gpuconfigurator.dto.product.FeaturedProductDto;
 import com.amalitech.gpuconfigurator.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ public class BrandNewProductController {
     @CrossOrigin
     @GetMapping("/v1/new")
     @ResponseStatus(HttpStatus.OK)
-    public List<Product> getBrandNewProducts(){
+    public List<FeaturedProductDto> getBrandNewProducts() {
         return productService.getNewProducts();
     }
 }

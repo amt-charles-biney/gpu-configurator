@@ -1,9 +1,6 @@
 package com.amalitech.gpuconfigurator.service.product;
 
-import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
-import com.amalitech.gpuconfigurator.dto.product.ProductDto;
-import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
-import com.amalitech.gpuconfigurator.dto.product.ProductUpdateDto;
+import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +19,7 @@ public interface ProductService {
 
     Page<ProductResponse> getAllProducts(int page, int size, String sort);
 
-    List<Product> getNewProducts();
+    List<FeaturedProductDto> getNewProducts();
 
 
     ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto);

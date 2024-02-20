@@ -28,7 +28,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
     Optional<List<FeaturedProductAbstraction>> getFeaturedProduct();
 
     @Query("SELECT p FROM Product p WHERE p.createdAt >= :startDate")
-    Optional<List<Product>> getBrandNewProducts(@Param("startDate") LocalDateTime startDate);
+    Optional<List<FeaturedProductAbstraction>> getBrandNewProducts(@Param("startDate") LocalDateTime startDate);
 
     @Query("SELECT COUNT(p) FROM Product p WHERE p.category.id = :categoryId")
     long countProductsByCategoryId(@Param("categoryId") UUID categoryId);
