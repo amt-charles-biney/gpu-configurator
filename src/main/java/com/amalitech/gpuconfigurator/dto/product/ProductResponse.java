@@ -1,6 +1,5 @@
 package com.amalitech.gpuconfigurator.dto.product;
 
-import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import lombok.Builder;
 
 import java.math.BigDecimal;
@@ -25,6 +24,8 @@ public record ProductResponse(
 
         boolean productAvailability,
 
-        Integer inStock
+        Integer inStock,
+
+        String stockStatus
 ) {
 }
