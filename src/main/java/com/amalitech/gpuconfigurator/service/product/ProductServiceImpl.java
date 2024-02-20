@@ -51,6 +51,7 @@ public class ProductServiceImpl implements ProductService {
                 .map(configs -> configs.getAttributeOption().getPriceAdjustment())
                 .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
 
+        var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
 
         BigDecimal percentageOfServiceChargeMultiplyByCasePrice = BigDecimal.valueOf(request.getServiceCharge())
                 .divide(BigDecimal.valueOf(100))
@@ -69,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
                 .totalProductPrice(totalProductPrice)
                 .baseConfigPrice(totalConfigPrice)
                 .category(category)
-                .inStock(request.getInStock())
+                .inStock(inStock)
                 .productId(request.getProductId())
                 .build();
 
@@ -172,22 +173,27 @@ public class ProductServiceImpl implements ProductService {
 
     @NotNull
     private static Function<Product, ProductResponse> getProductProductResponseFunction() {
-        return product -> ProductResponse.builder()
-                .productName(product.getProductName())
-                .id(product.getId().toString())
-                .productId(product.getProductId())
-                .productCase(product.getProductCase().getName())
-                .productDescription(product.getProductDescription())
-                .productPrice(product.getTotalProductPrice())
-                .coverImage(product.getProductCase().getCoverImageUrl())
-                .isFeatured(product.getFeatured())
-                .category(ProductResponseDto.builder()
-                        .name(product.getCategory().getCategoryName())
-                        .id(String.valueOf(product.getCategory().getId()))
-                        .build())
-                .imageUrl(product.getProductCase().getImageUrls())
-                .inStock(product.getInStock())
-                .build();
+        return product -> {
+            String stockLowOrMore = product.getInStock() <= 5 ? "Low Stock" : "Available";
+            String stockStatus = product.getInStock() == 0 ? "No Stock" : stockLowOrMore;
+            return ProductResponse.builder()
+                    .productName(product.getProductName())
+                    .id(product.getId().toString())
+                    .productId(product.getProductId())
+                    .productCase(product.getProductCase().getName())
+                    .productDescription(product.getProductDescription())
+                    .productPrice(product.getTotalProductPrice())
+                    .coverImage(product.getProductCase().getCoverImageUrl())
+                    .isFeatured(product.getFeatured())
+                    .category(ProductResponseDto.builder()
+                            .name(product.getCategory().getCategoryName())
+                            .id(String.valueOf(product.getCategory().getId()))
+                            .build())
+                    .stockStatus(stockStatus)
+                    .imageUrl(product.getProductCase().getImageUrls())
+                    .inStock(product.getInStock())
+                    .build();
+        };
     }
 
 

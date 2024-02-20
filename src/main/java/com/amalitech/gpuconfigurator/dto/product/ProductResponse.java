@@ -24,6 +24,8 @@ public record ProductResponse(
 
         boolean productAvailability,
 
-        Integer inStock
+        Integer inStock,
+
+        String stockStatus
 ) {
 }
