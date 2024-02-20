@@ -58,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
                 .multiply(productCase.getPrice().add(totalConfigPrice)).setScale(2, RoundingMode.HALF_UP);
 
 
-        BigDecimal totalProductPrice = percentageOfServiceChargeMultiplyByCasePrice.add(totalConfigPrice).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalProductPrice = percentageOfServiceChargeMultiplyByCasePrice.add(totalConfigPrice.add(productCase.getPrice())).setScale(2, RoundingMode.HALF_UP);
 
 
         var product = Product
