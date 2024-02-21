@@ -106,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
                         .productId(product.getProductId())
                         .productDescription(product.getProductDescription())
                         .productPrice(product.getTotalProductPrice())
-                        .productCase(product.getProductCase().getName())
+                        .productBrand(product.getProductCase().getName())
                         .coverImage(product.getProductCase().getCoverImageUrl())
                         .isFeatured(product.getFeatured())
                         .category(ProductResponseDto.builder()
@@ -130,7 +130,7 @@ public class ProductServiceImpl implements ProductService {
                 .productDescription(product.getProductDescription())
                 .productPrice(product.getTotalProductPrice())
                 .productAvailability(product.getProductAvailability())
-                .productCase(product.getProductCase().getName())
+                .productBrand(product.getProductCase().getName())
                 .coverImage(product.getProductCase().getCoverImageUrl())
                 .inStock(product.getInStock())
                 .isFeatured(product.getFeatured())
@@ -172,22 +172,27 @@ public class ProductServiceImpl implements ProductService {
 
     @NotNull
     private static Function<Product, ProductResponse> getProductProductResponseFunction() {
-        return product -> ProductResponse.builder()
-                .productName(product.getProductName())
-                .id(product.getId().toString())
-                .productId(product.getProductId())
-                .productCase(product.getProductCase().getName())
-                .productDescription(product.getProductDescription())
-                .productPrice(product.getTotalProductPrice())
-                .coverImage(product.getProductCase().getCoverImageUrl())
-                .isFeatured(product.getFeatured())
-                .category(ProductResponseDto.builder()
-                        .name(product.getCategory().getCategoryName())
-                        .id(String.valueOf(product.getCategory().getId()))
-                        .build())
-                .imageUrl(product.getProductCase().getImageUrls())
-                .inStock(product.getInStock())
-                .build();
+        return product -> {
+            String stockLowOrMore = product.getInStock() <= 5 ? "Low Stock" : "Available";
+            String stockStatus = product.getInStock() == 0 ? "No Stock" : stockLowOrMore;
+            return ProductResponse.builder()
+                    .productName(product.getProductName())
+                    .id(product.getId().toString())
+                    .productId(product.getProductId())
+                    .productBrand(product.getProductCase().getName())
+                    .productDescription(product.getProductDescription())
+                    .productPrice(product.getTotalProductPrice())
+                    .coverImage(product.getProductCase().getCoverImageUrl())
+                    .isFeatured(product.getFeatured())
+                    .category(ProductResponseDto.builder()
+                            .name(product.getCategory().getCategoryName())
+                            .id(String.valueOf(product.getCategory().getId()))
+                            .build())
+                    .stockStatus(stockStatus)
+                    .imageUrl(product.getProductCase().getImageUrls())
+                    .inStock(product.getInStock())
+                    .build();
+        };
     }
 
 
