@@ -244,6 +244,7 @@ public class ProductServiceImpl implements ProductService {
         LocalDateTime timeRequest = LocalDateTime.now().minusHours(24);
         var products = productRepository.getBrandNewProducts(timeRequest).orElse(Collections.emptyList());
         return products.stream().map(product -> FeaturedProductDto.builder()
+                .id(product.getId())
                 .productName(product.getProductName())
                 .coverImage(product.getProductCase().getCoverImageUrl())
                 .build()).toList();

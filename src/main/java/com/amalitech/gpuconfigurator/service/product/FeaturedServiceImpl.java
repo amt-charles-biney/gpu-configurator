@@ -22,6 +22,7 @@ public class FeaturedServiceImpl implements FeaturedService {
         var products = productRepository.getFeaturedProduct().orElse(Collections.emptyList());
 
         return products.stream().map(product -> FeaturedProductDto.builder()
+                .id(product.getId())
                 .productName(product.getProductName())
                 .coverImage(product.getProductCase().getCoverImageUrl())
                 .build()).toList();
