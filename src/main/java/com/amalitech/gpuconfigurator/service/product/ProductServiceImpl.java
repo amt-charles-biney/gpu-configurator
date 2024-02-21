@@ -185,6 +185,7 @@ public class ProductServiceImpl implements ProductService {
                     .productPrice(product.getTotalProductPrice())
                     .coverImage(product.getProductCase().getCoverImageUrl())
                     .isFeatured(product.getFeatured())
+                    .productBrand(product.getProductCase().getName())
                     .category(ProductResponseDto.builder()
                             .name(product.getCategory().getCategoryName())
                             .id(String.valueOf(product.getCategory().getId()))
@@ -246,6 +247,8 @@ public class ProductServiceImpl implements ProductService {
         return products.stream().map(product -> FeaturedProductDto.builder()
                 .id(product.getId())
                 .productName(product.getProductName())
+                .productBrand(product.getProductCase().getName())
+                .productPrice(product.getTotalProductPrice())
                 .coverImage(product.getProductCase().getCoverImageUrl())
                 .build()).toList();
     }

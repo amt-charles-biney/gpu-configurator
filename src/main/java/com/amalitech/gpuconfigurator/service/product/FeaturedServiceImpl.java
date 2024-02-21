@@ -25,6 +25,8 @@ public class FeaturedServiceImpl implements FeaturedService {
                 .id(product.getId())
                 .productName(product.getProductName())
                 .coverImage(product.getProductCase().getCoverImageUrl())
+                .productPrice(product.getTotalProductPrice())
+                .productBrand(product.getProductCase().getName())
                 .build()).toList();
     }
 

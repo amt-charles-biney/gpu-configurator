@@ -18,6 +18,8 @@ public record ProductResponse(
         ProductResponseDto category,
         String productDescription,
 
+        String productBrand,
+
         Double serviceCharge,
 
         boolean isFeatured,
