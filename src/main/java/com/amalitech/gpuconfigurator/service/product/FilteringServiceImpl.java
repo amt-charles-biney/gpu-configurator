@@ -2,15 +2,12 @@ package com.amalitech.gpuconfigurator.service.product;
 
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +17,7 @@ public class FilteringServiceImpl implements FilteringService {
     private final ConfigOptionsFiltering configOptionsFiltering;
 
 
-    public List<Product> filterProduct(String productCase, String price, String productType, String processor) {
+    public List<Product> filterProduct(String productCase, String price, String productType, String processor, String category) {
 
         Specification<Product> spec = Specification.where(null);
 
@@ -33,6 +30,19 @@ public class FilteringServiceImpl implements FilteringService {
             } else {
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.and(root.get("productCase").get("name").in((Object[]) productCaseNames))
+                );
+            }
+        }
+
+        if (category != null && !category.isEmpty()) {
+            String[] productCategory = category.split(",");
+            if (productCategory.length == 1) {
+                spec = spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get("category").get("categoryName"), productCategory[0])
+                );
+            } else {
+                spec = spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.and(root.get("category").get("categoryName").in((Object[]) productCategory))
                 );
             }
         }
