@@ -137,6 +137,48 @@ public class ProductServiceImpl implements ProductService {
                 .build());
     }
 
+
+    public Page<ProductResponse> getAllProductsAdmin(int page, int size, String sort) {
+        if (sort == null) {
+            sort = "createdAt";
+        }
+
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sort).descending());
+        Page<Product> productPage = productRepository.findAll(pageRequest);
+
+        return productPage
+                .map(getProductProductResponseFunction());
+
+    }
+
+    @NotNull
+    private static Function<Product, ProductResponse> getProductProductResponseFunction() {
+        return product -> {
+            String stockLowOrMore = product.getInStock() <= 5 ? "Low Stock" : "Available";
+            String stockStatus = product.getInStock() == 0 ? "No Stock" : stockLowOrMore;
+            return ProductResponse.builder()
+                    .productName(product.getProductName())
+                    .id(product.getId().toString())
+                    .productId(product.getProductId())
+                    .productCase(product.getProductCase().getName())
+                    .productDescription(product.getProductDescription())
+                    .productPrice(product.getTotalProductPrice())
+                    .coverImage(product.getProductCase().getCoverImageUrl())
+                    .isFeatured(product.getFeatured())
+                    .productBrand(product.getProductCase().getName())
+                    .category(ProductResponseDto.builder()
+                            .name(product.getCategory().getCategoryName())
+                            .id(String.valueOf(product.getCategory().getId()))
+                            .build())
+                    .stockStatus(stockStatus)
+                    .imageUrl(product.getProductCase().getImageUrls())
+                    .inStock(product.getInStock())
+                    .build();
+        };
+    }
+
+
+
     @Override
     public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto,List<MultipartFile> files, MultipartFile coverImage) {
         try {
@@ -190,6 +232,19 @@ public class ProductServiceImpl implements ProductService {
         } catch (NotFoundException e) {
             throw new NotFoundException("No product found");
         }
+    }
+
+
+    public List<FeaturedProductDto> getNewProducts() {
+        LocalDateTime timeRequest = LocalDateTime.now().minusHours(24);
+        var products = productRepository.getBrandNewProducts(timeRequest).orElse(Collections.emptyList());
+        return products.stream().map(product -> FeaturedProductDto.builder()
+                .id(product.getId())
+                .productName(product.getProductName())
+                .productBrand(product.getProductCase().getName())
+                .productPrice(product.getTotalProductPrice())
+                .coverImage(product.getProductCase().getCoverImageUrl())
+                .build()).toList();
     }
 
     private ProductResponse mapProductToProductResponse(Product updatedProduct) {
