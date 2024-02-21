@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.service.cases;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
+import com.amalitech.gpuconfigurator.dto.cases.UserCaseResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,4 +20,8 @@ public interface CaseService {
     CaseResponse findById(UUID caseId);
 
     GenericResponse deleteById(UUID caseId);
+
+    Page<UserCaseResponse> findAllForUser(int page, int size);
+
+    UserCaseResponse findForUserById(UUID caseId);
 }

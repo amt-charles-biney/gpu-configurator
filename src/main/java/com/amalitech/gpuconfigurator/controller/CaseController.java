@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
+import com.amalitech.gpuconfigurator.dto.cases.UserCaseResponse;
 import com.amalitech.gpuconfigurator.service.cases.CaseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,21 @@ public class CaseController {
     @GetMapping("/v1/admin/cases/{caseId}")
     public ResponseEntity<CaseResponse> findById(@PathVariable UUID caseId) {
         return ResponseEntity.ok(caseService.findById(caseId));
+    }
+
+    @CrossOrigin
+    @GetMapping("/v1/cases")
+    public ResponseEntity<Page<UserCaseResponse>> findAllForUser(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size
+    ) {
+        return ResponseEntity.ok(caseService.findAllForUser(page, size));
+    }
+
+    @CrossOrigin
+    @GetMapping("/v1/cases/{caseId}")
+    public ResponseEntity<UserCaseResponse> findForUserById(@PathVariable UUID caseId) {
+        return ResponseEntity.ok(caseService.findForUserById(caseId));
     }
 
     @CrossOrigin
