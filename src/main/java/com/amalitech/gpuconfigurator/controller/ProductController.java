@@ -89,8 +89,8 @@ public class ProductController {
             @RequestParam(required = false) String price,
             @RequestParam(required = false) String productType,
             @RequestParam(required = false) String processor,
-            @RequestParam(required = false) String query
-    ) {
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String category) {
         if (query != null && !query.isBlank()) {
             String[] brands = null;
             String[] priceRanges = null;
@@ -116,8 +116,8 @@ public class ProductController {
 
         List<ProductResponse> products = new ArrayList<>();
 
-        if (productCase != null || price != null || productType != null || processor != null) {
-            List<Product> filteredProducts = filteringService.filterProduct(productCase, price, productType, processor);
+        if (productCase != null || price != null || productType != null || processor != null || category != null) {
+            List<Product> filteredProducts = filteringService.filterProduct(productCase, price, productType, processor,category);
             if (!filteredProducts.isEmpty()) {
                 products = new ResponseMapper().getProductResponses(filteredProducts);
                 productsResponse.setProducts(products);
