@@ -151,11 +151,11 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> productPage = productRepository.findAll(pageRequest);
 
         List<ProductResponse> productResponseList = productPage.getContent().stream()
-                .filter(product -> !"unassigned".equals(product.getCategory().getCategoryName()))
+                .filter(product -> !"unassigned".equals(product.getCategory().getCategoryName()) && !product.getInStock().equals(0))
                 .map(getProductProductResponseFunction())
                 .toList();
 
-        return new PageImpl<>(productResponseList, pageRequest, productPage.getTotalElements());
+        return new PageImpl<>(productResponseList, pageRequest, productResponseList.size());
     }
 
     public Page<ProductResponse> getAllProductsAdmin(int page, int size, String sort) {
