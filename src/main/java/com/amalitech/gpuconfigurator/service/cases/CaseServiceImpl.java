@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import com.amalitech.gpuconfigurator.dto.cases.AttributeOptionResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
+import com.amalitech.gpuconfigurator.dto.cases.UserCaseResponse;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Case;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
@@ -19,7 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -105,6 +108,17 @@ public class CaseServiceImpl implements CaseService {
                 .status(HttpStatus.OK.value())
                 .message("Case deleted successfully.")
                 .build();
+    }
+
+    @Override
+    public Page<UserCaseResponse> findAllForUser(int page, int size) {
+        return caseRepository.findAllForUserBy(PageRequest.of(page, size));
+    }
+
+    @Override
+    public UserCaseResponse findForUserById(UUID caseId) {
+        return caseRepository.findForUserById(caseId)
+                .orElseThrow(() -> new NotFoundException("Case with id " + caseId + " does not exist."));
     }
 
     private CaseResponse mapCaseToCaseResponse(Case productCase) {
