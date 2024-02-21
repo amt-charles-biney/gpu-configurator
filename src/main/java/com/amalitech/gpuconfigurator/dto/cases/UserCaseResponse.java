@@ -6,4 +6,8 @@ public interface UserCaseResponse {
     UUID getId();
 
     String getName();
+
+    String getDescription();
+
+    String getCoverImageUrl();
 }
