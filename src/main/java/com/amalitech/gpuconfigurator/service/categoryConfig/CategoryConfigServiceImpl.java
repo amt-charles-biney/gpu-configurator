@@ -64,7 +64,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
     @Override
     public CategoryConfig getCategoryConfig(String id) {
-        return categoryConfigRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("no config found"));
+        return categoryConfigRepository.findByCategoryId(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("no config found"));
     }
 
     @Override
