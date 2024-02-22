@@ -28,6 +28,11 @@ public class UserSessionInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (request.getCookies() == null) {
+            createNewUserSessionCookie(request, response);
+            return true;
+        }
+
         Optional<Cookie> userSessionCookieOptional = Arrays.stream(request.getCookies())
                 .filter(c -> c.getName().equals(USER_SESSION_COOKIE_NAME))
                 .findFirst();
