@@ -17,7 +17,7 @@ public class FilteringServiceImpl implements FilteringService {
     private final ConfigOptionsFiltering configOptionsFiltering;
 
 
-    public List<Product> filterProduct(String productCase, String price, String productType, String processor, String category) {
+    public List<Product> filterProduct(String productCase, String price, String productType, String processor, String category, String brand) {
 
         Specification<Product> spec = Specification.where(null);
 
@@ -56,6 +56,15 @@ public class FilteringServiceImpl implements FilteringService {
 
         if (productType != null && !productType.isEmpty()) {
             List<UUID> matchingProductIds = configOptionsFiltering.getProductTypes(productType);
+            if (!matchingProductIds.isEmpty()) {
+                spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProductIds));
+            } else {
+                return Collections.emptyList();
+            }
+        }
+
+        if (brand != null && !brand.isEmpty()) {
+            List<UUID> matchingProductIds = configOptionsFiltering.getBrand(brand);
             if (!matchingProductIds.isEmpty()) {
                 spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProductIds));
             } else {

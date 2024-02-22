@@ -8,4 +8,8 @@ public interface ConfigOptionsFiltering {
     List<UUID> getProductTypes(String productType);
 
     List<UUID> getProcessor(String productType);
+
+    List<UUID> getBrand(String brand);
+
+
 }
