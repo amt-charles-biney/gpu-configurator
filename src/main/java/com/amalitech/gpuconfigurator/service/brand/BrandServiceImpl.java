@@ -30,7 +30,7 @@ public class BrandServiceImpl implements BrandService {
 
         return brands.stream().map(
                 brand -> BrandDto.builder()
-                        .name(brand.getOptionName().toLowerCase())
+                        .name(brand.getBrand().toLowerCase())
                         .id(String.valueOf(brand.getId()))
                         .thumbnail(brand.getMedia())
                         .description(brand.getAttribute().getDescription())
