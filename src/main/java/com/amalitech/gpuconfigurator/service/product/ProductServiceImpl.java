@@ -209,8 +209,15 @@ public class ProductServiceImpl implements ProductService {
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
             if (updatedProductDto.getCategory() != null) {
-                var newCategory = categoryRepository.findByCategoryName(updatedProductDto.getCategory()).orElseThrow();
-                existingProduct.setCategory(newCategory);
+                Category category = categoryService.getCategory(updatedProductDto.getCategory());
+
+                var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
+                System.out.println("------------------------");
+                System.out.println(inStock);
+
+                existingProduct.setCategory(category);
+                existingProduct.setInStock(inStock);
+
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
             if (files != null) {
