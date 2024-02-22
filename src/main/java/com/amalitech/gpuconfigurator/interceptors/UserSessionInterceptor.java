@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.interceptors;
 
+import com.amalitech.gpuconfigurator.model.Cart;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
 import com.amalitech.gpuconfigurator.service.jwt.JwtService;
@@ -51,7 +52,7 @@ public class UserSessionInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        request.setAttribute("userSessionId", userSessionOptional.get().getId());
+        request.setAttribute("userSession", userSessionOptional.get());
 
         return true;
     }
@@ -60,7 +61,7 @@ public class UserSessionInterceptor implements HandlerInterceptor {
         UserSession userSession = createUserSession(request);
         Cookie newSessionCookie = createUserSessionCookie(userSession);
         response.addCookie(newSessionCookie);
-        request.setAttribute("userSessionId", userSession.getId());
+        request.setAttribute("userSession", userSession);
     }
 
     private Cookie createUserSessionCookie(UserSession userSession) {
@@ -86,6 +87,8 @@ public class UserSessionInterceptor implements HandlerInterceptor {
         if (ipAddress.isPresent() && !ipAddress.get().isBlank()) {
             userSession.setIpAddress(ipAddress.get());
         }
+
+        userSession.setCart(new Cart());
 
         return userSessionRepository.save(userSession);
     }
