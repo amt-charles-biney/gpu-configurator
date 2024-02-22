@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
+import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 
@@ -38,4 +39,6 @@ public interface AttributeService {
     List<AttributeOptionResponseDto> createAllAttributeOptions(UUID attributeId, @NotNull List<CreateAttributeOptionRequest> attributeOptionDtoList);
 
     GenericResponse deleteBulkAttributes(List<String> selectedAttributes);
+
+    List<AttributeOption> getAllAttributeOptions();
 }
