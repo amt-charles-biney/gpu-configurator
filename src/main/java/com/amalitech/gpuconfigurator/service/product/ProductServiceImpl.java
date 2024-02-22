@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service.product;
 
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -242,6 +244,16 @@ public class ProductServiceImpl implements ProductService {
         } catch (NotFoundException e) {
             throw new NotFoundException("No product found");
         }
+    }
+
+    @Override
+    public GenericResponse deleteBulkProducts(List<String> productIds) {
+        List<UUID> selectedProductUUID = productIds.stream()
+                .map(UUID::fromString)
+                .toList();
+
+        productRepository.deleteAllById(selectedProductUUID);
+        return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted bulk products successful");
     }
 
     public void deleteProductById(UUID id) {
