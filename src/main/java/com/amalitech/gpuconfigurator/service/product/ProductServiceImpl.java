@@ -1,11 +1,16 @@
 package com.amalitech.gpuconfigurator.service.product;
 
 
+<<<<<<<HEAD
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
 import com.amalitech.gpuconfigurator.dto.product.ProductUpdateDto;
+=======
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.product.*;
+>>>>>>>cc924ca(feat:product deletion in bulk)
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
@@ -17,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -178,9 +184,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-
     @Override
-    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto,List<MultipartFile> files, MultipartFile coverImage) {
+    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto, List<MultipartFile> files, MultipartFile coverImage) {
         try {
             Product existingProduct = productRepository.getReferenceById(id);
 
@@ -241,6 +246,16 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+
+    @Override
+    public GenericResponse deleteBulkProducts(List<String> productIds) {
+        List<UUID> selectedProductUUID = productIds.stream()
+                .map(UUID::fromString)
+                .toList();
+
+        productRepository.deleteAllById(selectedProductUUID);
+        return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted bulk products successful");
+    }
 
     public List<FeaturedProductDto> getNewProducts() {
         LocalDateTime timeRequest = LocalDateTime.now().minusHours(24);

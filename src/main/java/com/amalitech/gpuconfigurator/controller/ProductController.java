@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.controller;
 
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
@@ -91,6 +92,13 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteProduct(@PathVariable("id") UUID id) {
         productService.deleteProductById(id);
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/v1/admin/product/all")
+    public ResponseEntity<GenericResponse> deleteAllProducts(@RequestBody List<String> productIds) {
+        GenericResponse deletedBulkProduct = productService.deleteBulkProducts(productIds);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(deletedBulkProduct);
     }
 
 
