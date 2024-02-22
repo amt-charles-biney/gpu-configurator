@@ -181,8 +181,8 @@ class FilteringServiceImplTest {
         List<Product> actualResponse = List.of(product1, product2);
 
         //when
-        when(filteringService.filterProduct(null, null, null, null)).thenReturn(actualResponse);
-        var expectedResponse = filteringService.filterProduct(null, null, null, null);
+        when(filteringService.filterProduct(null, null, null, null, null)).thenReturn(actualResponse);
+        var expectedResponse = filteringService.filterProduct(null, null, null, null, null);
 
         //then
         assertNotNull(expectedResponse);
@@ -220,7 +220,7 @@ class FilteringServiceImplTest {
 
         //when
         when(productRepository.findAll(Mockito.any(Specification.class))).thenReturn(actualResponse);
-        var expectedResponse = filteringService.filterProduct(productCaseVar, null, null, null);
+        var expectedResponse = filteringService.filterProduct(productCaseVar, null, null, null, null);
 
         //then
         assertNotNull(expectedResponse);
@@ -259,7 +259,7 @@ class FilteringServiceImplTest {
 
         //when
         when(productRepository.findAll(Mockito.any(Specification.class))).thenReturn(actualResponse);
-        var expectedResponse = filteringService.filterProduct(productCaseVar, price, null, null);
+        var expectedResponse = filteringService.filterProduct(productCaseVar, price, null, null, category.getCategoryName());
 
         //then
         assertNotNull(expectedResponse);
