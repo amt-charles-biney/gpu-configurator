@@ -6,13 +6,15 @@ import com.amalitech.gpuconfigurator.dto.cart.CartItemsResponse;
 import com.amalitech.gpuconfigurator.dto.cart.DeleteCartItemResponse;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.model.Cart;
+import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.CartRepository;
 import com.amalitech.gpuconfigurator.repository.ConfigurationRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
+import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
 import com.amalitech.gpuconfigurator.service.configuration.ConfigurationService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -31,16 +33,16 @@ public class CartServiceImpl implements CartService {
     private final ConfigurationService configuredProductService;
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
+    private final UserSessionRepository userSessionRepository;
 
     @Override
-    public CartItemsCountResponse getCartItemsCount(Principal principal, HttpSession session) {
-        User user = this.getUser(principal);
-        var optionalCart = this.getUserOrGuestCart(user, session);
+    public CartItemsCountResponse getCartItemsCount(Principal principal, UserSession userSession) {
+        User user = getUser(principal);
+        Optional<Cart> optionalCart = getUserOrGuestCart(user, userSession);
 
-        long cartItemsCount = 0;
-        if (optionalCart.isPresent()) {
-            cartItemsCount = configuredProductRepository.countByCartId(optionalCart.get().getId());
-        }
+        long cartItemsCount = optionalCart
+                .map(cart -> configuredProductRepository.countByCartId(cart.getId()))
+                .orElse(0L);
 
         return CartItemsCountResponse.builder()
                 .count(cartItemsCount)
@@ -48,22 +50,20 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public AddCartItemResponse addCartItem(UUID productId, Boolean warranty, String components, Principal principal, HttpSession session) {
-        var user = this.getUser(principal);
-        Cart cart = this.getUserOrGuestCart(user, session).orElseGet(Cart::new);
-
-        if (cart.getId() == null) {
-            cart = cartRepository.save(cart);
-        }
+    public AddCartItemResponse addCartItem(UUID productId, Boolean warranty, String components, Principal principal, UserSession userSession) {
+        User user = getUser(principal);
+        Optional<Cart> cartOptional = getUserOrGuestCart(user, userSession);
+        Cart cart = cartOptional.orElseGet(() -> cartRepository.save(new Cart()));
 
         if (user == null) {
-            session.setAttribute("cart_id", cart.getId());
+            userSession.setCart(cart);
+            userSessionRepository.save(userSession);
         } else if (user.getCart() == null) {
             user.setCart(cart);
             userRepository.save(user);
         }
 
-        var configuredProductResponse = configuredProductService.saveConfiguration(productId.toString(), warranty, components, cart);
+        ConfigurationResponseDto configuredProductResponse = configuredProductService.saveConfiguration(productId.toString(), warranty, components, cart);
 
         return AddCartItemResponse.builder()
                 .message("Configured product added to cart successfully")
@@ -72,22 +72,25 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public DeleteCartItemResponse deleteCartItem(UUID configuredProductId, Principal principal, HttpSession session) {
-        var optionalCart = this.getUserOrGuestCart(this.getUser(principal), session);
+    public DeleteCartItemResponse deleteCartItem(UUID configuredProductId, Principal principal, UserSession userSession) {
+        User user = getUser(principal);
+        Optional<Cart> optionalCart = getUserOrGuestCart(user, userSession);
 
         if (optionalCart.isEmpty()) {
-            return DeleteCartItemResponse.builder().message("User has no items in cart").build();
+            return DeleteCartItemResponse.builder().message("Configured product deleted successfully").build();
         }
 
-        var optionalConfiguredProduct = configuredProductRepository.findByIdAndCartId(configuredProductId, optionalCart.get().getId());
-        optionalConfiguredProduct.ifPresent(configuredProductRepository::delete);
+        configuredProductRepository
+                .findByIdAndCartId(configuredProductId, optionalCart.get().getId())
+                .ifPresent(configuredProductRepository::delete);
 
         return DeleteCartItemResponse.builder().message("Configured product deleted successfully").build();
     }
 
     @Override
-    public CartItemsResponse getCartItems(Principal principal, HttpSession session) {
-        var optionalCart = this.getUserOrGuestCart(this.getUser(principal), session);
+    public CartItemsResponse getCartItems(Principal principal, UserSession userSession) {
+        User user = getUser(principal);
+        Optional<Cart> optionalCart = this.getUserOrGuestCart(user, userSession);
 
         if (optionalCart.isEmpty()) {
             return new CartItemsResponse(new ArrayList<>(), 0);
@@ -101,23 +104,11 @@ public class CartServiceImpl implements CartService {
         return new CartItemsResponse(configuredProducts, configuredProducts.size());
     }
 
-    private Optional<Cart> getUserOrGuestCart(User user, HttpSession session) {
+    private Optional<Cart> getUserOrGuestCart(User user, UserSession userSession) {
         if (user == null) {
-            return Optional.ofNullable(this.getGuestCart(session));
+            return Optional.ofNullable(userSession.getCart());
         }
-        return Optional.ofNullable(this.getUserCart(user));
-    }
-
-    private Cart getGuestCart(HttpSession session) {
-        UUID cartId = (UUID) session.getAttribute("cart_id");
-        if (cartId == null) {
-            return null;
-        }
-        return cartRepository.findById(cartId).orElse(null);
-    }
-
-    private Cart getUserCart(User user) {
-        return user.getCart();
+        return Optional.ofNullable(user.getCart());
     }
 
     private User getUser(Principal principal) {
@@ -128,7 +119,7 @@ public class CartServiceImpl implements CartService {
     }
 
     private ConfigurationResponseDto mapToConfigurationResponseDto(Configuration configuredProduct) {
-        var product = configuredProduct.getProduct();
+        Product product = configuredProduct.getProduct();
 
         return ConfigurationResponseDto.builder()
                 .Id(String.valueOf(configuredProduct.getId()))

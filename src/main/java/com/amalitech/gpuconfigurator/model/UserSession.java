@@ -25,6 +25,10 @@ public class UserSession {
     @Column
     private String userAgent;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
