@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service.jwt;
 
 
+import com.amalitech.gpuconfigurator.model.UserSession;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -91,6 +92,21 @@ public class JwtServiceImpl implements JwtService {
 
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
+    }
+
+    @Override
+    public String generateTokenForUserSession(UserSession userSession) {
+        return Jwts
+                .builder()
+                .setSubject(String.valueOf(userSession.getId()))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    @Override
+    public String extractSubject(String jwtToken) {
+        return extractSingleClaim(jwtToken, Claims::getSubject);
     }
 
     public boolean isTokenValid(String jwtToken, UserDetails userDetails) {
