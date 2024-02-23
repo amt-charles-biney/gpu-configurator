@@ -29,7 +29,7 @@ public class UserSessionInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        response.addHeader("Access-Control-Allow-Credentials", "true");
+//        response.addHeader("Access-Control-Allow-Credentials", "true");
 //        response.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
 //        response.addHeader("Vary", "Origin");
 
