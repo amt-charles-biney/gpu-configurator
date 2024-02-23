@@ -157,7 +157,7 @@ public class ProductServiceImpl implements ProductService {
                 .map(getProductProductResponseFunction())
                 .toList();
 
-        return new PageImpl<>(productResponseList, pageRequest, productPage.getTotalElements());
+        return new PageImpl<>(productResponseList, pageRequest, productResponseList.size());
     }
 
     public Page<ProductResponse> getAllProductsAdmin(int page, int size, String sort) {

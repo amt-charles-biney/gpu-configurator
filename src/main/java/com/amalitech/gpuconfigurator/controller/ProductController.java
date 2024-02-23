@@ -80,8 +80,6 @@ public class ProductController {
     }
 
 
-
-
     @CrossOrigin
     @GetMapping("/v1/product")
     public ResponseEntity<PageResponseDto> getAllProductUsers(
@@ -121,7 +119,7 @@ public class ProductController {
         List<ProductResponse> products = new ArrayList<>();
 
         if (productCase != null || price != null || productType != null || processor != null || category != null || brand != null) {
-            List<Product> filteredProducts = filteringService.filterProduct(productCase, price, productType, processor,category, brand);
+            List<Product> filteredProducts = filteringService.filterProduct(productCase, price, productType, processor, category, brand);
             if (!filteredProducts.isEmpty()) {
                 products = new ResponseMapper().getProductResponses(filteredProducts);
                 productsResponse.setProducts(products);
