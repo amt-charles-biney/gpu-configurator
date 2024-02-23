@@ -71,6 +71,8 @@ public class UserSessionInterceptor implements HandlerInterceptor {
 
         sessionCookie.setPath("/");
         sessionCookie.setMaxAge(USER_SESSION_COOKIE_MAX_AGE);
+        sessionCookie.setHttpOnly(true);
+        sessionCookie.setAttribute("SameSite", "Lax");
 
         return sessionCookie;
     }
