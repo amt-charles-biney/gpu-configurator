@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.product;
 
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface ConfigOptionsFiltering {
@@ -9,7 +10,7 @@ public interface ConfigOptionsFiltering {
 
     List<UUID> getProcessor(String productType);
 
-    List<UUID> getBrand(String brand);
+    Set<UUID> getBrand(String brand);
 
 
 }
