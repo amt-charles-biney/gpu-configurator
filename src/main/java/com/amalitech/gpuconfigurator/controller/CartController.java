@@ -50,7 +50,7 @@ public class CartController {
         return ResponseEntity.ok(cartService.deleteCartItem(configuredProductId, principal, userSession));
     }
 
-//    @CrossOrigin
+    @CrossOrigin
     @GetMapping("/v1/carts")
     public ResponseEntity<CartItemsResponse> getCartItems(
             @RequestAttribute("userSession") UserSession userSession,

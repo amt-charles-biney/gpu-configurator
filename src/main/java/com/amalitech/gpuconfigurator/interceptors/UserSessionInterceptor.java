@@ -29,10 +29,6 @@ public class UserSessionInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-//        response.addHeader("Access-Control-Allow-Credentials", "true");
-//        response.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
-//        response.addHeader("Vary", "Origin");
-
         if (request.getCookies() == null) {
             createNewUserSessionCookie(request, response);
             return true;
@@ -76,6 +72,7 @@ public class UserSessionInterceptor implements HandlerInterceptor {
         sessionCookie.setPath("/");
         sessionCookie.setMaxAge(USER_SESSION_COOKIE_MAX_AGE);
         sessionCookie.setHttpOnly(true);
+        sessionCookie.setAttribute("SameSite", "Lax");
 
         return sessionCookie;
     }
