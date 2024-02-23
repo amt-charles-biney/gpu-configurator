@@ -66,6 +66,18 @@ public class FilteringServiceImpl implements FilteringService {
             }
         }
 
+<<<<<<< HEAD
+=======
+        if (brand != null && !brand.isEmpty()) {
+            Set<UUID> matchingProductIds = configOptionsFiltering.getBrand(brand);
+            if (!matchingProductIds.isEmpty()) {
+                spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProductIds));
+            } else {
+                return Collections.emptyList();
+            }
+        }
+
+>>>>>>> deb5714 (feat: out of stock and unassigned category will not show on filter)
         if (processor != null && !processor.isEmpty()) {
             List<UUID> matchingProcessorIds = configOptionsFiltering.getProcessor(processor);
             if (!matchingProcessorIds.isEmpty()) {
@@ -75,7 +87,7 @@ public class FilteringServiceImpl implements FilteringService {
             }
         }
 
-        return productRepository.findAll(spec);
+        return productRepository.findAll(spec).stream().filter(product -> !"unassigned".equals(product.getCategory().getCategoryName()) && !product.getInStock().equals(0)).toList();
     }
 
     private static List<Specification<Product>> getSpecifications(String price) {
