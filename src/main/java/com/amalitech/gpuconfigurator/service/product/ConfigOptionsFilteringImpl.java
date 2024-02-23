@@ -8,9 +8,7 @@ import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServic
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -66,9 +64,9 @@ public class ConfigOptionsFilteringImpl implements ConfigOptionsFiltering {
     }
 
     @Override
-    public List<UUID> getBrand(String brand) {
+    public Set<UUID> getBrand(String brand) {
         List<Product> products = productRepository.findAll();
-        List<UUID> brandList = new ArrayList<>();
+        Set<UUID> brandList = new HashSet<>();
 
         if (brand != null && !brand.isEmpty()) {
             String[] brandNameList = brand.split(",");
