@@ -29,9 +29,7 @@ public class UserSessionInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (request.getMethod().equals("OPTIONS")) {
-            return true;
-        }
+        response.addHeader("Access-Control-Allow-Credentials", "true");
 
         if (request.getCookies() == null) {
             createNewUserSessionCookie(request, response);
