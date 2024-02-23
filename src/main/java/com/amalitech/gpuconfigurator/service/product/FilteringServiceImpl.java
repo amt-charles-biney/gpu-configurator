@@ -64,7 +64,7 @@ public class FilteringServiceImpl implements FilteringService {
         }
 
         if (brand != null && !brand.isEmpty()) {
-            List<UUID> matchingProductIds = configOptionsFiltering.getBrand(brand);
+            Set<UUID> matchingProductIds = configOptionsFiltering.getBrand(brand);
             if (!matchingProductIds.isEmpty()) {
                 spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProductIds));
             } else {
@@ -81,7 +81,7 @@ public class FilteringServiceImpl implements FilteringService {
             }
         }
 
-        return productRepository.findAll(spec);
+        return productRepository.findAll(spec).stream().filter(product -> !"unassigned".equals(product.getCategory().getCategoryName()) && !product.getInStock().equals(0)).toList();
     }
 
     @NotNull
