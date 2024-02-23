@@ -64,7 +64,9 @@ public class CategoryServiceImpl implements CategoryService {
         return allCategories.stream().filter(category -> !"unassigned".equals(category.getCategoryName()))
                 .map(category -> AllCategoryResponse.builder()
                         .id(category.getId())
-                        .name(category.getCategoryName()).build())
+                        .name(category.getCategoryName())
+                        .thumbnail(category.getThumbnail())
+                        .build())
                 .toList();
 
     }
