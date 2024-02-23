@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,14 +29,19 @@ public class BrandServiceImpl implements BrandService {
     public List<BrandDto> getAllBrands() {
         List<AttributeOption> brands = attributeService.getAllAttributeOptions();
 
-        return brands.stream().map(
-                brand -> BrandDto.builder()
+        return brands.stream()
+                .map(brand -> BrandDto.builder()
                         .name(brand.getBrand().toLowerCase())
                         .id(String.valueOf(brand.getId()))
                         .thumbnail(brand.getMedia())
                         .description(brand.getAttribute().getDescription())
-                        .build()
-        ).distinct().toList();
+                        .build())
+                .collect(Collectors.toMap(
+                        BrandDto::name,
+                        brand -> brand,
+                        (existing, replacement) -> existing))
+                .values().stream()
+                .toList();
     }
 
 
