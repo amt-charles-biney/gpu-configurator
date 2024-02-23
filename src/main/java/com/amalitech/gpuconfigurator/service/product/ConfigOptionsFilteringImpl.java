@@ -60,5 +60,29 @@ public class ConfigOptionsFilteringImpl implements ConfigOptionsFiltering {
         return processorList;
     }
 
+    @Override
+    public Set<UUID> getBrand(String brand) {
+        List<Product> products = productRepository.findAll();
+        Set<UUID> brandList = new HashSet<>();
+        Set<String> uniqueBrandNames = new HashSet<>();
+
+        if (brand != null && !brand.isEmpty()) {
+            String[] brandNameList = brand.split(",");
+
+            for (Product product : products) {
+                var configs = categoryConfigService.getCategoryConfig(String.valueOf(product.getCategory().getId()));
+                for (String name : brandNameList) {
+                    if (!uniqueBrandNames.contains(name.trim()) &&
+                            configs.getCompatibleOptions().stream()
+                                    .anyMatch(option -> option.getAttributeOption().getBrand().equalsIgnoreCase(name.trim()))) {
+                        brandList.add(product.getId());
+                        uniqueBrandNames.add(name.trim());
+                        break;
+                    }
+                }
+            }
+        }
+        return brandList;
+    }
 
 }
