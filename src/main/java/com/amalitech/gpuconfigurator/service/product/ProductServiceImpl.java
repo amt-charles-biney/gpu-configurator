@@ -103,18 +103,26 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse getProduct(String id) {
+    public ProductResponseWithBrandDto getProduct(String id) {
         Product product = productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new NotFoundException("product not found"));
         Category category = categoryRepository.findById(product.getCategory().getId()).orElseThrow(() -> new NotFoundException("category does not exist "));
 
-        return ProductResponse.builder()
+        return ProductResponseWithBrandDto.builder()
                 .productName(product.getProductName())
                 .id(product.getId().toString())
                 .productId(product.getProductId())
                 .productDescription(product.getProductDescription())
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                 .productAvailability(product.getProductAvailability())
+<<<<<<< HEAD
                 .coverImage(product.getCoverImage())
+=======
+                .productBrand(ProdcutBrandDto.builder()
+                        .name(product.getProductCase().getName())
+                        .price(product.getProductCase().getPrice())
+                        .build())
+                .coverImage(product.getProductCase().getCoverImageUrl())
+>>>>>>> b5a2ef0 (fix: get product response with brand name and price)
                 .inStock(product.getInStock())
                 .imageUrl(product.getImageUrl().stream().toList())
                 .category(new AttributeResponseDto(category.getCategoryName(), category.getId().toString()))
