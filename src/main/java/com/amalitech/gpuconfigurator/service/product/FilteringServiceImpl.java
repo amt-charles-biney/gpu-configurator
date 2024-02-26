@@ -20,7 +20,8 @@ public class FilteringServiceImpl implements FilteringService {
     private final ConfigOptionsFiltering configOptionsFiltering;
 
 
-    public List<Product> filterProduct(String productCase, String price, String productType, String processor, String category) {
+
+    public List<Product> filterProduct(String productCase, String price, String productType, String processor, String categories, String brand) {
 
         Specification<Product> spec = Specification.where(null);
 
@@ -37,8 +38,8 @@ public class FilteringServiceImpl implements FilteringService {
             }
         }
 
-        if (category != null && !category.isEmpty()) {
-            String[] productCategory = category.split(",");
+        if (categories != null && !categories.isEmpty()) {
+            String[] productCategory = categories.split(",");
             if (productCategory.length == 1) {
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.equal(root.get("category").get("categoryName"), productCategory[0])
@@ -47,6 +48,7 @@ public class FilteringServiceImpl implements FilteringService {
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.and(root.get("category").get("categoryName").in((Object[]) productCategory))
                 );
+                System.out.println("hello");
             }
         }
 
@@ -66,8 +68,6 @@ public class FilteringServiceImpl implements FilteringService {
             }
         }
 
-<<<<<<< HEAD
-=======
         if (brand != null && !brand.isEmpty()) {
             Set<UUID> matchingProductIds = configOptionsFiltering.getBrand(brand);
             if (!matchingProductIds.isEmpty()) {
@@ -77,7 +77,6 @@ public class FilteringServiceImpl implements FilteringService {
             }
         }
 
->>>>>>> deb5714 (feat: out of stock and unassigned category will not show on filter)
         if (processor != null && !processor.isEmpty()) {
             List<UUID> matchingProcessorIds = configOptionsFiltering.getProcessor(processor);
             if (!matchingProcessorIds.isEmpty()) {
