@@ -32,9 +32,9 @@ public class CategoryConfigController {
     }
 
     @CrossOrigin
-    @GetMapping("/v1/category/{categoryId}/config")
-    public ResponseEntity<CategoryConfigResponseDto> getConfigsUser(@PathVariable String categoryId) {
-        CategoryConfigResponseDto result = categoryConfigServiceImpl.getCategoryConfigByCategory(categoryId);
+    @GetMapping("/v1/category/{productId}/config")
+    public ResponseEntity<CategoryConfigResponseDto> getConfigByProductId(@PathVariable String productId) {
+        CategoryConfigResponseDto result = categoryConfigServiceImpl.getCategoryConfigByProduct(productId);
         return ResponseEntity.ok(result);
     }
 
