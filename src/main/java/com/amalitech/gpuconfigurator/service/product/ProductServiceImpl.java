@@ -233,8 +233,6 @@ public class ProductServiceImpl implements ProductService {
                 Category category = categoryService.getCategory(updatedProductDto.getCategory());
 
                 var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
-                System.out.println("------------------------");
-                System.out.println(inStock);
 
                 existingProduct.setCategory(category);
                 existingProduct.setInStock(inStock);
