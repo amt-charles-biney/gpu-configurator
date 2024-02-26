@@ -50,8 +50,10 @@ public class ProductServiceImpl implements ProductService {
         BigDecimal totalConfigPrice = category.getCategoryConfig().getCompatibleOptions()
                 .stream()
                 .filter(CompatibleOption::getIsIncluded)
+                .filter(configs -> !productCase.getIncompatibleVariants().contains(configs.getAttributeOption()))
                 .map(configs -> configs.getAttributeOption().getPriceAdjustment())
                 .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
+
 
         var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
 
