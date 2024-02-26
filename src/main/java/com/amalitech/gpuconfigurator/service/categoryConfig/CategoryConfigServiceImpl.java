@@ -1,6 +1,6 @@
 package com.amalitech.gpuconfigurator.service.categoryConfig;
 
-import com.amalitech.gpuconfigurator.dto.*;
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
@@ -109,7 +109,6 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     @Override
     public CompatibleOptionGetResponse getCategoryAndCompatibleOption(UUID categoryId) {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(categoryId).orElseThrow(() -> new EntityNotFoundException("config category not found"));
-
         List<CompatibleOption> compatibleOptions = compatibleOptionService.getAllCompatibleOptionsByCategoryConfig(categoryConfig.getId());
 
         List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList = compatibleOptions
@@ -157,11 +156,16 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     public GenericResponse deleteCategoryAndCategoryConfig(List<String> categoryIds) {
         List<UUID> categoryUUIDs = categoryIds.stream().map(UUID::fromString).toList();
 
-        categoryConfigRepository.deleteAllByCategoryId(categoryUUIDs);
+        List<Product> products = productRepository.findProductsByCategoryIds(categoryUUIDs);
+
+        var unassignedCategory = categoryRepository.findByCategoryName("unassigned").orElse(Category.builder().categoryName("unassigned").build());
+
+        for (var product : products) {
+            product.setCategory(unassignedCategory);
+        }
+
         categoryService.deleteAllById(categoryUUIDs);
-
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted category successfully");
-
     }
 
     @Override
@@ -174,6 +178,25 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
         compatibleOptionService.updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
 
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "updated category and config");
+    }
+
+    public CategoryConfigResponseDto getCategoryConfigByProduct(String productId) {
+        Product product = productRepository.findById(UUID.fromString(productId)).orElseThrow(() -> new EntityNotFoundException("product not found"));
+        List<AttributeOption> caseIncompatibleAttributes = product.getProductCase().getIncompatibleVariants();
+
+        List<CompatibleOption> compatibleOptions = getAllCompatibleOptionsByCategoryId(product.getCategory().getId())
+                .stream()
+                .filter(option -> option.getIsCompatible() || option.getIsIncluded())
+                .filter(option -> caseIncompatibleAttributes.stream()
+                        .noneMatch(attribute -> attribute.getId().equals(option.getAttributeOption().getId())))
+                .toList();
+
+        Map<String, List<CompatibleOptionResponseDto>> mapCompatibleOptionResponse = mapToCompatibleOptionResponseDtoMap(compatibleOptions);
+
+        return CategoryConfigResponseDto
+                .builder()
+                .options(mapCompatibleOptionResponse)
+                .build();
     }
 
 
@@ -191,6 +214,11 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                                 .collect(Collectors.toList())
                 ));
 
+    }
+
+    public List<CompatibleOption> getAllCompatibleOptionsByCategoryId(UUID categoryId) {
+        CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(categoryId).orElseThrow(() -> new EntityNotFoundException("config category not found"));
+        return compatibleOptionService.getAllCompatibleOptionsByCategoryConfig(categoryConfig.getId());
     }
 
     private Map<String, List<CompatibleOptionResponseDto>>  mapToCompatibleOptionResponseDtoMap(List<CompatibleOption> compatibleOptions) {
