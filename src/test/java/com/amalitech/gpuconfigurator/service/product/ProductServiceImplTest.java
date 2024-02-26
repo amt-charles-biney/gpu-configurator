@@ -297,9 +297,9 @@ class ProductServiceImplTest {
 
         ProductServiceImpl productServiceMock = Mockito.mock(ProductServiceImpl.class);
         when(productServiceMock.getProduct(String.valueOf(productId))).thenReturn(
-                ProductResponse.builder().productName(product.getProductName()).build());
+                ProductResponseWithBrandDto.builder().productName(product.getProductName()).build());
 
-        ProductResponse result = productServiceMock.getProduct(String.valueOf(productId));
+        ProductResponseWithBrandDto result = productServiceMock.getProduct(String.valueOf(productId));
 
         assertNotNull(result);
         assertEquals(product.getProductName(), result.productName());

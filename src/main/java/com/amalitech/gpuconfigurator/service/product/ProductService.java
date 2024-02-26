@@ -14,7 +14,7 @@ public interface ProductService {
 
     List<ProductResponse> getAllProducts();
 
-    ProductResponse getProduct(String id);
+    ProductResponseWithBrandDto getProduct(String id);
 
     void deleteProductById(UUID id) throws NoSuchFieldException;
 

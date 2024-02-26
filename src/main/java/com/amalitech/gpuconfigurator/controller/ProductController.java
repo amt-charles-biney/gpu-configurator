@@ -43,15 +43,15 @@ public class ProductController {
 
     @CrossOrigin
     @GetMapping("/v1/admin/product/{productId}")
-    public ResponseEntity<ProductResponse> getProductByProductId(@PathVariable("productId") String productId) {
-        ProductResponse product = productService.getProduct(productId);
+    public ResponseEntity<ProductResponseWithBrandDto> getProductByProductId(@PathVariable("productId") String productId) {
+        ProductResponseWithBrandDto product = productService.getProduct(productId);
         return ResponseEntity.ok(product);
     }
 
     @CrossOrigin
     @GetMapping("/v1/product/{productId}")
-    public ResponseEntity<ProductResponse> getProductByProductIdUser(@PathVariable("productId") String productId) {
-        ProductResponse product = productService.getProduct(productId);
+    public ResponseEntity<ProductResponseWithBrandDto> getProductByProductIdUser(@PathVariable("productId") String productId) {
+        ProductResponseWithBrandDto product = productService.getProduct(productId);
         return ResponseEntity.ok(product);
     }
 

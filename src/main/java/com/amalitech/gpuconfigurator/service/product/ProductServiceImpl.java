@@ -122,18 +122,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse getProduct(String id) {
+    public ProductResponseWithBrandDto getProduct(String id) {
         Product product = productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new NotFoundException("product not found"));
         Category category = categoryRepository.findById(product.getCategory().getId()).orElseThrow(() -> new NotFoundException("category does not exist "));
 
-        return ProductResponse.builder()
+        return ProductResponseWithBrandDto.builder()
                 .productName(product.getProductName())
                 .id(product.getId().toString())
                 .productId(product.getProductId())
                 .productDescription(product.getProductDescription())
                 .productPrice(product.getTotalProductPrice())
                 .productAvailability(product.getProductAvailability())
-                .productBrand(product.getProductCase().getName())
+                .productBrand(ProdcutBrandDto.builder()
+                        .name(product.getProductCase().getName())
+                        .price(product.getProductCase().getPrice())
+                        .build())
                 .coverImage(product.getProductCase().getCoverImageUrl())
                 .inStock(product.getInStock())
                 .isFeatured(product.getFeatured())
