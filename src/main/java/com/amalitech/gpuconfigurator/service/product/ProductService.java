@@ -1,15 +1,12 @@
 package com.amalitech.gpuconfigurator.service.product;
 
-<<<<<<< HEAD
 import com.amalitech.gpuconfigurator.dto.product.CreateProductResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
 import com.amalitech.gpuconfigurator.dto.product.ProductUpdateDto;
-=======
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.model.Product;
->>>>>>> cc924ca (feat: product deletion in bulk)
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,14 +24,13 @@ public interface ProductService {
 
     Page<ProductResponse> getAllProducts(int page, int size,String sort);
 
-<<<<<<< HEAD
+
     ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto,List<MultipartFile> files, MultipartFile coverImage);
-=======
+
     List<FeaturedProductDto> getNewProducts();
 
 
     ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto);
 
     GenericResponse deleteBulkProducts(List<String> productIds);
->>>>>>> cc924ca (feat: product deletion in bulk)
 }

@@ -114,15 +114,11 @@ public class ProductServiceImpl implements ProductService {
                 .productDescription(product.getProductDescription())
                 .productPrice(BigDecimal.valueOf(product.getProductPrice()))
                 .productAvailability(product.getProductAvailability())
-<<<<<<< HEAD
-                .coverImage(product.getCoverImage())
-=======
                 .productBrand(ProdcutBrandDto.builder()
                         .name(product.getProductCase().getName())
                         .price(product.getProductCase().getPrice())
                         .build())
                 .coverImage(product.getProductCase().getCoverImageUrl())
->>>>>>> b5a2ef0 (fix: get product response with brand name and price)
                 .inStock(product.getInStock())
                 .imageUrl(product.getImageUrl().stream().toList())
                 .category(new AttributeResponseDto(category.getCategoryName(), category.getId().toString()))
