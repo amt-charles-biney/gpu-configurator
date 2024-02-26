@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -31,8 +33,20 @@ public class Category {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @OneToMany(
+            mappedBy = "category"
+//            cascade = CascadeType.REMOVE
+//            orphanRemoval = false
+    )
+    private List<Product> products = new ArrayList<>();
+
+    @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CategoryConfig categoryConfig;
+
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
 }

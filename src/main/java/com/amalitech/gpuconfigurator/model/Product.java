@@ -1,4 +1,5 @@
 package com.amalitech.gpuconfigurator.model;
+import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -37,15 +38,24 @@ public class Product {
     @Column(name = "product_brand", nullable = false)
     private String productBrand;
 
+    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "case_id", referencedColumnName = "id", foreignKey = @ForeignKey(
+            name = "case_id_fk"
+    ))
+    private Case productCase;
+
     @Column(name = "product_instock", nullable = false)
     private Integer inStock;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(
             name = "category_id_fk"
     ))
     private Category category;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Configuration> configurations;
 
     @Column(name = "product_featured")
     private Boolean featured;
