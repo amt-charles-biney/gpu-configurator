@@ -25,7 +25,15 @@ public class CompatibleOption {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne(fetch=FetchType.EAGER)
+
+    @ManyToOne
+    @JoinColumn(
+            name = "category_config_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(
+                    name = "category_config_fk"
+            )
+    )
     @OnDelete(action = OnDeleteAction.CASCADE)
     private CategoryConfig categoryConfig;
 

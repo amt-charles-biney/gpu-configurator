@@ -65,4 +65,11 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public ProblemDetail notFoundException(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
+        errorDetail.setDetail(e.getMessage());
+        return errorDetail;
+    }
+
 }

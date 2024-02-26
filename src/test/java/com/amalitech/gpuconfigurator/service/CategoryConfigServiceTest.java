@@ -5,9 +5,11 @@ import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
+import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
+import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
@@ -34,6 +36,8 @@ class CategoryConfigServiceTest {
 
     @Mock
     private CategoryConfigRepository categoryConfigRepository;
+    @Mock
+    private CategoryRepository categoryRepository;
     @Mock
     private CategoryServiceImpl categoryService;
     @Mock
@@ -246,16 +250,28 @@ class CategoryConfigServiceTest {
     void testDeleteCategoryAndCategoryConfig() {
         List<String> categoryIds = List.of(UUID.randomUUID().toString());
         List<UUID> categoryUUIDs = categoryIds.stream().map(UUID::fromString).toList();
+        Category category1 = Category.builder()
+                            .categoryName("unassigned")
+                            .thumbnail("helloworld")
+                            .id(UUID.randomUUID())
+                            .categoryConfig(null)
+                            .build();
 
-        doNothing().when(categoryConfigRepository).deleteAllByCategoryId(categoryUUIDs);
+        List<Product> products = List.of(Product
+                .builder()
+                        .id(UUID.randomUUID())
+                        .category(category1)
+                .build());
+        when(categoryRepository.findByCategoryName(any(String.class))).thenReturn(Optional.ofNullable(category1));
         doNothing().when(categoryService).deleteAllById(categoryUUIDs);
+        doNothing().when(categoryConfigRepository).deleteAllByCategoryId(categoryUUIDs);
 
+        when(productRepository.findProductsByCategoryIds(any())).thenReturn(products);
         GenericResponse response = categoryConfigService.deleteCategoryAndCategoryConfig(categoryIds);
 
         assertEquals(HttpStatus.ACCEPTED.value(), response.status());
         assertEquals("deleted category successfully", response.message());
 
-        verify(categoryConfigRepository, times(1)).deleteAllByCategoryId(categoryUUIDs);
         verify(categoryService, times(1)).deleteAllById(categoryUUIDs);
     }
 

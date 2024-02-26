@@ -1,4 +1,3 @@
-
 package com.amalitech.gpuconfigurator.model.attributes;
 
 
@@ -35,13 +34,13 @@ public class AttributeOption {
     @Column(name = "media")
     private String media;
 
-    @Column(name="base_amount")
+    @Column(name = "base_amount")
     private Float baseAmount;
 
-    @Column(name="max_amount")
+    @Column(name = "max_amount")
     private Float maxAmount;
 
-    @Column(name="price_increment")
+    @Column(name = "price_increment")
     private Double priceFactor;
 
     @ManyToOne
