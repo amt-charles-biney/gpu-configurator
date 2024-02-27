@@ -119,6 +119,7 @@ public class ProductServiceImpl implements ProductService {
                                 .id(String.valueOf(product.getCategory().getId()))
                                 .build())
                         .imageUrl(product.getProductCase().getImageUrls())
+                        .serviceCharge(product.getServiceCharge())
                         .inStock(product.getInStock())
                         .build()).toList();
     }
@@ -198,6 +199,7 @@ public class ProductServiceImpl implements ProductService {
                             .id(String.valueOf(product.getCategory().getId()))
                             .build())
                     .stockStatus(stockStatus)
+                    .serviceCharge(product.getServiceCharge())
                     .imageUrl(product.getProductCase().getImageUrls())
                     .inStock(product.getInStock())
                     .build();
@@ -276,7 +278,7 @@ public class ProductServiceImpl implements ProductService {
         Double serviceCharge;
         BigDecimal baseConfigPrice;
 
-        for (var product: products){
+        for (var product : products) {
             serviceCharge = product.getServiceCharge();
             baseConfigPrice = product.getBaseConfigPrice();
 
@@ -285,10 +287,11 @@ public class ProductServiceImpl implements ProductService {
                     .multiply(casePrice.add(baseConfigPrice)).setScale(2, RoundingMode.HALF_UP);
 
             BigDecimal updatedTotalPrice = updatedPercentageOfServiceChargeMultiplyByCasePrice
-                    .add(baseConfigPrice.add(casePrice))
+                    .add(baseConfigPrice).add(casePrice)
                     .setScale(2, RoundingMode.HALF_UP);
 
             product.setTotalProductPrice(updatedTotalPrice);
+            productRepository.save(product);
         }
 
     }
