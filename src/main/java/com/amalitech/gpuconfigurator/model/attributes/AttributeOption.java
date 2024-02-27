@@ -52,12 +52,12 @@ public class AttributeOption {
     private Double priceFactor;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Attribute attribute;
 
     private Integer inStock;
 
     @OneToMany(mappedBy = "attributeOption", cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
     private List<CompatibleOption> compatibleOptions;
 
