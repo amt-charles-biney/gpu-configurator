@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.product;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.product.*;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
@@ -22,11 +23,14 @@ public interface ProductService {
     List<FeaturedProductDto> getNewProducts();
 
 
+    @Transactional
     ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto);
 
     GenericResponse deleteBulkProducts(List<String> productIds);
 
-    void updateCategoryStock(UUID categoryId, Integer stock);
+    @Transactional
+    void updateCategoryStock(UUID categoryId, UpdateProductConfigsDto request);
 
+    @Transactional
     void updateTotalPriceWhenUpdatingCase(UUID caseId, BigDecimal casePrice);
 }
