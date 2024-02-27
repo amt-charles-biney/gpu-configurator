@@ -2,10 +2,7 @@ package com.amalitech.gpuconfigurator.model.attributes;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -51,7 +48,6 @@ public class AttributeOption {
     private Double priceFactor;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Attribute attribute;
 
     private Integer inStock;
