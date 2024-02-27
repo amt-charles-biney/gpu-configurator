@@ -37,6 +37,9 @@ public class Attribute {
     @Column
     private String description;
 
+    @Column
+    private boolean isRequired;
+
     @JsonIgnore
     @OneToMany(mappedBy="attribute", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)

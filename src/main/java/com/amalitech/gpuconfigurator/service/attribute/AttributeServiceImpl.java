@@ -60,7 +60,7 @@ public class AttributeServiceImpl implements AttributeService {
     public CompatibleOptionGetResponse getAllAttributeOptionsEditable() {
         List<AttributeOption> attributeOptionList = attributeOptionRepository.findAll();
 
-        List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList = attributeOptionList.stream().map(
+        List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList =  attributeOptionList.stream().map(
                 attributeOption -> CompatibleOptionResponseDto.
                         builder()
                         .compatibleOptionId(attributeOption.getId().toString())
@@ -130,17 +130,16 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public Attribute addAttribute(@NotNull AttributeDto attribute) throws AttributeNameAlreadyExistsException {
-        if (attributeRepository.existsByAttributeName(attribute.attributeName()))
-            throw new AttributeNameAlreadyExistsException("duplicate name already exists");
-        Attribute newAttribute = Attribute.builder()
-                .attributeName(attribute.attributeName())
-                .isMeasured(attribute.isMeasured())
-                .description(attribute.description())
-                .unit(attribute.unit())
-                .isRequired(attribute.isRequired())
-                .build();
+        if(attributeRepository.existsByAttributeName(attribute.attributeName())) throw new AttributeNameAlreadyExistsException("duplicate name already exists");
+            Attribute newAttribute = Attribute.builder()
+                    .attributeName(attribute.attributeName())
+                    .isMeasured(attribute.isMeasured())
+                    .description(attribute.description())
+                    .unit(attribute.unit())
+                    .isRequired(attribute.isRequired())
+                    .build();
 
-        return attributeRepository.save(newAttribute);
+            return attributeRepository.save(newAttribute);
     }
 
     @Override
@@ -156,7 +155,7 @@ public class AttributeServiceImpl implements AttributeService {
         updateAttribute.setUpdatedAt(LocalDateTime.now());
 
         return attributeRepository.save(updateAttribute);
-    }
+   }
 
 
     @Override
@@ -170,10 +169,10 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public GenericResponse deleteAttributeById(UUID attributeId) {
         Attribute attribute = attributeRepository.findById(attributeId)
-                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST + attributeId));
+                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST +  attributeId));
         attributeRepository.delete(attribute);
 
-        return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted attribute successfully");
+        return new GenericResponse(HttpStatus.ACCEPTED.value(),"deleted attribute successfully");
     }
 
     @Override
@@ -192,7 +191,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public void updateAllAttributeOptions(Attribute attribute, List<UpdateAttributeOptionDto> attributeOptionDtos) {
-        for (UpdateAttributeOptionDto attributeOption : attributeOptionDtos) {
+        for(UpdateAttributeOptionDto attributeOption : attributeOptionDtos) {
 
             AttributeOption updateAttribute = attributeOptionRepository.findById(UUID.fromString(attributeOption.id()))
                     .orElseGet(() -> {
@@ -212,7 +211,7 @@ public class AttributeServiceImpl implements AttributeService {
             updateAttribute.setBrand(attributeOption.brand());
             updateAttribute.setIncompatibleAttributeOptions(convertStringsToUUIDS(attributeOption.incompatibleAttributeOptions()));
 
-            AttributeOption savedAttribute = attributeOptionRepository.save(updateAttribute);
+            AttributeOption savedAttribute =  attributeOptionRepository.save(updateAttribute);
         }
     }
 
@@ -238,18 +237,13 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public GenericResponse deleteBulkAttributes(List<String> selectedAttributes) {
+    public GenericResponse deleteBulkAttributes(List<String> selectedAttributes){
         List<UUID> selectedAttributesUUID = selectedAttributes.stream()
                 .map(UUID::fromString)
                 .toList();
 
         attributeRepository.deleteAllById(selectedAttributesUUID);
-        return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted bulk attributes successful");
-    }
-
-    @Override
-    public List<AttributeOption> getAllAttributeOptions() {
-        return attributeOptionRepository.findAll();
+        return new GenericResponse(HttpStatus.ACCEPTED.value(),"deleted bulk attributes successful");
     }
 
     private List<AttributeOptionResponseDto> streamAttributeOptions(@NotNull List<AttributeOption> instance) {
@@ -273,11 +267,9 @@ public class AttributeServiceImpl implements AttributeService {
                 .inStock(attributeOption.getInStock())
                 .attribute(
                         new AttributeResponseDto(
-                                attributeOption.getAttribute().getAttributeName(),
-                                attributeOption.getAttribute().getId().toString(),
-                                attributeOption.getAttribute().isMeasured(),
-                                attributeOption.getAttribute().getUnit()
-                        ))
+                        attributeOption.getAttribute().getAttributeName(),
+                        attributeOption.getAttribute().getId().toString(),
+                        attributeOption.getAttribute().isMeasured()))
                 .build();
     }
 
@@ -296,12 +288,12 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     private List<String> convertUUIDsToStrings(List<UUID> uuids) {
-        if (uuids.isEmpty()) return new ArrayList<>();
+        if(uuids.isEmpty()) return new ArrayList<>();
         return uuids.stream().map(String::valueOf).toList();
     }
 
     private List<UUID> convertStringsToUUIDS(List<String> uuidStrings) {
-        if (uuidStrings.isEmpty()) return new ArrayList<>();
+        if(uuidStrings.isEmpty()) return new ArrayList<>();
         return uuidStrings.stream().map(UUID::fromString).toList();
     }
 }
