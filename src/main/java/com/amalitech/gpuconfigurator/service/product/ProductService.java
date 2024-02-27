@@ -4,6 +4,7 @@ import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import org.springframework.data.domain.Page;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,4 +27,6 @@ public interface ProductService {
     GenericResponse deleteBulkProducts(List<String> productIds);
 
     void updateCategoryStock(UUID categoryId, Integer stock);
+
+    void updateTotalPriceWhenUpdatingCase(UUID caseId, BigDecimal casePrice);
 }
