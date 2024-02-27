@@ -18,15 +18,11 @@ public record ProductResponse(
         AttributeResponseDto category,
         String productDescription,
 
-<<<<<<< HEAD
-        Boolean isFeatured,
-=======
         String productBrand,
 
         Double serviceCharge,
 
         boolean isFeatured,
->>>>>>> 0685878 (fix: brandnames  not dusplaying)
 
         boolean productAvailability,
 

@@ -24,9 +24,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("SELECT p FROM Product p WHERE p.featured = true")
     Optional<List<Product>> getFeaturedProduct();
 
-<<<<<<< HEAD
-}
-=======
+
     @Query("SELECT p FROM Product p WHERE p.createdAt >= :startDate")
     Optional<List<FeaturedProductAbstraction>> getBrandNewProducts(@Param("startDate") LocalDateTime startDate);
 
@@ -39,5 +37,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("SELECT p FROM Product p WHERE p.category.id = ?1")
     List<Product> findProductsByCategoryName(UUID categoryId);
 
+    @Query("SELECT p FROM Product p WHERE p.productCase.id = ?1")
+    List<Product> findProductsByProductCase(UUID caseId);
+
 }
->>>>>>> 3ba7a66 (feat: updating stocks for product)

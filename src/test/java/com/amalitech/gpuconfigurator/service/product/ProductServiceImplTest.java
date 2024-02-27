@@ -24,6 +24,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -468,7 +469,7 @@ class ProductServiceImplTest {
                 .productAvailability(true)
                 .build();
 
-        List<Product> products = List.of(existingProduct1,existingProduct2);
+        List<Product> products = List.of(existingProduct1, existingProduct2);
 
         when(productRepository.findProductsByCategoryName(category.getId())).thenReturn(products);
 
@@ -482,5 +483,39 @@ class ProductServiceImplTest {
 
     }
 
+    @Test
+    void givenUpdatedCase_whenPriceChange_thenUpdateProductPrice() {
+        // Given
+        BigDecimal casePrice = BigDecimal.valueOf(500);
+
+        productCase.setPrice(casePrice);
+
+        List<Product> products = new ArrayList<>();
+
+        Product product1 = Product.builder()
+                .serviceCharge(10.0)
+                .baseConfigPrice(BigDecimal.valueOf(500))
+                .totalProductPrice(BigDecimal.valueOf(1750))
+                .build();
+        products.add(product1);
+
+        Product product2 = Product.builder()
+                .serviceCharge(10.0)
+                .baseConfigPrice(BigDecimal.valueOf(500))
+                .totalProductPrice(BigDecimal.valueOf(1500))
+                .build();
+
+
+        products.add(product2);
+
+        when(productRepository.findProductsByProductCase(productCase.getId())).thenReturn(products);
+
+        // When
+        productService.updateTotalPriceWhenUpdatingCase(productCase.getId(), casePrice);
+
+        // Then
+        assertEquals(BigDecimal.valueOf(1100).setScale(2, RoundingMode.HALF_UP), product1.getTotalProductPrice());
+        assertEquals(BigDecimal.valueOf(1100).setScale(2, RoundingMode.HALF_UP), product2.getTotalProductPrice());
+    }
 
 }
