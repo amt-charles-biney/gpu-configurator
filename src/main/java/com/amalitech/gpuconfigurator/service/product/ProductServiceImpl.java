@@ -269,6 +269,30 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+    @Override
+    public void updateTotalPriceWhenUpdatingCase(UUID caseId, BigDecimal casePrice) {
+
+        List<Product> products = productRepository.findProductsByProductCase(caseId);
+        Double serviceCharge;
+        BigDecimal baseConfigPrice;
+
+        for (var product: products){
+            serviceCharge = product.getServiceCharge();
+            baseConfigPrice = product.getBaseConfigPrice();
+
+            BigDecimal updatedPercentageOfServiceChargeMultiplyByCasePrice = BigDecimal.valueOf(serviceCharge)
+                    .divide(BigDecimal.valueOf(100))
+                    .multiply(casePrice.add(baseConfigPrice)).setScale(2, RoundingMode.HALF_UP);
+
+            BigDecimal updatedTotalPrice = updatedPercentageOfServiceChargeMultiplyByCasePrice
+                    .add(baseConfigPrice.add(casePrice))
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            product.setTotalProductPrice(updatedTotalPrice);
+        }
+
+    }
+
     public void deleteProductById(UUID id) {
         productRepository.deleteById(id);
     }
