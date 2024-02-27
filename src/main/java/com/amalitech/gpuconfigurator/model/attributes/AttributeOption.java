@@ -1,17 +1,17 @@
-
 package com.amalitech.gpuconfigurator.model.attributes;
 
 
-import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -35,6 +35,9 @@ public class AttributeOption {
     @Column(name = "media")
     private String media;
 
+    @Column(name = "brand")
+    private String brand;
+
     @Column(name="base_amount")
     private Float baseAmount;
 
@@ -45,14 +48,14 @@ public class AttributeOption {
     private Double priceFactor;
 
     @ManyToOne
-    @JoinColumn(name = "attribute_id", nullable = false)
     private Attribute attribute;
 
     private Integer inStock;
 
-    @OneToMany(mappedBy = "attributeOption", cascade = CascadeType.ALL)
-    private List<CompatibleOption> compatibleOptions;
+    @Column(name = "incompatible_attribute_option")
+    private List<UUID> incompatibleAttributeOptions = new ArrayList<>();
 
+    @CreationTimestamp
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 

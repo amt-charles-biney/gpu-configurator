@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Map;
 
 @Builder
-public record CompatibleOptionGetResponse(String name, String id, String thumbnail, List<CompatibleOptionResponseDto> config, double configPrice, Integer inStock) {
+public record CompatibleOptionGetResponse(String name, String id, String thumbnail, List<CompatibleOptionResponseDto> config, Integer inStock, double configPrice) {
 }

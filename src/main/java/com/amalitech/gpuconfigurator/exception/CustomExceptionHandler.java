@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.exception;
 
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -44,14 +45,14 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
-    @ExceptionHandler({BadCredentialsException.class})
+    @ExceptionHandler(BadCredentialsException.class)
     public ProblemDetail handleBadCredentialException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(401));
         errorDetail.setDetail(e.getMessage());
         return errorDetail;
     }
 
-    @ExceptionHandler(UsernameNotFoundException.class)
+    @ExceptionHandler({ UsernameNotFoundException.class, EntityNotFoundException.class })
     public ProblemDetail usernameNotFoundException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
         errorDetail.setDetail(e.getMessage());
@@ -59,7 +60,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(AttributeNameAlreadyExistsException.class)
-    public ProblemDetail AttributeNameAlreadyExistsException(Exception e) {
+    public ProblemDetail handleAttributeNameAlreadyExistsException(Exception e) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
         errorDetail.setDetail(e.getMessage());
         return errorDetail;
