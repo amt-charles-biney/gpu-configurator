@@ -4,10 +4,7 @@ package com.amalitech.gpuconfigurator.model.attributes;
 
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -45,12 +42,12 @@ public class AttributeOption {
     private Double priceFactor;
 
     @ManyToOne
-    @JoinColumn(name = "attribute_id", nullable = false)
     private Attribute attribute;
 
     private Integer inStock;
 
     @OneToMany(mappedBy = "attributeOption", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<CompatibleOption> compatibleOptions;
 
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
