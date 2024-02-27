@@ -8,10 +8,7 @@ import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
-import com.amalitech.gpuconfigurator.repository.CaseRepository;
-import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
-import com.amalitech.gpuconfigurator.repository.CategoryRepository;
-import com.amalitech.gpuconfigurator.repository.ProductRepository;
+import com.amalitech.gpuconfigurator.repository.*;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +28,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
@@ -439,6 +436,51 @@ class ProductServiceImplTest {
         assertEquals(updatedProductDto.getProductName(), result.productName());
     }
 
+    @Test
+    void test_update_category_stock_with_stock_value() {
+        // Given
+        Integer stock = 10;
+        Product existingProduct1 = Product.builder()
+                .id(UUID.randomUUID())
+                .totalProductPrice(BigDecimal.valueOf(10))
+                .baseConfigPrice(BigDecimal.ZERO)
+                .serviceCharge(20.0)
+                .productCase(productCase)
+                .category(category)
+                .productDescription("Description ")
+                .productName("Product ")
+                .inStock(20)
+                .featured(false)
+                .productAvailability(true)
+                .build();
+
+        Product existingProduct2 = Product.builder()
+                .id(UUID.randomUUID())
+                .totalProductPrice(BigDecimal.valueOf(10))
+                .baseConfigPrice(BigDecimal.ZERO)
+                .serviceCharge(20.0)
+                .productCase(productCase)
+                .category(category)
+                .productDescription("Description ")
+                .productName("Product ")
+                .inStock(20)
+                .featured(false)
+                .productAvailability(true)
+                .build();
+
+        List<Product> products = List.of(existingProduct1,existingProduct2);
+
+        when(productRepository.findProductsByCategoryName(category.getId())).thenReturn(products);
+
+        // When
+        productService.updateCategoryStock(category.getId(), stock);
+
+        // Then
+        verify(productRepository, times(1)).findProductsByCategoryName(category.getId());
+        assertEquals(stock, existingProduct1.getInStock());
+        assertEquals(stock, existingProduct2.getInStock());
+
+    }
 
 
 }
