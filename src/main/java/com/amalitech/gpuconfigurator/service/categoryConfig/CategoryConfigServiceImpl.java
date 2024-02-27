@@ -7,7 +7,6 @@ import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
-import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
@@ -31,7 +30,6 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     private final CompatibleOptionServiceImpl compatibleOptionService;
     private final ProductRepository productRepository;
     private final AttributeOptionRepository attributeOptionRepository;
-    private final CategoryRepository categoryRepository;
 
     @Override
     @Transactional
