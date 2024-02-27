@@ -50,8 +50,10 @@ public class ProductServiceImpl implements ProductService {
         BigDecimal totalConfigPrice = category.getCategoryConfig().getCompatibleOptions()
                 .stream()
                 .filter(CompatibleOption::getIsIncluded)
+                .filter(configs -> !productCase.getIncompatibleVariants().contains(configs.getAttributeOption()))
                 .map(configs -> configs.getAttributeOption().getPriceAdjustment())
                 .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
+
 
         var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
 
@@ -122,18 +124,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse getProduct(String id) {
+    public ProductResponseWithBrandDto getProduct(String id) {
         Product product = productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new NotFoundException("product not found"));
         Category category = categoryRepository.findById(product.getCategory().getId()).orElseThrow(() -> new NotFoundException("category does not exist "));
 
-        return ProductResponse.builder()
+        return ProductResponseWithBrandDto.builder()
                 .productName(product.getProductName())
                 .id(product.getId().toString())
                 .productId(product.getProductId())
                 .productDescription(product.getProductDescription())
                 .productPrice(product.getTotalProductPrice())
                 .productAvailability(product.getProductAvailability())
-                .productBrand(product.getProductCase().getName())
+                .productBrand(ProdcutBrandDto.builder()
+                        .name(product.getProductCase().getName())
+                        .price(product.getProductCase().getPrice())
+                        .build())
                 .coverImage(product.getProductCase().getCoverImageUrl())
                 .inStock(product.getInStock())
                 .isFeatured(product.getFeatured())
@@ -230,8 +235,6 @@ public class ProductServiceImpl implements ProductService {
                 Category category = categoryService.getCategory(updatedProductDto.getCategory());
 
                 var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
-                System.out.println("------------------------");
-                System.out.println(inStock);
 
                 existingProduct.setCategory(category);
                 existingProduct.setInStock(inStock);
@@ -254,6 +257,16 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.deleteAllById(selectedProductUUID);
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted bulk products successful");
+    }
+
+    @Override
+    public void updateCategoryStock(UUID categoryId, Integer stock) {
+        List<Product> products = productRepository.findProductsByCategoryName(categoryId);
+
+        for (var product : products) {
+            product.setInStock(stock);
+        }
+
     }
 
     public void deleteProductById(UUID id) {

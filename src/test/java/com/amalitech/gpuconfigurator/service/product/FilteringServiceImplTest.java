@@ -166,6 +166,7 @@ class FilteringServiceImplTest {
                 .productAvailability(true)
                 .totalProductPrice(BigDecimal.valueOf(1000))
                 .productCase(productCase)
+                .inStock(0)
                 .build();
 
         Product product2 = Product.builder()
@@ -176,13 +177,14 @@ class FilteringServiceImplTest {
                 .productAvailability(true)
                 .totalProductPrice(BigDecimal.valueOf(100))
                 .productCase(productCase)
+                .inStock(1)
                 .build();
 
         List<Product> actualResponse = List.of(product1, product2);
 
         //when
-        when(filteringService.filterProduct(null, null, null, null, null)).thenReturn(actualResponse);
-        var expectedResponse = filteringService.filterProduct(null, null, null, null, null);
+        when(filteringService.filterProduct(null, null, null, null, null, null)).thenReturn(actualResponse);
+        var expectedResponse = filteringService.filterProduct(null, null, null, null, null, null);
 
         //then
         assertNotNull(expectedResponse);
@@ -204,6 +206,7 @@ class FilteringServiceImplTest {
                 .productAvailability(true)
                 .totalProductPrice(BigDecimal.valueOf(1000))
                 .productCase(productCase)
+                .inStock(1)
                 .build();
 
         Product product2 = Product.builder()
@@ -214,13 +217,14 @@ class FilteringServiceImplTest {
                 .productAvailability(true)
                 .totalProductPrice(BigDecimal.valueOf(100))
                 .productCase(null)
+                .inStock(0)
                 .build();
 
         List<Product> actualResponse = List.of(product1);
 
         //when
         when(productRepository.findAll(Mockito.any(Specification.class))).thenReturn(actualResponse);
-        var expectedResponse = filteringService.filterProduct(productCaseVar, null, null, null, null);
+        var expectedResponse = filteringService.filterProduct(productCaseVar, null, null, null, null, null);
 
         //then
         assertNotNull(expectedResponse);
@@ -243,6 +247,7 @@ class FilteringServiceImplTest {
                 .productAvailability(true)
                 .totalProductPrice(BigDecimal.valueOf(1000))
                 .productCase(productCase)
+                .inStock(0)
                 .build();
 
         Product product2 = Product.builder()
@@ -253,17 +258,18 @@ class FilteringServiceImplTest {
                 .productAvailability(true)
                 .totalProductPrice(BigDecimal.valueOf(100))
                 .productCase(null)
+                .inStock(1)
                 .build();
 
-        List<Product> actualResponse = List.of(product1,product2);
+        List<Product> actualResponse = List.of(product1, product2);
 
         //when
         when(productRepository.findAll(Mockito.any(Specification.class))).thenReturn(actualResponse);
-        var expectedResponse = filteringService.filterProduct(productCaseVar, price, null, null, category.getCategoryName());
+        var expectedResponse = filteringService.filterProduct(productCaseVar, price, null, null, category.getCategoryName(), null);
 
         //then
         assertNotNull(expectedResponse);
-        assertEquals(2, expectedResponse.size());
+        assertEquals(1, expectedResponse.size());
 
     }
 }

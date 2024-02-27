@@ -1,8 +1,6 @@
 package com.amalitech.gpuconfigurator.repository;
 
 import com.amalitech.gpuconfigurator.model.Product;
-import io.micrometer.common.lang.Nullable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -35,5 +33,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
 
     @Query("SELECT p FROM Product p WHERE p.category.id IN :categoryIds")
     List<Product> findProductsByCategoryIds(@Param("categoryIds") List<UUID> categoryIds);
+
+    @Query("SELECT p FROM Product p WHERE p.category.id = ?1")
+    List<Product> findProductsByCategoryName(UUID categoryId);
 
 }
