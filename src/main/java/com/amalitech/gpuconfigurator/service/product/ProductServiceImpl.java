@@ -261,6 +261,20 @@ public class ProductServiceImpl implements ProductService {
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted bulk products successful");
     }
 
+    @Override
+    public void updateCategoryStock(UUID categoryId, Integer stock) {
+        List<Product> products = productRepository.findProductsByCategoryName(categoryId);
+
+        for (var product : products) {
+            product.setInStock(stock);
+        }
+
+    }
+
+    public void deleteProductById(UUID id) {
+        productRepository.deleteById(id);
+    }
+
     public List<FeaturedProductDto> getNewProducts() {
         LocalDateTime timeRequest = LocalDateTime.now().minusHours(24);
         var products = productRepository.getBrandNewProducts(timeRequest).orElse(Collections.emptyList());
