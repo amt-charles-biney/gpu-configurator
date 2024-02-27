@@ -14,7 +14,13 @@ import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
+<<<<<<< HEAD
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageServiceImpl;
+=======
+import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+>>>>>>> 9e30965 (refactor: updating config base price and case price)
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -186,7 +192,8 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto, List<MultipartFile> files, MultipartFile coverImage) {
+    @Transactional
+    public ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto) {
         try {
             Product existingProduct = productRepository.getReferenceById(id);
 
@@ -268,38 +275,36 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void updateCategoryStock(UUID categoryId, Integer stock) {
-        List<Product> products = productRepository.findProductsByCategoryName(categoryId);
-
-        for (var product : products) {
-            product.setInStock(stock);
-        }
-
+    @Transactional
+    public void updateCategoryStock(UUID categoryId, UpdateProductConfigsDto request) {
+        updateProductPrices(productRepository.findProductsByCategoryName(categoryId), request.getBaseConfigPrice(), request.getInStock());
     }
 
     @Override
+    @Transactional
     public void updateTotalPriceWhenUpdatingCase(UUID caseId, BigDecimal casePrice) {
+        updateProductPrices(productRepository.findProductsByProductCase(caseId), casePrice, null);
+    }
 
-        List<Product> products = productRepository.findProductsByProductCase(caseId);
-        Double serviceCharge;
-        BigDecimal baseConfigPrice;
-
+    private void updateProductPrices(List<Product> products, BigDecimal baseConfigPrice, Integer newInStock) {
         for (var product : products) {
-            serviceCharge = product.getServiceCharge();
-            baseConfigPrice = product.getBaseConfigPrice();
+            Double serviceCharge = product.getServiceCharge();
+            BigDecimal currentBaseConfigPrice = newInStock != null ? baseConfigPrice : product.getBaseConfigPrice();
 
             BigDecimal updatedPercentageOfServiceChargeMultiplyByCasePrice = BigDecimal.valueOf(serviceCharge)
                     .divide(BigDecimal.valueOf(100))
-                    .multiply(casePrice.add(baseConfigPrice)).setScale(2, RoundingMode.HALF_UP);
+                    .multiply(product.getProductCase().getPrice().add(currentBaseConfigPrice)).setScale(2, RoundingMode.HALF_UP);
 
             BigDecimal updatedTotalPrice = updatedPercentageOfServiceChargeMultiplyByCasePrice
-                    .add(baseConfigPrice.add(casePrice))
+                    .add(currentBaseConfigPrice).add(product.getProductCase().getPrice())
                     .setScale(2, RoundingMode.HALF_UP);
 
+            if (newInStock != null) {
+                product.setInStock(newInStock);
+            }
             product.setTotalProductPrice(updatedTotalPrice);
             productRepository.save(product);
         }
-
     }
 
     public void deleteProductById(UUID id) {
