@@ -5,10 +5,13 @@ import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
+import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
+import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
+import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
@@ -28,6 +31,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     private final AttributeRepository attributeRepository;
     private final AttributeOptionRepository attributeOptionRepository;
+    private final CategoryConfigServiceImpl categoryConfigService;
 
     @Override
     public List<AttributeResponse> getAllAttributes() {
@@ -191,7 +195,8 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public void updateAllAttributeOptions(Attribute attribute, List<UpdateAttributeOptionDto> attributeOptionDtos) {
-        for(UpdateAttributeOptionDto attributeOption : attributeOptionDtos) {
+        List<AttributeOption> newAttributeOptions = new ArrayList<>();
+        for (UpdateAttributeOptionDto attributeOption : attributeOptionDtos) {
 
             AttributeOption updateAttribute = attributeOptionRepository.findById(UUID.fromString(attributeOption.id()))
                     .orElseGet(() -> {
@@ -211,8 +216,12 @@ public class AttributeServiceImpl implements AttributeService {
             updateAttribute.setBrand(attributeOption.brand());
             updateAttribute.setIncompatibleAttributeOptions(convertStringsToUUIDS(attributeOption.incompatibleAttributeOptions()));
 
-            AttributeOption savedAttribute =  attributeOptionRepository.save(updateAttribute);
+            AttributeOption savedAttribute = attributeOptionRepository.save(updateAttribute);
+            newAttributeOptions.add(savedAttribute);
+
         }
+
+        categoryConfigService.updateExistingCategoryConfigs(newAttributeOptions);
     }
 
     @Override
@@ -233,6 +242,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .build()).toList();
 
         List<AttributeOption> savedAttributeOptions = attributeOptionRepository.saveAll(attributeOptionList);
+        categoryConfigService.updateExistingCategoryConfigs(attributeOptionList);
         return savedAttributeOptions.stream().map(this::createAttributeResponseType).toList();
     }
 
