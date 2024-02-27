@@ -198,12 +198,23 @@ public class ProductServiceImpl implements ProductService {
                 existingProduct.setProductDescription(updatedProductDto.getProductDescription());
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
-            if (updatedProductDto.getProductPrice() != null) {
-                existingProduct.setProductPrice(updatedProductDto.getProductPrice());
+            if (updatedProductDto.getServiceCharge() != null) {
+                existingProduct.setServiceCharge(updatedProductDto.getServiceCharge());
+
+                BigDecimal updatedPercentageOfServiceChargeMultiplyByCasePrice = BigDecimal.valueOf(updatedProductDto.getServiceCharge())
+                        .divide(BigDecimal.valueOf(100))
+                        .multiply(existingProduct.getProductCase().getPrice().add(existingProduct.getBaseConfigPrice())).setScale(2, RoundingMode.HALF_UP);
+
+                BigDecimal updatedTotalPrice = updatedPercentageOfServiceChargeMultiplyByCasePrice
+                        .add(existingProduct.getBaseConfigPrice()).add(existingProduct.getProductCase().getPrice())
+                        .setScale(2, RoundingMode.HALF_UP);
+
+                existingProduct.setTotalProductPrice(updatedTotalPrice);
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
             if (updatedProductDto.getProductId() != null) {
                 existingProduct.setProductId(updatedProductDto.getProductId());
+
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
             if (updatedProductDto.getInStock() != null) {
@@ -218,8 +229,6 @@ public class ProductServiceImpl implements ProductService {
                 Category category = categoryService.getCategory(updatedProductDto.getCategory());
 
                 var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
-                System.out.println("------------------------");
-                System.out.println(inStock);
 
                 existingProduct.setCategory(category);
                 existingProduct.setInStock(inStock);
