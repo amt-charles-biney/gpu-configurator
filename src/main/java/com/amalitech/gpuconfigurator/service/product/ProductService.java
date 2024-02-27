@@ -2,9 +2,7 @@ package com.amalitech.gpuconfigurator.service.product;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.product.*;
-import com.amalitech.gpuconfigurator.model.Product;
 import org.springframework.data.domain.Page;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,4 +24,6 @@ public interface ProductService {
     ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto);
 
     GenericResponse deleteBulkProducts(List<String> productIds);
+
+    void updateCategoryStock(UUID categoryId, Integer stock);
 }
