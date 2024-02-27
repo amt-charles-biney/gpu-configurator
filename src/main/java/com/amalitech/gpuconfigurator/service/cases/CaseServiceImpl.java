@@ -12,6 +12,7 @@ import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
+import com.amalitech.gpuconfigurator.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,7 @@ public class CaseServiceImpl implements CaseService {
     private final CaseRepository caseRepository;
     private final AttributeOptionRepository attributeOptionRepository;
     private final UploadImageService imageUploadService;
+    private final ProductService productService;
 
     @Override
     public CaseResponse createCase(CreateCaseRequest dto, MultipartFile coverImage, List<MultipartFile> images) {
@@ -74,8 +76,10 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CaseResponse updateCase(UUID caseId, CreateCaseRequest dto, MultipartFile coverImage, List<MultipartFile> images) {
-        var productCase = caseRepository.findById(caseId)
+        Case productCase = caseRepository.findById(caseId)
                 .orElseThrow(() -> new NotFoundException("Case with id " + caseId + " does not exist."));
+
+        boolean isNewPrice = dto.getPrice() != null && !productCase.getPrice().equals(dto.getPrice());
 
         List<AttributeOption> incompatibleVariants = new ArrayList<>();
 
@@ -94,7 +98,13 @@ public class CaseServiceImpl implements CaseService {
         productCase.setCoverImageUrl(coverImageUrl);
         productCase.setImageUrls(imageUrls);
 
-        return mapCaseToCaseResponse(caseRepository.save(productCase));
+        Case savedCase = caseRepository.save(productCase);
+
+        if (isNewPrice) {
+            productService.updateTotalPriceWhenUpdatingCase(savedCase.getId(), savedCase.getPrice());
+        }
+
+        return mapCaseToCaseResponse(savedCase);
     }
 
     @Override

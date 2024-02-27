@@ -37,4 +37,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
     @Query("SELECT p FROM Product p WHERE p.category.id = ?1")
     List<Product> findProductsByCategoryName(UUID categoryId);
 
+    @Query("SELECT p FROM Product p WHERE p.productCase.id = ?1")
+    List<Product> findProductsByProductCase(UUID caseId);
+
 }

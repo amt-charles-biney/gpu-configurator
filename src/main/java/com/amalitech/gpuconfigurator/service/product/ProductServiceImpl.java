@@ -119,6 +119,7 @@ public class ProductServiceImpl implements ProductService {
                                 .id(String.valueOf(product.getCategory().getId()))
                                 .build())
                         .imageUrl(product.getProductCase().getImageUrls())
+                        .serviceCharge(product.getServiceCharge())
                         .inStock(product.getInStock())
                         .build()).toList();
     }
@@ -198,6 +199,7 @@ public class ProductServiceImpl implements ProductService {
                             .id(String.valueOf(product.getCategory().getId()))
                             .build())
                     .stockStatus(stockStatus)
+                    .serviceCharge(product.getServiceCharge())
                     .imageUrl(product.getProductCase().getImageUrls())
                     .inStock(product.getInStock())
                     .build();
@@ -220,10 +222,21 @@ public class ProductServiceImpl implements ProductService {
             }
             if (updatedProductDto.getServiceCharge() != null) {
                 existingProduct.setServiceCharge(updatedProductDto.getServiceCharge());
+
+                BigDecimal updatedPercentageOfServiceChargeMultiplyByCasePrice = BigDecimal.valueOf(updatedProductDto.getServiceCharge())
+                        .divide(BigDecimal.valueOf(100))
+                        .multiply(existingProduct.getProductCase().getPrice().add(existingProduct.getBaseConfigPrice())).setScale(2, RoundingMode.HALF_UP);
+
+                BigDecimal updatedTotalPrice = updatedPercentageOfServiceChargeMultiplyByCasePrice
+                        .add(existingProduct.getBaseConfigPrice()).add(existingProduct.getProductCase().getPrice())
+                        .setScale(2, RoundingMode.HALF_UP);
+
+                existingProduct.setTotalProductPrice(updatedTotalPrice);
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
             if (updatedProductDto.getProductId() != null) {
                 existingProduct.setProductId(updatedProductDto.getProductId());
+
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
             if (updatedProductDto.getProductCaseId() != null) {
@@ -265,6 +278,31 @@ public class ProductServiceImpl implements ProductService {
 
         for (var product : products) {
             product.setInStock(stock);
+        }
+
+    }
+
+    @Override
+    public void updateTotalPriceWhenUpdatingCase(UUID caseId, BigDecimal casePrice) {
+
+        List<Product> products = productRepository.findProductsByProductCase(caseId);
+        Double serviceCharge;
+        BigDecimal baseConfigPrice;
+
+        for (var product : products) {
+            serviceCharge = product.getServiceCharge();
+            baseConfigPrice = product.getBaseConfigPrice();
+
+            BigDecimal updatedPercentageOfServiceChargeMultiplyByCasePrice = BigDecimal.valueOf(serviceCharge)
+                    .divide(BigDecimal.valueOf(100))
+                    .multiply(casePrice.add(baseConfigPrice)).setScale(2, RoundingMode.HALF_UP);
+
+            BigDecimal updatedTotalPrice = updatedPercentageOfServiceChargeMultiplyByCasePrice
+                    .add(baseConfigPrice).add(casePrice)
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            product.setTotalProductPrice(updatedTotalPrice);
+            productRepository.save(product);
         }
 
     }
