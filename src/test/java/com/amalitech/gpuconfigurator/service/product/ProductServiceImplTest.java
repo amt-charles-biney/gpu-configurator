@@ -440,11 +440,15 @@ class ProductServiceImplTest {
     @Test
     void test_update_category_stock_with_stock_value() {
         // Given
-        Integer stock = 10;
+        UpdateProductConfigsDto request = UpdateProductConfigsDto.builder()
+                .baseConfigPrice(BigDecimal.valueOf(10))
+                .inStock(10)
+                .build();
+
         Product existingProduct1 = Product.builder()
                 .id(UUID.randomUUID())
                 .totalProductPrice(BigDecimal.valueOf(10))
-                .baseConfigPrice(BigDecimal.ZERO)
+                .baseConfigPrice(BigDecimal.valueOf(10))
                 .serviceCharge(20.0)
                 .productCase(productCase)
                 .category(category)
@@ -474,12 +478,14 @@ class ProductServiceImplTest {
         when(productRepository.findProductsByCategoryName(category.getId())).thenReturn(products);
 
         // When
-        productService.updateCategoryStock(category.getId(), stock);
+        productService.updateCategoryStock(category.getId(), request);
 
         // Then
         verify(productRepository, times(1)).findProductsByCategoryName(category.getId());
-        assertEquals(stock, existingProduct1.getInStock());
-        assertEquals(stock, existingProduct2.getInStock());
+        assertEquals(request.getInStock(), existingProduct1.getInStock());
+        assertEquals(request.getInStock(), existingProduct2.getInStock());
+
+        assertEquals(request.getBaseConfigPrice(), existingProduct1.getBaseConfigPrice());
 
     }
 
