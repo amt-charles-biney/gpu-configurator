@@ -41,7 +41,6 @@ public class CompatibleOptionServiceImpl implements CompatibleOptionService {
     public void updateBulkCompatibleOptions(CategoryConfig categoryConfig, List<CompatibleUpdateDto> compatibleUpdateDtos) {
 
         for (CompatibleUpdateDto updateDto : compatibleUpdateDtos) {
-            // find the compatible option that has the categoryConfig id as well as the attribute option id
             Optional<CompatibleOption> optionalExistingOption =
                     compatibleOptionRepository.findByCategoryConfigIdAndAttributeOptionId(categoryConfig.getId(), UUID.fromString(updateDto.attributeOptionId()));
 

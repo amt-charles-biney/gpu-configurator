@@ -104,7 +104,7 @@ class CategoryConfigControllerTest {
     @Test
     void testGetAllCategoryConfigById() throws Exception {
         String categoryId = UUID.randomUUID().toString();
-        CompatibleOptionGetResponse response = new CompatibleOptionGetResponse("CategoryName", categoryId, "./hello_world.jpg", Collections.emptyList(), 0.0, 2);
+        CompatibleOptionGetResponse response = new CompatibleOptionGetResponse("CategoryName", categoryId, "./hello_world.jpg", Collections.emptyList(), 0, 2);
 
         Mockito.when(categoryConfigService.getCategoryAndCompatibleOption(UUID.fromString(categoryId))).thenReturn(response);
 
@@ -118,7 +118,7 @@ class CategoryConfigControllerTest {
 
     @Test
     void testUpdate() throws Exception {
-        CompatibleOptionEditResponse request = new CompatibleOptionEditResponse("CategoryName", "./hello_world.jpg" , "1", Collections.emptyList());
+        CompatibleOptionEditResponse request = new CompatibleOptionEditResponse("CategoryName", UUID.randomUUID().toString() , "1", Collections.emptyList());
         GenericResponse response = new GenericResponse(200, "Category and config updated successfully");
 
         Mockito.when(categoryConfigService.updateCategoryAndConfigs(Mockito.any())).thenReturn(response);

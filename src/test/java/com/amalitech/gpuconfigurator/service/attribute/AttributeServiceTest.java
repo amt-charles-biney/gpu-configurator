@@ -10,6 +10,7 @@ import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
+import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,8 @@ class AttributeServiceTest {
     private AttributeRepository attributeRepository;
     @Mock
     private AttributeOptionRepository attributeOptionRepository;
+    @Mock
+    private CategoryConfigServiceImpl categoryConfigService;
 
     @InjectMocks
     private AttributeServiceImpl attributeService;
@@ -163,11 +166,13 @@ class AttributeServiceTest {
                         .brand("nvidea")
                         .maxAmount(attributes.maxAmount())
                         .priceFactor(attributes.priceFactor())
+                        .inStock(0)
                         .build())
                 .toList();
 
         when(attributeRepository.findById(attributeId)).thenReturn(Optional.of(attribute));
         when(attributeOptionRepository.saveAll(anyList())).thenAnswer(invocation -> {
+        doNothing().when(categoryConfigService).updateExistingCategoryConfigs(anyList());
 
             List<AttributeOption> inputList = invocation.getArgument(0);
 

@@ -11,6 +11,7 @@ import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
+import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,14 +51,27 @@ class CategoryConfigServiceTest {
     private AttributeOption attributeOption;
     private CompatibleOptionGetResponse compatibleOptionGetResponse;
 
+    private Attribute attribute;
+
     private CompatibleOptionEditResponse compatibleOptionEditResponse;
 
     @Mock
     private AttributeOptionRepository attributeOptionRepository;
 
+    @Mock
+    private CompatibleOptionService compatibleOptionService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        attribute = Attribute.builder()
+                .unit("SampleUnit")
+                .isMeasured(true)
+                .description("")
+                .attributeName("DISK")
+                .id(UUID.randomUUID())
+                .build();
 
         CompatibleOptionDTO compatibleOptionDTO = CompatibleOptionDTO.builder()
                 .attributeOptionId(UUID.randomUUID().toString())
@@ -72,13 +86,7 @@ class CategoryConfigServiceTest {
                 .optionName("SampleOption")
                 .priceAdjustment(BigDecimal.valueOf(25.0))
                 .inStock(0)
-                .attribute(Attribute.builder()
-                        .unit("SampleUnit")
-                        .isMeasured(true)
-                        .description("")
-                        .attributeName("DISK")
-                        .id(UUID.randomUUID())
-                        .build())
+                .attribute(attribute)
                 .id(UUID.randomUUID())
                 .baseAmount(10.0F)
                 .maxAmount(50.0F)
@@ -90,7 +98,6 @@ class CategoryConfigServiceTest {
                 Collections.singletonList(compatibleOptionDTO));
 
         category = Category.builder().id(UUID.randomUUID()).thumbnail("./hello_world.jpg").categoryName("TestCategory").build();
-        categoryConfig = CategoryConfig.builder().id(UUID.randomUUID()).category(category).build();
 
         categoryConfig = CategoryConfig.builder()
                 .id(UUID.randomUUID())
@@ -297,5 +304,16 @@ class CategoryConfigServiceTest {
 
         verify(productRepository, times(1)).countProductsByCategoryId(categoryId);
         assertEquals(0L, result);
+    }
+
+    @Test
+    void testUpdateExistingCategoryConfigs() {
+
+        List<CategoryConfig> categoryConfigs = Collections.singletonList(categoryConfig);
+        when(categoryConfigRepository.findAll()).thenReturn(categoryConfigs);
+
+        doNothing().when(compatibleOptionService).updateBulkCompatibleOptions(any(CategoryConfig.class), anyList());
+        categoryConfigService.updateExistingCategoryConfigs(List.of(attributeOption));
+        verify(categoryConfigRepository, times(1)).findAll();
     }
 }
