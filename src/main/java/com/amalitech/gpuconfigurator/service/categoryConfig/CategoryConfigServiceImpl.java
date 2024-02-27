@@ -10,9 +10,11 @@ import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -67,7 +69,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     @Override
     public CategoryConfigResponseDto getCategoryConfigByCategory(String id) {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("config does not exist"));
-        List<CompatibleOption> compatibleOptions = compatibleOptionService.getByCategoryConfigId(categoryConfig.getId());
+        List<CompatibleOption> compatibleOptions = compatibleOptionService.getByCategoryConfigId(categoryConfig.getId()).stream().filter(option -> option.getIsCompatible() || option.getIsIncluded()).toList();
 
         CategoryResponse categoryResponse = CategoryResponse
                 .builder()
@@ -191,6 +193,47 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                                 .collect(Collectors.toList())
                 ));
 
+    }
+
+    public List<CompatibleOption> getAllCompatibleOptionsByCategoryId(UUID categoryId) {
+        CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(categoryId).orElseThrow(() -> new EntityNotFoundException("config category not found"));
+        return compatibleOptionService.getAllCompatibleOptionsByCategoryConfig(categoryConfig.getId());
+    }
+
+    @Override
+    @Transactional
+    public void updateExistingCategoryConfigs(List<AttributeOption> attributeOptions) {
+        List<CategoryConfig> categoryConfigs =  categoryConfigRepository.findAll();
+
+        for (CategoryConfig categoryConfig: categoryConfigs) {
+            List<CompatibleOption> getCategoryCompatibleOptions = categoryConfig.getCompatibleOptions();
+
+            List<CompatibleUpdateDto> compatibleUpdateDtos =
+                    getNewDistinctAttributeOptions(attributeOptions, getCategoryCompatibleOptions).stream()
+                    .map(option -> CompatibleUpdateDto.builder()
+                            .attributeId(option.getAttribute().getId().toString())
+                            .attributeOptionId(option.getId().toString())
+                            .size(option.getBaseAmount() != null ? Math.round(option.getBaseAmount()) : 0)
+                            .isCompatible(true)
+                            .isIncluded(false)
+                            .isMeasured(option.getAttribute().isMeasured())
+                            .build())
+                    .toList();
+
+            compatibleOptionService.updateBulkCompatibleOptions(categoryConfig, compatibleUpdateDtos);
+        }
+
+        GenericResponse.builder()
+                .status(201)
+                .message("bulk update attribute compatible options")
+                .build();
+    }
+
+    public List<AttributeOption> getNewDistinctAttributeOptions(@NotNull List<AttributeOption> attributeOptions, List<CompatibleOption> compatibleOptions) {
+        return attributeOptions.stream()
+                .filter(option -> compatibleOptions.stream()
+                        .noneMatch(existingOption -> existingOption.getAttributeOption().getId().equals(option.getId())))
+                .toList();
     }
 
     private Map<String, List<CompatibleOptionResponseDto>>  mapToCompatibleOptionResponseDtoMap(List<CompatibleOption> compatibleOptions) {
