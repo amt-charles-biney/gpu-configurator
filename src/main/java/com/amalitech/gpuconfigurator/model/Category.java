@@ -2,6 +2,8 @@ package com.amalitech.gpuconfigurator.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
@@ -41,6 +43,7 @@ public class Category {
     private List<Product> products = new ArrayList<>();
 
     @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private CategoryConfig categoryConfig;
 
 
