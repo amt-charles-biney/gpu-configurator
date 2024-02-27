@@ -200,6 +200,8 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     @Override
     @Transactional
     public void updateExistingCategoryConfigs(List<AttributeOption> attributeOptions) {
+        if(attributeOptions == null || attributeOptions.isEmpty()) return;
+
         List<CategoryConfig> categoryConfigs =  categoryConfigRepository.findAll();
 
         for (CategoryConfig categoryConfig: categoryConfigs) {
@@ -219,11 +221,6 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
             compatibleOptionService.updateBulkCompatibleOptions(categoryConfig, compatibleUpdateDtos);
         }
-
-        GenericResponse.builder()
-                .status(201)
-                .message("bulk update attribute compatible options")
-                .build();
     }
 
     public List<AttributeOption> getNewDistinctAttributeOptions(@NotNull List<AttributeOption> attributeOptions, List<CompatibleOption> compatibleOptions) {
