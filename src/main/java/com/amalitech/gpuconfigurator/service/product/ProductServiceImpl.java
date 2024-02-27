@@ -275,7 +275,7 @@ public class ProductServiceImpl implements ProductService {
         Double serviceCharge;
         BigDecimal baseConfigPrice;
 
-        for (var product: products){
+        for (var product : products) {
             serviceCharge = product.getServiceCharge();
             baseConfigPrice = product.getBaseConfigPrice();
 
@@ -288,6 +288,7 @@ public class ProductServiceImpl implements ProductService {
                     .setScale(2, RoundingMode.HALF_UP);
 
             product.setTotalProductPrice(updatedTotalPrice);
+            productRepository.save(product);
         }
 
     }
