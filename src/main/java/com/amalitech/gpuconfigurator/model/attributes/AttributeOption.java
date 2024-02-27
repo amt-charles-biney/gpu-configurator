@@ -51,7 +51,7 @@ public class AttributeOption {
     @Column(name="price_increment")
     private Double priceFactor;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Attribute attribute;
 
     private Integer inStock;
