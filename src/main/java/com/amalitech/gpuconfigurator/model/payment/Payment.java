@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -20,9 +21,8 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "id")
-    private User user;
+    @OneToMany(mappedBy = "payment", cascade = {CascadeType.REMOVE})
+    private List<User> users;
 
     @Column(name = "ref")
     private String ref;
