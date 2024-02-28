@@ -11,16 +11,12 @@ public record InitializePaymentRequest(
         String email,
 
         @NotNull(message = "amount cannot be null")
-                @NotBlank(message = "amount cannot be blank")
         double amount,
 
         @NotNull(message = "currency cannot be null")
                 @NotBlank(message = "currency cannot be blank")
         String currency,
 
-        @NotNull(message = "channel cannot be null")
-                @NotBlank(message = "channel cannot be blank")
-        String channel,
         String reference
 ) {
 }

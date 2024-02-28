@@ -13,9 +13,9 @@ public record InitializePaymentResponse(
 ) {
     public record Data(
             @NotBlank(message = "Authorization URL must not be blank")
-            String authorizationUrl,
+            String authorization_url,
             @NotBlank(message = "Access code must not be blank")
-            String accessCode,
+            String access_code,
             @NotBlank(message = "Reference must not be blank")
             String reference
     ) {}
