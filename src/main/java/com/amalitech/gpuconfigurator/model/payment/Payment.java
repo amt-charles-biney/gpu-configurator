@@ -21,8 +21,9 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToMany(mappedBy = "payment", cascade = {CascadeType.REMOVE})
-    private List<User> users;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id")
+    private User user;
 
     @Column(name = "ref")
     private String ref;
