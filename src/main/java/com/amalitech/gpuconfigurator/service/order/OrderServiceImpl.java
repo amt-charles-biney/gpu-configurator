@@ -4,12 +4,15 @@ import com.amalitech.gpuconfigurator.dto.order.CreateOrderRequestDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Order;
+import com.amalitech.gpuconfigurator.model.OrderProduct;
 import com.amalitech.gpuconfigurator.model.OrderType;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -27,23 +30,31 @@ public class OrderServiceImpl implements OrderService {
 
         //todo : get payments infor from here
 
+        // to get order product here
+        OrderProduct orderProduct = OrderProduct.builder()
+                .coverImage("")
+                .productName("")
+                .totalPrice(BigDecimal.ZERO)
+                .build();
+
 
         Order order = Order.builder()
                 .user(customer)
+                .orderProduct(orderProduct)
                 .payments(//todo : add payment here)
                 .status(OrderType.PENDING)
                 .build();
 
-         orderRepository.save(order);
+        orderRepository.save(order);
 
         return OrderResponseDto.builder()
                 .orderId(order.getId())
-                .customerName(order.getUser().getFirstName() + " "+ order.getUser().getLastName())
+                .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
                 .status(order.getStatus())
-                .productName(// todo : product here)
-                .paymentMethod(order.getPayments().//todo: get channel here)
-                .productImageCover(//todo: product image here)
-                .totalPrice(// todo: product total price here)
+                .productName(orderProduct.getProductName())
+                .paymentMethod(order.getPayments().getChannel())
+                .productImageCover(orderProduct.getCoverImage())
+                .totalPrice(orderProduct.getTotalPrice())
                 .date(order.getCreatedAt())
                 .build();
     }
