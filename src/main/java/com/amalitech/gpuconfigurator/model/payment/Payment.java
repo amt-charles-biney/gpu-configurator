@@ -1,10 +1,12 @@
 package com.amalitech.gpuconfigurator.model.payment;
 
+import com.amalitech.gpuconfigurator.model.Order;
 import com.amalitech.gpuconfigurator.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -25,6 +27,10 @@ public class Payment {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
     @Column(name = "ref")
     private String ref;
 
@@ -37,11 +43,11 @@ public class Payment {
     @Column(name = "currency", nullable = false)
     private String currency;
 
-    @Column(name = "paid_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private String paidAt;
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
 
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @Override
     public boolean equals(Object o) {
