@@ -1,12 +1,11 @@
 package com.amalitech.gpuconfigurator.service.payment;
 
-import com.amalitech.gpuconfigurator.config.Paystack;
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.Payment.InitializePaymentRequest;
 import com.amalitech.gpuconfigurator.dto.Payment.InitializePaymentResponse;
-import com.amalitech.gpuconfigurator.dto.Payment.PaymentVerifiedResponse;
-import com.amalitech.gpuconfigurator.dto.Payment.PaymentVerifyRequest;
-import com.amalitech.gpuconfigurator.exception.PaymentError;
+import com.amalitech.gpuconfigurator.dto.Payment.VerifyPaymentRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -17,8 +16,11 @@ import org.springframework.web.client.RestTemplate;
 public class PaymentServiceImpl implements PaymentService {
 
     private final RestTemplate restTemplate;
-    private final static String API_URL  =  "https://api.paystack.co";
-    private final static String API_KEY = "test_key";
+
+    @Value("${paystack.api.url")
+    private String API_URL;
+    @Value("${paystack.api.key")
+    private String API_KEY;
     @Override
     public InitializePaymentResponse initializePaymentTransaction(@Validated InitializePaymentRequest paymentRequest) {
         
@@ -36,11 +38,29 @@ public class PaymentServiceImpl implements PaymentService {
                 InitializePaymentResponse.class
         );
 
-        return response.getBody();
+        return (InitializePaymentResponse) response.getBody();
     }
 
+
     @Override
-    public PaymentVerifiedResponse verifyPayment(PaymentVerifyRequest paymentResponse) {
-        return null;
+    public Object verifyPaymentTransaction(@Validated VerifyPaymentRequest reference) {
+        HttpHeaders verifyPaymentHeaders = new HttpHeaders();
+        verifyPaymentHeaders.set("Authorization", "Bearer " + API_KEY);
+
+        String verifyPaymentUrl = API_URL + "/transaction/verify/" + reference.reference();
+
+        HttpEntity<?> requestEntity = new HttpEntity<>(verifyPaymentHeaders);
+
+        return restTemplate.exchange(
+                verifyPaymentUrl,
+                HttpMethod.GET,
+                requestEntity,
+                Object.class
+        ).getBody();
+
+        // get the body
+        // update the payment table
+        // update the order table
+
     }
 }
