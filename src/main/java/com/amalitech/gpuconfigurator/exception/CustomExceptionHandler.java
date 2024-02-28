@@ -1,7 +1,9 @@
 package com.amalitech.gpuconfigurator.exception;
 
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,14 +25,18 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<Object> usernameNotFoundException(Exception e) {
-        return buildResponse(HttpStatus.NOT_FOUND, e.getMessage());
+    @ExceptionHandler({ UsernameNotFoundException.class, EntityNotFoundException.class })
+    public ProblemDetail usernameNotFoundException(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
+        errorDetail.setDetail(e.getMessage());
+        return errorDetail;
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGenericException(Exception e) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    @ExceptionHandler(AttributeNameAlreadyExistsException.class)
+    public ProblemDetail handleAttributeNameAlreadyExistsException(Exception e) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(400));
+        errorDetail.setDetail(e.getMessage());
+        return errorDetail;
     }
 
     private ResponseEntity<Object> buildResponse(HttpStatus status, String detail) {
