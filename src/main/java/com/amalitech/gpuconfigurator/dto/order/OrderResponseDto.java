@@ -17,6 +17,7 @@ public record OrderResponseDto(
         String productName,
 
         String customerName,
+
         String paymentMethod,
 
         OrderType status,

@@ -1,18 +1,21 @@
 package com.amalitech.gpuconfigurator.service.order;
 
+import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderRequestDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
-import com.amalitech.gpuconfigurator.model.Order;
-import com.amalitech.gpuconfigurator.model.OrderProduct;
-import com.amalitech.gpuconfigurator.model.OrderType;
-import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.exception.NotFoundException;
+import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
+import com.amalitech.gpuconfigurator.service.cart.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.security.Principal;
+import java.util.List;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -20,21 +23,19 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final CartService cartService;
 
     @Override
-    public OrderResponseDto createOrder(CreateOrderRequestDto request) {
-
-//        User customer = userRepository.findById(request.getUserId()).orElseThrow(() -> {
-//            throw new NotFoundException("No user found");
-//        });
+    public OrderResponseDto createOrder(CreateOrderRequestDto request, Principal principal, UserSession userSession) {
 
         User customer = userRepository.findById(request.getUserId()).orElseThrow(() -> {
-            try {
-                throw new Exception("No user found");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            throw new NotFoundException("No user found");
         });
+
+        var cartItems = cartService.getCartItems(principal,userSession);
+
+        Iterable<ConfigurationResponseDto> configuredProducts = cartItems.configuredProducts();
+
 
         //todo : get payments infor from here, this code below will change
         Payment payment = Payment.builder()
