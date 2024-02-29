@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
+import java.util.List;
+
 @Builder
 public record InitializePaymentRequest(
         @NotNull(message = "email cannot be null")
@@ -17,6 +19,7 @@ public record InitializePaymentRequest(
                 @NotBlank(message = "currency cannot be blank")
         String currency,
 
-        String reference
+        String reference,
+        List<String> channels
 ) {
 }
