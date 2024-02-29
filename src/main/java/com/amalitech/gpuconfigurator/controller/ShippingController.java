@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.shipping.ShippingRequest;
 import com.amalitech.gpuconfigurator.dto.shipping.ShippingResponse;
+import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.service.shipping.ShippingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,12 @@ public class ShippingController {
     private final ShippingService shippingService;
 
     @PostMapping("/v1/shipping")
-    public ResponseEntity<ShippingResponse> create(@Valid ShippingRequest dto) {
-        return new ResponseEntity<>(shippingService.create(dto), HttpStatus.CREATED);
+    public ResponseEntity<ShippingResponse> create(
+            @Valid ShippingRequest dto,
+            @RequestAttribute("userSession") UserSession userSession
+    ) {
+        ShippingResponse response = shippingService.create(dto, userSession);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/v1/shipping")

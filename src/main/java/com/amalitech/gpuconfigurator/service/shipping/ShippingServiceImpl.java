@@ -7,7 +7,9 @@ import com.amalitech.gpuconfigurator.dto.shipping.ShippingResponse;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Contact;
 import com.amalitech.gpuconfigurator.model.Shipping;
+import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.repository.ShippingRepository;
+import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,14 +22,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ShippingServiceImpl implements ShippingService {
     private final ShippingRepository shippingRepository;
+    private final UserSessionRepository userSessionRepository;
 
     @Override
-    public ShippingResponse create(ShippingRequest dto) {
+    public ShippingResponse create(ShippingRequest dto, UserSession userSession) {
         Shipping shipping = mapShippingRequestToShipping(dto);
 
-        Shipping savedShipping = shippingRepository.save(shipping);
+        userSession.setCurrentShipping(shipping);
+        userSessionRepository.save(userSession);
 
-        return shippingRepository.findShippingResponseById(savedShipping.getId());
+        return shippingRepository.findShippingResponseById(userSession.getCurrentShipping().getId());
     }
 
     @Override
