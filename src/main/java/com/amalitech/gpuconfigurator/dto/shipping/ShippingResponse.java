@@ -19,5 +19,7 @@ public interface ShippingResponse {
 
     String getZipCode();
 
+    String getEmail();
+
     ContactResponse getContact();
 }

@@ -81,6 +81,7 @@ public class ShippingServiceImpl implements ShippingService {
                 .state(shippingRequest.getState())
                 .city(shippingRequest.getCity())
                 .zipCode(shippingRequest.getZipCode())
+                .email(shippingRequest.getEmail())
                 .contact(mapContactRequestToContact(shippingRequest.getContact()));
 
         if (shippingRequest.getAddress2() != null) {

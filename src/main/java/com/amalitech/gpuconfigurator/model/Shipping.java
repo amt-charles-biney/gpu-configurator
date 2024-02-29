@@ -45,6 +45,9 @@ public class Shipping {
     @Column(nullable = false)
     private String zipCode;
 
+    @Column(nullable = false)
+    private String email;
+
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(nullable = false)
     private Contact contact;
@@ -62,11 +65,12 @@ public class Shipping {
         Shipping shipping = (Shipping) o;
         return Objects.equals(id, shipping.id) && Objects.equals(firstName, shipping.firstName) && Objects.equals(lastName, shipping.lastName)
                 && Objects.equals(address1, shipping.address1) && Objects.equals(address2, shipping.address2) && Objects.equals(country, shipping.country)
-                && Objects.equals(state, shipping.state) && Objects.equals(city, shipping.city) && Objects.equals(zipCode, shipping.zipCode) && Objects.equals(contact, shipping.contact);
+                && Objects.equals(state, shipping.state) && Objects.equals(city, shipping.city) && Objects.equals(zipCode, shipping.zipCode)
+                && Objects.equals(email, shipping.email) && Objects.equals(contact, shipping.contact);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, address1, address2, country, state, city, zipCode, contact);
+        return Objects.hash(id, firstName, lastName, address1, address2, country, state, city, zipCode, email, contact);
     }
 }

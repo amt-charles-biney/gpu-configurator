@@ -2,7 +2,9 @@ package com.amalitech.gpuconfigurator.dto.shipping;
 
 import com.amalitech.gpuconfigurator.annotation.OptionalAddress;
 import com.amalitech.gpuconfigurator.dto.profile.ContactRequest;
+import jakarta.persistence.Column;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -38,6 +40,10 @@ public class ShippingRequest {
 
     @NotBlank
     private String zipCode;
+
+    @NotBlank
+    @Email
+    private String email;
 
     @Valid
     private ContactRequest contact;
