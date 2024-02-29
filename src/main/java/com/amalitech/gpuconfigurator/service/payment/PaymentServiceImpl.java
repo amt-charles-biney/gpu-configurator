@@ -5,14 +5,19 @@ import com.amalitech.gpuconfigurator.dto.Payment.InitializePaymentRequest;
 import com.amalitech.gpuconfigurator.dto.Payment.InitializePaymentResponse;
 import com.amalitech.gpuconfigurator.dto.Payment.PaymentObjectRequest;
 import com.amalitech.gpuconfigurator.dto.Payment.VerifyPaymentRequest;
+import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.payment.PaymentRepository;
+import com.amalitech.gpuconfigurator.service.order.OrderService;
+import com.amalitech.gpuconfigurator.service.order.OrderServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.RestTemplate;
@@ -27,6 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final RestTemplate restTemplate;
     private final PaymentRepository paymentRepository;
     private final ObjectMapper objectMapper;
+    private final OrderServiceImpl orderService;
 
     @Value("${paystack.api.url}")
     private String API_URL;
@@ -65,7 +71,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     @Override
-    public GenericResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user) throws JsonProcessingException {
+    public GenericResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user, UserSession userSession) throws JsonProcessingException {
 
         HttpHeaders verifyPaymentHeaders = new HttpHeaders();
         verifyPaymentHeaders.set("Authorization", "Bearer " + API_KEY);
@@ -85,23 +91,22 @@ public class PaymentServiceImpl implements PaymentService {
 
         if(paymentResponseJson.status()) {
             Payment paymentTransaction = savePaymentTransaction(paymentResponseJson, user);
+            orderService.createOrder(paymentTransaction, user, userSession);
         }
-
-        // update the payment table
-        // update the order table
 
         return new GenericResponse(200, "payment verified successful");
     }
 
     @Override
     public Payment savePaymentTransaction(PaymentObjectRequest paymentObjectRequest, Principal user) {
-
+        User getUser = (User) ((UsernamePasswordAuthenticationToken) user).getPrincipal();
         Payment makePayment = Payment
                 .builder()
                 .ref(paymentObjectRequest.data().reference())
                 .channel(paymentObjectRequest.data().channel())
                 .currency(paymentObjectRequest.data().currency())
                 .amount(paymentObjectRequest.data().amount())
+                .user(getUser)
                 .build();
 
         return paymentRepository.save(makePayment);
