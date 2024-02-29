@@ -5,10 +5,13 @@ import com.amalitech.gpuconfigurator.dto.Payment.InitializePaymentRequest;
 import com.amalitech.gpuconfigurator.dto.Payment.InitializePaymentResponse;
 import com.amalitech.gpuconfigurator.dto.Payment.VerifyPaymentRequest;
 import com.amalitech.gpuconfigurator.service.payment.PaymentService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api")
@@ -23,8 +26,8 @@ public class PaymentController {
     }
 
     @GetMapping("/v1/payment/{reference}")
-    public ResponseEntity<Object> verifyPayment(@PathVariable String reference) {
+    public ResponseEntity<Object> verifyPayment(@PathVariable String reference, Principal user) throws NoSuchFieldException, JsonProcessingException {
         VerifyPaymentRequest verifyPaymentRequest = new VerifyPaymentRequest(reference);
-        return ResponseEntity.ok(paymentService.verifyPaymentTransaction(verifyPaymentRequest));
+        return ResponseEntity.ok(paymentService.verifyPaymentTransaction(verifyPaymentRequest, user));
     }
 }
