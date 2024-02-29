@@ -2,11 +2,11 @@ package com.amalitech.gpuconfigurator.service.order;
 
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderRequestDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
-import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Order;
 import com.amalitech.gpuconfigurator.model.OrderProduct;
 import com.amalitech.gpuconfigurator.model.OrderType;
 import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +24,26 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto createOrder(CreateOrderRequestDto request) {
 
+//        User customer = userRepository.findById(request.getUserId()).orElseThrow(() -> {
+//            throw new NotFoundException("No user found");
+//        });
+
         User customer = userRepository.findById(request.getUserId()).orElseThrow(() -> {
-            throw new NotFoundException("No user found");
+            try {
+                throw new Exception("No user found");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
 
-        //todo : get payments infor from here
+        //todo : get payments infor from here, this code below will change
+        Payment payment = Payment.builder()
+                .amount(BigDecimal.ZERO)
+                .ref("")
+                .channel("mobile_money")
+                .currency("GHS")
+                .user(customer)
+                .build();
 
         // to get order product here
         OrderProduct orderProduct = OrderProduct.builder()
@@ -41,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = Order.builder()
                 .user(customer)
                 .orderProduct(orderProduct)
-                .payments(//todo : add payment here)
+                .payments(payment)
                 .status(OrderType.PENDING)
                 .build();
 
@@ -57,5 +72,6 @@ public class OrderServiceImpl implements OrderService {
                 .totalPrice(orderProduct.getTotalPrice())
                 .date(order.getCreatedAt())
                 .build();
+
     }
 }
