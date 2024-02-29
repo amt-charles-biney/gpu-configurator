@@ -4,7 +4,9 @@ import com.amalitech.gpuconfigurator.model.payment.Payment;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,7 +16,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Order")
+@Entity(name = "product_order")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,13 +32,19 @@ public class Order {
 
     @OneToOne
     @ToString.Exclude
-    private Payment payments;
+    private Payment payment;
+
+    private BigDecimal totalPrice;
+
+    private Double vatPrice;
+
+    @ElementCollection
+    private List<ConfiguredProduct> configuredProducts = new ArrayList<>();
+
 
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    private OrderProduct orderProduct;
 }
