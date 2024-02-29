@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -55,7 +54,11 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
-  
+
+    @OneToOne
+    @JoinColumn
+    private Shipping lastSavedShipping;
+
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 

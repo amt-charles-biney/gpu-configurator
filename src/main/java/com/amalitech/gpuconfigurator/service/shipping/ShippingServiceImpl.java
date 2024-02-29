@@ -7,15 +7,20 @@ import com.amalitech.gpuconfigurator.dto.shipping.ShippingResponse;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Contact;
 import com.amalitech.gpuconfigurator.model.Shipping;
+import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.repository.ShippingRepository;
+import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.UUID;
 
 @Service
@@ -23,15 +28,30 @@ import java.util.UUID;
 public class ShippingServiceImpl implements ShippingService {
     private final ShippingRepository shippingRepository;
     private final UserSessionRepository userSessionRepository;
+    private final UserRepository userRepository;
 
+    @Transactional
     @Override
-    public ShippingResponse create(ShippingRequest dto, UserSession userSession) {
-        Shipping shipping = mapShippingRequestToShipping(dto);
+    public ShippingResponse create(ShippingRequest dto, Principal principal, UserSession userSession) {
+        Shipping newShipping = mapShippingRequestToShipping(dto);
 
-        userSession.setCurrentShipping(shipping);
+        Shipping savedShipping = shippingRepository.save(newShipping);
+
+        userSession.setCurrentShipping(savedShipping);
+
+        if (dto.isSaveInformation()) {
+            userSession.setLastSavedShipping(savedShipping);
+
+            User currentUser = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+            if (currentUser != null) {
+                currentUser.setLastSavedShipping(savedShipping);
+                userRepository.save(currentUser);
+            }
+        }
+
         userSessionRepository.save(userSession);
 
-        return shippingRepository.findShippingResponseById(userSession.getCurrentShipping().getId());
+        return shippingRepository.findShippingResponseById(savedShipping.getId());
     }
 
     @Override

@@ -6,10 +6,11 @@ import com.amalitech.gpuconfigurator.dto.shipping.ShippingResponse;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import org.springframework.data.domain.Page;
 
+import java.security.Principal;
 import java.util.UUID;
 
 public interface ShippingService {
-    ShippingResponse create(ShippingRequest dto, UserSession userSession);
+    ShippingResponse create(ShippingRequest dto, Principal principal, UserSession userSession);
 
     Page<ShippingResponse> findAll(int page, int size);
 

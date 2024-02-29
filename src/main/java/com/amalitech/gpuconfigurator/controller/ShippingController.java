@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.UUID;
 
 @RestController
@@ -23,9 +24,10 @@ public class ShippingController {
     @PostMapping("/v1/shipping")
     public ResponseEntity<ShippingResponse> create(
             @Valid ShippingRequest dto,
-            @RequestAttribute("userSession") UserSession userSession
+            @RequestAttribute("userSession") UserSession userSession,
+            Principal principal
     ) {
-        ShippingResponse response = shippingService.create(dto, userSession);
+        ShippingResponse response = shippingService.create(dto, principal, userSession);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

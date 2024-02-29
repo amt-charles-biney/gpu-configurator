@@ -25,9 +25,13 @@ public class UserSession {
     @Column
     private String userAgent;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     @JoinColumn
     private Shipping currentShipping;
+
+    @OneToOne
+    @JoinColumn
+    private Shipping lastSavedShipping;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
