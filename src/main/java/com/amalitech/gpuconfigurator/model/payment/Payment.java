@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.model.payment;
 import com.amalitech.gpuconfigurator.model.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,7 +26,7 @@ public class Payment {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "ref")
+    @Column(name = "ref", unique = true, nullable = false)
     private String ref;
 
     @Column(name = "amount", nullable = false)
@@ -37,21 +38,20 @@ public class Payment {
     @Column(name = "currency", nullable = false)
     private String currency;
 
-    @Column(name = "paid_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private String paidAt;
-
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private String createdAt;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Payment payment)) return false;
-        return Objects.equals(getId(), payment.getId()) && Objects.equals(getRef(), payment.getRef()) && Objects.equals(getAmount(), payment.getAmount()) && Objects.equals(getChannel(), payment.getChannel()) && Objects.equals(getCurrency(), payment.getCurrency()) && Objects.equals(getPaidAt(), payment.getPaidAt()) && Objects.equals(getCreatedAt(), payment.getCreatedAt());
+        if (o == null || getClass() != o.getClass()) return false;
+        Payment payment = (Payment) o;
+        return Objects.equals(getId(), payment.getId()) && Objects.equals(getUser(), payment.getUser()) && Objects.equals(getRef(), payment.getRef()) && Objects.equals(getAmount(), payment.getAmount()) && Objects.equals(getChannel(), payment.getChannel()) && Objects.equals(getCurrency(), payment.getCurrency()) && Objects.equals(getCreatedAt(), payment.getCreatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getRef(), getAmount(), getChannel(), getCurrency(), getPaidAt(), getCreatedAt());
+        return Objects.hash(getId(), getUser(), getRef(), getAmount(), getChannel(), getCurrency(), getCreatedAt());
     }
 }
