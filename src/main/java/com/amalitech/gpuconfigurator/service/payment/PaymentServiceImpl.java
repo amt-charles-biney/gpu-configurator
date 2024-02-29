@@ -23,12 +23,20 @@ public class PaymentServiceImpl implements PaymentService {
     private String API_KEY;
     @Override
     public InitializePaymentResponse initializePaymentTransaction(@Validated InitializePaymentRequest paymentRequest) {
+
+        InitializePaymentRequest paymentDetails = InitializePaymentRequest
+                .builder()
+                .amount(paymentRequest.amount() * 100)
+                .currency(paymentRequest.currency())
+                .email(paymentRequest.email())
+                .reference(paymentRequest.currency())
+                .build();
         
         HttpHeaders paymentHeaders = new HttpHeaders();
         paymentHeaders.set("Authorization", "Bearer " + API_KEY);
         paymentHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<InitializePaymentRequest> requestEntity = new HttpEntity<>(paymentRequest, paymentHeaders);
+        HttpEntity<InitializePaymentRequest> requestEntity = new HttpEntity<>(paymentDetails, paymentHeaders);
         String paymentUrl = API_URL + "/transaction/initialize";
 
         ResponseEntity<InitializePaymentResponse> response = restTemplate.exchange(
