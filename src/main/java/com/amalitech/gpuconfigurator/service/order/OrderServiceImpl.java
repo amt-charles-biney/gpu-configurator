@@ -1,7 +1,6 @@
 package com.amalitech.gpuconfigurator.service.order;
 
 
-
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
@@ -31,72 +30,36 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public GenericResponse createOrder(Payment payment, Principal principal, UserSession userSession) {
 
-        var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+        User user = null;
+        UsernamePasswordAuthenticationToken authenticationToken = ((UsernamePasswordAuthenticationToken) principal);
 
-//        var cartItems = cartService.getCartItems(principal, userSession);
-
-//        Iterable<ConfigurationResponseDto> configuredProducts = cartItems.configuredProducts();
-
-//        List<ConfiguredProduct> configuredProductList = StreamSupport.stream(configuredProducts.spliterator(), false)
-//                .map(configDto -> ConfiguredProduct.builder()
-//                        .configurationName(configDto.productName())
-//                        .configurationPrice(configDto.configuredPrice())
-//                        .price(configDto.productPrice())
-//                        .coverImage(configDto.productCoverImage())
-//                        .configurationDescription(configDto.productDescription())
-//                        .configs(configDto.configured().stream()
-//                                .map(options -> ConfiguredProduct.Configs.builder()
-//                                        .optionName(options.getOptionName())
-//                                        .optionPrice(options.getOptionPrice())
-//                                        .OptionType(options.getOptionType())
-//                                        .build())
-//                                .collect(Collectors.toList()))
-//                        .build())
-//                .collect(Collectors.toList());
-
-//        List<ConfiguredProduct> configuredProductList = StreamSupport.stream(configuredProducts.spliterator(), false)
-//                .map(configDto -> ConfiguredProduct.builder()
-//                        .configurationName(configDto.productName())
-//                        .configurationPrice(configDto.configuredPrice())
-//                        .price(configDto.productPrice())
-//                        .coverImage(configDto.productCoverImage())
-//                        .configurationDescription(configDto.productDescription())
-//                        .build())
-//                .collect(Collectors.toList());
-
-//
-//        BigDecimal totalPrice = StreamSupport.stream(configuredProducts.spliterator(), false)
-//                .map(ConfigurationResponseDto::totalPrice)
-//                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+        if (authenticationToken != null) {
+            user = (User) authenticationToken.getPrincipal();
+        }
 
         Order.OrderBuilder orderBuilder = Order.builder();
+
         if (user != null) {
             orderBuilder.cart(user.getCart());
-            user.setCart(new Cart());
+            user.setCart(null);
             userRepository.save(user);
 
         } else {
             orderBuilder.cart(userSession.getCart());
-            userSession.setCart(new Cart());
+            userSession.setCart(null);
             userSessionRepository.save(userSession);
 
         }
 
-        Order order = orderBuilder.status(OrderType.PENDING).payment(payment).build();
-
-
-//                .configuredProducts(configuredProductList)
-//                .user(user != null ? user : null)
-//                .payment(payment)
-//                .totalPrice(totalPrice)
-//                .status(OrderType.PENDING);
-
+        Order order = orderBuilder
+                .status(OrderType.PENDING)
+                .user(user)
+                .payment(payment).build();
         orderRepository.save(order);
 
         return GenericResponse.builder()
-                .message("Order successful")
                 .status(200)
+                .message("Order successful")
                 .build();
     }
 }
