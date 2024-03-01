@@ -79,7 +79,7 @@ class CategoryConfigControllerTest {
                         categoryId,
                         "CategoryName",
                         "./hello_world.jpg"),
-                Collections.emptyMap(), VariantStockLeastDto.builder().attributeResponse(attributeResponse).name("attribute least").inStock(8).build());
+                Collections.emptyMap(), VariantStockLeastDto.builder().attributeResponse("id").name("attribute least").inStock(8).build());
 
         Mockito.when(categoryConfigService.getCategoryConfigByCategory(categoryId)).thenReturn(responseDto);
 
@@ -127,7 +127,7 @@ class CategoryConfigControllerTest {
         CompatibleOptionGetResponse response = new CompatibleOptionGetResponse("CategoryName", categoryId, "./hello_world.jpg", Collections.emptyList(),
                 VariantStockLeastDto
                         .builder()
-                        .attributeResponse(attributeResponse)
+                        .attributeResponse("id")
                         .name("test variant")
                         .inStock(8)
                         .build(), 2);

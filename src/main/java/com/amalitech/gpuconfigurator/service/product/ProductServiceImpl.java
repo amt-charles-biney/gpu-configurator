@@ -254,7 +254,6 @@ public class ProductServiceImpl implements ProductService {
 
                 existingProduct.setCategory(category);
                 existingProduct.setInStock(inStock.inStock());
-
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
 
