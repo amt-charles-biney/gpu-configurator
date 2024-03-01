@@ -5,9 +5,13 @@ import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationResponse;
+import com.amalitech.gpuconfigurator.dto.profile.ContactRequest;
+import com.amalitech.gpuconfigurator.dto.shipping.ShippingRequest;
 import com.amalitech.gpuconfigurator.dto.shipping.ShippingResponse;
 import com.amalitech.gpuconfigurator.exception.InvalidPasswordException;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
+import com.amalitech.gpuconfigurator.model.Contact;
+import com.amalitech.gpuconfigurator.model.Shipping;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.ShippingRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
@@ -71,5 +75,46 @@ public class ProfileServiceImpl implements ProfileService {
             throw new NotFoundException("User has no shipping information");
         }
         return shippingRepository.findShippingResponseById(user.getShippingInformation().getId());
+    }
+
+    @Transactional
+    @Override
+    public ShippingResponse addUserShippingInformation(ShippingRequest dto, User user) {
+        Shipping newShipping = mapShippingRequestToShipping(dto);
+
+        Shipping savedShipping = shippingRepository.save(newShipping);
+
+        user.setShippingInformation(savedShipping);
+        userRepository.save(user);
+
+        return shippingRepository.findShippingResponseById(savedShipping.getId());
+    }
+
+    private Shipping mapShippingRequestToShipping(ShippingRequest shippingRequest) {
+        Shipping.ShippingBuilder builder = Shipping.builder()
+                .firstName(shippingRequest.getFirstName())
+                .lastName(shippingRequest.getLastName())
+                .address1(shippingRequest.getAddress1())
+                .country(shippingRequest.getCountry())
+                .state(shippingRequest.getState())
+                .city(shippingRequest.getCity())
+                .zipCode(shippingRequest.getZipCode())
+                .email(shippingRequest.getEmail())
+                .contact(mapContactRequestToContact(shippingRequest.getContact()));
+
+        if (shippingRequest.getAddress2() != null) {
+            builder.address2(shippingRequest.getAddress2());
+        }
+
+        return builder.build();
+    }
+
+    private Contact mapContactRequestToContact(ContactRequest contactRequest) {
+        return Contact.builder()
+                .phoneNumber(contactRequest.getPhoneNumber())
+                .country(contactRequest.getCountry())
+                .iso2Code(contactRequest.getIso2Code())
+                .dialCode(contactRequest.getDialCode())
+                .build();
     }
 }
