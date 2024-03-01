@@ -56,7 +56,7 @@ public class AttributeOption {
 
     private Integer inStock;
 
-    @OneToMany(mappedBy = "attributeOption", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "attributeOption", cascade = CascadeType.REMOVE)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
     private List<CompatibleOption> compatibleOptions;
