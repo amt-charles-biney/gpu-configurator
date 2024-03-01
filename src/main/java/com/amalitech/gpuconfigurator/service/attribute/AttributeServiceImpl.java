@@ -11,6 +11,7 @@ import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
+import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigService;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -31,7 +32,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     private final AttributeRepository attributeRepository;
     private final AttributeOptionRepository attributeOptionRepository;
-    private final CategoryConfigServiceImpl categoryConfigService;
+    private final CategoryConfigService categoryConfigService;
 
     @Override
     public List<AttributeResponse> getAllAttributes() {

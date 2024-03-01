@@ -1,9 +1,12 @@
 package com.amalitech.gpuconfigurator.dto.product;
 
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @Builder
 public record ProductResponse(
