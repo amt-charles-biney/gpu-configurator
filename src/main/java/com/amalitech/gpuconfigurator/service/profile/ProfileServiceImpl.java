@@ -5,10 +5,14 @@ import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationResponse;
+import com.amalitech.gpuconfigurator.dto.shipping.ShippingResponse;
 import com.amalitech.gpuconfigurator.exception.InvalidPasswordException;
+import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.repository.ShippingRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.service.contact.ContactService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +26,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ContactService contactService;
+    private final ShippingRepository shippingRepository;
 
     @Override
     public BasicInformationResponse updateBasicInformation(BasicInformationRequest dto, Principal principal) {
@@ -58,5 +63,14 @@ public class ProfileServiceImpl implements ProfileService {
         userRepository.save(user);
 
         return new GenericResponse(201, ProfileConstants.PASSWORD_UPDATE_SUCCESS);
+    }
+
+    @Transactional
+    @Override
+    public ShippingResponse getUserShippingInformation(User user) {
+        if (user.getShippingInformation() == null) {
+            throw new NotFoundException("User has no shipping information");
+        }
+        return shippingRepository.findShippingResponseById(user.getShippingInformation().getId());
     }
 }
