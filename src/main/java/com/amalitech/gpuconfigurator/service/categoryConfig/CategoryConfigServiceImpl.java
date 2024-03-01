@@ -1,17 +1,20 @@
 package com.amalitech.gpuconfigurator.service.categoryConfig;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.Product;
+import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
+import com.amalitech.gpuconfigurator.service.attribute.AttributeServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,6 +37,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     private final ProductRepository productRepository;
     private final AttributeOptionRepository attributeOptionRepository;
     private final CategoryRepository categoryRepository;
+    private final AttributeServiceImpl attributeService;
 
     @Override
     @Transactional
@@ -292,15 +296,6 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
         return attributeOptionRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("could not find attribute option"));
     }
 
-//    public Integer getTotalLeastStock(List<CompatibleOption> compatibleOptions) {
-//        return compatibleOptions.stream()
-//                .map(CompatibleOption::getAttributeOption)
-//                .filter(Objects::nonNull)
-//                .map(AttributeOption::getInStock)
-//                .min(Comparator.naturalOrder())
-//                .orElse(0);
-//    }
-
     public VariantStockLeastDto getTotalLeastStock(List<CompatibleOption> compatibleOptions) {
         CompatibleOption leastStockOption = compatibleOptions.stream()
                 .filter(co -> co.getAttributeOption() != null && co.getAttributeOption().getInStock() != null)
@@ -308,8 +303,9 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .orElse(null);
 
         if (leastStockOption != null) {
+            AttributeResponse attribute = attributeService.getAttributeById(leastStockOption.getAttributeOption().getAttribute().getId());
             AttributeOption attributeOption = leastStockOption.getAttributeOption();
-            return new VariantStockLeastDto(attributeOption.getOptionName(), attributeOption.getId().toString(), attributeOption.getInStock());
+            return new VariantStockLeastDto(attributeOption.getOptionName(), attribute, attributeOption.getInStock());
         } else {
             return null;
         }
