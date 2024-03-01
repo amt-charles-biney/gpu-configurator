@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service.order;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.model.Cart;
 import com.amalitech.gpuconfigurator.model.Order;
 import com.amalitech.gpuconfigurator.model.User;
@@ -66,13 +67,10 @@ class OrderServiceImplTest {
         // When
         when(userRepository.save(user)).thenReturn(user);
         when(authenticationToken.getPrincipal()).thenReturn(user);
-        GenericResponse response = orderService.createOrder(payment, authenticationToken, userSession);
+        CreateOrderDto response = orderService.createOrder(payment, authenticationToken, userSession);
 
         // Then
         assertNotNull(response);
-        // Uncomment the following lines based on your actual implementation
-        assertEquals("Order successful", response.message());
-         assertEquals(200, response.status());
         // Verify that the save method is called with the correct argument
         verify(orderRepository, times(1)).save(any(Order.class));
     }
