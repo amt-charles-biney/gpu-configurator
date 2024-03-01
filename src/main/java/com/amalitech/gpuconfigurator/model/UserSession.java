@@ -29,6 +29,10 @@ public class UserSession {
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
+    @OneToOne
+    @JoinColumn
+    private Shipping currentShipping;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
