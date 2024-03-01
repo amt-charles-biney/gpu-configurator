@@ -59,7 +59,12 @@ class CategoryConfigControllerTest {
     @Test
     void getConfigs() throws Exception {
         String categoryId = UUID.randomUUID().toString();
-        CategoryConfigResponseDto responseDto = new CategoryConfigResponseDto(UUID.randomUUID().toString(), new CategoryResponse( categoryId, "CategoryName", "./hello_world.jpg"), Collections.emptyMap(), 0);
+        CategoryConfigResponseDto responseDto = new CategoryConfigResponseDto(UUID.randomUUID().toString(),
+                new CategoryResponse(
+                        categoryId,
+                        "CategoryName",
+                        "./hello_world.jpg"),
+                Collections.emptyMap(), VariantStockLeastDto.builder().id(UUID.randomUUID().toString()).name("attribute least").inStock(8).build());
 
         Mockito.when(categoryConfigService.getCategoryConfigByCategory(categoryId)).thenReturn(responseDto);
 
@@ -74,7 +79,7 @@ class CategoryConfigControllerTest {
     @Test
     void getConfigsUser() throws Exception {
         String categoryId = UUID.randomUUID().toString();
-        CategoryConfigResponseDto responseDto = new CategoryConfigResponseDto(UUID.randomUUID().toString(), new CategoryResponse(categoryId, "CategoryName", "./hello_world.jpg"), Collections.emptyMap(), 0);
+        CategoryConfigResponseDto responseDto = new CategoryConfigResponseDto(UUID.randomUUID().toString(), new CategoryResponse(categoryId, "CategoryName", "./hello_world.jpg"), Collections.emptyMap(), null);
 
         Mockito.when(categoryConfigService.getCategoryConfigByCategory(categoryId)).thenReturn(responseDto);
 
@@ -104,7 +109,13 @@ class CategoryConfigControllerTest {
     @Test
     void testGetAllCategoryConfigById() throws Exception {
         String categoryId = UUID.randomUUID().toString();
-        CompatibleOptionGetResponse response = new CompatibleOptionGetResponse("CategoryName", categoryId, "./hello_world.jpg", Collections.emptyList(), 0, 2);
+        CompatibleOptionGetResponse response = new CompatibleOptionGetResponse("CategoryName", categoryId, "./hello_world.jpg", Collections.emptyList(),
+                VariantStockLeastDto
+                        .builder()
+                        .id(UUID.randomUUID().toString())
+                        .name("test variant")
+                        .inStock(8)
+                        .build(), 2);
 
         Mockito.when(categoryConfigService.getCategoryAndCompatibleOption(UUID.fromString(categoryId))).thenReturn(response);
 
