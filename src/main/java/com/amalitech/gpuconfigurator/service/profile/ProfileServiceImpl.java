@@ -5,12 +5,10 @@ import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationResponse;
-import com.amalitech.gpuconfigurator.dto.profile.ContactRequest;
-import com.amalitech.gpuconfigurator.dto.shipping.ShippingRequest;
+import com.amalitech.gpuconfigurator.dto.profile.ProfileShippingRequest;
 import com.amalitech.gpuconfigurator.dto.shipping.ShippingResponse;
 import com.amalitech.gpuconfigurator.exception.InvalidPasswordException;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
-import com.amalitech.gpuconfigurator.model.Contact;
 import com.amalitech.gpuconfigurator.model.Shipping;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.ShippingRepository;
@@ -79,8 +77,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Transactional
     @Override
-    public ShippingResponse addUserShippingInformation(ShippingRequest dto, User user) {
-        Shipping newShipping = mapShippingRequestToShipping(dto);
+    public ShippingResponse addUserShippingInformation(ProfileShippingRequest dto, User user) {
+        Shipping newShipping = mapProfileShippingRequestToShipping(dto);
 
         Shipping savedShipping = shippingRepository.save(newShipping);
 
@@ -90,7 +88,7 @@ public class ProfileServiceImpl implements ProfileService {
         return shippingRepository.findShippingResponseById(savedShipping.getId());
     }
 
-    private Shipping mapShippingRequestToShipping(ShippingRequest shippingRequest) {
+    private Shipping mapProfileShippingRequestToShipping(ProfileShippingRequest shippingRequest) {
         Shipping.ShippingBuilder builder = Shipping.builder()
                 .firstName(shippingRequest.getFirstName())
                 .lastName(shippingRequest.getLastName())
@@ -98,23 +96,12 @@ public class ProfileServiceImpl implements ProfileService {
                 .country(shippingRequest.getCountry())
                 .state(shippingRequest.getState())
                 .city(shippingRequest.getCity())
-                .zipCode(shippingRequest.getZipCode())
-                .email(shippingRequest.getEmail())
-                .contact(mapContactRequestToContact(shippingRequest.getContact()));
+                .zipCode(shippingRequest.getZipCode());
 
         if (shippingRequest.getAddress2() != null) {
             builder.address2(shippingRequest.getAddress2());
         }
 
         return builder.build();
-    }
-
-    private Contact mapContactRequestToContact(ContactRequest contactRequest) {
-        return Contact.builder()
-                .phoneNumber(contactRequest.getPhoneNumber())
-                .country(contactRequest.getCountry())
-                .iso2Code(contactRequest.getIso2Code())
-                .dialCode(contactRequest.getDialCode())
-                .build();
     }
 }
