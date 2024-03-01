@@ -25,17 +25,11 @@ public class Order {
     private OrderType status;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
     @OneToOne(cascade = CascadeType.ALL)
     private Payment payment;
-
-//    private BigDecimal totalPrice;
-
-//    @ElementCollection
-//    @CollectionTable(name = "configured_products")
-//    private List<ConfiguredProduct> configuredProducts = new ArrayList<>();
 
     @OneToOne
     private Cart cart;
