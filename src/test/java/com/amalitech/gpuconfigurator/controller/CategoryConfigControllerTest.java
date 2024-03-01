@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,9 +36,23 @@ class CategoryConfigControllerTest {
     private static ObjectMapper objectMapper;
     @MockBean
     private CategoryConfigServiceImpl categoryConfigService;
+
+    private AttributeResponse attributeResponse;
     @BeforeAll
     public static void setUp() {
         objectMapper = new ObjectMapper();
+    }
+
+    @BeforeEach
+    public void tearUp() {
+        attributeResponse = AttributeResponse.builder()
+                .isRequired(false)
+                .description("hello world")
+                .unit("12")
+                .isMeasured(false)
+                .attributeOptions(new ArrayList<>())
+                .id(UUID.randomUUID())
+                .build();
     }
 
     @Test
@@ -64,7 +79,7 @@ class CategoryConfigControllerTest {
                         categoryId,
                         "CategoryName",
                         "./hello_world.jpg"),
-                Collections.emptyMap(), VariantStockLeastDto.builder().id(UUID.randomUUID().toString()).name("attribute least").inStock(8).build());
+                Collections.emptyMap(), VariantStockLeastDto.builder().attributeResponse("id").name("attribute least").inStock(8).build());
 
         Mockito.when(categoryConfigService.getCategoryConfigByCategory(categoryId)).thenReturn(responseDto);
 
@@ -112,7 +127,7 @@ class CategoryConfigControllerTest {
         CompatibleOptionGetResponse response = new CompatibleOptionGetResponse("CategoryName", categoryId, "./hello_world.jpg", Collections.emptyList(),
                 VariantStockLeastDto
                         .builder()
-                        .id(UUID.randomUUID().toString())
+                        .attributeResponse("id")
                         .name("test variant")
                         .inStock(8)
                         .build(), 2);

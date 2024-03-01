@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
@@ -10,6 +11,7 @@ import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
+import com.amalitech.gpuconfigurator.service.attribute.AttributeServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
@@ -41,6 +43,9 @@ class CategoryConfigServiceTest {
     private CompatibleOptionServiceImpl compatibleOptionServiceImpl;
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private AttributeServiceImpl attributeService;
     @InjectMocks
     private CategoryConfigServiceImpl categoryConfigService;
 
@@ -49,6 +54,7 @@ class CategoryConfigServiceTest {
     private CategoryConfigRequest categoryConfigRequest;
     private CompatibleOption compatibleOption;
     private AttributeOption attributeOption;
+    private AttributeResponse attributeResponse;
     private CompatibleOptionGetResponse compatibleOptionGetResponse;
 
     private Attribute attribute;
@@ -64,6 +70,15 @@ class CategoryConfigServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        attributeResponse = AttributeResponse.builder()
+                .isRequired(false)
+                .description("hello world")
+                .unit("12")
+                .isMeasured(false)
+                .attributeOptions(new ArrayList<>())
+                .id(UUID.randomUUID())
+                .build();
 
         attribute = Attribute.builder()
                 .unit("SampleUnit")
@@ -186,6 +201,7 @@ class CategoryConfigServiceTest {
         when(categoryConfigRepository.findByCategoryId(categoryId)).thenReturn(Optional.ofNullable(categoryConfig));
 
         when(compatibleOptionServiceImpl.getByCategoryConfigId(categoryConfig.getId())).thenReturn(List.of(compatibleOption));
+        when(attributeService.getAttributeById(any(UUID.class))).thenReturn(attributeResponse);
 
         CategoryConfigResponseDto response = categoryConfigService.getCategoryConfigByCategory(categoryIdString);
 
@@ -235,6 +251,7 @@ class CategoryConfigServiceTest {
 
         List<CompatibleOption> compatibleOptions = List.of(compatibleOption);
         when(compatibleOptionServiceImpl.getAllCompatibleOptionsByCategoryConfig(categoryConfig.getId())).thenReturn(compatibleOptions);
+        when(attributeService.getAttributeById(any(UUID.class))).thenReturn(attributeResponse);
 
         CompatibleOptionGetResponse response = categoryConfigService.getCategoryAndCompatibleOption(categoryId);
 

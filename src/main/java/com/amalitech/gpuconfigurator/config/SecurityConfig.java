@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.config;
 
+import com.amalitech.gpuconfigurator.model.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/**", "/api/v1/carts/**", "/api/v1/shipping/**").permitAll()
+                .requestMatchers("/api/v1/profile/**").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())
                 .requestMatchers("/api/v1/admin/**").hasAnyAuthority("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/v1/cases/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/product/**").permitAll()

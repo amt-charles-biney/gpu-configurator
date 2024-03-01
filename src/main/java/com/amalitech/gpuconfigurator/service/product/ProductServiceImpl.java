@@ -56,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
 
 
-        var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
+        var inStock = 0;
 
         BigDecimal percentageOfServiceChargeMultiplyByCasePrice = BigDecimal.valueOf(request.getServiceCharge())
                 .divide(BigDecimal.valueOf(100))
@@ -252,7 +252,7 @@ public class ProductServiceImpl implements ProductService {
                 var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
 
                 existingProduct.setCategory(category);
-                existingProduct.setInStock(inStock);
+                existingProduct.setInStock(0);
 
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }

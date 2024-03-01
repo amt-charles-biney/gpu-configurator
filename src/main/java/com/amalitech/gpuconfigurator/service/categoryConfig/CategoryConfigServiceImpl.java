@@ -292,15 +292,6 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
         return attributeOptionRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("could not find attribute option"));
     }
 
-//    public Integer getTotalLeastStock(List<CompatibleOption> compatibleOptions) {
-//        return compatibleOptions.stream()
-//                .map(CompatibleOption::getAttributeOption)
-//                .filter(Objects::nonNull)
-//                .map(AttributeOption::getInStock)
-//                .min(Comparator.naturalOrder())
-//                .orElse(0);
-//    }
-
     public VariantStockLeastDto getTotalLeastStock(List<CompatibleOption> compatibleOptions) {
         CompatibleOption leastStockOption = compatibleOptions.stream()
                 .filter(co -> co.getAttributeOption() != null && co.getAttributeOption().getInStock() != null)
