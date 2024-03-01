@@ -9,6 +9,7 @@ import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
@@ -39,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final CaseRepository caseRepository;
     private final CategoryConfigServiceImpl categoryConfig;
+    private final AttributeOptionRepository attributeOptionRepository;
 
 
     @Override
@@ -130,6 +132,8 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseWithBrandDto getProduct(String id) {
         Product product = productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new NotFoundException("product not found"));
         Category category = categoryRepository.findById(product.getCategory().getId()).orElseThrow(() -> new NotFoundException("category does not exist "));
+
+        var outOrLowStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
 
         return ProductResponseWithBrandDto.builder()
                 .productName(product.getProductName())
