@@ -309,7 +309,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
         if (leastStockOption != null) {
             AttributeOption attributeOption = leastStockOption.getAttributeOption();
-            return new VariantStockLeastDto(attributeOption.getOptionName(), attributeOption.getId().toString(), attributeOption.getInStock());
+            return new VariantStockLeastDto(attributeOption.getOptionName(), attributeOption.getAttribute().getId().toString(), attributeOption.getInStock());
         } else {
             return null;
         }
