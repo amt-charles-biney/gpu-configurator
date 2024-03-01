@@ -25,7 +25,7 @@ public class ShippingController {
 
     @PostMapping("/v1/shipping")
     public ResponseEntity<ShippingResponse> create(
-            @Valid ShippingRequest dto,
+            @RequestBody @Valid ShippingRequest dto,
             @RequestAttribute("userSession") UserSession userSession,
             Principal principal
     ) {
@@ -50,7 +50,7 @@ public class ShippingController {
     }
 
     @PutMapping("/v1/shipping/{shippingId}")
-    public ResponseEntity<ShippingResponse> update(@PathVariable UUID shippingId, @Valid ShippingRequest dto) {
+    public ResponseEntity<ShippingResponse> update(@PathVariable UUID shippingId, @RequestBody @Valid ShippingRequest dto) {
         return ResponseEntity.ok(shippingService.update(shippingId, dto));
     }
 
