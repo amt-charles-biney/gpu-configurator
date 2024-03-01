@@ -60,6 +60,10 @@ public class User implements UserDetails {
     @ToString.Exclude
     private List<Order> orders;
 
+    @OneToOne
+    @JoinColumn
+    private Shipping shippingInformation;
+
     @Column(name = "createdAt", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
