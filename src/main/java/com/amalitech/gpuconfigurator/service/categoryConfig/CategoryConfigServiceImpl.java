@@ -85,7 +85,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .filter(entry -> entry.getValue().stream().anyMatch(option -> option.isCompatible() || option.isIncluded()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        Integer inStock = getTotalLeastStock(compatibleOptions);
+        VariantStockLeastDto inStock = getTotalLeastStock(compatibleOptions);
 
         return CategoryConfigResponseDto.builder()
                 .id(categoryConfig.getId().toString())
@@ -142,7 +142,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .mapToDouble(compatibleOption ->  compatibleOption.price() != null ? compatibleOption.price().doubleValue() : 0.0)
                 .sum();
 
-        Integer inStock = getTotalLeastStock(compatibleOptions);
+        VariantStockLeastDto inStock = getTotalLeastStock(compatibleOptions);
 
         return CompatibleOptionGetResponse.builder()
                 .name(categoryConfig.getCategory().getCategoryName())
@@ -292,12 +292,27 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
         return attributeOptionRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("could not find attribute option"));
     }
 
-    public Integer getTotalLeastStock(List<CompatibleOption> compatibleOptions) {
-        return compatibleOptions.stream()
-                .map(CompatibleOption::getAttributeOption)
-                .filter(Objects::nonNull)
-                .map(AttributeOption::getInStock)
-                .min(Comparator.naturalOrder())
-                .orElse(0);
+//    public Integer getTotalLeastStock(List<CompatibleOption> compatibleOptions) {
+//        return compatibleOptions.stream()
+//                .map(CompatibleOption::getAttributeOption)
+//                .filter(Objects::nonNull)
+//                .map(AttributeOption::getInStock)
+//                .min(Comparator.naturalOrder())
+//                .orElse(0);
+//    }
+
+    public VariantStockLeastDto getTotalLeastStock(List<CompatibleOption> compatibleOptions) {
+        CompatibleOption leastStockOption = compatibleOptions.stream()
+                .filter(co -> co.getAttributeOption() != null && co.getAttributeOption().getInStock() != null)
+                .min(Comparator.comparing(co -> co.getAttributeOption().getInStock()))
+                .orElse(null);
+
+        if (leastStockOption != null) {
+            AttributeOption attributeOption = leastStockOption.getAttributeOption();
+            return new VariantStockLeastDto(attributeOption.getOptionName(), attributeOption.getId().toString(), attributeOption.getInStock());
+        } else {
+            return null;
+        }
     }
+
 }
