@@ -16,6 +16,5 @@ public interface PaymentService {
 
     InitializePaymentResponse initializePaymentTransaction(InitializePaymentRequest paymentRequest);
     GenericResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user, UserSession userSession) throws NoSuchFieldException, JsonProcessingException;
-
-    Payment savePaymentTransaction(PaymentObjectRequest paymentObjectRequest, Principal user);
+    Payment savePaymentTransaction(PaymentObjectRequest paymentObjectRequest, Principal principal, UserSession userSession);
 }

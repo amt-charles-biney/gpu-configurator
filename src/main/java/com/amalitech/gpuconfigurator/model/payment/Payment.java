@@ -22,8 +22,8 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE, optional = true)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
     @Column(name = "ref", unique = true, nullable = false)
@@ -37,6 +37,9 @@ public class Payment {
 
     @Column(name = "currency", nullable = false)
     private String currency;
+
+    @Column(name = "session", nullable = true)
+    private String sessionId;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")

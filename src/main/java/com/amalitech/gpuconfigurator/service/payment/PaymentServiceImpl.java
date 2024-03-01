@@ -9,13 +9,11 @@ import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.payment.PaymentRepository;
-import com.amalitech.gpuconfigurator.service.order.OrderService;
 import com.amalitech.gpuconfigurator.service.order.OrderServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.Principal;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -90,7 +87,7 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentObjectRequest paymentResponseJson = mapPaymentResponseToPayment(paymentResponse);
 
         if(paymentResponseJson.status()) {
-            Payment paymentTransaction = savePaymentTransaction(paymentResponseJson, user);
+            Payment paymentTransaction = savePaymentTransaction(paymentResponseJson, user,  userSession);
             orderService.createOrder(paymentTransaction, user, userSession);
         }
 
@@ -98,15 +95,23 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Payment savePaymentTransaction(PaymentObjectRequest paymentObjectRequest, Principal user) {
-        User getUser = (User) ((UsernamePasswordAuthenticationToken) user).getPrincipal();
+    public Payment savePaymentTransaction(PaymentObjectRequest paymentObjectRequest, Principal principal, UserSession userSession) {
+
+        User user = null;
+        UsernamePasswordAuthenticationToken authenticationToken =  ((UsernamePasswordAuthenticationToken) principal);
+
+        if(authenticationToken != null) {
+            user = (User) authenticationToken.getPrincipal();
+        }
+
         Payment makePayment = Payment
                 .builder()
                 .ref(paymentObjectRequest.data().reference())
                 .channel(paymentObjectRequest.data().channel())
                 .currency(paymentObjectRequest.data().currency())
                 .amount(paymentObjectRequest.data().amount())
-                .user(getUser)
+                .user(user)
+                .sessionId(userSession.getId().toString())
                 .build();
 
         return paymentRepository.save(makePayment);
