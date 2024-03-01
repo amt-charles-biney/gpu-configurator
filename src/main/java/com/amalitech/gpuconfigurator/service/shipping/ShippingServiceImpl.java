@@ -17,10 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.util.UUID;
 
 @Service
@@ -32,23 +30,17 @@ public class ShippingServiceImpl implements ShippingService {
 
     @Transactional
     @Override
-    public ShippingResponse create(ShippingRequest dto, Principal principal, UserSession userSession) {
+    public ShippingResponse create(ShippingRequest dto, User currentUser, UserSession userSession) {
         Shipping newShipping = mapShippingRequestToShipping(dto);
 
         Shipping savedShipping = shippingRepository.save(newShipping);
 
-        userSession.setCurrentShipping(savedShipping);
-
-        if (dto.isSaveInformation()) {
-            userSession.setLastSavedShipping(savedShipping);
-
-            User currentUser = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
-            if (currentUser != null) {
-                currentUser.setLastSavedShipping(savedShipping);
-                userRepository.save(currentUser);
-            }
+        if (currentUser != null && dto.isSaveInformation()) {
+            currentUser.setShippingInformation(savedShipping);
+            userRepository.save(currentUser);
         }
 
+        userSession.setCurrentShipping(savedShipping);
         userSessionRepository.save(userSession);
 
         return shippingRepository.findShippingResponseById(savedShipping.getId());

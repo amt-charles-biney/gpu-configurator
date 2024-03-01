@@ -2,7 +2,11 @@ package com.amalitech.gpuconfigurator.dto.shipping;
 
 import com.amalitech.gpuconfigurator.dto.profile.ContactResponse;
 
+import java.util.UUID;
+
 public interface ShippingResponse {
+    UUID getId();
+
     String getFirstName();
 
     String getLastName();

@@ -29,10 +29,6 @@ public class UserSession {
     @JoinColumn
     private Shipping currentShipping;
 
-    @OneToOne
-    @JoinColumn
-    private Shipping lastSavedShipping;
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 
