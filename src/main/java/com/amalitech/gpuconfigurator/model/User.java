@@ -60,7 +60,7 @@ public class User implements UserDetails {
     @ToString.Exclude
     private List<Order> orders;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Shipping shippingInformation;
 
