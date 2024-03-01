@@ -65,7 +65,6 @@ public class ProfileServiceImpl implements ProfileService {
         return new GenericResponse(201, ProfileConstants.PASSWORD_UPDATE_SUCCESS);
     }
 
-    @Transactional
     @Override
     public ShippingResponse getUserShippingInformation(User user) {
         if (user.getShippingInformation() == null) {
