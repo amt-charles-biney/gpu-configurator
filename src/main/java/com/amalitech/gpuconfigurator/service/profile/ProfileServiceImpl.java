@@ -3,12 +3,11 @@ package com.amalitech.gpuconfigurator.service.profile;
 import com.amalitech.gpuconfigurator.constant.ProfileConstants;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
-import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
-import com.amalitech.gpuconfigurator.dto.profile.BasicInformationResponse;
-import com.amalitech.gpuconfigurator.dto.profile.ProfileShippingRequest;
+import com.amalitech.gpuconfigurator.dto.profile.*;
 import com.amalitech.gpuconfigurator.dto.shipping.ShippingResponse;
 import com.amalitech.gpuconfigurator.exception.InvalidPasswordException;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
+import com.amalitech.gpuconfigurator.model.Contact;
 import com.amalitech.gpuconfigurator.model.Shipping;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.ShippingRepository;
@@ -68,11 +67,25 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ShippingResponse getUserShippingInformation(User user) {
+    public ProfileShippingResponse getUserShippingInformation(User user) {
         if (user.getShippingInformation() == null) {
             throw new NotFoundException("User has no shipping information");
         }
-        return shippingRepository.findShippingResponseById(user.getShippingInformation().getId());
+
+        Shipping shipping = shippingRepository.findById(user.getShippingInformation().getId())
+                .orElseThrow(() -> new NotFoundException("User has no shipping information"));
+
+        ProfileShippingResponse profileShippingResponse = mapToProfileShippingResponse(shipping);
+
+        if (shipping.getEmail() == null) {
+            profileShippingResponse.setEmail(user.getEmail());
+        }
+
+        if (shipping.getContact() == null && user.getContact() != null) {
+            profileShippingResponse.setContact(mapToProfileContactResponse(user.getContact()));
+        }
+
+        return profileShippingResponse;
     }
 
     @Transactional
@@ -103,5 +116,32 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         return builder.build();
+    }
+
+    private ProfileShippingResponse mapToProfileShippingResponse(Shipping shipping) {
+        Contact contact = shipping.getContact();
+
+        return ProfileShippingResponse.builder()
+                .id(shipping.getId())
+                .firstName(shipping.getFirstName())
+                .lastName(shipping.getLastName())
+                .address1(shipping.getAddress1())
+                .address2(shipping.getAddress2())
+                .country(shipping.getCountry())
+                .state(shipping.getState())
+                .city(shipping.getCity())
+                .zipCode(shipping.getZipCode())
+                .email(shipping.getEmail())
+                .contact(contact == null ? null : mapToProfileContactResponse(contact))
+                .build();
+    }
+
+    private ProfileContactResponse mapToProfileContactResponse(Contact contact) {
+        return ProfileContactResponse.builder()
+                .phoneNumber(contact.getPhoneNumber())
+                .dialCode(contact.getDialCode())
+                .iso2Code(contact.getIso2Code())
+                .country(contact.getCountry())
+                .build();
     }
 }
