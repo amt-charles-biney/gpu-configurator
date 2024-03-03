@@ -45,11 +45,11 @@ public class Shipping {
     @Column(nullable = false)
     private String zipCode;
 
-    @Column(nullable = false)
+    @Column
     private String email;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Contact contact;
 
     @CreationTimestamp
