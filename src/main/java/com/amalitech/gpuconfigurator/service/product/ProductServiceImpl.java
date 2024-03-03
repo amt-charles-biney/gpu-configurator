@@ -2,14 +2,14 @@ package com.amalitech.gpuconfigurator.service.product;
 
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.VariantStockLeastDto;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
+import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
-import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final CaseRepository caseRepository;
     private final CategoryConfigServiceImpl categoryConfig;
-    private final AttributeOptionRepository attributeOptionRepository;
+    private final AttributeRepository attributeRepository;
 
 
     @Override
@@ -133,8 +133,6 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new NotFoundException("product not found"));
         Category category = categoryRepository.findById(product.getCategory().getId()).orElseThrow(() -> new NotFoundException("category does not exist "));
 
-        var outOrLowStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
-
         return ProductResponseWithBrandDto.builder()
                 .productName(product.getProductName())
                 .id(product.getId().toString())
@@ -186,10 +184,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @NotNull
-    private static Function<Product, ProductResponse> getProductProductResponseFunction() {
+    private Function<Product, ProductResponse> getProductProductResponseFunction() {
         return product -> {
             String stockLowOrMore = product.getInStock() <= 5 ? "Low Stock" : "Available";
             String stockStatus = product.getInStock() == 0 ? "No Stock" : stockLowOrMore;
+
+            var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(product.getCategory().getId())).inStock();
+            var zeroOrLowStockAttr = attributeRepository.findById(UUID.fromString(inStock.attributeResponse())).orElse(null);
+
             return ProductResponse.builder()
                     .productName(product.getProductName())
                     .id(product.getId().toString())
@@ -208,6 +210,7 @@ public class ProductServiceImpl implements ProductService {
                     .serviceCharge(product.getServiceCharge())
                     .imageUrl(product.getProductCase().getImageUrls())
                     .inStock(product.getInStock())
+                    .zeroOrLowStockAttr(product.getInStock() <= 5 ? zeroOrLowStockAttr : null)
                     .build();
         };
     }

@@ -2,6 +2,8 @@ package com.amalitech.gpuconfigurator.dto.product;
 
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
+import com.amalitech.gpuconfigurator.model.attributes.Attribute;
+import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import lombok.Builder;
 
 import java.math.BigDecimal;
@@ -29,6 +31,8 @@ public record ProductResponse(
 
         Integer inStock,
 
-        String stockStatus
+        String stockStatus,
+
+        Attribute zeroOrLowStockAttr
 ) {
 }
