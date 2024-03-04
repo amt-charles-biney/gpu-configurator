@@ -1,10 +1,7 @@
 package com.amalitech.gpuconfigurator.service.payment;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.Payment.InitializePaymentRequest;
-import com.amalitech.gpuconfigurator.dto.Payment.InitializePaymentResponse;
-import com.amalitech.gpuconfigurator.dto.Payment.PaymentObjectRequest;
-import com.amalitech.gpuconfigurator.dto.Payment.VerifyPaymentRequest;
+import com.amalitech.gpuconfigurator.dto.Payment.*;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
@@ -21,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.Principal;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +66,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     @Override
-    public GenericResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user, UserSession userSession) throws JsonProcessingException {
+    public VerifyPaymentResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user, UserSession userSession) throws JsonProcessingException {
 
         HttpHeaders verifyPaymentHeaders = new HttpHeaders();
         verifyPaymentHeaders.set("Authorization", "Bearer " + API_KEY);
@@ -85,13 +83,20 @@ public class PaymentServiceImpl implements PaymentService {
         ).getBody();
 
         PaymentObjectRequest paymentResponseJson = mapPaymentResponseToPayment(paymentResponse);
+        UUID orderId = null;
 
         if(paymentResponseJson.status()) {
             Payment paymentTransaction = savePaymentTransaction(paymentResponseJson, user,  userSession);
-            orderService.createOrder(paymentTransaction, user, userSession);
+            orderId = orderService.createOrder(paymentTransaction, user, userSession).orderId();
+
         }
 
-        return new GenericResponse(200, "payment verified successful");
+        return VerifyPaymentResponse
+                .builder()
+                .orderId(orderId != null ? orderId.toString() : null)
+                .message("payment verified successfully")
+                .status(200)
+                .build();
     }
 
     @Override
