@@ -33,6 +33,7 @@ public record ProductResponse(
 
         String stockStatus,
 
-        Attribute zeroOrLowStockAttr
+
+        AttributeResponse zeroOrLowStockAttr
 ) {
 }

@@ -5,11 +5,10 @@ import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
-import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
-import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
+import com.amalitech.gpuconfigurator.service.attribute.AttributeService;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final CaseRepository caseRepository;
     private final CategoryConfigServiceImpl categoryConfig;
-    private final AttributeRepository attributeRepository;
+    private final AttributeService attributeService;
 
 
     @Override
@@ -190,7 +189,7 @@ public class ProductServiceImpl implements ProductService {
             String stockStatus = product.getInStock() == 0 ? "No Stock" : stockLowOrMore;
 
             var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(product.getCategory().getId())).inStock();
-            var zeroOrLowStockAttr = attributeRepository.findById(UUID.fromString(inStock.attributeResponse())).orElse(null);
+            var zeroOrLowStockAttr = attributeService.getAttributeById(UUID.fromString(inStock.attributeResponse()));
 
             return ProductResponse.builder()
                     .productName(product.getProductName())
