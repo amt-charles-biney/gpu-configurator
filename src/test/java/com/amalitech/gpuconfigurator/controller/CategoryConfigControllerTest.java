@@ -79,7 +79,7 @@ class CategoryConfigControllerTest {
                         categoryId,
                         "CategoryName",
                         "./hello_world.jpg"),
-                Collections.emptyMap(), VariantStockLeastDto.builder().attributeResponse("id").name("attribute least").inStock(8).build());
+                Collections.emptyMap(), 8, List.of(VariantStockLeastDto.builder().attributeResponse("id").name("attribute least").inStock(8).build()));
 
         Mockito.when(categoryConfigService.getCategoryConfigByCategory(categoryId)).thenReturn(responseDto);
 
@@ -94,7 +94,7 @@ class CategoryConfigControllerTest {
     @Test
     void getConfigsUser() throws Exception {
         String categoryId = UUID.randomUUID().toString();
-        CategoryConfigResponseDto responseDto = new CategoryConfigResponseDto(UUID.randomUUID().toString(), new CategoryResponse(categoryId, "CategoryName", "./hello_world.jpg"), Collections.emptyMap(), null);
+        CategoryConfigResponseDto responseDto = new CategoryConfigResponseDto(UUID.randomUUID().toString(), new CategoryResponse(categoryId, "CategoryName", "./hello_world.jpg"), Collections.emptyMap(), 8, null);
 
         Mockito.when(categoryConfigService.getCategoryConfigByCategory(categoryId)).thenReturn(responseDto);
 
@@ -125,12 +125,12 @@ class CategoryConfigControllerTest {
     void testGetAllCategoryConfigById() throws Exception {
         String categoryId = UUID.randomUUID().toString();
         CompatibleOptionGetResponse response = new CompatibleOptionGetResponse("CategoryName", categoryId, "./hello_world.jpg", Collections.emptyList(),
-                VariantStockLeastDto
+                4, List.of(VariantStockLeastDto
                         .builder()
                         .attributeResponse("id")
                         .name("test variant")
                         .inStock(8)
-                        .build(), 2);
+                        .build()), 2);
 
         Mockito.when(categoryConfigService.getCategoryAndCompatibleOption(UUID.fromString(categoryId))).thenReturn(response);
 
