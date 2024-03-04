@@ -81,10 +81,6 @@ public class ProfileServiceImpl implements ProfileService {
             profileShippingResponse.setEmail(user.getEmail());
         }
 
-        if (shipping.getContact() == null && user.getContact() != null) {
-            profileShippingResponse.setContact(mapToProfileContactResponse(user.getContact()));
-        }
-
         return profileShippingResponse;
     }
 
@@ -109,7 +105,13 @@ public class ProfileServiceImpl implements ProfileService {
                 .country(shippingRequest.getCountry())
                 .state(shippingRequest.getState())
                 .city(shippingRequest.getCity())
-                .zipCode(shippingRequest.getZipCode());
+                .zipCode(shippingRequest.getZipCode())
+                .contact(Contact.builder()
+                        .country(shippingRequest.getContact().getCountry())
+                        .phoneNumber(shippingRequest.getContact().getPhoneNumber())
+                        .iso2Code(shippingRequest.getContact().getIso2Code())
+                        .dialCode(shippingRequest.getContact().getDialCode())
+                        .build());
 
         if (shippingRequest.getAddress2() != null) {
             builder.address2(shippingRequest.getAddress2());
@@ -119,8 +121,6 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     private ProfileShippingResponse mapToProfileShippingResponse(Shipping shipping) {
-        Contact contact = shipping.getContact();
-
         return ProfileShippingResponse.builder()
                 .id(shipping.getId())
                 .firstName(shipping.getFirstName())
@@ -132,7 +132,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .city(shipping.getCity())
                 .zipCode(shipping.getZipCode())
                 .email(shipping.getEmail())
-                .contact(contact == null ? null : mapToProfileContactResponse(contact))
+                .contact(mapToProfileContactResponse(shipping.getContact()))
                 .build();
     }
 
