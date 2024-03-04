@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.product;
 
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.VariantStockLeastDto;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
@@ -77,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
                 .totalProductPrice(totalProductPrice)
                 .baseConfigPrice(totalConfigPrice)
                 .category(category)
-                .inStock(inStock.inStock())
+                .inStock(inStock)
                 .productId(request.getProductId())
                 .build();
 
@@ -188,8 +189,8 @@ public class ProductServiceImpl implements ProductService {
             String stockLowOrMore = product.getInStock() <= 5 ? "Low Stock" : "Available";
             String stockStatus = product.getInStock() == 0 ? "No Stock" : stockLowOrMore;
 
-            var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(product.getCategory().getId())).inStock();
-            var zeroOrLowStockAttr = attributeService.getAttributeById(UUID.fromString(inStock.attributeResponse()));
+            List<VariantStockLeastDto> totalLeastStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(product.getCategory().getId())).totalLeastStocks();
+
 
             return ProductResponse.builder()
                     .productName(product.getProductName())
@@ -209,7 +210,7 @@ public class ProductServiceImpl implements ProductService {
                     .serviceCharge(product.getServiceCharge())
                     .imageUrl(product.getProductCase().getImageUrls())
                     .inStock(product.getInStock())
-                    .zeroOrLowStockAttr(product.getInStock() <= 5 ? zeroOrLowStockAttr : null)
+                    .totalLeastStock(totalLeastStock)
                     .build();
         };
     }
@@ -259,7 +260,7 @@ public class ProductServiceImpl implements ProductService {
                 var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
 
                 existingProduct.setCategory(category);
-                existingProduct.setInStock(inStock.inStock());
+                existingProduct.setInStock(inStock);
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
 

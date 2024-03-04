@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.dto.product;
 
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.VariantStockLeastDto;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import lombok.Builder;
@@ -33,7 +34,6 @@ public record ProductResponse(
 
         String stockStatus,
 
-
-        AttributeResponse zeroOrLowStockAttr
+        List<VariantStockLeastDto> totalLeastStock
 ) {
 }
