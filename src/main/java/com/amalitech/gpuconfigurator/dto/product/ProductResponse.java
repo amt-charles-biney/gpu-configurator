@@ -34,6 +34,6 @@ public record ProductResponse(
 
         String stockStatus,
 
-        List<VariantStockLeastDto> totalLeastStock
+        List<AttributeResponse> totalLeastStock
 ) {
 }

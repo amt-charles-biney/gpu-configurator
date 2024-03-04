@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.product;
 
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.VariantStockLeastDto;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -191,6 +193,16 @@ public class ProductServiceImpl implements ProductService {
 
             List<VariantStockLeastDto> totalLeastStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(product.getCategory().getId())).totalLeastStocks();
 
+            List<String> attributeResponses = totalLeastStock.stream()
+                    .map(VariantStockLeastDto::attributeResponse)
+                    .toList();
+
+            List<AttributeResponse> attributeOptions = new ArrayList<>();
+
+            for (var x : attributeResponses) {
+                var option = attributeService.getAttributeById(UUID.fromString(x));
+                attributeOptions.add(option);
+            }
 
             return ProductResponse.builder()
                     .productName(product.getProductName())
@@ -210,7 +222,7 @@ public class ProductServiceImpl implements ProductService {
                     .serviceCharge(product.getServiceCharge())
                     .imageUrl(product.getProductCase().getImageUrls())
                     .inStock(product.getInStock())
-                    .totalLeastStock(totalLeastStock)
+                    .totalLeastStock(attributeOptions)
                     .build();
         };
     }
