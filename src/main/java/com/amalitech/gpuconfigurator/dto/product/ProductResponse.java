@@ -26,6 +26,12 @@ public record ProductResponse(
 
         Integer inStock,
 
+<<<<<<< HEAD
         String stockStatus
+=======
+        String stockStatus,
+
+        List<AttributeResponse> totalLeastStock
+>>>>>>> 30cc83a (feat: variant indicators)
 ) {
 }
