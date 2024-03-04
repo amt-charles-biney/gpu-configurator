@@ -141,7 +141,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
         double totalPrice = compatibleOptionResponseDtoList
                 .stream()
-                .mapToDouble(compatibleOption ->  compatibleOption.price() != null ? compatibleOption.price().doubleValue() : 0.0)
+                .mapToDouble(compatibleOption -> compatibleOption.price() != null ? compatibleOption.price().doubleValue() : 0.0)
                 .sum();
 
         List<VariantStockLeastDto> leastStocks = getTotalLeastStocks(compatibleOptions);
@@ -180,7 +180,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     @Transactional
     public GenericResponse updateCategoryAndConfigs(CompatibleOptionEditResponse compatibleOptionEditResponse) {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(UUID.fromString(compatibleOptionEditResponse.id()))
-                        .orElseThrow(() -> new EntityNotFoundException("configuration does not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("configuration does not exist"));
 
         categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name(), compatibleOptionEditResponse.thumbnail());
         compatibleOptionService.updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
@@ -232,22 +232,22 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     @Override
     @Transactional
     public void updateExistingCategoryConfigs(List<AttributeOption> attributeOptions) {
-        List<CategoryConfig> categoryConfigs =  categoryConfigRepository.findAll();
+        List<CategoryConfig> categoryConfigs = categoryConfigRepository.findAll();
 
-        for (CategoryConfig categoryConfig: categoryConfigs) {
+        for (CategoryConfig categoryConfig : categoryConfigs) {
             List<CompatibleOption> getCategoryCompatibleOptions = categoryConfig.getCompatibleOptions();
 
             List<CompatibleUpdateDto> compatibleUpdateDtos =
                     getNewDistinctAttributeOptions(attributeOptions, getCategoryCompatibleOptions).stream()
-                    .map(option -> CompatibleUpdateDto.builder()
-                            .attributeId(option.getAttribute().getId().toString())
-                            .attributeOptionId(option.getId().toString())
-                            .size(option.getBaseAmount() != null ? Math.round(option.getBaseAmount()) : 0)
-                            .isCompatible(true)
-                            .isIncluded(false)
-                            .isMeasured(option.getAttribute().isMeasured())
-                            .build())
-                    .toList();
+                            .map(option -> CompatibleUpdateDto.builder()
+                                    .attributeId(option.getAttribute().getId().toString())
+                                    .attributeOptionId(option.getId().toString())
+                                    .size(option.getBaseAmount() != null ? Math.round(option.getBaseAmount()) : 0)
+                                    .isCompatible(true)
+                                    .isIncluded(false)
+                                    .isMeasured(option.getAttribute().isMeasured())
+                                    .build())
+                            .toList();
 
             compatibleOptionService.updateBulkCompatibleOptions(categoryConfig, compatibleUpdateDtos);
         }
@@ -265,9 +265,9 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .toList();
     }
 
-    private Map<String, List<CompatibleOptionResponseDto>>  mapToCompatibleOptionResponseDtoMap(List<CompatibleOption> compatibleOptions) {
+    private Map<String, List<CompatibleOptionResponseDto>> mapToCompatibleOptionResponseDtoMap(List<CompatibleOption> compatibleOptions) {
 
-                return compatibleOptions.stream()
+        return compatibleOptions.stream()
                 .collect(Collectors.groupingBy((option) -> option.getAttributeOption().getAttribute().getAttributeName(),
                         Collectors.mapping(option -> CompatibleOptionResponseDto.builder()
                                         .compatibleOptionId(option.getId().toString())
@@ -290,10 +290,12 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                                 Collectors.toList())));
 
     }
+
     public Long extractProductCount(UUID category) {
         return productRepository.countProductsByCategoryId(category);
     }
-    public AttributeOption getAttributeOption (String id) {
+
+    public AttributeOption getAttributeOption(String id) {
         return attributeOptionRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("could not find attribute option"));
     }
 

@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -191,17 +192,20 @@ public class ProductServiceImpl implements ProductService {
             String stockLowOrMore = product.getInStock() <= 5 ? "Low Stock" : "Available";
             String stockStatus = product.getInStock() == 0 ? "No Stock" : stockLowOrMore;
 
-            List<VariantStockLeastDto> totalLeastStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(product.getCategory().getId())).totalLeastStocks();
+            List<AttributeResponse> attributeOptions = Collections.emptyList();
 
-            List<String> attributeResponses = totalLeastStock.stream()
-                    .map(VariantStockLeastDto::attributeResponse)
-                    .toList();
+            try {
+                List<VariantStockLeastDto> totalLeastStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(product.getCategory().getId())).totalLeastStocks();
 
-            List<AttributeResponse> attributeOptions = new ArrayList<>();
+                List<String> attributeResponses = totalLeastStock.stream()
+                        .map(VariantStockLeastDto::attributeResponse)
+                        .toList();
 
-            for (var x : attributeResponses) {
-                var option = attributeService.getAttributeById(UUID.fromString(x));
-                attributeOptions.add(option);
+                attributeOptions = attributeResponses.stream()
+                        .map(x -> attributeService.getAttributeById(UUID.fromString(x)))
+                        .toList();
+            } catch (EntityNotFoundException ex) {
+                // handling the exception here will cause the UI to break
             }
 
             return ProductResponse.builder()
