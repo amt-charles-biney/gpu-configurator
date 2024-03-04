@@ -51,12 +51,12 @@ public class AttributeOption {
     @Column(name="price_increment")
     private Double priceFactor;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private Attribute attribute;
 
     private Integer inStock;
 
-    @OneToMany(mappedBy = "attributeOption", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "attributeOption", cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
     private List<CompatibleOption> compatibleOptions;

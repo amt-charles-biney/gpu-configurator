@@ -37,7 +37,8 @@ public class Category {
     private LocalDateTime deletedAt;
 
     @OneToMany(
-            mappedBy = "category"
+            mappedBy = "category",
+            cascade = CascadeType.MERGE
     )
     @ToString.Exclude
     private List<Product> products = new ArrayList<>();
