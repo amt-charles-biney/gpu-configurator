@@ -93,6 +93,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .category(categoryResponse)
                 .options(compatibleGroupedByType)
                 .inStock(inStock)
+                .totalLeastStocks(totalLeastStock)
                 .build();
     }
 
