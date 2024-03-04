@@ -38,6 +38,8 @@ public class ProfileShippingRequest {
     @NotBlank
     private String zipCode;
 
+    private String email;
+
     @Valid
     @NotNull
     private ContactRequest contact;

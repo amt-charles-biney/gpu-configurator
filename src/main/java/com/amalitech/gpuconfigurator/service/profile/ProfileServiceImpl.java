@@ -106,6 +106,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .state(shippingRequest.getState())
                 .city(shippingRequest.getCity())
                 .zipCode(shippingRequest.getZipCode())
+                .email(shippingRequest.getEmail())
                 .contact(Contact.builder()
                         .country(shippingRequest.getContact().getCountry())
                         .phoneNumber(shippingRequest.getContact().getPhoneNumber())
