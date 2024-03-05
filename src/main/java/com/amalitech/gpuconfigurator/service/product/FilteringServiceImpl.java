@@ -82,7 +82,7 @@ public class FilteringServiceImpl implements FilteringService {
             }
         }
 
-        return productRepository.findAll(spec).stream().filter(product -> !"unassigned".equals(product.getCategory().getCategoryName()) && !product.getInStock().equals(0)).toList();
+        return productRepository.findAll(spec).stream().filter(product -> !"unassigned".equals(product.getCategory().getCategoryName())).toList();
     }
 
     @NotNull

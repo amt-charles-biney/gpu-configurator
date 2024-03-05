@@ -25,7 +25,6 @@ public class ResponseMapper {
                                 .build())
                         .productDescription(product.getProductDescription())
                         .productAvailability(product.getProductAvailability())
-                        .inStock(product.getInStock())
                         .build())
                 .toList();
     }
