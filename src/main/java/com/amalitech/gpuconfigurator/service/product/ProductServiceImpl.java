@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -147,7 +148,6 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
-
     public Page<ProductResponse> getAllProducts(int page, int size, String sort) {
         if (sort == null) {
             sort = "createdAt";
@@ -157,12 +157,17 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> productPage = productRepository.findAll(pageRequest);
 
         List<ProductResponse> productResponseList = productPage.getContent().stream()
-                .filter(product -> !"unassigned".equals(product.getCategory().getCategoryName()))
+                .filter(prod -> {
+                    var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(prod.getCategory().getId())).inStock();
+
+                    return inStock != 0 && !"unassigned".equals(prod.getCategory().getCategoryName());
+                })
                 .map(getProductProductResponseFunction())
                 .toList();
 
-        return new PageImpl<>(productResponseList, pageRequest, productPage.getTotalElements());
+        return new PageImpl<>(productResponseList, pageRequest, productResponseList.size());
     }
+
 
     public Page<ProductResponse> getAllProductsAdmin(int page, int size, String sort) {
         if (sort == null) {
