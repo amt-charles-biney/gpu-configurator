@@ -26,7 +26,6 @@ import java.util.UUID;
 public class ProductController {
 
     private final ProductServiceImpl productService;
-    private final UploadImageService cloudinaryImage;
     private final FilteringService filteringService;
     private final SearchService searchService;
 

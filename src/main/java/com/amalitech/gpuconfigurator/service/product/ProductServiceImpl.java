@@ -24,12 +24,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -56,8 +54,6 @@ public class ProductServiceImpl implements ProductService {
                 .map(configs -> configs.getAttributeOption().getPriceAdjustment())
                 .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
 
-        var inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(category.getId())).inStock();
-
         BigDecimal percentageOfServiceChargeMultiplyByCasePrice = BigDecimal.valueOf(request.getServiceCharge())
                 .divide(BigDecimal.valueOf(100))
                 .multiply(productCase.getPrice().add(totalConfigPrice)).setScale(2, RoundingMode.HALF_UP);
@@ -75,7 +71,6 @@ public class ProductServiceImpl implements ProductService {
                 .totalProductPrice(totalProductPrice)
                 .baseConfigPrice(totalConfigPrice)
                 .category(category)
-                .inStock(inStock)
                 .productId(request.getProductId())
                 .build();
 
@@ -95,7 +90,6 @@ public class ProductServiceImpl implements ProductService {
                 .productCategory(category.getCategoryName())
                 .coverImage(product.getProductCase().getCoverImageUrl())
                 .imageUrl(product.getProductCase().getImageUrls())
-                .inStock(product.getInStock())
                 .createdAt(product.getCreatedAt())
                 .build();
     }
@@ -120,7 +114,7 @@ public class ProductServiceImpl implements ProductService {
                                 .id(String.valueOf(product.getCategory().getId()))
                                 .build())
                         .imageUrl(product.getProductCase().getImageUrls())
-                        .inStock(product.getInStock())
+                        .serviceCharge(product.getServiceCharge())
                         .build()).toList();
     }
 
@@ -138,7 +132,6 @@ public class ProductServiceImpl implements ProductService {
                 .productAvailability(product.getProductAvailability())
                 .productCase(product.getProductCase().getName())
                 .coverImage(product.getProductCase().getCoverImageUrl())
-                .inStock(product.getInStock())
                 .isFeatured(product.getFeatured())
                 .serviceCharge(product.getServiceCharge())
                 .imageUrl(product.getProductCase().getImageUrls())
@@ -179,15 +172,20 @@ public class ProductServiceImpl implements ProductService {
     @NotNull
     private static Function<Product, ProductResponse> getProductProductResponseFunction() {
         return product -> {
-            String stockLowOrMore = product.getInStock() <= 5 ? "Low Stock" : "Available";
-            String stockStatus = product.getInStock() == 0 ? "No Stock" : stockLowOrMore;
+            String stockStatus = "";
 
 
             List<VariantStockLeastDto> totalLeastStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(product.getCategory().getId())).totalLeastStocks();
             List<AttributeResponse> attributeOptions = Collections.emptyList();
 
+            Integer inStock = 0;
             try {
                 List<VariantStockLeastDto> totalLeastStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(product.getCategory().getId())).totalLeastStocks();
+
+                inStock = categoryConfig.getCategoryConfigByCategory(String.valueOf(product.getCategory().getId())).inStock();
+
+                String stockLowOrMore = inStock <= 5 ? "Low Stock" : "Available";
+                stockStatus = inStock == 0 ? "No Stock" : stockLowOrMore;
 
                 List<String> attributeResponses = totalLeastStock.stream()
                         .map(VariantStockLeastDto::attributeResponse)
@@ -215,7 +213,7 @@ public class ProductServiceImpl implements ProductService {
                             .build())
                     .stockStatus(stockStatus)
                     .imageUrl(product.getProductCase().getImageUrls())
-                    .inStock(product.getInStock())
+                    .inStock(inStock)
                     .totalLeastStock(attributeOptions)
                     .build();
         };
@@ -251,6 +249,8 @@ public class ProductServiceImpl implements ProductService {
             if (updatedProductDto.getCategory() != null) {
                 var newCategory = categoryRepository.findByCategoryName(updatedProductDto.getCategory()).orElseThrow();
                 existingProduct.setCategory(newCategory);
+                Category category = categoryService.getCategory(updatedProductDto.getCategory());
+                existingProduct.setCategory(category);
                 existingProduct.setUpdatedAt(LocalDateTime.now());
             }
 
@@ -258,6 +258,46 @@ public class ProductServiceImpl implements ProductService {
             return mapProductToProductResponse(updatedProduct);
         } catch (NotFoundException e) {
             throw new NotFoundException("No product found");
+        }
+    }
+
+
+    @Override
+    public GenericResponse deleteBulkProducts(List<String> productIds) {
+        List<UUID> selectedProductUUID = productIds.stream()
+                .map(UUID::fromString)
+                .toList();
+
+        productRepository.deleteAllById(selectedProductUUID);
+        return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted bulk products successful");
+    }
+
+    @Override
+    @Transactional
+    public void updateCategoryStock(UUID categoryId, UpdateProductConfigsDto request) {
+        updateProductPrices(productRepository.findProductsByCategoryName(categoryId), request.getBaseConfigPrice());
+    }
+
+    @Override
+    @Transactional
+    public void updateTotalPriceWhenUpdatingCase(UUID caseId, BigDecimal casePrice) {
+        updateProductPrices(productRepository.findProductsByProductCase(caseId), casePrice);
+    }
+
+    private void updateProductPrices(List<Product> products, BigDecimal baseConfigPrice) {
+        for (var product : products) {
+            Double serviceCharge = product.getServiceCharge();
+
+            BigDecimal updatedPercentageOfServiceChargeMultiplyByCasePrice = BigDecimal.valueOf(serviceCharge)
+                    .divide(BigDecimal.valueOf(100))
+                    .multiply(product.getProductCase().getPrice().add(baseConfigPrice)).setScale(2, RoundingMode.HALF_UP);
+
+            BigDecimal updatedTotalPrice = updatedPercentageOfServiceChargeMultiplyByCasePrice
+                    .add(baseConfigPrice).add(product.getProductCase().getPrice())
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            product.setTotalProductPrice(updatedTotalPrice);
+            productRepository.save(product);
         }
     }
 
@@ -277,7 +317,6 @@ public class ProductServiceImpl implements ProductService {
                 .productId(updatedProduct.getProductId())
                 .productDescription(updatedProduct.getProductDescription())
                 .productPrice(updatedProduct.getTotalProductPrice())
-                .inStock(updatedProduct.getInStock())
                 .serviceCharge(updatedProduct.getServiceCharge())
                 .productAvailability(updatedProduct.getProductAvailability())
                 .build();

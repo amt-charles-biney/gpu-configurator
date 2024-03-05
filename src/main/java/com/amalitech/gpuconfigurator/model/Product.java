@@ -50,9 +50,6 @@ public class Product {
     ))
     private Case productCase;
 
-    @Column(name = "product_instock", nullable = false)
-    private Integer inStock;
-
     @JsonIgnore
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(
@@ -84,25 +81,34 @@ public class Product {
         featured = false;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Product product)) return false;
-        return Objects.equals(getId(), product.getId()) && Objects.equals(getProductName(), product.getProductName())
-                && Objects.equals(getProductId(), product.getProductId()) && Objects.equals(getProductDescription(), product.getProductDescription())
-                && Objects.equals(getServiceCharge(), product.getServiceCharge()) && Objects.equals(getTotalProductPrice(), product.getTotalProductPrice())
-                && Objects.equals(getBaseConfigPrice(), product.getBaseConfigPrice()) && Objects.equals(getProductCase(), product.getProductCase())
-                && Objects.equals(getInStock(), product.getInStock()) && Objects.equals(getCategory(), product.getCategory())
-                && Objects.equals(getConfigurations(), product.getConfigurations()) && Objects.equals(getFeatured(), product.getFeatured())
-                && Objects.equals(getProductAvailability(), product.getProductAvailability()) && Objects.equals(getCreatedAt(), product.getCreatedAt())
-                && Objects.equals(getUpdatedAt(), product.getUpdatedAt()) && Objects.equals(getDeletedAt(), product.getDeletedAt());
+        return Objects.equals(getId(), product.getId()) &&
+                Objects.equals(getProductName(), product.getProductName())
+                && Objects.equals(getProductId(), product.getProductId()) &&
+                Objects.equals(getProductDescription(), product.getProductDescription()) &&
+                Objects.equals(getServiceCharge(), product.getServiceCharge()) &&
+                Objects.equals(getTotalProductPrice(), product.getTotalProductPrice()) &&
+                Objects.equals(getBaseConfigPrice(), product.getBaseConfigPrice()) && Objects.equals(getProductCase(), product.getProductCase())
+                && Objects.equals(getCategory(), product.getCategory())
+                && Objects.equals(getConfigurations(), product.getConfigurations())
+                && Objects.equals(getFeatured(), product.getFeatured())
+                && Objects.equals(getProductAvailability(), product.getProductAvailability())
+                && Objects.equals(getCreatedAt(), product.getCreatedAt())
+                && Objects.equals(getUpdatedAt(), product.getUpdatedAt())
+                && Objects.equals(getDeletedAt(), product.getDeletedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getProductName(), getProductId(), getProductDescription(),
-                getServiceCharge(), getTotalProductPrice(), getBaseConfigPrice(), getProductCase(),
-                getInStock(), getCategory(), getConfigurations(), getFeatured(), getProductAvailability(),
-                getCreatedAt(), getUpdatedAt(), getDeletedAt());
+        return Objects.hash(getId(),
+                getProductName(),
+                getProductId(), getProductDescription(), getServiceCharge(),
+                getTotalProductPrice(), getBaseConfigPrice(), getProductCase(), getCategory(),
+                getConfigurations(), getFeatured(), getProductAvailability(), getCreatedAt(), getUpdatedAt(),
+                getDeletedAt());
     }
 }
