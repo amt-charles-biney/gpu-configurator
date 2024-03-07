@@ -48,6 +48,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+    @ExceptionHandler(CannotAddItemToCartException.class)
+    public ResponseEntity<Object> handleCannotAddItemToCartException(Exception e) {
+        return buildResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     private ResponseEntity<Object> buildResponse(HttpStatus status, String detail) {
         ProblemDetail errorDetail = ProblemDetail.forStatus(status);
         errorDetail.setDetail(detail);
