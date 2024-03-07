@@ -240,7 +240,6 @@ class ProductServiceImplTest {
                 .category(category)
                 .productDescription("Description 1")
                 .productName("Product 1")
-                .inStock(20)
                 .productAvailability(true)
                 .build();
 
@@ -253,7 +252,6 @@ class ProductServiceImplTest {
                 .category(category)
                 .productDescription("Description 2")
                 .productName("Product 2")
-                .inStock(20)
                 .productAvailability(true)
                 .build();
 
@@ -289,7 +287,6 @@ class ProductServiceImplTest {
                 .category(category)
                 .productDescription("Description 1")
                 .productName("Product 1")
-                .inStock(20)
                 .productAvailability(true)
                 .build();
 
@@ -320,7 +317,6 @@ class ProductServiceImplTest {
                 .category(category)
                 .productDescription("Description 1")
                 .productName("Product 1")
-                .inStock(20)
                 .featured(false)
                 .productAvailability(true)
                 .build();
@@ -334,7 +330,6 @@ class ProductServiceImplTest {
                 .category(category)
                 .productDescription("Description 2")
                 .productName("Product 2")
-                .inStock(20)
                 .featured(false)
                 .productAvailability(true)
                 .build();
@@ -372,7 +367,6 @@ class ProductServiceImplTest {
                 .category(category)
                 .productDescription("Description 1")
                 .productName("Product 1")
-                .inStock(20)
                 .featured(false)
                 .productAvailability(true)
                 .build();
@@ -386,7 +380,6 @@ class ProductServiceImplTest {
                 .category(category)
                 .productDescription("Description 2")
                 .productName("Product 2")
-                .inStock(20)
                 .featured(false)
                 .productAvailability(true)
                 .build();
@@ -419,7 +412,6 @@ class ProductServiceImplTest {
                 .category(category)
                 .productDescription("Description ")
                 .productName("Product ")
-                .inStock(20)
                 .featured(false)
                 .productAvailability(true)
                 .build();
@@ -454,7 +446,6 @@ class ProductServiceImplTest {
                 .category(category)
                 .productDescription("Description ")
                 .productName("Product ")
-                .inStock(20)
                 .featured(false)
                 .productAvailability(true)
                 .build();
@@ -468,7 +459,6 @@ class ProductServiceImplTest {
                 .category(category)
                 .productDescription("Description ")
                 .productName("Product ")
-                .inStock(20)
                 .featured(false)
                 .productAvailability(true)
                 .build();
@@ -482,8 +472,7 @@ class ProductServiceImplTest {
 
         // Then
         verify(productRepository, times(1)).findProductsByCategoryName(category.getId());
-        assertEquals(request.getInStock(), existingProduct1.getInStock());
-        assertEquals(request.getInStock(), existingProduct2.getInStock());
+
 
         assertEquals(request.getBaseConfigPrice(), existingProduct1.getBaseConfigPrice());
 

@@ -151,7 +151,6 @@ class FeaturedServiceImplTest {
                 .featured(false)
                 .productAvailability(true)
                 .serviceCharge(20.0)
-                .inStock(10)
                 .productCase(productCase)
                 .category(category)
                 .build();

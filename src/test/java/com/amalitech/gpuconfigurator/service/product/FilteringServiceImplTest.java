@@ -166,7 +166,6 @@ class FilteringServiceImplTest {
                 .productAvailability(true)
                 .totalProductPrice(BigDecimal.valueOf(1000))
                 .productCase(productCase)
-                .inStock(0)
                 .build();
 
         Product product2 = Product.builder()
@@ -177,7 +176,6 @@ class FilteringServiceImplTest {
                 .productAvailability(true)
                 .totalProductPrice(BigDecimal.valueOf(100))
                 .productCase(productCase)
-                .inStock(1)
                 .build();
 
         List<Product> actualResponse = List.of(product1, product2);
@@ -206,7 +204,6 @@ class FilteringServiceImplTest {
                 .productAvailability(true)
                 .totalProductPrice(BigDecimal.valueOf(1000))
                 .productCase(productCase)
-                .inStock(1)
                 .build();
 
         Product product2 = Product.builder()
@@ -217,7 +214,6 @@ class FilteringServiceImplTest {
                 .productAvailability(true)
                 .totalProductPrice(BigDecimal.valueOf(100))
                 .productCase(null)
-                .inStock(0)
                 .build();
 
         List<Product> actualResponse = List.of(product1);
@@ -247,7 +243,6 @@ class FilteringServiceImplTest {
                 .productAvailability(true)
                 .totalProductPrice(BigDecimal.valueOf(1000))
                 .productCase(productCase)
-                .inStock(0)
                 .build();
 
         Product product2 = Product.builder()
@@ -258,7 +253,6 @@ class FilteringServiceImplTest {
                 .productAvailability(true)
                 .totalProductPrice(BigDecimal.valueOf(100))
                 .productCase(null)
-                .inStock(1)
                 .build();
 
         List<Product> actualResponse = List.of(product1, product2);
