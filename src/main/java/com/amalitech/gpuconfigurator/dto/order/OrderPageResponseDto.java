@@ -1,21 +1,18 @@
 package com.amalitech.gpuconfigurator.dto.order;
 
-import com.amalitech.gpuconfigurator.model.OrderType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
 
+@Data
 @Builder
-public record OrderPageResponseDto(
-        String productCoverImage,
-        String productName,
-        UUID orderId,
-        String customerName,
-        String paymentMethod,
-        OrderType status,
-        LocalDateTime date,
-        BigDecimal totalPrice
-        ) {
+@AllArgsConstructor
+@NoArgsConstructor
+public class OrderPageResponseDto {
+    private List<OrderResponseDto> orders;
+    private long total;
 }
+

@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.order;
 
 
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
+import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 
 
@@ -10,10 +11,14 @@ import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.function.Function;
 
 
 @Service
@@ -60,5 +65,18 @@ public class OrderServiceImpl implements OrderService {
                 .orderId(order.getId())
                 .build();
     }
+
+    @Override
+    public Page<OrderResponseDto> getAllOrders(Integer page, Integer size, String sort) {
+        if(sort == null){
+            sort = "createdAt";
+        }
+
+        PageRequest orderRequest = PageRequest.of(page,size, Sort.by(sort).descending());
+        Page<Order> orderPage = orderRepository.findAll(orderRequest);
+        
+        return orderPage.map(getOrderResponseFuntion());
+    }
+
 
 }
