@@ -1,6 +1,5 @@
 package com.amalitech.gpuconfigurator.service.order;
 
-import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
 import jakarta.transaction.Transactional;
