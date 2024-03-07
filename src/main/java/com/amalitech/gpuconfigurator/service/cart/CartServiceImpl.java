@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.dto.cart.CartItemsCountResponse;
 import com.amalitech.gpuconfigurator.dto.cart.CartItemsResponse;
 import com.amalitech.gpuconfigurator.dto.cart.DeleteCartItemResponse;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
+import com.amalitech.gpuconfigurator.exception.CannotAddItemToCartException;
 import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
@@ -54,6 +55,12 @@ public class CartServiceImpl implements CartService {
         } else if (user.getCart() == null) {
             user.setCart(cart);
             userRepository.save(user);
+        }
+
+        long cartItemsCount = configuredProductRepository.countByCartId(cart.getId());
+
+        if (cartItemsCount != 0) {
+            throw new CannotAddItemToCartException("Cart already contains one configured product. Checkout configured product to continue.");
         }
 
         ConfigurationResponseDto configuredProductResponse = configuredProductService.saveConfiguration(productId.toString(), warranty, components, cart);
