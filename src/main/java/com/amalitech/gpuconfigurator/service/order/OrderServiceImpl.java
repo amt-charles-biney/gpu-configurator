@@ -9,17 +9,17 @@ import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
+import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.function.Function;
 
 
 @Service
@@ -27,7 +27,6 @@ import java.util.function.Function;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final CartService cartService;
     private final UserRepository userRepository;
     private final UserSessionRepository userSessionRepository;
 
@@ -68,22 +67,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderResponseDto> getAllOrders(Integer page, Integer size, String sort) {
-        if(sort == null){
-            sort = "createdAt";
-        }
+    public Page<OrderResponseDto> getAllOrders(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
 
-        PageRequest orderRequest = PageRequest.of(page,size, Sort.by(sort).descending());
-        Page<Order> orderPage = orderRepository.findAll(orderRequest);
-        
-        return orderPage.map(getOrderResponseFuntion());
+        return orderRepository.findAll(pageable).map(this::mapOrderToOrderResponseDto);
     }
 
-    @NotNull
-    private Function<? super Order, OrderResponseDto> getOrderResponseFuntion() {
-        return order -> OrderResponseDto.builder()
+    private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
+        return OrderResponseDto.builder()
                 .orderId(order.getId())
-//                .productName(order.)
                 .build();
     }
 
