@@ -10,6 +10,7 @@ import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -76,6 +77,14 @@ public class OrderServiceImpl implements OrderService {
         Page<Order> orderPage = orderRepository.findAll(orderRequest);
         
         return orderPage.map(getOrderResponseFuntion());
+    }
+
+    @NotNull
+    private Function<? super Order, OrderResponseDto> getOrderResponseFuntion() {
+        return order -> OrderResponseDto.builder()
+                .orderId(order.getId())
+//                .productName(order.)
+                .build();
     }
 
 
