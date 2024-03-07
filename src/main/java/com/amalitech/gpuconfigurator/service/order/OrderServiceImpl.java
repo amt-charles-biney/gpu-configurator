@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.service.order;
 
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
+import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 
 
@@ -19,7 +20,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.UUID;
 
 
 @Service
@@ -76,6 +79,13 @@ public class OrderServiceImpl implements OrderService {
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
         return OrderResponseDto.builder()
                 .orderId(order.getId())
+                .products(order.getCart().getConfiguredProducts())
+                .paymentMethod(order.getPayment().getChannel())
+                .status(order.getStatus())
+                .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
+                .totalPrice(order.getCart().getConfiguredProducts().stream()
+                        .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
+                .date(order.getCreatedAt())
                 .build();
     }
 
