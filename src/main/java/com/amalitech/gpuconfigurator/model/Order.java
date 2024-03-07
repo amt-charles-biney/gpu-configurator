@@ -17,7 +17,7 @@ import java.util.UUID;
 @Entity(name = "Order")
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @Enumerated(EnumType.STRING)
@@ -25,12 +25,15 @@ public class Order {
     private OrderType status;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<Payment> payments;
+    @OneToOne(cascade = CascadeType.ALL)
+    private Payment payment;
+
+    @OneToOne
+    private Cart cart;
+
 
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
