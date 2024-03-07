@@ -18,19 +18,12 @@ public class OrderController {
     @CrossOrigin
     @GetMapping("/v1/admin/orders")
 
-    public ResponseEntity<OrderPageResponseDto> getOrders(
+    public ResponseEntity<Page<OrderResponseDto>> getOrders(
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(required = false) Integer size,
-            @RequestParam(required = false) String sort
-    ) {
-        OrderPageResponseDto orderResponse = new OrderPageResponseDto();
+            @RequestParam(defaultValue = "100") Integer size
 
-        if(page != null && size != null){
-            Page<OrderResponseDto> orders = orderService.getAllOrders(page,size,sort);
-            orderResponse.setOrders(orders.getContent());
-            orderResponse.setTotal(orders.getTotalElements());
-        }
-        return ResponseEntity.ok(orderResponse);
+    ) {
+     return ResponseEntity.ok(orderService.getAllOrders(page,size));
     }
 
 }
