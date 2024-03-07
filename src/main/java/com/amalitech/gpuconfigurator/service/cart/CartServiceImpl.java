@@ -5,26 +5,18 @@ import com.amalitech.gpuconfigurator.dto.cart.CartItemsCountResponse;
 import com.amalitech.gpuconfigurator.dto.cart.CartItemsResponse;
 import com.amalitech.gpuconfigurator.dto.cart.DeleteCartItemResponse;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
-import com.amalitech.gpuconfigurator.model.Cart;
-import com.amalitech.gpuconfigurator.model.Product;
-import com.amalitech.gpuconfigurator.model.User;
-import com.amalitech.gpuconfigurator.model.UserSession;
+import com.amalitech.gpuconfigurator.model.*;
+import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
-import com.amalitech.gpuconfigurator.repository.CartRepository;
-import com.amalitech.gpuconfigurator.repository.ConfigurationRepository;
-import com.amalitech.gpuconfigurator.repository.UserRepository;
-import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
+import com.amalitech.gpuconfigurator.repository.*;
 import com.amalitech.gpuconfigurator.service.configuration.ConfigurationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +26,7 @@ public class CartServiceImpl implements CartService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final UserSessionRepository userSessionRepository;
+    private final CompatibleOptionRepository compatibleOptionRepository;
 
     @Override
     public CartItemsCountResponse getCartItemsCount(Principal principal, UserSession userSession) {
@@ -67,7 +60,7 @@ public class CartServiceImpl implements CartService {
 
         return AddCartItemResponse.builder()
                 .message("Configured product added to cart successfully")
-                .configuration(configuredProductResponse)
+                .configuration(setMaximumStock(configuredProductResponse))
                 .build();
     }
 
@@ -99,6 +92,7 @@ public class CartServiceImpl implements CartService {
         List<ConfigurationResponseDto> configuredProducts = configuredProductRepository.findByCartId(optionalCart.get().getId())
                 .stream()
                 .map(this::mapToConfigurationResponseDto)
+                .map(this::setMaximumStock)
                 .toList();
 
         return new CartItemsResponse(configuredProducts, configuredProducts.size());
@@ -133,6 +127,36 @@ public class CartServiceImpl implements CartService {
                 .vat(null)
                 .configuredPrice(null)
                 .configured(configuredProduct.getConfiguredOptions())
+                .build();
+    }
+
+    private ConfigurationResponseDto setMaximumStock(ConfigurationResponseDto dto) {
+        Set<UUID> compatibleOptionIds = dto.configured()
+                .stream()
+                .map(ConfigOptions::getOptionId)
+                .map(UUID::fromString)
+                .collect(Collectors.toSet());
+
+        List<CompatibleOption> compatibleOptions = compatibleOptionRepository.findAllById(compatibleOptionIds);
+
+        int stock = Integer.MAX_VALUE;
+        for (CompatibleOption compatibleOption : compatibleOptions) {
+            stock = Math.min(stock, compatibleOption.getAttributeOption().getInStock());
+        }
+
+        return ConfigurationResponseDto.builder()
+                .Id(dto.Id())
+                .totalPrice(dto.totalPrice())
+                .productId(dto.productId())
+                .productName(dto.productName())
+                .productPrice(dto.productPrice())
+                .productDescription(dto.productDescription())
+                .productCoverImage(dto.productCoverImage())
+                .configuredPrice(dto.configuredPrice())
+                .configured(dto.configured())
+                .vat(dto.vat())
+                .warranty(dto.warranty())
+                .stock(compatibleOptions.isEmpty() ? 0 : stock)
                 .build();
     }
 }
