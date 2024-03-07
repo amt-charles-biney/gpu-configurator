@@ -207,6 +207,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return ConfigurationResponseDto.builder()
                 .Id(String.valueOf(configuration.getId()))
                 .productName(product.getProductName())
+                .coverImage(product.getProductCase().getCoverImageUrl())
                 .productId(String.valueOf(configuration.getProduct().getId()))
                 .totalPrice(totalPriceWithVat)
                 .warranty(warranty)

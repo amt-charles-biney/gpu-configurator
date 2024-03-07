@@ -12,5 +12,5 @@ import java.util.List;
 public record ConfigurationResponseDto(String Id, BigDecimal totalPrice, String productId, String productName,
                                        BigDecimal productPrice,
                                        BigDecimal configuredPrice, List<ConfigOptions> configured, BigDecimal vat,
-                                       Boolean warranty) {
+                                       Boolean warranty, String coverImage) {
 }
