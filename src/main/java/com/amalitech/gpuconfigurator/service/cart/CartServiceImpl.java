@@ -26,7 +26,6 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final UserSessionRepository userSessionRepository;
     private final CompatibleOptionRepository compatibleOptionRepository;
-    private final ConfigurationOptionsRepository configurationOptionsRepository;
 
     @Override
     public CartItemsCountResponse getCartItemsCount(Principal principal, UserSession userSession) {
@@ -159,6 +158,7 @@ public class CartServiceImpl implements CartService {
                 .vat(null)
                 .configuredPrice(null)
                 .configured(configuredProduct.getConfiguredOptions())
+                .quantity(configuredProduct.getQuantity())
                 .build();
     }
 
@@ -189,6 +189,7 @@ public class CartServiceImpl implements CartService {
                 .vat(dto.vat())
                 .warranty(dto.warranty())
                 .stock(compatibleOptions.isEmpty() ? 0 : stock)
+                .quantity(dto.quantity())
                 .build();
     }
 }
