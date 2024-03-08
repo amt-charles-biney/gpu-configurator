@@ -10,7 +10,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
-public record ConfigurationResponseDto(@JsonProperty("id") String Id, BigDecimal totalPrice, String productId,String productName , BigDecimal productPrice, String productDescription, String productCoverImage,
+public record ConfigurationResponseDto(@JsonProperty("id") String Id, BigDecimal totalPrice, String productId,
+                                       String productName, BigDecimal productPrice, String productDescription,
+                                       String productCoverImage,
                                        BigDecimal configuredPrice, List<ConfigOptions> configured, BigDecimal vat,
-                                       Boolean warranty, String coverImage) {
+
+                                       Boolean warranty, int stock) {
 }
