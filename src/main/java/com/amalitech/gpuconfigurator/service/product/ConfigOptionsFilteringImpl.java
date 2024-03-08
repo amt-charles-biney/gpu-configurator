@@ -1,9 +1,11 @@
 package com.amalitech.gpuconfigurator.service.product;
 
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigResponseDto;
+import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
+import com.amalitech.gpuconfigurator.service.brand.BrandService;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -64,30 +66,27 @@ public class ConfigOptionsFilteringImpl implements ConfigOptionsFiltering {
     }
 
     @Override
-    public Set<UUID> getBrand(String brand) {
+    public List<UUID> getBrand(String brand) {
         List<Product> products = productRepository.findAll();
-        Set<UUID> brandList = new HashSet<>();
-        Set<String> uniqueBrandNames = new HashSet<>();
-
+        List<UUID> brandList = new ArrayList<>();
         if (brand != null && !brand.isEmpty()) {
             String[] brandNameList = brand.split(",");
 
             for (Product product : products) {
                 var configs = categoryConfigService.getCategoryConfig(String.valueOf(product.getCategory().getId()));
                 for (String name : brandNameList) {
-                    if (!uniqueBrandNames.contains(name.trim()) &&
-                            configs.getCompatibleOptions().stream()
-                                    .anyMatch(option -> option.getAttributeOption().getBrand().equalsIgnoreCase(name.trim()))) {
+                    if (configs.getCompatibleOptions().stream()
+                            .anyMatch(option -> option.getAttributeOption().getBrand().equalsIgnoreCase(name.trim()))) {
                         brandList.add(product.getId());
-                        uniqueBrandNames.add(name.trim());
                         break;
                     }
                 }
             }
+
         }
+
         return brandList;
     }
-
 
 
 }

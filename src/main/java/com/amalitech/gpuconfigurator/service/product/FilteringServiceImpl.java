@@ -65,7 +65,7 @@ public class FilteringServiceImpl implements FilteringService {
         }
 
         if (brand != null && !brand.isEmpty()) {
-            Set<UUID> matchingProductIds = configOptionsFiltering.getBrand(brand);
+            List<UUID> matchingProductIds = configOptionsFiltering.getBrand(brand);
             if (!matchingProductIds.isEmpty()) {
                 spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProductIds));
             } else {

@@ -1,8 +1,6 @@
 package com.amalitech.gpuconfigurator.dto.configuration;
 
 import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonKey;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
