@@ -53,8 +53,8 @@ public class Configuration {
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;
 
-    @Column(nullable = false)
-    private int quantity = 1;
+    @Column(nullable = false, columnDefinition = "integer default 1")
+    private int quantity;
 
     @Override
     public final boolean equals(Object o) {
