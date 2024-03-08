@@ -1,11 +1,9 @@
 package com.amalitech.gpuconfigurator.service.cart;
 
-import com.amalitech.gpuconfigurator.dto.cart.AddCartItemResponse;
-import com.amalitech.gpuconfigurator.dto.cart.CartItemsCountResponse;
-import com.amalitech.gpuconfigurator.dto.cart.CartItemsResponse;
-import com.amalitech.gpuconfigurator.dto.cart.DeleteCartItemResponse;
+import com.amalitech.gpuconfigurator.dto.cart.*;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.exception.CannotAddItemToCartException;
+import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
@@ -28,6 +26,7 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final UserSessionRepository userSessionRepository;
     private final CompatibleOptionRepository compatibleOptionRepository;
+    private final ConfigurationOptionsRepository configurationOptionsRepository;
 
     @Override
     public CartItemsCountResponse getCartItemsCount(Principal principal, UserSession userSession) {
@@ -103,6 +102,32 @@ public class CartServiceImpl implements CartService {
                 .toList();
 
         return new CartItemsResponse(configuredProducts, configuredProducts.size());
+    }
+
+    @Override
+    public UpdateCartItemQuantityResponse updateCartItemQuantity(UpdateCartItemQuantityRequest dto, User user, UserSession userSession) {
+        Optional<Cart> optionalCart = getUserOrGuestCart(user, userSession);
+        if (optionalCart.isEmpty()) {
+            throw new NotFoundException("Configured product with ID " + dto.getConfiguredProductId() + " not found.");
+        }
+
+        Optional<Configuration> optionalConfiguredProduct = configuredProductRepository.findByIdAndCartId(dto.getConfiguredProductId(), optionalCart.get().getId());
+        if (optionalConfiguredProduct.isEmpty()) {
+            throw new NotFoundException("Configured product with ID " + dto.getConfiguredProductId() + " not found.");
+        }
+
+        Configuration configuredProduct = optionalConfiguredProduct.get();
+
+        if (configuredProduct.getQuantity() != dto.getQuantity()) {
+            configuredProduct.setQuantity(dto.getQuantity());
+            configuredProductRepository.save(configuredProduct);
+        }
+
+        return UpdateCartItemQuantityResponse.builder()
+                .message("Quantity updated successfully.")
+                .configuredProductId(dto.getConfiguredProductId())
+                .quantity(dto.getQuantity())
+                .build();
     }
 
     private Optional<Cart> getUserOrGuestCart(User user, UserSession userSession) {

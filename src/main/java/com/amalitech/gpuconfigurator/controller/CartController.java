@@ -1,13 +1,13 @@
 package com.amalitech.gpuconfigurator.controller;
 
-import com.amalitech.gpuconfigurator.dto.cart.AddCartItemResponse;
-import com.amalitech.gpuconfigurator.dto.cart.CartItemsCountResponse;
-import com.amalitech.gpuconfigurator.dto.cart.CartItemsResponse;
-import com.amalitech.gpuconfigurator.dto.cart.DeleteCartItemResponse;
+import com.amalitech.gpuconfigurator.dto.cart.*;
+import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.service.cart.CartService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -57,5 +57,17 @@ public class CartController {
             Principal principal
     ) {
         return ResponseEntity.ok(cartService.getCartItems(principal, userSession));
+    }
+
+    @PostMapping("/v1/carts/update-quantity")
+    public ResponseEntity<UpdateCartItemQuantityResponse> updateCartItemQuantity(
+            @RequestBody @Valid UpdateCartItemQuantityRequest dto,
+            @RequestAttribute("userSession") UserSession userSession,
+            Principal principal
+    ) {
+        User user = principal == null
+                ? null
+                : (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+        return ResponseEntity.ok(cartService.updateCartItemQuantity(dto, user, userSession));
     }
 }

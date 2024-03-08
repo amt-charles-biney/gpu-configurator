@@ -1,9 +1,7 @@
 package com.amalitech.gpuconfigurator.service.cart;
 
-import com.amalitech.gpuconfigurator.dto.cart.AddCartItemResponse;
-import com.amalitech.gpuconfigurator.dto.cart.CartItemsCountResponse;
-import com.amalitech.gpuconfigurator.dto.cart.CartItemsResponse;
-import com.amalitech.gpuconfigurator.dto.cart.DeleteCartItemResponse;
+import com.amalitech.gpuconfigurator.dto.cart.*;
+import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 
 import java.security.Principal;
@@ -17,4 +15,6 @@ public interface CartService {
     DeleteCartItemResponse deleteCartItem(UUID configuredProductId, Principal principal, UserSession userSession);
 
     CartItemsResponse getCartItems(Principal principal, UserSession userSession);
+
+    UpdateCartItemQuantityResponse updateCartItemQuantity(UpdateCartItemQuantityRequest dto, User user, UserSession userSession);
 }
