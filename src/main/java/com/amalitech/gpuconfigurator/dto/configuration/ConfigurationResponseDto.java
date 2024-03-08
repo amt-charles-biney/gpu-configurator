@@ -14,6 +14,7 @@ public record ConfigurationResponseDto(@JsonProperty("id") String Id, BigDecimal
                                        String productName, BigDecimal productPrice, String productDescription,
                                        String productCoverImage,
                                        BigDecimal configuredPrice, List<ConfigOptions> configured, BigDecimal vat,
+                                       String coverImage,
 
                                        Boolean warranty, int stock) {
 }
