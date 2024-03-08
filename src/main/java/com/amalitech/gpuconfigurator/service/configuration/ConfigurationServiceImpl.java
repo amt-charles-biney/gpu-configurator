@@ -74,6 +74,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         Configuration configuration = createConfiguration(product, configOptions, cart);
         configuration.setTotalPrice(totalPriceWithVat);
+        configuration.setQuantity(1);
         saveConfiguration(configuration);
 
         return createResponseDto(configuration, totalPriceWithVat, warranty, vat, optionalTotal, product);
