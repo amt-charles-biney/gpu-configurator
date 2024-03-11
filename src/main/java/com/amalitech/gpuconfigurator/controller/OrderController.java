@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.controller;
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.OrderPageResponseDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.model.Order;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -29,5 +31,12 @@ public class OrderController {
     ) {
         return ResponseEntity.ok(orderService.getAllOrders(page, size));
     }
+
+    @DeleteMapping("/v1/admin/orders/{id}")
+
+    public ResponseEntity<GenericResponse> deleteOrder(@PathVariable("id") UUID id) {
+        return ResponseEntity.ok(orderService.deleteOrder(id));
+    }
+
 
 }
