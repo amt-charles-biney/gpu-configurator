@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.order;
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.model.UserSession;
@@ -8,10 +9,14 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 
 import java.security.Principal;
+import java.util.UUID;
 
 public interface OrderService {
     @Transactional
     CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession);
 
     Page<OrderResponseDto> getAllOrders(Integer page, Integer size);
+
+    @Transactional
+    GenericResponse deleteOrder(UUID id);
 }
