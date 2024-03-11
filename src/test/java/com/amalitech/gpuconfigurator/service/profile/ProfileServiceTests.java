@@ -1,6 +1,6 @@
 package com.amalitech.gpuconfigurator.service.profile;
 
-import com.amalitech.gpuconfigurator.constant.ProfileConstants;
+import com.amalitech.gpuconfigurator.constant.ProfileErrors;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
@@ -147,7 +147,7 @@ public class ProfileServiceTests {
         verify(passwordEncoder, times(1)).encode(userPasswordRequestDto.getNewPassword());
 
         Assertions.assertThat(response.status()).isEqualTo(HttpStatus.CREATED.value());
-        Assertions.assertThat(response.message()).isEqualTo(ProfileConstants.PASSWORD_UPDATE_SUCCESS);
+        Assertions.assertThat(response.message()).isEqualTo(ProfileErrors.PASSWORD_UPDATE_SUCCESS);
         Assertions.assertThat(user.getPassword()).isEqualTo(encodedNewPassword);
     }
 
@@ -169,7 +169,7 @@ public class ProfileServiceTests {
         verify(passwordEncoder, never()).encode(userPasswordRequestDto.getNewPassword());
         verify(userRepository, never()).save(user);
 
-        Assertions.assertThat(exception.getMessage()).isEqualTo(ProfileConstants.INCORRECT_CURRENT_PASSWORD);
+        Assertions.assertThat(exception.getMessage()).isEqualTo(ProfileErrors.INCORRECT_CURRENT_PASSWORD);
     }
 
     @Test
@@ -190,6 +190,6 @@ public class ProfileServiceTests {
         verify(passwordEncoder, never()).encode(userPasswordRequestDto.getNewPassword());
         verify(userRepository, never()).save(user);
 
-        Assertions.assertThat(exception.getMessage()).isEqualTo(ProfileConstants.PASSWORDS_NOT_EQUAL);
+        Assertions.assertThat(exception.getMessage()).isEqualTo(ProfileErrors.PASSWORDS_NOT_EQUAL);
     }
 }

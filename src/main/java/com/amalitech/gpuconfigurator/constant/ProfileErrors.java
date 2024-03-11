@@ -1,6 +1,6 @@
 package com.amalitech.gpuconfigurator.constant;
 
-public class ProfileConstants {
+public class ProfileErrors {
     public static final String BASIC_INFORMATION_UPDATE_SUCCESS = "Basic information updated successfully";
 
     public static final String PASSWORDS_NOT_EQUAL = "Password and password confirmation are not equal";

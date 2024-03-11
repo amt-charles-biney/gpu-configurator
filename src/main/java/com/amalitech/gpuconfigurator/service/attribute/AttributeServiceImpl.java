@@ -5,10 +5,8 @@ import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
-import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
-import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
@@ -150,7 +148,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public Attribute updateAttribute(UUID id, @NotNull AttributeDto attribute) {
         Attribute updateAttribute = attributeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+                .orElseThrow(() -> new EntityNotFoundException(AttributeErrors.ATTRIBUTE_NOT_EXIST));
 
         updateAttribute.setAttributeName(attribute.attributeName());
         updateAttribute.setMeasured(attribute.isMeasured());
@@ -166,7 +164,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public AttributeResponse getAttributeById(UUID id) {
         Attribute attribute = attributeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+                .orElseThrow(() -> new EntityNotFoundException(AttributeErrors.ATTRIBUTE_NOT_EXIST));
 
         return this.createAttributeResponseType(attribute);
     }
@@ -174,7 +172,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public GenericResponse deleteAttributeById(UUID attributeId) {
         Attribute attribute = attributeRepository.findById(attributeId)
-                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST + attributeId));
+                .orElseThrow(() -> new EntityNotFoundException(AttributeErrors.ATTRIBUTE_NOT_EXIST + attributeId));
         attributeRepository.delete(attribute);
 
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted attribute successfully");
@@ -183,7 +181,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public GenericResponse deleteAttributeOption(UUID attributeId, UUID optionId) {
         var attribute = attributeRepository.findById(attributeId)
-                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+                .orElseThrow(() -> new EntityNotFoundException(AttributeErrors.ATTRIBUTE_NOT_EXIST));
         attribute.getAttributeOptions()
                 .removeIf(option -> option.getId().equals(optionId));
         attributeRepository.save(attribute);
@@ -228,7 +226,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     @Transactional
     public List<AttributeOptionResponseDto> createAllAttributeOptions(UUID attributeId, @NotNull List<CreateAttributeOptionRequest> attributeOptionDtoList) {
-        Attribute attribute = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST));
+        Attribute attribute = attributeRepository.findById(attributeId).orElseThrow(() -> new EntityNotFoundException(AttributeErrors.ATTRIBUTE_NOT_EXIST));
         List<AttributeOption> attributeOptionList = attributeOptionDtoList.stream().map(attributes -> AttributeOption.builder()
                 .optionName(attributes.name())
                 .priceAdjustment(attributes.price())
@@ -292,7 +290,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     private AttributeResponse createAttributeResponseType(@NotNull Attribute attribute) {
-        List<AttributeOption> attributeOptions = attributeOptionRepository.findAllByAttributeId(attribute.getId()).orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_OPTIONS_NOT_EXIST));
+        List<AttributeOption> attributeOptions = attributeOptionRepository.findAllByAttributeId(attribute.getId()).orElseThrow(() -> new EntityNotFoundException(AttributeErrors.ATTRIBUTE_OPTIONS_NOT_EXIST));
         return AttributeResponse
                 .builder()
                 .id(attribute.getId())

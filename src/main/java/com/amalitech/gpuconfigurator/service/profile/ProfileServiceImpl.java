@@ -1,6 +1,6 @@
 package com.amalitech.gpuconfigurator.service.profile;
 
-import com.amalitech.gpuconfigurator.constant.ProfileConstants;
+import com.amalitech.gpuconfigurator.constant.ProfileErrors;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
 import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
@@ -49,14 +49,14 @@ public class ProfileServiceImpl implements ProfileService {
         var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
 
         if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
-            throw new InvalidPasswordException(ProfileConstants.PASSWORDS_NOT_EQUAL);
+            throw new InvalidPasswordException(ProfileErrors.PASSWORDS_NOT_EQUAL);
         }
         if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
-            throw new InvalidPasswordException(ProfileConstants.INCORRECT_CURRENT_PASSWORD);
+            throw new InvalidPasswordException(ProfileErrors.INCORRECT_CURRENT_PASSWORD);
         }
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
 
-        return new GenericResponse(201, ProfileConstants.PASSWORD_UPDATE_SUCCESS);
+        return new GenericResponse(201, ProfileErrors.PASSWORD_UPDATE_SUCCESS);
     }
 }

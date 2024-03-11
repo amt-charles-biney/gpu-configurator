@@ -6,15 +6,15 @@ import lombok.Builder;
 
 @Builder
 public record AttributeDto(
-        @NotNull(message = AttributeConstant.ATTRIBUTE_NOT_NULL)
-                @NotBlank(message = AttributeConstant.ATTRIBUTE_NOT_BLANK)
+        @NotNull(message = AttributeErrors.ATTRIBUTE_NOT_NULL)
+                @NotBlank(message = AttributeErrors.ATTRIBUTE_NOT_BLANK)
        String attributeName,
 
-        @NotNull(message = AttributeConstant.ATTRIBUTE_NOT_NULL)
-                @NotBlank(message = AttributeConstant.ATTRIBUTE_NOT_BLANK)
+        @NotNull(message = AttributeErrors.ATTRIBUTE_NOT_NULL)
+                @NotBlank(message = AttributeErrors.ATTRIBUTE_NOT_BLANK)
         Boolean isMeasured,
-        @NotNull(message = AttributeConstant.ATTRIBUTE_NOT_NULL)
-                @NotBlank(message = AttributeConstant.ATTRIBUTE_NOT_BLANK)
+        @NotNull(message = AttributeErrors.ATTRIBUTE_NOT_NULL)
+                @NotBlank(message = AttributeErrors.ATTRIBUTE_NOT_BLANK)
         String description,
         String unit,
         Boolean isRequired
