@@ -2,24 +2,32 @@ package com.amalitech.gpuconfigurator.service.order;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
-import com.amalitech.gpuconfigurator.model.Cart;
-import com.amalitech.gpuconfigurator.model.Order;
-import com.amalitech.gpuconfigurator.model.User;
-import com.amalitech.gpuconfigurator.model.UserSession;
+import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
+import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.enums.Role;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
+import org.aspectj.weaver.ast.Or;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.security.Principal;
 import java.util.UUID;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+import static org.awaitility.Awaitility.given;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -73,5 +81,21 @@ class OrderServiceImplTest {
         assertNotNull(response);
         // Verify that the save method is called with the correct argument
         verify(orderRepository, times(1)).save(any(Order.class));
+    }
+
+    @Test
+    void deleteOrder() {
+
+        //given
+        Order order = Order.builder()
+                .id(UUID.randomUUID())
+                .build();
+
+        // When
+        GenericResponse response = orderService.deleteOrder(order.getId());
+        // Then
+        assertNotNull(response);
+        assertEquals(200, response.status());
+        assertEquals("Order id " + order.getId() + " deleted", response.message());
     }
 }

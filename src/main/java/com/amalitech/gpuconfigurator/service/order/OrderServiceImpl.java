@@ -1,7 +1,7 @@
 package com.amalitech.gpuconfigurator.service.order;
 
 
-import com.amalitech.gpuconfigurator.dto.cart.CartItemsResponse;
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
@@ -75,6 +75,15 @@ public class OrderServiceImpl implements OrderService {
         Pageable pageable = PageRequest.of(page, size);
 
         return orderRepository.findAll(pageable).map(this::mapOrderToOrderResponseDto);
+    }
+
+    @Override
+    public GenericResponse deleteOrder(UUID id) {
+        orderRepository.deleteById(id);
+        return GenericResponse.builder()
+                .status(200)
+                .message("Order id" + " " + id + " " + "deleted")
+                .build();
     }
 
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
