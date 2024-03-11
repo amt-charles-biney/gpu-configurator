@@ -7,8 +7,9 @@ import com.amalitech.gpuconfigurator.dto.PaymentInfo.MobileMoneyResponse;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.CardPayment;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.MobilePayment;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.PaymentInfo;
-import com.amalitech.gpuconfigurator.model.PaymentInfo.PaymentInfoType;
 import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.repository.PaymentInfoRepository.CardPaymentInfoRepository;
+import com.amalitech.gpuconfigurator.repository.PaymentInfoRepository.MobileMoneyInfoRepository;
 import com.amalitech.gpuconfigurator.repository.PaymentInfoRepository.PaymentInfoRepository;
 import com.amalitech.gpuconfigurator.service.encryption.AesEncryptionService;
 import lombok.RequiredArgsConstructor;
@@ -30,18 +31,20 @@ import java.util.List;
 public class PaymentInfoServiceImpl implements PaymentInfoService{
 
     private final PaymentInfoRepository paymentInfoRepository;
+    private final CardPaymentInfoRepository cardPaymentInfoRepository;
+    private final MobileMoneyInfoRepository mobileMoneyInfoRepository;
     private final AesEncryptionService encryptionService;
 
     @Override
-    public List<PaymentInfoType> getAllMobileMoneyPayments() {
+    public List<MobilePayment> getAllMobileMoneyPayments() {
         User user = getCurrentUserHelper();
-       return paymentInfoRepository.findAllByPaymentTypeAndUser(PaymentInfo.MOBILE_MONEY, user);
+       return mobileMoneyInfoRepository.findAllByUser(user);
     }
 
     @Override
-    public List<PaymentInfoType> getAllCardPayments() {
+    public List<CardPayment> getAllCardPayments() {
         User user = getCurrentUserHelper();
-        return paymentInfoRepository.findAllByPaymentTypeAndUser(PaymentInfo.CARD, user);
+        return cardPaymentInfoRepository.findAllByUser(user);
     }
 
     @Override

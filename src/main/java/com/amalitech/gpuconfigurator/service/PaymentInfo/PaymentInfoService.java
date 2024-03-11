@@ -4,8 +4,9 @@ import com.amalitech.gpuconfigurator.dto.PaymentInfo.CardInfoRequest;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.CardInfoResponse;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.MobileMoneyRequest;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.MobileMoneyResponse;
+import com.amalitech.gpuconfigurator.model.PaymentInfo.CardPayment;
+import com.amalitech.gpuconfigurator.model.PaymentInfo.MobilePayment;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.PaymentInfoType;
-import org.springframework.stereotype.Service;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -16,11 +17,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public interface PaymentInfoService {
-    List<PaymentInfoType> getAllMobileMoneyPayments();
+    List<MobilePayment> getAllMobileMoneyPayments();
 
     MobileMoneyResponse saveMobileMoneyPayment(MobileMoneyRequest mobileMoneyRequest);
 
-    List<PaymentInfoType> getAllCardPayments();
+    List<CardPayment> getAllCardPayments();
 
     CardInfoResponse saveCardPayment(CardInfoRequest cardInfoRequest) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException;
 }
