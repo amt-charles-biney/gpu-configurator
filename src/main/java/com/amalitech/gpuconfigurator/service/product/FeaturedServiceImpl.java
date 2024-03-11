@@ -32,25 +32,23 @@ public class FeaturedServiceImpl implements FeaturedService {
 
     @Override
     public FeaturedResponseDto addFeaturedProduct(UUID id) {
-        try {
-            Product product = productRepository.findById(id).orElseThrow(
-                    () -> new NotFoundException("Product does not exist")
-            );
 
-            if (product.getCategory().getCategoryName().equals("unassigned")) {
-                throw new NotFoundException("This product has no category");
-            }
+        Product product = productRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Product does not exist")
+        );
 
-            if (Boolean.TRUE.equals(product.getFeatured())) {
-                return FeaturedResponseDto.builder().message("Product is already Featured").build();
-            }
-            product.setFeatured(true);
-            productRepository.save(product);
-            return FeaturedResponseDto.builder().message("Now a featured Product").build();
-
-        } catch (NotFoundException e) {
-            throw new NotFoundException("Product does not exist");
+        if (product.getCategory().getCategoryName().equals("unassigned")) {
+            throw new NotFoundException("This product has no category");
         }
+
+        if (Boolean.TRUE.equals(product.getFeatured())) {
+            return FeaturedResponseDto.builder().message("Product is already Featured").build();
+        }
+        product.setFeatured(true);
+        productRepository.save(product);
+        return FeaturedResponseDto.builder().message("Now a featured Product").build();
+
+
     }
 
     @Override
