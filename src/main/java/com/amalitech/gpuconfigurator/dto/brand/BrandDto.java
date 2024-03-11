@@ -1,6 +1,8 @@
 package com.amalitech.gpuconfigurator.dto.brand;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
-public record BrandDto(@NotNull  String name, String id) {
+@Builder
+public record BrandDto(String id, String description, String thumbnail, String name) {
 }

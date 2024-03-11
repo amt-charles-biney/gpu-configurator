@@ -1,7 +1,7 @@
 package com.amalitech.gpuconfigurator.service.otp;
 
 import com.amalitech.gpuconfigurator.model.Otp;
-import com.amalitech.gpuconfigurator.model.OtpType;
+import com.amalitech.gpuconfigurator.model.enums.OtpType;
 import com.amalitech.gpuconfigurator.model.User;
 
 public interface OtpService {

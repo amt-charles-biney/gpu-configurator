@@ -1,7 +1,7 @@
 package com.amalitech.gpuconfigurator.repository;
 
 import com.amalitech.gpuconfigurator.model.Otp;
-import com.amalitech.gpuconfigurator.model.OtpType;
+import com.amalitech.gpuconfigurator.model.enums.OtpType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
