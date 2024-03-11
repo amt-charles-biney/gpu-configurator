@@ -1,5 +1,7 @@
 package com.amalitech.gpuconfigurator.service.configuration;
 
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigResponseDto;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Cart;
@@ -15,6 +17,8 @@ import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
+import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
+import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +34,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ConfigurationServiceImpl implements ConfigurationService {
     private final CompatibleOptionService compatibleOptionService;
-    private final ProductRepository productRepository;
+    private final ProductServiceImpl productService;
     private final CategoryConfigRepository categoryConfigRepository;
     private final ConfigurationRepository configurationRepository;
 
@@ -60,8 +64,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public ConfigurationResponseDto saveConfiguration(String productId, Boolean warranty, String components, Cart cart) {
 
         Product product = getProductById(productId);
-        BigDecimal totalPrice = calculateTotalPrice(product);
         CategoryConfig categoryConfig = getCategoryConfig(product);
+        BigDecimal totalPrice = calculateTotalPrice(product);
         List<CompatibleOption> compatibleOptions = getCompatibleOptions(categoryConfig);
         List<ConfigOptions> configOptions = getConfigOptions(components, compatibleOptions);
 
@@ -91,8 +95,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     private Product getProductById(String productId) {
-        return productRepository.findById(UUID.fromString(productId))
-                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+            return productService.getProductOnDemand(UUID.fromString(productId));
     }
 
     private BigDecimal calculateTotalPrice(Product product) {

@@ -49,26 +49,13 @@ public class ProductServiceImpl implements ProductService {
 
     public CreateProductResponseDto createProduct(ProductDto request) {
         Category category = categoryService.getCategory(request.getCategory());
-
-
         Case productCase = caseRepository.findById(UUID.fromString(request.getProductCaseId())).orElseThrow(() -> new EntityNotFoundException("No case found"));
 
-        BigDecimal totalConfigPrice = category.getCategoryConfig().getCompatibleOptions()
-                .stream()
-                .filter(CompatibleOption::getIsIncluded)
-                .filter(configs -> !productCase.getIncompatibleVariants().contains(configs.getAttributeOption()))
-                .map(configs -> configs.getAttributeOption().getPriceAdjustment())
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalConfigPrice = getTotalConfigIncludedPrice(category, productCase);
+        BigDecimal serviceChargePercentage = getPercentageOfServiceChargeMultiplyByCasePrice(request.getServiceCharge(), productCase, totalConfigPrice);
+        BigDecimal totalProductPrice = getProductTotalPrice(serviceChargePercentage, totalConfigPrice, productCase);
 
-        BigDecimal percentageOfServiceChargeMultiplyByCasePrice = BigDecimal.valueOf(request.getServiceCharge())
-                .divide(BigDecimal.valueOf(100))
-                .multiply(productCase.getPrice().add(totalConfigPrice)).setScale(2, RoundingMode.HALF_UP);
-
-
-        BigDecimal totalProductPrice = percentageOfServiceChargeMultiplyByCasePrice.add(totalConfigPrice.add(productCase.getPrice())).setScale(2, RoundingMode.HALF_UP);
-
-
-        var product = Product
+        Product product = Product
                 .builder()
                 .productName(request.getProductName())
                 .productDescription(request.getProductDescription())
@@ -122,6 +109,20 @@ public class ProductServiceImpl implements ProductService {
                         .imageUrl(product.getProductCase().getImageUrls())
                         .serviceCharge(product.getServiceCharge())
                         .build()).toList();
+    }
+
+    public Product getProductOnDemand(UUID productId) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("could not find product"));
+
+        Case productCase = product.getProductCase();
+        BigDecimal totalConfigPrice = getTotalConfigIncludedPrice(product.getCategory(), productCase);
+        BigDecimal serviceChargePercentage = getPercentageOfServiceChargeMultiplyByCasePrice(product.getServiceCharge(), productCase, totalConfigPrice);
+        BigDecimal totalProductPrice = getProductTotalPrice(serviceChargePercentage, totalConfigPrice, productCase);
+
+        product.setTotalProductPrice(totalProductPrice);
+        product.setBaseConfigPrice(totalConfigPrice);
+
+        return product;
     }
 
     @Override
@@ -350,5 +351,25 @@ public class ProductServiceImpl implements ProductService {
                 .serviceCharge(updatedProduct.getServiceCharge())
                 .productAvailability(updatedProduct.getProductAvailability())
                 .build();
+    }
+
+
+    private BigDecimal getTotalConfigIncludedPrice(Category category, Case productCase) {
+        return category.getCategoryConfig().getCompatibleOptions()
+                .stream()
+                .filter(CompatibleOption::getIsIncluded)
+                .filter(configs -> !productCase.getIncompatibleVariants().contains(configs.getAttributeOption()))
+                .map(configs -> configs.getAttributeOption().getPriceAdjustment())
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal getPercentageOfServiceChargeMultiplyByCasePrice(double serviceCharge, Case productCase, BigDecimal totalConfigPrice) {
+        return BigDecimal.valueOf(serviceCharge)
+            .divide(BigDecimal.valueOf(100))
+            .multiply(productCase.getPrice().add(totalConfigPrice)).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal getProductTotalPrice(BigDecimal percentageOfServiceChargeXCasePrice, BigDecimal totalConfigPrice, Case productCase) {
+        return percentageOfServiceChargeXCasePrice.add(totalConfigPrice.add(productCase.getPrice())).setScale(2, RoundingMode.HALF_UP);
     }
 }
