@@ -21,14 +21,21 @@ public class FeaturedServiceImpl implements FeaturedService {
     public List<FeaturedProductDto> getAllFeaturedProduct() {
         var products = productRepository.getFeaturedProduct().orElse(Collections.emptyList());
 
-        return products.stream().map(product -> FeaturedProductDto.builder()
-                .id(product.getId())
-                .productName(product.getProductName())
-                .coverImage(product.getProductCase().getCoverImageUrl())
-                .productPrice(product.getTotalProductPrice())
-                .productBrand(product.getProductCase().getName())
-                .build()).toList();
+        if (products.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return products.stream()
+                .map(product -> FeaturedProductDto.builder()
+                        .id(product.getId())
+                        .productName(product.getProductName())
+                        .coverImage(product.getProductCase().getCoverImageUrl())
+                        .productPrice(product.getTotalProductPrice())
+                        .productBrand(product.getProductCase().getName())
+                        .build())
+                .toList();
     }
+
 
     @Override
     public FeaturedResponseDto addFeaturedProduct(UUID id) {
