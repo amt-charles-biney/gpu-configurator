@@ -1,4 +1,4 @@
-package com.amalitech.gpuconfigurator.dto.attribute;
+package com.amalitech.gpuconfigurator.constant;
 
 public class AttributeErrors {
     public static final String ATTRIBUTE_NOT_EXIST = "attribute does not exist";

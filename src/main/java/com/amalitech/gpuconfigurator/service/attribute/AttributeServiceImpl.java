@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.attribute;
 
+import com.amalitech.gpuconfigurator.constant.AttributeErrors;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
