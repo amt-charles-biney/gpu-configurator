@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 public interface OrderService {
@@ -21,4 +22,6 @@ public interface OrderService {
     GenericResponse deleteOrder(UUID id);
 
     OrderResponseDto getOrderById(UUID id);
+
+    GenericResponse deleteBulkProducts(List<String> ids);
 }
