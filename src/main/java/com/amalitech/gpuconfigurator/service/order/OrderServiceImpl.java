@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service.order;
 
 
+import com.amalitech.gpuconfigurator.dto.cart.CartItemsResponse;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
@@ -79,7 +80,12 @@ public class OrderServiceImpl implements OrderService {
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
         return OrderResponseDto.builder()
                 .orderId(order.getId())
-                .products(order.getCart().getConfiguredProducts())
+                .configuredProduct(order.getCart().getConfiguredProducts())
+                .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
+                .paymentMethod(order.getPayment().getChannel())
+                .productName(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductName()).orElse(null))
                 .paymentMethod(order.getPayment().getChannel())
                 .status(order.getStatus())
                 .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
