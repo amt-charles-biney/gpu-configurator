@@ -23,35 +23,34 @@ public class FilteringServiceImpl implements FilteringService {
             String productType,
             String processor,
             String categories,
-            String brand
-    ) {
-        Specification<Product> spec = buildSpecification(
+            String brand) {
+
+        Specification<Product> spec = createSpecification(
                 productCase,
                 price,
                 productType,
                 processor,
                 categories,
-                brand
-        );
+                brand);
 
         return productRepository.findAll(spec).stream()
                 .filter(product -> !"unassigned".equals(product.getCategory().getCategoryName()))
-                .filter(product -> product.getInStock() != 0)
                 .toList();
     }
 
-    private Specification<Product> buildSpecification(
+    @NotNull
+    private Specification<Product> createSpecification(
             String productCase,
             String price,
             String productType,
             String processor,
             String categories,
-            String brand
-    ) {
+            String brand) {
+
         Specification<Product> spec = Specification.where(null);
 
         spec = applyProductCaseFilter(spec, productCase);
-        spec = applyCategoryFilter(spec, categories);
+        spec = applyCategoriesFilter(spec, categories);
         spec = applyPriceFilter(spec, price);
         spec = applyProductTypeFilter(spec, productType);
         spec = applyBrandFilter(spec, brand);
@@ -65,28 +64,24 @@ public class FilteringServiceImpl implements FilteringService {
             String[] productCaseNames = productCase.split(",");
             if (productCaseNames.length == 1) {
                 spec = spec.and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.equal(root.get("productCase").get("name"), productCaseNames[0])
-                );
+                        criteriaBuilder.equal(root.get("productCase").get("name"), productCaseNames[0]));
             } else {
                 spec = spec.and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.and(root.get("productCase").get("name").in((Object[]) productCaseNames))
-                );
+                        criteriaBuilder.and(root.get("productCase").get("name").in((Object[]) productCaseNames)));
             }
         }
         return spec;
     }
 
-    private Specification<Product> applyCategoryFilter(Specification<Product> spec, String categories) {
+    private Specification<Product> applyCategoriesFilter(Specification<Product> spec, String categories) {
         if (categories != null && !categories.isEmpty()) {
             String[] productCategory = categories.split(",");
             if (productCategory.length == 1) {
                 spec = spec.and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.equal(root.get("category").get("categoryName"), productCategory[0])
-                );
+                        criteriaBuilder.equal(root.get("category").get("categoryName"), productCategory[0]));
             } else {
                 spec = spec.and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.and(root.get("category").get("categoryName").in((Object[]) productCategory))
-                );
+                        criteriaBuilder.and(root.get("category").get("categoryName").in((Object[]) productCategory)));
             }
         }
         return spec;
@@ -106,7 +101,7 @@ public class FilteringServiceImpl implements FilteringService {
             if (!matchingProductIds.isEmpty()) {
                 spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProductIds));
             } else {
-                return noResults();
+                return null; // Return an empty specification if no matching product types
             }
         }
         return spec;
@@ -114,11 +109,11 @@ public class FilteringServiceImpl implements FilteringService {
 
     private Specification<Product> applyBrandFilter(Specification<Product> spec, String brand) {
         if (brand != null && !brand.isEmpty()) {
-            Set<UUID> matchingProductIds = configOptionsFiltering.getBrand(brand);
+            List<UUID> matchingProductIds = configOptionsFiltering.getBrand(brand);
             if (!matchingProductIds.isEmpty()) {
                 spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProductIds));
             } else {
-                return noResults();
+                return null; // Return an empty specification if no matching brands
             }
         }
         return spec;
@@ -130,14 +125,10 @@ public class FilteringServiceImpl implements FilteringService {
             if (!matchingProcessorIds.isEmpty()) {
                 spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProcessorIds));
             } else {
-                return noResults();
+                return null; // Return an empty specification if no matching processors
             }
         }
         return spec;
-    }
-
-    private Specification<Product> noResults() {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.disjunction();
     }
 
     @NotNull
