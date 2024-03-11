@@ -5,6 +5,8 @@ import com.amalitech.gpuconfigurator.dto.PaymentInfo.CardInfoRequest;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.CardInfoResponse;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.MobileMoneyRequest;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.MobileMoneyResponse;
+import com.amalitech.gpuconfigurator.model.PaymentInfo.CardPayment;
+import com.amalitech.gpuconfigurator.model.PaymentInfo.MobilePayment;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.PaymentInfo;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.PaymentInfoType;
 import com.amalitech.gpuconfigurator.service.PaymentInfo.PaymentInfoServiceImpl;
@@ -32,14 +34,14 @@ public class PaymentInfoController {
     private final PaymentInfoServiceImpl paymentInfoService;
 
     @GetMapping("v1/payment_info/mobile_money")
-    public ResponseEntity<ApiResponse<List<PaymentInfoType>>> getMobileMoneyInfo() {
-        List<PaymentInfoType> paymentInfoTypes = paymentInfoService.getAllMobileMoneyPayments();
+    public ResponseEntity<ApiResponse<List<MobilePayment>>> getMobileMoneyInfo() {
+        List<MobilePayment> paymentInfoTypes = paymentInfoService.getAllMobileMoneyPayments();
         return ResponseEntity.ok(new ApiResponse<>(paymentInfoTypes, "success", 200));
     }
 
     @GetMapping("v1/payment_info/card")
-    public ResponseEntity<ApiResponse<List<PaymentInfoType>>> getCardInfo() {
-        List<PaymentInfoType> paymentInfoTypes = paymentInfoService.getAllCardPayments();
+    public ResponseEntity<ApiResponse<List<CardPayment>>> getCardInfo() {
+        List<CardPayment> paymentInfoTypes = paymentInfoService.getAllCardPayments();
         return ResponseEntity.ok(new ApiResponse<>(paymentInfoTypes, "success", 200));
     }
 
