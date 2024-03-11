@@ -19,4 +19,6 @@ public interface OrderService {
 
     @Transactional
     GenericResponse deleteOrder(UUID id);
+
+    OrderResponseDto getOrderById(UUID id);
 }

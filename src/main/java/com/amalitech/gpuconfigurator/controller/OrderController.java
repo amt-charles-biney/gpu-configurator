@@ -1,17 +1,14 @@
 package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.order.OrderPageResponseDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
-import com.amalitech.gpuconfigurator.model.Order;
-import com.amalitech.gpuconfigurator.repository.OrderRepository;
+
 import com.amalitech.gpuconfigurator.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -21,7 +18,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @CrossOrigin
     @GetMapping("/v1/admin/orders")
 
     public ResponseEntity<Page<OrderResponseDto>> getOrders(
@@ -31,6 +27,13 @@ public class OrderController {
     ) {
         return ResponseEntity.ok(orderService.getAllOrders(page, size));
     }
+
+    @GetMapping("/v1/admin/orders/{id}")
+
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) {
+        return ResponseEntity.ok(orderService.getOrderById(id));
+    }
+
 
     @DeleteMapping("/v1/admin/orders/{id}")
 
