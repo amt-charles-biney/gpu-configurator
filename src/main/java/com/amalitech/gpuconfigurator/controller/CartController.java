@@ -19,7 +19,6 @@ import java.util.UUID;
 public class CartController {
     private final CartService cartService;
 
-    @CrossOrigin
     @GetMapping("/v1/carts/item-count")
     public ResponseEntity<CartItemsCountResponse> getCartItemsCount(
             @RequestAttribute("userSession") UserSession userSession,
@@ -28,7 +27,6 @@ public class CartController {
         return ResponseEntity.ok(cartService.getCartItemsCount(principal, userSession));
     }
 
-    @CrossOrigin
     @PostMapping("/v1/carts/add-item/{productId}")
     public ResponseEntity<AddCartItemResponse> addCartItem(
             @PathVariable UUID productId,
@@ -40,7 +38,6 @@ public class CartController {
         return ResponseEntity.ok(cartService.addCartItem(productId, warranty, components, principal, userSession));
     }
 
-    @CrossOrigin
     @DeleteMapping("/v1/carts/delete-item/{configuredProductId}")
     public ResponseEntity<DeleteCartItemResponse> deleteCartItem(
             @PathVariable UUID configuredProductId,
@@ -50,7 +47,6 @@ public class CartController {
         return ResponseEntity.ok(cartService.deleteCartItem(configuredProductId, principal, userSession));
     }
 
-    @CrossOrigin
     @GetMapping("/v1/carts")
     public ResponseEntity<CartItemsResponse> getCartItems(
             @RequestAttribute("userSession") UserSession userSession,

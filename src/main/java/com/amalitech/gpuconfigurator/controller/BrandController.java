@@ -22,7 +22,6 @@ public class BrandController {
 
     private final BrandService brandService;
 
-    @CrossOrigin
     @GetMapping("/v1/brand")
     public ResponseEntity<List<BrandDto>> getAllBrands() {
         List<BrandDto> brands = brandService.getAllBrands();

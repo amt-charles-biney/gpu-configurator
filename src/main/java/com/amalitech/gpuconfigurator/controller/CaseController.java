@@ -22,7 +22,6 @@ import java.util.UUID;
 public class CaseController {
     private final CaseService caseService;
 
-    @CrossOrigin
     @PostMapping("/v1/admin/cases")
     public ResponseEntity<CaseResponse> createCase(
             @Valid CreateCaseRequest dto,
@@ -33,7 +32,6 @@ public class CaseController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @CrossOrigin
     @GetMapping("/v1/admin/cases")
     public ResponseEntity<Page<CaseResponse>> findAll(
             @RequestParam(defaultValue = "0") int page,
@@ -42,13 +40,11 @@ public class CaseController {
         return ResponseEntity.ok(caseService.findAll(page, size));
     }
 
-    @CrossOrigin
     @GetMapping("/v1/admin/cases/{caseId}")
     public ResponseEntity<CaseResponse> findById(@PathVariable UUID caseId) {
         return ResponseEntity.ok(caseService.findById(caseId));
     }
 
-    @CrossOrigin
     @GetMapping("/v1/cases")
     public ResponseEntity<Page<UserCaseResponse>> findAllForUser(
             @RequestParam(defaultValue = "0") int page,
@@ -57,13 +53,11 @@ public class CaseController {
         return ResponseEntity.ok(caseService.findAllForUser(page, size));
     }
 
-    @CrossOrigin
     @GetMapping("/v1/cases/{caseId}")
     public ResponseEntity<UserCaseResponse> findForUserById(@PathVariable UUID caseId) {
         return ResponseEntity.ok(caseService.findForUserById(caseId));
     }
 
-    @CrossOrigin
     @PutMapping("/v1/admin/cases/{caseId}")
     public ResponseEntity<CaseResponse> updateCase(
             @PathVariable UUID caseId,
@@ -74,7 +68,6 @@ public class CaseController {
         return ResponseEntity.ok(caseService.updateCase(caseId, dto, coverImage, images));
     }
 
-    @CrossOrigin
     @DeleteMapping("/v1/admin/cases/{caseId}")
     public ResponseEntity<GenericResponse> deleteById(@PathVariable UUID caseId) {
         return ResponseEntity.ok(caseService.deleteById(caseId));

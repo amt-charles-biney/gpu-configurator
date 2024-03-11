@@ -32,7 +32,6 @@ public class ProductController {
     private final SearchService searchService;
 
 
-    @CrossOrigin
     @PostMapping("/v1/admin/product")
     @ResponseStatus(HttpStatus.CREATED)
 
@@ -41,14 +40,12 @@ public class ProductController {
     }
 
 
-    @CrossOrigin
     @GetMapping("/v1/admin/product/{productId}")
     public ResponseEntity<ProductResponseWithBrandDto> getProductByProductId(@PathVariable("productId") String productId) {
         ProductResponseWithBrandDto product = productService.getProduct(productId);
         return ResponseEntity.ok(product);
     }
 
-    @CrossOrigin
     @GetMapping("/v1/product/{productId}")
     public ResponseEntity<ProductResponseWithBrandDto> getProductByProductIdUser(@PathVariable("productId") String productId) {
         ProductResponseWithBrandDto product = productService.getProduct(productId);
@@ -56,7 +53,6 @@ public class ProductController {
     }
 
 
-    @CrossOrigin
     @GetMapping("/v1/admin/product")
     public ResponseEntity<PageResponseDto> getAllProducts(
             @RequestParam(defaultValue = "1") Integer page,
@@ -80,7 +76,6 @@ public class ProductController {
     }
 
 
-    @CrossOrigin
     @GetMapping("/v1/product")
     public ResponseEntity<PageResponseDto> getAllProductUsers(
             @RequestParam(defaultValue = "0") Integer page,
@@ -146,7 +141,6 @@ public class ProductController {
     }
 
 
-    @CrossOrigin
     @PatchMapping("/v1/admin/product/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable("id") UUID id,
@@ -156,13 +150,11 @@ public class ProductController {
         return ResponseEntity.ok(updatedProduct);
     }
 
-    @CrossOrigin
     @DeleteMapping("/v1/admin/product/{id}")
     public void deleteProduct(@PathVariable("id") UUID id) {
         productService.deleteProductById(id);
     }
 
-    @CrossOrigin
     @DeleteMapping("/v1/admin/product/all")
     public ResponseEntity<GenericResponse> deleteAllProducts(@RequestBody List<String> productIds) {
         GenericResponse deletedBulkProduct = productService.deleteBulkProducts(productIds);

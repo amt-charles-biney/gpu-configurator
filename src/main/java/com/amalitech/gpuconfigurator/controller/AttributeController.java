@@ -24,7 +24,6 @@ public class AttributeController {
 
     private final AttributeService attributeService;
 
-    @CrossOrigin
     @PostMapping("/v1/admin/attributes/bulk")
     public ResponseEntity<ApiResponse<List<AttributeResponse>>> createAllAttributeandAttributeOptionsBulk(@Validated @RequestBody CreateAttributesRequest createAttributesRequest) throws AttributeNameAlreadyExistsException {
         List<AttributeResponse> attributeResponse = attributeService.createAttributeAndAttributeOptions(createAttributesRequest);
@@ -32,7 +31,6 @@ public class AttributeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(attributeApiResponse);
     }
 
-    @CrossOrigin
     @PutMapping("/v1/admin/attributes/bulk")
     public ResponseEntity<ApiResponse<List<AttributeResponse>>> updateAllAttributendAttributeOptions(@Validated @RequestBody UpdateAttributeDto updateAttributeDto) {
         List<AttributeResponse> attributeResponse = attributeService.bulkUpdateAttributeAndAttributeOptions(updateAttributeDto);
@@ -40,7 +38,6 @@ public class AttributeController {
         return ResponseEntity.ok(attributeApiResponse);
     }
 
-    @CrossOrigin
     @GetMapping("/v1/admin/attributes")
     public ResponseEntity<ApiResponse<List<AttributeResponse>>> getAttributes() {
         List<AttributeResponse> attributes = attributeService.getAllAttributes();
@@ -48,14 +45,12 @@ public class AttributeController {
         return ResponseEntity.ok(attributeResponse);
     }
 
-    @CrossOrigin
     @GetMapping("/v1/admin/attributes/config")
     public ResponseEntity<CompatibleOptionGetResponse> getAllAttributesEditable() {
         CompatibleOptionGetResponse compatibleOptionEditResponse = attributeService.getAllAttributeOptionsEditable();
         return ResponseEntity.ok(compatibleOptionEditResponse);
     }
 
-    @CrossOrigin
     @GetMapping("/v1/admin/attributes/{attributeId}")
     public ResponseEntity<ApiResponse<AttributeResponse>> getAttribute(@PathVariable String attributeId) {
         AttributeResponse attribute = attributeService.getAttributeById(UUID.fromString(attributeId));
@@ -63,21 +58,18 @@ public class AttributeController {
         return ResponseEntity.ok(attributeResponse);
     }
 
-    @CrossOrigin
     @DeleteMapping("/v1/admin/attributes/{attributeId}")
     public ResponseEntity<GenericResponse> deleteAttribute(@PathVariable String attributeId) {
         GenericResponse deleteResponse = attributeService.deleteAttributeById(UUID.fromString(attributeId));
         return ResponseEntity.ok(deleteResponse);
     }
 
-    @CrossOrigin
     @DeleteMapping("/v1/admin/attributes/all")
     public ResponseEntity<GenericResponse> deleteAllAttributes(@RequestBody List<String> attributes) {
         GenericResponse deletedBulkAttributes = attributeService.deleteBulkAttributes(attributes);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(deletedBulkAttributes);
     }
 
-    @CrossOrigin
     @DeleteMapping("/v1/admin/attributes/{attributeId}/options/{optionId}")
     public ResponseEntity<GenericResponse> deleteOption(
             @PathVariable String attributeId,

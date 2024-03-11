@@ -15,7 +15,6 @@ public class BrandNewProductController {
 
     private final ProductService productService;
 
-    @CrossOrigin
     @GetMapping("/v1/new")
     @ResponseStatus(HttpStatus.OK)
     public List<FeaturedProductDto> getBrandNewProducts() {

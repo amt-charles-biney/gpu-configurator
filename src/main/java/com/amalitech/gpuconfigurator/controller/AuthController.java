@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final UserService userService;
 
-    @CrossOrigin
     @PostMapping("/v1/auth/signup")
-
     public ResponseEntity<SignupResponse> signup(@Validated @RequestBody SignUpDto request) throws MessagingException, BadRequestException {
         userService.signup(request);
 
@@ -33,7 +31,6 @@ public class AuthController {
         return ResponseEntity.ok(message);
     }
 
-    @CrossOrigin
     @PostMapping("/v1/auth/verify")
     public ResponseEntity<AuthenticationResponse> verify(@RequestBody VerifyUserDto request) {
 
@@ -41,20 +38,17 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
-    @CrossOrigin
     @PostMapping("/v1/auth/resend-otp")
     public ResponseEntity<GenericResponse> resendOtp(@RequestBody ResendOtpDto resend) throws MessagingException {
         GenericResponse response = userService.resendOtp(resend);
         return ResponseEntity.ok(response);
     }
 
-    @CrossOrigin
     @PostMapping("/v1/auth/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDto request) {
         return ResponseEntity.ok(userService.login(request));
     }
 
-    @CrossOrigin
     @PostMapping("/v1/auth/reset-password")
     public ResponseEntity<ResetResponseDTO> resetPassword(
             @Validated @RequestBody ResetPasswordDTO resetPasswordDto
@@ -64,7 +58,6 @@ public class AuthController {
         return ResponseEntity.ok(message);
     }
 
-    @CrossOrigin
     @PostMapping("/v1/auth/verify-otp")
     public ResponseEntity<VerifyOTPResponse> verifyOtp(
             @Validated @RequestBody VerifyOtpDTO verifyOtpDTO
@@ -74,7 +67,6 @@ public class AuthController {
         return ResponseEntity.ok(message);
     }
 
-    @CrossOrigin
     @PostMapping("/v1/auth/change-password")
     public ResponseEntity<GenericResponse> changePassword(
             @Validated @RequestBody ChangePasswordDTO changePasswordDTO

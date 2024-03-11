@@ -17,21 +17,18 @@ import java.util.UUID;
 public class FeaturedProductController {
     private final FeaturedService featuredService;
 
-    @CrossOrigin
     @GetMapping("/v1/featured")
     @ResponseStatus(HttpStatus.OK)
     public List<FeaturedProductDto> getAllFeaturedProduct(){
         return featuredService.getAllFeaturedProduct();
     }
 
-    @CrossOrigin
     @PostMapping("/v1/admin/featured/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public FeaturedResponseDto addFeaturedProduct(@PathVariable("id") UUID id){
         return featuredService.addFeaturedProduct(id);
     }
 
-    @CrossOrigin
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/v1/admin/featured/{id}")
     public FeaturedResponseDto removeFeaturedProduct(@PathVariable("id") UUID id){

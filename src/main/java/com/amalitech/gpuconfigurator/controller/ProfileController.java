@@ -20,7 +20,6 @@ import java.security.Principal;
 public class ProfileController {
     private final ProfileService profileService;
 
-    @CrossOrigin
     @PutMapping("/basic-info")
     public ResponseEntity<BasicInformationResponse> updateBasicInformation(
             @Validated @RequestBody BasicInformationRequest dto,
@@ -28,13 +27,11 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.updateBasicInformation(dto, principal));
     }
 
-    @CrossOrigin
     @GetMapping("/basic-info")
     public ResponseEntity<BasicInformationResponse> getBasicInformation(Principal principal) {
         return ResponseEntity.ok(profileService.getUserProfile(principal));
     }
 
-    @CrossOrigin
     @PostMapping("/password")
     public ResponseEntity<GenericResponse> updateUserPassword(
             @Validated @RequestBody UserPasswordRequest dto,
