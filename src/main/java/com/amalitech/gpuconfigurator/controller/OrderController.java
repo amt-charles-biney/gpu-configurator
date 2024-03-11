@@ -21,7 +21,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @CrossOrigin
     @GetMapping("/v1/admin/orders")
 
     public ResponseEntity<Page<OrderResponseDto>> getOrders(
@@ -31,6 +30,13 @@ public class OrderController {
     ) {
         return ResponseEntity.ok(orderService.getAllOrders(page, size));
     }
+
+    @GetMapping("/v1/admin/orders/{id}")
+
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) {
+        return ResponseEntity.ok(orderService.getOrderById(id));
+    }
+
 
     @DeleteMapping("/v1/admin/orders/{id}")
 

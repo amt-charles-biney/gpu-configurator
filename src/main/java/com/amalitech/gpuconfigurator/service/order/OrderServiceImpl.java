@@ -4,6 +4,7 @@ package com.amalitech.gpuconfigurator.service.order;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
+import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 
@@ -84,6 +85,14 @@ public class OrderServiceImpl implements OrderService {
                 .status(200)
                 .message("Order id" + " " + id + " " + "deleted")
                 .build();
+    }
+
+    @Override
+    public OrderResponseDto getOrderById(UUID id) {
+
+        Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
+
+        return mapOrderToOrderResponseDto(order);
     }
 
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
