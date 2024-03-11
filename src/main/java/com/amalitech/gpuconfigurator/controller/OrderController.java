@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,5 +42,11 @@ public class OrderController {
         return ResponseEntity.ok(orderService.deleteOrder(id));
     }
 
+    @CrossOrigin
+    @DeleteMapping("/v1/admin/orders/all")
+    public ResponseEntity<GenericResponse> deleteBulkOrders(@RequestBody List<String> ids) {
+        GenericResponse deletedBulkProduct = orderService.deleteBulkProducts(ids);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(deletedBulkProduct);
+    }
 
 }
