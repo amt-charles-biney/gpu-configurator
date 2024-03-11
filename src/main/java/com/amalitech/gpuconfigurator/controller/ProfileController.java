@@ -15,24 +15,24 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/v1/profile")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class ProfileController {
     private final ProfileService profileService;
 
-    @PutMapping("/basic-info")
+    @PutMapping("/v1/profile/basic-info")
     public ResponseEntity<BasicInformationResponse> updateBasicInformation(
             @Validated @RequestBody BasicInformationRequest dto,
             Principal principal) {
         return ResponseEntity.ok(profileService.updateBasicInformation(dto, principal));
     }
 
-    @GetMapping("/basic-info")
+    @GetMapping("/v1/profile/basic-info")
     public ResponseEntity<BasicInformationResponse> getBasicInformation(Principal principal) {
         return ResponseEntity.ok(profileService.getUserProfile(principal));
     }
 
-    @PostMapping("/password")
+    @PostMapping("/v1/profile/password")
     public ResponseEntity<GenericResponse> updateUserPassword(
             @Validated @RequestBody UserPasswordRequest dto,
             Principal principal) throws InvalidPasswordException {
