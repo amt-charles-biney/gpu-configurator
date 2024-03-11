@@ -19,11 +19,13 @@ import org.springframework.data.domain.Page;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -93,6 +95,16 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
 
         return mapOrderToOrderResponseDto(order);
+    }
+
+    @Override
+    public GenericResponse deleteBulkProducts(List<String> ids) {
+        List<UUID> selectedProductUUID = ids.stream()
+                .map(UUID::fromString)
+                .toList();
+
+        orderRepository.deleteAllById(selectedProductUUID);
+        return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted bulk products successful");
     }
 
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
