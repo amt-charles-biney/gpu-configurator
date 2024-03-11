@@ -2,19 +2,18 @@ package com.amalitech.gpuconfigurator.model;
 
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -56,4 +55,20 @@ public class Case {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Case aCase = (Case) o;
+        return Objects.equals(id, aCase.id) && Objects.equals(name, aCase.name) && Objects.equals(description, aCase.description)
+                && Objects.equals(coverImageUrl, aCase.coverImageUrl) && Objects.equals(imageUrls, aCase.imageUrls)
+                && Objects.equals(price, aCase.price) && Objects.equals(incompatibleVariants, aCase.incompatibleVariants)
+                && Objects.equals(products, aCase.products);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, coverImageUrl, imageUrls, price, incompatibleVariants, products);
+    }
 }

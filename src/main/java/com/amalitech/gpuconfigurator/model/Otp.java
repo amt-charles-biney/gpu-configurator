@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 import com.amalitech.gpuconfigurator.model.enums.OtpType;
@@ -12,12 +13,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -48,5 +47,17 @@ public class Otp {
 
     private LocalDateTime deletedAt;
 
-    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Otp otp = (Otp) o;
+        return Objects.equals(id, otp.id) && Objects.equals(code, otp.code) && Objects.equals(email, otp.email)
+                && type == otp.type && Objects.equals(expiration, otp.expiration);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, code, email, type, expiration);
+    }
 }

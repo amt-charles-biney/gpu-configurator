@@ -2,18 +2,17 @@ package com.amalitech.gpuconfigurator.model.attributes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Builder
 @Entity
 @AllArgsConstructor
@@ -59,4 +58,18 @@ public class Attribute {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Attribute attribute = (Attribute) o;
+        return isMeasured == attribute.isMeasured && isRequired == attribute.isRequired && Objects.equals(id, attribute.id)
+                && Objects.equals(attributeName, attribute.attributeName) && Objects.equals(unit, attribute.unit)
+                && Objects.equals(description, attribute.description) && Objects.equals(attributeOptions, attribute.attributeOptions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, attributeName, isMeasured, unit, description, isRequired, attributeOptions);
+    }
 }

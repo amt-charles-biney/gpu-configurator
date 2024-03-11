@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -37,4 +38,17 @@ public class Order {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return Objects.equals(id, order.id) && status == order.status && Objects.equals(user, order.user) && Objects.equals(payments, order.payments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, status, user, payments);
+    }
 }
