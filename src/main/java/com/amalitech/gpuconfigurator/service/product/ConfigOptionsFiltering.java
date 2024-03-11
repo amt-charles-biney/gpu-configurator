@@ -10,7 +10,7 @@ public interface ConfigOptionsFiltering {
 
     List<UUID> getProcessor(String productType);
 
-    Set<UUID> getBrand(String brand);
+    List<UUID> getBrand(String brand);
 
 
 }

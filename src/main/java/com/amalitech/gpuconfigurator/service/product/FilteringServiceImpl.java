@@ -101,7 +101,7 @@ public class FilteringServiceImpl implements FilteringService {
             if (!matchingProductIds.isEmpty()) {
                 spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProductIds));
             } else {
-                return null; // Return an empty specification if no matching product types
+                return null;
             }
         }
         return spec;
@@ -113,7 +113,7 @@ public class FilteringServiceImpl implements FilteringService {
             if (!matchingProductIds.isEmpty()) {
                 spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProductIds));
             } else {
-                return null; // Return an empty specification if no matching brands
+                return null;
             }
         }
         return spec;
@@ -125,7 +125,7 @@ public class FilteringServiceImpl implements FilteringService {
             if (!matchingProcessorIds.isEmpty()) {
                 spec = spec.and((root, query, criteriaBuilder) -> root.get("id").in(matchingProcessorIds));
             } else {
-                return null; // Return an empty specification if no matching processors
+                return null;
             }
         }
         return spec;
