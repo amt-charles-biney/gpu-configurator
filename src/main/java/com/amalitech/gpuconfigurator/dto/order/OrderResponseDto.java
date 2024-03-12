@@ -14,11 +14,14 @@ import java.util.UUID;
 
 @Builder
 public record OrderResponseDto(
+
+        UUID id,
         String productCoverImage,
 
         String productName,
         Set<Configuration> configuredProduct,
-        UUID orderId,
+        String orderId,
+
         String customerName,
         String paymentMethod,
         String status,

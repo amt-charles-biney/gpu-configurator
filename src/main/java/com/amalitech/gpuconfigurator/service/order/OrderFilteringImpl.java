@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +34,11 @@ public class OrderFilteringImpl implements OrderFiltering {
     }
 
     private Specification<Order> createOrderDateRangeSpecification(Specification<Order> spec, LocalDate startDate, LocalDate endDate) {
-        if (startDate != null || endDate != null) {
-            spec = spec.and(((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("createdAt"), startDate)));
+        if (startDate != null && endDate != null) {
+            spec = spec.and(((root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("createdAt"), startDate, endDate)));
 
+        } else if (startDate != null) {
+            spec = spec.and(((root, query, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), startDate)));
         }
         return spec;
     }
@@ -50,7 +52,8 @@ public class OrderFilteringImpl implements OrderFiltering {
 
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
         return OrderResponseDto.builder()
-                .orderId(order.getId())
+                .id(order.getId())
+                .orderId(order.getTracking_id())
                 .configuredProduct(order.getCart().getConfiguredProducts())
                 .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
                         .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))

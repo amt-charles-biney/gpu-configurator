@@ -53,7 +53,8 @@ public class OrderServiceImpl implements OrderService {
     public CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession) throws APIConnectionException, APIException, AuthenticationException, InvalidRequestException {
 
         Shippo.setApiKey(shippoTestKey);
-        Map<String, Object> toAddressMap = new HashMap<>();
+
+        HashMap<String, Object> addressToMap = new HashMap<>();
 
 
         User user = null;
@@ -70,80 +71,54 @@ public class OrderServiceImpl implements OrderService {
             orderBuilder.cart(user.getCart());
             user.setCart(null);
             userRepository.save(user);
-            toAddressMap.put("name", user.getFirstName());
-            toAddressMap.put("company", "Shippo");
-            toAddressMap.put("street1", user.getShippingInformation().getAddress1());
-            toAddressMap.put("city", user.getShippingInformation().getCity());
-            toAddressMap.put("state", user.getShippingInformation().getState());
-            toAddressMap.put("zip", user.getShippingInformation().getZipCode());
-            toAddressMap.put("country", user.getShippingInformation().getCountry());
-            toAddressMap.put("phone", "+1 555 341 9393");
-            toAddressMap.put("email", user.getShippingInformation().getEmail());
+            addressToMap.put("name", user.getShippingInformation().getFirstName());
 
 
         } else {
             orderBuilder.cart(userSession.getCart());
             userSession.setCart(null);
             userSessionRepository.save(userSession);
-            toAddressMap.put("name", userSession.getCurrentShipping().getFirstName());
-            toAddressMap.put("company", "Shippo");
-            toAddressMap.put("street1", userSession.getCurrentShipping().getAddress1());
-            toAddressMap.put("city", userSession.getCurrentShipping().getCity());
-            toAddressMap.put("state", userSession.getCurrentShipping().getState());
-            toAddressMap.put("zip", userSession.getCurrentShipping().getZipCode());
-            toAddressMap.put("country", userSession.getCurrentShipping().getCountry());
-            toAddressMap.put("phone", "+1 555 341 9393");
-            toAddressMap.put("email", userSession.getCurrentShipping().getEmail());
+            addressToMap.put("name", userSession.getCurrentShipping().getFirstName());
+            addressToMap.put("company", "S3vers");
 
         }
+        addressToMap.put("street1", "215 Clayton St.");
+        addressToMap.put("city", "San Francisco");
+        addressToMap.put("state", "CA");
+        addressToMap.put("zip", "94117");
+        addressToMap.put("country", "US");
 
 
-        // from address
-        Map<String, Object> fromAddressMap = new HashMap<>();
-        fromAddressMap.put("name", ShippoContants.ADDRESS_FROM_COMPANY);
-        fromAddressMap.put("company", ShippoContants.ADDRESS_FROM_COMPANY);
-        fromAddressMap.put("street1", ShippoContants.ADDRESS_FROM);
-        fromAddressMap.put("city", ShippoContants.ADDRESS_FROM_CITY);
-        fromAddressMap.put("state", ShippoContants.ADDRESS_FROM_STATE);
-        fromAddressMap.put("zip", ShippoContants.ADDRESS_FROM_ZIP);
-        fromAddressMap.put("country", ShippoContants.ADDRESS_FROM_COUNTRY);
-        fromAddressMap.put("email", ShippoContants.ADDRESS_FROM_EMAIL);
-        fromAddressMap.put("phone", ShippoContants.ADDRESS_FROM_PHONE);
-        fromAddressMap.put("metadata", ShippoContants.ADDRESS_FROM_ID);
 
-//        Map<String, Object> fromAddressMap = new HashMap<>();
-//        fromAddressMap.put("name", "Ms Hippo");
-//        fromAddressMap.put("company", "San Diego Zoo");
-//        fromAddressMap.put("street1", "2920 Zoo Drive");
-//        fromAddressMap.put("city", "San Diego");
-//        fromAddressMap.put("state", "CA");
-//        fromAddressMap.put("zip", "92101");
-//        fromAddressMap.put("country", "US");
-//        fromAddressMap.put("email", "mshippo@goshipppo.com");
-//        fromAddressMap.put("phone", "+1 619 231 1515");
-//        fromAddressMap.put("metadata", "Customer ID 123456");
+// From Address
+        HashMap<String, Object> addressFromMap = new HashMap<>();
+        addressFromMap.put("name", ShippoContants.ADDRESS_FROM_COMPANY);
+        addressFromMap.put("company", ShippoContants.ADDRESS_FROM_COMPANY);
+        addressFromMap.put("street1", ShippoContants.ADDRESS_FROM);
+        addressFromMap.put("city", ShippoContants.ADDRESS_FROM_CITY);
+        addressFromMap.put("state", ShippoContants.ADDRESS_FROM_STATE);
+        addressFromMap.put("zip", ShippoContants.ADDRESS_FROM_ZIP);
+        addressFromMap.put("country", ShippoContants.ADDRESS_FROM_COUNTRY);
 
-        // parcel
-        Map<String, Object> parcelMap = new HashMap<>();
+// Parcel
+        HashMap<String, Object> parcelMap = new HashMap<>();
         parcelMap.put("length", "5");
         parcelMap.put("width", "5");
         parcelMap.put("height", "5");
         parcelMap.put("distance_unit", "in");
         parcelMap.put("weight", "2");
         parcelMap.put("mass_unit", "lb");
-        List<Map<String, Object>> parcels = new ArrayList<>();
-        parcels.add(parcelMap);
 
-        Map<String, Object> shipmentMap = new HashMap<>();
-        shipmentMap.put("address_to", toAddressMap);
-        shipmentMap.put("address_from", fromAddressMap);
-        shipmentMap.put("parcels", parcels);
+// Shipment
+        HashMap<String, Object> shipmentMap = new HashMap<>();
+        shipmentMap.put("address_to", addressToMap);
+        shipmentMap.put("address_from", addressFromMap);
+        shipmentMap.put("parcels", parcelMap);
         shipmentMap.put("async", false);
-
         Shipment shipment = Shipment.create(shipmentMap);
 
         List<Rate> rates = shipment.getRates();
-        Rate rate = rates.getFirst();
+        Rate rate = rates.get(0);
 
         Map<String, Object> transParams = new HashMap<>();
         transParams.put("rate", rate.getObjectId());
@@ -199,7 +174,8 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
         return OrderResponseDto.builder()
-                .orderId(order.getId())
+                .id(order.getId())
+                .orderId(order.getTracking_id())
                 .configuredProduct(order.getCart().getConfiguredProducts())
                 .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
                         .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
