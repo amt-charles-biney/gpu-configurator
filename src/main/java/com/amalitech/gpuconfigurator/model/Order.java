@@ -24,9 +24,15 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "status", nullable = false)
+//    private OrderType status;
+
     @Column(name = "status", nullable = false)
-    private OrderType status;
+    private String status;
+
+    @Column(name = "tracking_id", nullable = false)
+    private String tracking_id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = true)
@@ -45,6 +51,7 @@ public class Order {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
