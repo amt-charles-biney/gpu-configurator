@@ -9,6 +9,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -18,31 +20,24 @@ public class OrderFilteringImpl implements OrderFiltering {
     private final OrderRepository orderRepository;
 
     @Override
-    public List<OrderResponseDto> orders(String status) {
-        Specification<Order> spec = createOrderSpecification(status);
+    public List<OrderResponseDto> orders(String status, LocalDate startDate, LocalDate endDate) {
+        Specification<Order> spec = createOrderSpecification(status, startDate, endDate);
         List<Order> orders = orderRepository.findAll(spec);
-        return orders.stream().map(
-                order -> OrderResponseDto.builder()
-                        .orderId(order.getId())
-                        .configuredProduct(order.getCart().getConfiguredProducts())
-                        .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
-                                .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
-                        .paymentMethod(order.getPayment().getChannel())
-                        .productName(order.getCart().getConfiguredProducts().stream().findFirst()
-                                .map(prod -> prod.getProduct().getProductName()).orElse(null))
-                        .paymentMethod(order.getPayment().getChannel())
-                        .status(order.getStatus())
-                        .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
-                        .totalPrice(order.getCart().getConfiguredProducts().stream()
-                                .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
-                        .date(order.getCreatedAt())
-                        .build()
-        ).toList();
+        return orders.stream().map(this::mapOrderToOrderResponseDto).toList();
     }
 
-    private Specification<Order> createOrderSpecification(String status) {
+    private Specification<Order> createOrderSpecification(String status, LocalDate startDate, LocalDate endDate) {
         Specification<Order> spec = Specification.where(null);
         spec = applyStatusFilter(spec, status);
+        spec = createOrderDateRangeSpecification(spec, startDate, endDate);
+        return spec;
+    }
+
+    private Specification<Order> createOrderDateRangeSpecification(Specification<Order> spec, LocalDate startDate, LocalDate endDate) {
+        if (startDate != null || endDate != null) {
+            spec = spec.and(((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("createdAt"), startDate)));
+
+        }
         return spec;
     }
 
@@ -51,5 +46,23 @@ public class OrderFilteringImpl implements OrderFiltering {
             spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status));
         }
         return spec;
+    }
+
+    private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
+        return OrderResponseDto.builder()
+                .orderId(order.getId())
+                .configuredProduct(order.getCart().getConfiguredProducts())
+                .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
+                .paymentMethod(order.getPayment().getChannel())
+                .productName(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductName()).orElse(null))
+                .paymentMethod(order.getPayment().getChannel())
+                .status(order.getStatus())
+                .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
+                .totalPrice(order.getCart().getConfiguredProducts().stream()
+                        .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
+                .date(order.getCreatedAt())
+                .build();
     }
 }
