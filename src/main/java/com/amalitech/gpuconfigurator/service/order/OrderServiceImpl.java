@@ -166,6 +166,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
         return OrderResponseDto.builder()
+                .id(order.getId())
                 .orderId(order.getTracking_id())
                 .configuredProduct(order.getCart().getConfiguredProducts())
                 .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
