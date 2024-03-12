@@ -21,23 +21,7 @@ public class OrderFilteringImpl implements OrderFiltering {
     public List<OrderResponseDto> orders(String status) {
         Specification<Order> spec = createOrderSpecification(status);
         List<Order> orders = orderRepository.findAll(spec);
-        return orders.stream().map(
-                order -> OrderResponseDto.builder()
-                        .orderId(order.getId())
-                        .configuredProduct(order.getCart().getConfiguredProducts())
-                        .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
-                                .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
-                        .paymentMethod(order.getPayment().getChannel())
-                        .productName(order.getCart().getConfiguredProducts().stream().findFirst()
-                                .map(prod -> prod.getProduct().getProductName()).orElse(null))
-                        .paymentMethod(order.getPayment().getChannel())
-                        .status(order.getStatus())
-                        .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
-                        .totalPrice(order.getCart().getConfiguredProducts().stream()
-                                .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
-                        .date(order.getCreatedAt())
-                        .build()
-        ).toList();
+        return orders.stream().map(this::mapOrderToOrderResponseDto).toList();
     }
 
     private Specification<Order> createOrderSpecification(String status) {
@@ -51,5 +35,23 @@ public class OrderFilteringImpl implements OrderFiltering {
             spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status));
         }
         return spec;
+    }
+
+    private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
+        return OrderResponseDto.builder()
+                .orderId(order.getId())
+                .configuredProduct(order.getCart().getConfiguredProducts())
+                .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
+                .paymentMethod(order.getPayment().getChannel())
+                .productName(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductName()).orElse(null))
+                .paymentMethod(order.getPayment().getChannel())
+                .status(order.getStatus())
+                .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
+                .totalPrice(order.getCart().getConfiguredProducts().stream()
+                        .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
+                .date(order.getCreatedAt())
+                .build();
     }
 }
