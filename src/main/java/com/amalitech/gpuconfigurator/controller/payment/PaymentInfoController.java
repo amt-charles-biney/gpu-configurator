@@ -7,10 +7,7 @@ import com.amalitech.gpuconfigurator.dto.PaymentInfo.MobileMoneyRequest;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.MobileMoneyResponse;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.CardPayment;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.MobilePayment;
-import com.amalitech.gpuconfigurator.model.PaymentInfo.PaymentInfo;
-import com.amalitech.gpuconfigurator.model.PaymentInfo.PaymentInfoType;
 import com.amalitech.gpuconfigurator.service.PaymentInfo.PaymentInfoServiceImpl;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +21,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -34,14 +31,14 @@ public class PaymentInfoController {
     private final PaymentInfoServiceImpl paymentInfoService;
 
     @GetMapping("v1/payment_info/mobile_money")
-    public ResponseEntity<ApiResponse<List<MobilePayment>>> getMobileMoneyInfo() {
-        List<MobilePayment> paymentInfoTypes = paymentInfoService.getAllMobileMoneyPayments();
+    public ResponseEntity<ApiResponse<Optional<MobilePayment>>> getMobileMoneyInfo() {
+        Optional<MobilePayment> paymentInfoTypes = paymentInfoService.getOneMobileMoneyPayment();
         return ResponseEntity.ok(new ApiResponse<>(paymentInfoTypes, "success", 200));
     }
 
     @GetMapping("v1/payment_info/card")
-    public ResponseEntity<ApiResponse<List<CardPayment>>> getCardInfo() {
-        List<CardPayment> paymentInfoTypes = paymentInfoService.getAllCardPayments();
+    public ResponseEntity<ApiResponse<Optional<CardPayment>>> getCardInfo() {
+        Optional<CardPayment> paymentInfoTypes = paymentInfoService.getOneCardPayment();
         return ResponseEntity.ok(new ApiResponse<>(paymentInfoTypes, "success", 200));
     }
 
