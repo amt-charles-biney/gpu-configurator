@@ -22,6 +22,7 @@ public abstract class PaymentInfoType {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @JsonIgnore
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_type", insertable = true, updatable = false)
     private PaymentInfo paymentType;
@@ -31,9 +32,11 @@ public abstract class PaymentInfoType {
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
+    @JsonIgnore
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @JsonIgnore
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 

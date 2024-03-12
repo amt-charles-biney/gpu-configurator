@@ -16,4 +16,5 @@ import java.util.Objects;
 @TypeAlias("MOBILE_MONEY")
 public class MobilePayment extends PaymentInfoType {
     private String phoneNumber;
+    private String network;
 }
