@@ -171,14 +171,6 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAll(pageable).map(this::mapOrderToOrderResponseDto);
     }
 
-    @Override
-    public GenericResponse deleteOrder(UUID id) {
-        orderRepository.deleteById(id);
-        return GenericResponse.builder()
-                .status(200)
-                .message("Order id" + " " + id + " " + "deleted")
-                .build();
-    }
 
     @Override
     public OrderResponseDto getOrderById(UUID id) {
