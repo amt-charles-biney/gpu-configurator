@@ -34,7 +34,7 @@ public class OrderFilteringImpl implements OrderFiltering {
 
     private Specification<Order> createOrderDateRangeSpecification(Specification<Order> spec, LocalDate startDate, LocalDate endDate) {
         if (startDate != null || endDate != null) {
-            spec = spec.and(((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("createdAt"), startDate)));
+            spec = spec.and(((root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("createdAt"), startDate,endDate)));
 
         }
         return spec;
