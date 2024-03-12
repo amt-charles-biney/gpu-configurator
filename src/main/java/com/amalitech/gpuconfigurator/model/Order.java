@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -19,9 +20,15 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "status", nullable = false)
+//    private OrderType status;
+
     @Column(name = "status", nullable = false)
-    private OrderType status;
+    private String status;
+
+    @Column(name = "tracking_id", nullable = false)
+    private String tracking_id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = true)
@@ -39,4 +46,16 @@ public class Order {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Order order)) return false;
+        return Objects.equals(getId(), order.getId()) && Objects.equals(getStatus(), order.getStatus()) && Objects.equals(getTracking_id(), order.getTracking_id()) && Objects.equals(getUser(), order.getUser()) && Objects.equals(getPayment(), order.getPayment()) && Objects.equals(getCart(), order.getCart()) && Objects.equals(getCreatedAt(), order.getCreatedAt()) && Objects.equals(getUpdatedAt(), order.getUpdatedAt());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getStatus(), getTracking_id(), getUser(), getPayment(), getCart(), getCreatedAt(), getUpdatedAt());
+    }
 }
