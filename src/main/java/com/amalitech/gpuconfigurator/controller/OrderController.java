@@ -9,10 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,12 +31,14 @@ public class OrderController {
     public ResponseEntity<Page<OrderResponseDto>> getOrders(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "100") Integer size,
-            @RequestParam(required = false) String status
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
     ) {
         Page<OrderResponseDto> resultPage;
 
-        if (status != null) {
-            List<OrderResponseDto> orderByStatus = orderFiltering.orders(status);
+        if (status != null || startDate != null || endDate != null) {
+            List<OrderResponseDto> orderByStatus = orderFiltering.orders(status, startDate, endDate);
             resultPage = new PageImpl<>(orderByStatus, PageRequest.of(page, size), orderByStatus.size());
         } else {
             resultPage = orderService.getAllOrders(page, size);

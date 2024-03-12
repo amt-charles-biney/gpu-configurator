@@ -2,11 +2,13 @@ package com.amalitech.gpuconfigurator.model;
 
 import com.amalitech.gpuconfigurator.dto.brand.BrandDto;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -46,7 +48,8 @@ public class Order {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
