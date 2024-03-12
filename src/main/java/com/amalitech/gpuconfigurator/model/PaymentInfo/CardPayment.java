@@ -1,11 +1,8 @@
 package com.amalitech.gpuconfigurator.model.PaymentInfo;
 
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.*;
 import org.springframework.data.annotation.TypeAlias;
-
-import java.util.Objects;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)

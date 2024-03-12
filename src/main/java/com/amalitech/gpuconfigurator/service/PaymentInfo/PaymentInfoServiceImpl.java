@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class PaymentInfoServiceImpl implements PaymentInfoService{
+public class PaymentInfoServiceImpl implements PaymentInfoService {
 
     private final PaymentInfoRepository paymentInfoRepository;
     private final CardPaymentInfoRepository cardPaymentInfoRepository;
@@ -38,7 +38,7 @@ public class PaymentInfoServiceImpl implements PaymentInfoService{
     @Override
     public Optional<MobilePayment> getOneMobileMoneyPayment() {
         User user = getCurrentUserHelper();
-       return mobileMoneyInfoRepository.findOneByUser(user);
+        return mobileMoneyInfoRepository.findOneByUser(user);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class PaymentInfoServiceImpl implements PaymentInfoService{
     public User getCurrentUserHelper() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(!authentication.isAuthenticated())
+        if (!authentication.isAuthenticated())
             throw new IllegalArgumentException("No authenticated user found");
 
         return (User) authentication.getPrincipal();

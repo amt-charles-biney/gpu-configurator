@@ -1,4 +1,5 @@
 package com.amalitech.gpuconfigurator.model.PaymentInfo;
+
 import com.amalitech.gpuconfigurator.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

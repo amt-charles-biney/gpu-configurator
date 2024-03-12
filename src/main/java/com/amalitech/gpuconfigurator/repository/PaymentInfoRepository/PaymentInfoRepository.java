@@ -1,6 +1,5 @@
 package com.amalitech.gpuconfigurator.repository.PaymentInfoRepository;
 
-import com.amalitech.gpuconfigurator.model.PaymentInfo.CardPayment;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.PaymentInfo;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.PaymentInfoType;
 import com.amalitech.gpuconfigurator.model.User;
