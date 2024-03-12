@@ -18,7 +18,7 @@ public record OrderResponseDto(
 
         String productName,
         Set<Configuration> configuredProduct,
-        UUID orderId,
+        String orderId,
         String customerName,
         String paymentMethod,
         String status,
