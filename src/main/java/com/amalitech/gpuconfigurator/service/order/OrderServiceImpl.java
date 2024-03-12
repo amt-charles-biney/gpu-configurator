@@ -45,8 +45,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final UserSessionRepository userSessionRepository;
-    //    @Value("${shippo-test-key}")
-    @Value("shippo_test_57350379cdf8b7a2b9fdf76ed0f677039321cae6")
+    @Value("${shippo-test-key}")
     private String shippoTestKey;
 
     @Override
