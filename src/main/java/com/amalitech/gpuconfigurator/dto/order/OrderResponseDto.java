@@ -20,7 +20,7 @@ public record OrderResponseDto(
         UUID orderId,
         String customerName,
         String paymentMethod,
-        OrderType status,
+        String status,
         LocalDateTime date,
         BigDecimal totalPrice
 ) {

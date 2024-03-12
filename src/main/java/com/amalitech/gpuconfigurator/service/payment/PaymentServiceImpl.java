@@ -9,6 +9,10 @@ import com.amalitech.gpuconfigurator.repository.payment.PaymentRepository;
 import com.amalitech.gpuconfigurator.service.order.OrderServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shippo.exception.APIConnectionException;
+import com.shippo.exception.APIException;
+import com.shippo.exception.AuthenticationException;
+import com.shippo.exception.InvalidRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -66,7 +70,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     @Override
-    public VerifyPaymentResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user, UserSession userSession) throws JsonProcessingException {
+    public VerifyPaymentResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user, UserSession userSession) throws JsonProcessingException, APIConnectionException, APIException, AuthenticationException, InvalidRequestException {
 
         HttpHeaders verifyPaymentHeaders = new HttpHeaders();
         verifyPaymentHeaders.set("Authorization", "Bearer " + API_KEY);
