@@ -24,7 +24,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -36,36 +36,42 @@ public class PaymentInfoServiceImpl implements PaymentInfoService{
     private final AesEncryptionService encryptionService;
 
     @Override
-    public List<MobilePayment> getAllMobileMoneyPayments() {
+    public Optional<MobilePayment> getOneMobileMoneyPayment() {
         User user = getCurrentUserHelper();
-       return mobileMoneyInfoRepository.findAllByUser(user);
+       return mobileMoneyInfoRepository.findOneByUser(user);
     }
 
     @Override
-    public List<CardPayment> getAllCardPayments() {
+    public Optional<CardPayment> getOneCardPayment() {
         User user = getCurrentUserHelper();
-        return cardPaymentInfoRepository.findAllByUser(user);
+        return cardPaymentInfoRepository.findOneByUser(user);
     }
 
     @Override
     public MobileMoneyResponse saveMobileMoneyPayment(@Validated MobileMoneyRequest mobileMoneyRequest) {
         User user = getCurrentUserHelper();
-        MobilePayment paymentInfoType = new MobilePayment();
+        MobilePayment paymentInfoType = mobileMoneyInfoRepository.findOneByUser(user).orElseGet(() -> new MobilePayment());
 
         paymentInfoType.setPhoneNumber(mobileMoneyRequest.phoneNumber());
         paymentInfoType.setPaymentType(PaymentInfo.MOBILE_MONEY);
+        paymentInfoType.setNetwork(mobileMoneyRequest.network());
         paymentInfoType.setUser(user);
 
         MobilePayment mobilePayment = paymentInfoRepository.save(paymentInfoType);
 
-        return new MobileMoneyResponse(mobilePayment.getPhoneNumber(), mobilePayment.getId().toString());
+        return MobileMoneyResponse
+                .builder()
+                .network(mobilePayment.getNetwork())
+                .phoneNumber(mobilePayment.getPhoneNumber())
+                .id(mobilePayment.getId().toString())
+                .build();
     }
 
     @Override
     public CardInfoResponse saveCardPayment(CardInfoRequest cardInfoRequest) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         User user = getCurrentUserHelper();
 
-        CardPayment cardPayment = new CardPayment();
+        CardPayment cardPayment = cardPaymentInfoRepository.findOneByUser(user).orElseGet(() -> new CardPayment());
         cardPayment.setPaymentType(PaymentInfo.CARD);
 
         String encryptedCardNumber = encryptionService.encrypt(cardInfoRequest.cardNumber());
@@ -83,8 +89,8 @@ public class PaymentInfoServiceImpl implements PaymentInfoService{
                 .builder()
                 .id(savedCardPayment.getId().toString())
                 .cardholderName(encryptionService.decrypt(savedCardPayment.getCardholderName()))
-                .expirationDate(savedCardPayment.getExpirationDate())
-                .cardNumber(savedCardPayment.getCardNumber())
+                .expirationDate(encryptionService.decrypt(savedCardPayment.getExpirationDate()))
+                .cardNumber(encryptionService.decrypt(savedCardPayment.getCardNumber()))
                 .build();
     }
 
