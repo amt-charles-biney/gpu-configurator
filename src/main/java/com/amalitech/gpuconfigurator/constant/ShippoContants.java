@@ -3,9 +3,9 @@ package com.amalitech.gpuconfigurator.constant;
 public class ShippoContants {
     public static final String ADDRESS_FROM_COMPANY = "S3VERS";
     public static final String ADDRESS_FROM = "Amalitech 123 st.";
-    public static final String ADDRESS_FROM_CITY = "TAKORADI";
-    public static final String ADDRESS_FROM_STATE = "Texas";
-    public static final String ADDRESS_FROM_ZIP = "92101";
+    public static final String ADDRESS_FROM_CITY = "San Francisco";
+    public static final String ADDRESS_FROM_STATE = "CA";
+    public static final String ADDRESS_FROM_ZIP = "94117";
 
     public static final String ADDRESS_FROM_COUNTRY = "US";
 
