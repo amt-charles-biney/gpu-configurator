@@ -81,15 +81,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public GenericResponse deleteOrder(UUID id) {
-        orderRepository.deleteById(id);
-        return GenericResponse.builder()
-                .status(200)
-                .message("Order id" + " " + id + " " + "deleted")
-                .build();
-    }
-
-    @Override
     public OrderResponseDto getOrderById(UUID id) {
 
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));

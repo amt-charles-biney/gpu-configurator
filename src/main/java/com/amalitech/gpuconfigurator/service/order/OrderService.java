@@ -22,10 +22,9 @@ public interface OrderService {
 
     Page<OrderResponseDto> getAllOrders(Integer page, Integer size);
 
-    @Transactional
-    GenericResponse deleteOrder(UUID id);
 
     OrderResponseDto getOrderById(UUID id);
 
+    @Transactional
     GenericResponse deleteBulkProducts(List<String> ids);
 }
