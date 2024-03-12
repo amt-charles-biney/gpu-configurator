@@ -1,4 +1,7 @@
 package com.amalitech.gpuconfigurator.dto.PaymentInfo;
 
-public record MobileMoneyResponse(String phoneNumber, String id) {
+import lombok.Builder;
+
+@Builder
+public record MobileMoneyResponse(String phoneNumber, String id, String network) {
 }
