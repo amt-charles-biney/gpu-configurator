@@ -33,7 +33,7 @@ public class OrderController {
         Page<OrderResponseDto> resultPage;
 
         if (status != null) {
-            List<OrderResponseDto> orderByStatus = orderFiltering.orders(status);
+            List<OrderResponseDto> orderByStatus = orderFiltering.orders(status.toUpperCase());
             resultPage = new PageImpl<>(orderByStatus, PageRequest.of(page, size), orderByStatus.size());
         } else {
             resultPage = orderService.getAllOrders(page, size);
