@@ -39,12 +39,6 @@ public class OrderController {
     }
 
 
-    @DeleteMapping("/v1/admin/orders/{id}")
-
-    public ResponseEntity<GenericResponse> deleteOrder(@PathVariable("id") UUID id) {
-        return ResponseEntity.ok(orderService.deleteOrder(id));
-    }
-
     @CrossOrigin
     @DeleteMapping("/v1/admin/orders/all")
     public ResponseEntity<GenericResponse> deleteBulkOrders(@RequestBody List<String> ids) {
