@@ -26,10 +26,6 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "status", nullable = false)
-//    private OrderType status;
-
     @Column(name = "status", nullable = false)
     private String status;
 

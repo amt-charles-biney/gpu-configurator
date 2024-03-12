@@ -23,6 +23,8 @@ public interface OrderService {
     Page<OrderResponseDto> getAllOrders(Integer page, Integer size);
 
 
+    Page<OrderResponseDto> getAllUserOrders(Integer page, Integer size, Principal principal);
+
     OrderResponseDto getOrderById(UUID id);
 
     @Transactional

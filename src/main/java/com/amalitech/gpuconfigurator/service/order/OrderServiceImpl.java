@@ -6,12 +6,12 @@ import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
+import com.amalitech.gpuconfigurator.model.Order;
+import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
-import com.amalitech.gpuconfigurator.repository.OrderRepository;
-
-
-import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
+import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
 import com.shippo.Shippo;
@@ -26,11 +26,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -166,16 +166,24 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<OrderResponseDto> getAllOrders(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-
         return orderRepository.findAll(pageable).map(this::mapOrderToOrderResponseDto);
+    }
+
+    @Override
+    public Page<OrderResponseDto> getAllUserOrders(Integer page, Integer size, Principal principal) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        if(principal == null) throw new UsernameNotFoundException("user cannot be found");
+
+        User user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+
+        return orderRepository.findAllByUser(user, pageable).map(this::mapOrderToOrderResponseDto);
     }
 
 
     @Override
     public OrderResponseDto getOrderById(UUID id) {
-
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
-
         return mapOrderToOrderResponseDto(order);
     }
 
