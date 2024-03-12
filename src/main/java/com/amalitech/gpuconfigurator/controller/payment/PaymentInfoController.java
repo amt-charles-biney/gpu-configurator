@@ -33,13 +33,13 @@ public class PaymentInfoController {
     @GetMapping("v1/payment_info/mobile_money")
     public ResponseEntity<ApiResponse<Optional<MobilePayment>>> getMobileMoneyInfo() {
         Optional<MobilePayment> paymentInfoTypes = paymentInfoService.getOneMobileMoneyPayment();
-        return ResponseEntity.ok(new ApiResponse<>(paymentInfoTypes, "success", 200));
+        return ResponseEntity.ok(new ApiResponse<>(paymentInfoTypes, "success", "200"));
     }
 
     @GetMapping("v1/payment_info/card")
     public ResponseEntity<ApiResponse<Optional<CardPayment>>> getCardInfo() {
         Optional<CardPayment> paymentInfoTypes = paymentInfoService.getOneCardPayment();
-        return ResponseEntity.ok(new ApiResponse<>(paymentInfoTypes, "success", 200));
+        return ResponseEntity.ok(new ApiResponse<>(paymentInfoTypes, "success", "200"));
     }
 
     @PostMapping("v1/payment_info/card")
@@ -47,12 +47,12 @@ public class PaymentInfoController {
             NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
 
         CardInfoResponse cardInfoResponse = paymentInfoService.saveCardPayment(cardInfoRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(cardInfoResponse, "successfully created card", 201));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(cardInfoResponse, "successfully created card", "201"));
     }
 
     @PostMapping("v1/payment_info/mobile_money")
     public ResponseEntity<ApiResponse<MobileMoneyResponse>> saveCardInfo(@RequestBody @Validated MobileMoneyRequest mobileMoneyRequest, Principal user) {
         MobileMoneyResponse mobileMoneyResponse = paymentInfoService.saveMobileMoneyPayment(mobileMoneyRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(mobileMoneyResponse, "successfully added mobile money", 201));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(mobileMoneyResponse, "successfully added mobile money", "201"));
     }
 }
