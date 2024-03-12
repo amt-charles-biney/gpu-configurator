@@ -7,6 +7,7 @@ import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import lombok.Builder;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -21,7 +22,7 @@ public record OrderResponseDto(
         String customerName,
         String paymentMethod,
         String status,
-        LocalDateTime date,
+        LocalDate date,
         BigDecimal totalPrice
 ) {
 }

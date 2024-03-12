@@ -9,6 +9,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -18,15 +20,24 @@ public class OrderFilteringImpl implements OrderFiltering {
     private final OrderRepository orderRepository;
 
     @Override
-    public List<OrderResponseDto> orders(String status) {
-        Specification<Order> spec = createOrderSpecification(status);
+    public List<OrderResponseDto> orders(String status, LocalDate startDate, LocalDate endDate) {
+        Specification<Order> spec = createOrderSpecification(status, startDate, endDate);
         List<Order> orders = orderRepository.findAll(spec);
         return orders.stream().map(this::mapOrderToOrderResponseDto).toList();
     }
 
-    private Specification<Order> createOrderSpecification(String status) {
+    private Specification<Order> createOrderSpecification(String status, LocalDate startDate, LocalDate endDate) {
         Specification<Order> spec = Specification.where(null);
         spec = applyStatusFilter(spec, status);
+        spec = createOrderDateRangeSpecification(spec, startDate, endDate);
+        return spec;
+    }
+
+    private Specification<Order> createOrderDateRangeSpecification(Specification<Order> spec, LocalDate startDate, LocalDate endDate) {
+        if (startDate != null || endDate != null) {
+            spec = spec.and(((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("createdAt"), startDate)));
+
+        }
         return spec;
     }
 
