@@ -6,6 +6,8 @@ import com.amalitech.gpuconfigurator.dto.Payment.InitializePaymentResponse;
 import com.amalitech.gpuconfigurator.dto.Payment.VerifyPaymentRequest;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.service.payment.PaymentService;
+import com.easypost.exception.EasyPostException;
+import com.easypost.exception.General.MissingParameterError;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.shippo.exception.APIConnectionException;
 import com.shippo.exception.APIException;
@@ -33,7 +35,7 @@ public class PaymentController {
     @GetMapping("/v1/payment/{reference}")
     public ResponseEntity<Object> verifyPayment(@PathVariable String reference,
                                                 @RequestAttribute("userSession") UserSession userSession,
-                                                Principal principal) throws NoSuchFieldException, JsonProcessingException, APIConnectionException, APIException, AuthenticationException, InvalidRequestException {
+                                                Principal principal) throws NoSuchFieldException, JsonProcessingException, APIConnectionException, APIException, AuthenticationException, InvalidRequestException, EasyPostException {
         VerifyPaymentRequest verifyPaymentRequest = new VerifyPaymentRequest(reference);
         return ResponseEntity.ok(paymentService.verifyPaymentTransaction(verifyPaymentRequest, principal, userSession));
     }

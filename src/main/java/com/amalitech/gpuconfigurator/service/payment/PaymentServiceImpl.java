@@ -7,6 +7,8 @@ import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.payment.PaymentRepository;
 import com.amalitech.gpuconfigurator.service.order.OrderServiceImpl;
+import com.easypost.exception.EasyPostException;
+import com.easypost.exception.General.MissingParameterError;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shippo.exception.APIConnectionException;
@@ -70,7 +72,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     @Override
-    public VerifyPaymentResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user, UserSession userSession) throws JsonProcessingException, APIConnectionException, APIException, AuthenticationException, InvalidRequestException {
+    public VerifyPaymentResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user, UserSession userSession) throws JsonProcessingException, EasyPostException {
 
         HttpHeaders verifyPaymentHeaders = new HttpHeaders();
         verifyPaymentHeaders.set("Authorization", "Bearer " + API_KEY);
