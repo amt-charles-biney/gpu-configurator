@@ -13,10 +13,9 @@ import lombok.NoArgsConstructor;
 public class ProductUpdateDto {
     String productName;
     String productDescription;
-    Double productPrice;
+    Double serviceCharge;
     String productId;
     Boolean availability;
-    Integer inStock;
     String category;
-    String productBrand;
+    String productCaseId;
 }

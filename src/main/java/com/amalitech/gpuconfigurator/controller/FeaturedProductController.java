@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.FeaturedResponseDto;
+import com.amalitech.gpuconfigurator.dto.product.FeaturedProductDto;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.service.product.FeaturedService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class FeaturedProductController {
     @CrossOrigin
     @GetMapping("/v1/featured")
     @ResponseStatus(HttpStatus.OK)
-    public List<Product> getAllFeaturedProduct(){
+    public List<FeaturedProductDto> getAllFeaturedProduct(){
         return featuredService.getAllFeaturedProduct();
     }
 

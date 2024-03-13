@@ -20,6 +20,5 @@ public class BasicInformationRequest {
     public String lastName;
 
     @Valid
-    @NotNull
     public ContactRequest contact;
 }

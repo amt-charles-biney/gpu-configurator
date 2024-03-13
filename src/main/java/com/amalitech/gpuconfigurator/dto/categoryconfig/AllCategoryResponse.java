@@ -18,4 +18,6 @@ public class AllCategoryResponse {
 
     @NotNull(message = "category name is null")
     private String name;
+
+    private String thumbnail;
 }

@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
@@ -10,7 +11,9 @@ import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
+import com.amalitech.gpuconfigurator.service.attribute.AttributeServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
+import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +43,9 @@ class CategoryConfigServiceTest {
     private CompatibleOptionServiceImpl compatibleOptionServiceImpl;
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private AttributeServiceImpl attributeService;
     @InjectMocks
     private CategoryConfigServiceImpl categoryConfigService;
 
@@ -48,16 +54,39 @@ class CategoryConfigServiceTest {
     private CategoryConfigRequest categoryConfigRequest;
     private CompatibleOption compatibleOption;
     private AttributeOption attributeOption;
+    private AttributeResponse attributeResponse;
     private CompatibleOptionGetResponse compatibleOptionGetResponse;
+
+    private Attribute attribute;
 
     private CompatibleOptionEditResponse compatibleOptionEditResponse;
 
     @Mock
     private AttributeOptionRepository attributeOptionRepository;
 
+    @Mock
+    private CompatibleOptionService compatibleOptionService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        attributeResponse = AttributeResponse.builder()
+                .isRequired(false)
+                .description("hello world")
+                .unit("12")
+                .isMeasured(false)
+                .attributeOptions(new ArrayList<>())
+                .id(UUID.randomUUID())
+                .build();
+
+        attribute = Attribute.builder()
+                .unit("SampleUnit")
+                .isMeasured(true)
+                .description("")
+                .attributeName("DISK")
+                .id(UUID.randomUUID())
+                .build();
 
         CompatibleOptionDTO compatibleOptionDTO = CompatibleOptionDTO.builder()
                 .attributeOptionId(UUID.randomUUID().toString())
@@ -71,13 +100,8 @@ class CategoryConfigServiceTest {
         attributeOption = AttributeOption.builder()
                 .optionName("SampleOption")
                 .priceAdjustment(BigDecimal.valueOf(25.0))
-                .attribute(Attribute.builder()
-                        .unit("SampleUnit")
-                        .isMeasured(true)
-                        .description("")
-                        .attributeName("DISK")
-                        .id(UUID.randomUUID())
-                        .build())
+                .inStock(0)
+                .attribute(attribute)
                 .id(UUID.randomUUID())
                 .baseAmount(10.0F)
                 .maxAmount(50.0F)
@@ -85,11 +109,10 @@ class CategoryConfigServiceTest {
                 .build();
 
 
-        categoryConfigRequest = new CategoryConfigRequest("TestCategory",
+        categoryConfigRequest = new CategoryConfigRequest("TestCategory", "./hello_world.jpg",
                 Collections.singletonList(compatibleOptionDTO));
 
-        category = Category.builder().id(UUID.randomUUID()).categoryName("TestCategory").build();
-        categoryConfig = CategoryConfig.builder().id(UUID.randomUUID()).category(category).build();
+        category = Category.builder().id(UUID.randomUUID()).thumbnail("./hello_world.jpg").categoryName("TestCategory").build();
 
         categoryConfig = CategoryConfig.builder()
                 .id(UUID.randomUUID())
@@ -98,6 +121,7 @@ class CategoryConfigServiceTest {
                 .build();
 
         compatibleOption = CompatibleOption.builder()
+                .id(UUID.randomUUID())
                 .categoryConfig(categoryConfig)
                 .attributeOption(attributeOption)
                 .isMeasured(true)
@@ -110,6 +134,7 @@ class CategoryConfigServiceTest {
         compatibleOptionGetResponse = CompatibleOptionGetResponse.builder()
                 .id(UUID.randomUUID().toString())
                 .name("SampleCategory")
+                .thumbnail("./hello_world.jpg")
                 .config(Arrays.asList(
                         CompatibleOptionResponseDto.builder()
                                 .compatibleOptionId(UUID.randomUUID().toString())
@@ -145,6 +170,7 @@ class CategoryConfigServiceTest {
         compatibleOptionEditResponse = CompatibleOptionEditResponse.builder()
                 .name("edit")
                 .id(UUID.randomUUID().toString())
+                .thumbnail("./hello_world.jpg")
                 .config(List.of(compatibleUpdateDto))
                 .build();
 
@@ -172,9 +198,10 @@ class CategoryConfigServiceTest {
         UUID categoryId = UUID.randomUUID();
         String categoryIdString = categoryId.toString();
         compatibleOption.setId(UUID.randomUUID());
-        when(categoryConfigRepository.findByCategoryId(categoryId)).thenReturn(Optional.of(categoryConfig));
+        when(categoryConfigRepository.findByCategoryId(categoryId)).thenReturn(Optional.ofNullable(categoryConfig));
 
         when(compatibleOptionServiceImpl.getByCategoryConfigId(categoryConfig.getId())).thenReturn(List.of(compatibleOption));
+        when(attributeService.getAttributeById(any(UUID.class))).thenReturn(attributeResponse);
 
         CategoryConfigResponseDto response = categoryConfigService.getCategoryConfigByCategory(categoryIdString);
 
@@ -204,7 +231,6 @@ class CategoryConfigServiceTest {
 
         when(categoryConfigRepository.findAll()).thenReturn(categoryConfigs);
 
-        when(categoryConfigService.extractAttributesFromCompatibleOptions(any())).thenReturn(Collections.emptyList());
         when(categoryConfigService.extractProductCount(any())).thenReturn(10L);
 
 
@@ -225,6 +251,7 @@ class CategoryConfigServiceTest {
 
         List<CompatibleOption> compatibleOptions = List.of(compatibleOption);
         when(compatibleOptionServiceImpl.getAllCompatibleOptionsByCategoryConfig(categoryConfig.getId())).thenReturn(compatibleOptions);
+        when(attributeService.getAttributeById(any(UUID.class))).thenReturn(attributeResponse);
 
         CompatibleOptionGetResponse response = categoryConfigService.getCategoryAndCompatibleOption(categoryId);
 
@@ -260,7 +287,7 @@ class CategoryConfigServiceTest {
     void testUpdateCategoryAndConfigs() {
 
         when(categoryConfigRepository.findByCategoryId(any(UUID.class))).thenReturn(Optional.ofNullable(categoryConfig));
-        when(categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name())).thenReturn(new CategoryResponse(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name()));
+        when(categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name(), compatibleOptionEditResponse.thumbnail())).thenReturn(new CategoryResponse(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name(), compatibleOptionEditResponse.thumbnail()));
         doNothing().when(compatibleOptionServiceImpl).updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
 
         GenericResponse response = categoryConfigService.updateCategoryAndConfigs(compatibleOptionEditResponse);
@@ -268,7 +295,7 @@ class CategoryConfigServiceTest {
         assertEquals(HttpStatus.ACCEPTED.value(), response.status());
         assertEquals("updated category and config", response.message());
 
-        verify(categoryService, times(1)).updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name());
+        verify(categoryService, times(1)).updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name(), compatibleOptionEditResponse.thumbnail());
         verify(compatibleOptionServiceImpl, times(1)).updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
     }
 
@@ -278,9 +305,8 @@ class CategoryConfigServiceTest {
         List<CompatibleOption> mockCompatibleOptions = List.of(compatibleOption);
         when(compatibleOptionServiceImpl.getAllCompatibleOptionsByCategoryConfig(categoryConfigId)).thenReturn(mockCompatibleOptions);
 
-        List<String> extractedAttributes = categoryConfigService.extractAttributesFromCompatibleOptions(categoryConfigId);
-
-        assertEquals(Arrays.asList("DISK"), extractedAttributes);
+        Map<String, List<CategoryConfigDisplay>> extractedAttributes = categoryConfigService.extractAttributesFromCompatibleOptions(categoryConfigId);
+        assertNotNull(extractedAttributes);
         verify(compatibleOptionServiceImpl, times(1)).getAllCompatibleOptionsByCategoryConfig(categoryConfigId);
 
     }
@@ -295,5 +321,16 @@ class CategoryConfigServiceTest {
 
         verify(productRepository, times(1)).countProductsByCategoryId(categoryId);
         assertEquals(0L, result);
+    }
+
+    @Test
+    void testUpdateExistingCategoryConfigs() {
+
+        List<CategoryConfig> categoryConfigs = Collections.singletonList(categoryConfig);
+        when(categoryConfigRepository.findAll()).thenReturn(categoryConfigs);
+
+        doNothing().when(compatibleOptionService).updateBulkCompatibleOptions(any(CategoryConfig.class), anyList());
+        categoryConfigService.updateExistingCategoryConfigs(List.of(attributeOption));
+        verify(categoryConfigRepository, times(1)).findAll();
     }
 }

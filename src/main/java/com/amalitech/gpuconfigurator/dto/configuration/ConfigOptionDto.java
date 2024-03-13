@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class configOptionDto {
+public class ConfigOptionDto {
     private String optionId;
 
     private String optionName;
@@ -21,4 +21,12 @@ public class configOptionDto {
     private BigDecimal optionPrice;
 
     private Boolean isIncluded;
+
+    private BigDecimal baseAmount;
+
+    private Boolean isMeasured;
+
+    private String size;
+
+
 }

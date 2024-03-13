@@ -6,10 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,26 +14,17 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "compatibleOption" ,uniqueConstraints = {@UniqueConstraint(columnNames = {"id", "attribute_id"})})
+@Table(name = "compatibleOption")
 public class CompatibleOption {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-
-    @ManyToOne
-    @JoinColumn(
-            name = "category_config_id",
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "category_config_fk"
-            )
-    )
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private CategoryConfig categoryConfig;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private AttributeOption attributeOption;
 
     private Boolean isCompatible;

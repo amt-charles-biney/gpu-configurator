@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.controller;
 
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
@@ -14,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +27,6 @@ import java.util.UUID;
 public class ProductController {
 
     private final ProductServiceImpl productService;
-    private final UploadImageService cloudinaryImage;
     private final FilteringService filteringService;
     private final SearchService searchService;
 
@@ -36,23 +35,22 @@ public class ProductController {
     @PostMapping("/v1/admin/product")
     @ResponseStatus(HttpStatus.CREATED)
 
-    public CreateProductResponseDto addProduct(@Valid @ModelAttribute ProductDto request,
-                                               @RequestParam("file") List<MultipartFile> files, @RequestParam("coverImage") MultipartFile coverImage) {
-        return productService.createProduct(request, files, coverImage);
+    public CreateProductResponseDto addProduct(@Valid @RequestBody ProductDto request) {
+        return productService.createProduct(request);
     }
 
 
     @CrossOrigin
     @GetMapping("/v1/admin/product/{productId}")
-    public ResponseEntity<ProductResponse> getProductByProductId(@PathVariable("productId") String productId) {
-        ProductResponse product = productService.getProduct(productId);
+    public ResponseEntity<ProductResponseWithBrandDto> getProductByProductId(@PathVariable("productId") String productId) {
+        ProductResponseWithBrandDto product = productService.getProduct(productId);
         return ResponseEntity.ok(product);
     }
 
     @CrossOrigin
     @GetMapping("/v1/product/{productId}")
-    public ResponseEntity<ProductResponse> getProductByProductIdUser(@PathVariable("productId") String productId) {
-        ProductResponse product = productService.getProduct(productId);
+    public ResponseEntity<ProductResponseWithBrandDto> getProductByProductIdUser(@PathVariable("productId") String productId) {
+        ProductResponseWithBrandDto product = productService.getProduct(productId);
         return ResponseEntity.ok(product);
     }
 
@@ -81,46 +79,24 @@ public class ProductController {
     }
 
 
-//    @CrossOrigin
-//    @GetMapping("/v1/product")
-//    public ResponseEntity<PageResponseDto> getAllProductUsers(
-//            @RequestParam(defaultValue = "0") Integer page,
-//            @RequestParam(required = false) Integer size,
-//            @RequestParam(required = false) String sort
-//    ) {
-//
-//        PageResponseDto productsResponse = new PageResponseDto();
-//
-//        if (page != null && size != null) {
-//            Page<ProductResponse> products = productService.getAllProducts(page, size, sort);
-//            productsResponse.setProducts(products.getContent());
-//            productsResponse.setTotal(products.getTotalElements());
-//        } else {
-//            List<ProductResponse> products = productService.getAllProducts();
-//            productsResponse.setProducts(products);
-//            productsResponse.setTotal(products.size());
-//        }
-//
-//        return ResponseEntity.ok(productsResponse);
-//    }
-
     @CrossOrigin
     @GetMapping("/v1/product")
     public ResponseEntity<PageResponseDto> getAllProductUsers(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(required = false) Integer size,
             @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String productCase,
             @RequestParam(required = false) String price,
             @RequestParam(required = false) String productType,
             @RequestParam(required = false) String processor,
-            @RequestParam(required = false) String query
-    ) {
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String categories) {
         if (query != null && !query.isBlank()) {
             String[] brands = null;
             String[] priceRanges = null;
-            if (brand != null && !brand.isBlank()) {
-                brands = brand.strip().split(",");
+            if (productCase != null && !productCase.isBlank()) {
+                brands = productCase.strip().split(",");
             }
             if (price != null && !price.isBlank()) {
                 priceRanges = price.strip().split(",");
@@ -141,8 +117,8 @@ public class ProductController {
 
         List<ProductResponse> products = new ArrayList<>();
 
-        if (brand != null || price != null || productType != null || processor != null) {
-            List<Product> filteredProducts = filteringService.filterProduct(brand, price, productType, processor);
+        if (productCase != null || price != null || productType != null || processor != null || categories != null || brand != null) {
+            List<Product> filteredProducts = filteringService.filterProduct(productCase, price, productType, processor, categories, brand);
             if (!filteredProducts.isEmpty()) {
                 products = new ResponseMapper().getProductResponses(filteredProducts);
                 productsResponse.setProducts(products);
@@ -173,11 +149,9 @@ public class ProductController {
     @PatchMapping("/v1/admin/product/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable("id") UUID id,
-            @ModelAttribute ProductUpdateDto updatedProductDto,
-            @RequestParam(value = "file", required = false) List<MultipartFile> files,
-            @RequestParam(value = "coverImage", required = false) MultipartFile coverImage
+            @RequestBody ProductUpdateDto updatedProductDto
     ) {
-        ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto, files, coverImage);
+        ProductResponse updatedProduct = productService.updateProduct(id, updatedProductDto);
         return ResponseEntity.ok(updatedProduct);
     }
 
@@ -185,6 +159,13 @@ public class ProductController {
     @DeleteMapping("/v1/admin/product/{id}")
     public void deleteProduct(@PathVariable("id") UUID id) {
         productService.deleteProductById(id);
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/v1/admin/product/all")
+    public ResponseEntity<GenericResponse> deleteAllProducts(@RequestBody List<String> productIds) {
+        GenericResponse deletedBulkProduct = productService.deleteBulkProducts(productIds);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(deletedBulkProduct);
     }
 
 

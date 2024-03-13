@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -177,12 +178,16 @@ public class AttributeControllerTest {
                                 "existingOptionId",
                                 "UpdatedOptionName",
                                 BigDecimal.valueOf(30.0),
+                                "nvidea",
+                                 new ArrayList<>(),
                                 "/updated_media.png",
                                 25.0F,
                                 150.0F,
-                                2.0
+                                2.0,
+                                1
                         )
-                )
+                ),
+                true
         );
 
 

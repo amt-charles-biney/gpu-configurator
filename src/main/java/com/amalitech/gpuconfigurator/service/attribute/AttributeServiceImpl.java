@@ -5,10 +5,14 @@ import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
+import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
+import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
+import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigService;
+import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,6 +32,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     private final AttributeRepository attributeRepository;
     private final AttributeOptionRepository attributeOptionRepository;
+    private final CategoryConfigService categoryConfigService;
 
     @Override
     public List<AttributeResponse> getAllAttributes() {
@@ -37,11 +43,29 @@ public class AttributeServiceImpl implements AttributeService {
                 .collect(Collectors.toList());
     }
 
+    private List<IncompatibleAttributeResponse> getAllAttributesById(List<String> attributeUUIDStrings) {
+        List<UUID> attributeUUIDs = attributeUUIDStrings.stream().map(UUID::fromString).toList();
+        return attributeOptionRepository.findAllById(attributeUUIDs).stream().map(attribute -> IncompatibleAttributeResponse
+                .builder()
+                .id(attribute.getId().toString())
+                .optionName(attribute.getOptionName())
+                .optionPrice(attribute.getPriceAdjustment())
+                .additionalInfo(new AttributeVariantDto(attribute.getBaseAmount(), attribute.getMaxAmount(), attribute.getPriceFactor()))
+                .brand(attribute.getBrand())
+                .attribute(AttributeResponseDto
+                        .builder()
+                        .id(attribute.getAttribute().getId().toString())
+                        .isMeasured(attribute.getAttribute().isMeasured())
+                        .name(attribute.getAttribute().getAttributeName())
+                        .build())
+                .build()).distinct().toList();
+    }
+
     @Override
     public CompatibleOptionGetResponse getAllAttributeOptionsEditable() {
         List<AttributeOption> attributeOptionList = attributeOptionRepository.findAll();
 
-        List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList =  attributeOptionList.stream().map(
+        List<CompatibleOptionResponseDto> compatibleOptionResponseDtoList = attributeOptionList.stream().map(
                 attributeOption -> CompatibleOptionResponseDto.
                         builder()
                         .compatibleOptionId(attributeOption.getId().toString())
@@ -80,6 +104,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .attributeName(createAttributesRequest.attributeName())
                 .description(createAttributesRequest.description())
                 .isMeasured(createAttributesRequest.isMeasured())
+                .isRequired(createAttributesRequest.isRequired())
                 .unit(createAttributesRequest.unit())
                 .build();
 
@@ -99,6 +124,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .description(updateAttributeDto.description())
                 .isMeasured(updateAttributeDto.isMeasured())
                 .unit(updateAttributeDto.unit())
+                .isRequired(updateAttributeDto.isRequired())
                 .build();
 
         Attribute attribute = this.updateAttribute(UUID.fromString(updateAttributeDto.id()), attributeDto);
@@ -109,15 +135,17 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public Attribute addAttribute(@NotNull AttributeDto attribute) throws AttributeNameAlreadyExistsException {
-        if(attributeRepository.existsByAttributeName(attribute.attributeName())) throw new AttributeNameAlreadyExistsException("duplicate name already exists");
-            Attribute newAttribute = Attribute.builder()
-                    .attributeName(attribute.attributeName())
-                    .isMeasured(attribute.isMeasured())
-                    .description(attribute.description())
-                    .unit(attribute.unit())
-                    .build();
+        if (attributeRepository.existsByAttributeName(attribute.attributeName()))
+            throw new AttributeNameAlreadyExistsException("duplicate name already exists");
+        Attribute newAttribute = Attribute.builder()
+                .attributeName(attribute.attributeName())
+                .isMeasured(attribute.isMeasured())
+                .description(attribute.description())
+                .unit(attribute.unit())
+                .isRequired(attribute.isRequired())
+                .build();
 
-            return attributeRepository.save(newAttribute);
+        return attributeRepository.save(newAttribute);
     }
 
     @Override
@@ -128,11 +156,12 @@ public class AttributeServiceImpl implements AttributeService {
         updateAttribute.setAttributeName(attribute.attributeName());
         updateAttribute.setMeasured(attribute.isMeasured());
         updateAttribute.setDescription(attribute.description());
+        updateAttribute.setRequired(attribute.isRequired());
         updateAttribute.setUnit(attribute.unit());
         updateAttribute.setUpdatedAt(LocalDateTime.now());
 
         return attributeRepository.save(updateAttribute);
-   }
+    }
 
 
     @Override
@@ -146,10 +175,10 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public GenericResponse deleteAttributeById(UUID attributeId) {
         Attribute attribute = attributeRepository.findById(attributeId)
-                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST +  attributeId));
+                .orElseThrow(() -> new EntityNotFoundException(AttributeConstant.ATTRIBUTE_NOT_EXIST + attributeId));
         attributeRepository.delete(attribute);
 
-        return new GenericResponse(HttpStatus.ACCEPTED.value(),"deleted attribute successfully");
+        return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted attribute successfully");
     }
 
     @Override
@@ -168,7 +197,8 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public void updateAllAttributeOptions(Attribute attribute, List<UpdateAttributeOptionDto> attributeOptionDtos) {
-        for(UpdateAttributeOptionDto attributeOption : attributeOptionDtos) {
+        List<AttributeOption> newAttributeOptions = new ArrayList<>();
+        for (UpdateAttributeOptionDto attributeOption : attributeOptionDtos) {
 
             AttributeOption updateAttribute = attributeOptionRepository.findById(UUID.fromString(attributeOption.id()))
                     .orElseGet(() -> {
@@ -184,9 +214,16 @@ public class AttributeServiceImpl implements AttributeService {
             updateAttribute.setPriceFactor(attributeOption.priceFactor());
             updateAttribute.setMedia(attributeOption.media());
             updateAttribute.setUpdatedAt(LocalDateTime.now());
+            updateAttribute.setInStock(attributeOption.inStock());
+            updateAttribute.setBrand(attributeOption.brand());
+            updateAttribute.setIncompatibleAttributeOptions(convertStringsToUUIDS(attributeOption.incompatibleAttributeOptions()));
 
-            AttributeOption savedAttribute =  attributeOptionRepository.save(updateAttribute);
+            AttributeOption savedAttribute = attributeOptionRepository.save(updateAttribute);
+            newAttributeOptions.add(savedAttribute);
+
         }
+
+        categoryConfigService.updateExistingCategoryConfigs(newAttributeOptions);
     }
 
     @Override
@@ -199,22 +236,31 @@ public class AttributeServiceImpl implements AttributeService {
                 .attribute(attribute)
                 .media(attributes.media())
                 .baseAmount(attributes.baseAmount())
+                .inStock(attributes.inStock())
                 .maxAmount(attributes.maxAmount())
+                .brand(attributes.brand())
                 .priceFactor(attributes.priceFactor())
+                .incompatibleAttributeOptions(convertStringsToUUIDS(attributes.incompatibleAttributeOptions()))
                 .build()).toList();
 
         List<AttributeOption> savedAttributeOptions = attributeOptionRepository.saveAll(attributeOptionList);
+        categoryConfigService.updateExistingCategoryConfigs(attributeOptionList);
         return savedAttributeOptions.stream().map(this::createAttributeResponseType).toList();
     }
 
     @Override
-    public GenericResponse deleteBulkAttributes(List<String> selectedAttributes){
+    public GenericResponse deleteBulkAttributes(List<String> selectedAttributes) {
         List<UUID> selectedAttributesUUID = selectedAttributes.stream()
                 .map(UUID::fromString)
                 .toList();
 
         attributeRepository.deleteAllById(selectedAttributesUUID);
-        return new GenericResponse(HttpStatus.ACCEPTED.value(),"deleted bulk attributes successful");
+        return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted bulk attributes successful");
+    }
+
+    @Override
+    public List<AttributeOption> getAllAttributeOptions() {
+        return attributeOptionRepository.findAll();
     }
 
     private List<AttributeOptionResponseDto> streamAttributeOptions(@NotNull List<AttributeOption> instance) {
@@ -224,6 +270,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .toList();
     }
 
+
     private AttributeOptionResponseDto createAttributeResponseType(@NotNull AttributeOption attributeOption) {
         return AttributeOptionResponseDto
                 .builder()
@@ -232,11 +279,14 @@ public class AttributeServiceImpl implements AttributeService {
                 .optionPrice(attributeOption.getPriceAdjustment())
                 .additionalInfo(new AttributeVariantDto(attributeOption.getBaseAmount(), attributeOption.getMaxAmount(), attributeOption.getPriceFactor()))
                 .optionMedia(attributeOption.getMedia())
+                .incompatibleAttributeOptions(this.getAllAttributesById(convertUUIDsToStrings(attributeOption.getIncompatibleAttributeOptions())))
+                .brand(attributeOption.getBrand())
+                .inStock(attributeOption.getInStock())
                 .attribute(
                         new AttributeResponseDto(
-                        attributeOption.getAttribute().getAttributeName(),
-                        attributeOption.getAttribute().getId().toString(),
-                        attributeOption.getAttribute().isMeasured(),
+                                attributeOption.getAttribute().getAttributeName(),
+                                attributeOption.getAttribute().getId().toString(),
+                                attributeOption.getAttribute().isMeasured(),
                                 attributeOption.getAttribute().getUnit()
                         ))
                 .build();
@@ -249,9 +299,20 @@ public class AttributeServiceImpl implements AttributeService {
                 .id(attribute.getId())
                 .attributeName(attribute.getAttributeName())
                 .isMeasured(attribute.isMeasured())
+                .isRequired(attribute.isRequired())
                 .description(attribute.getDescription())
                 .unit(attribute.getUnit())
                 .attributeOptions(this.streamAttributeOptions(attributeOptions))
                 .build();
+    }
+
+    private List<String> convertUUIDsToStrings(List<UUID> uuids) {
+        if (uuids.isEmpty()) return new ArrayList<>();
+        return uuids.stream().map(String::valueOf).toList();
+    }
+
+    private List<UUID> convertStringsToUUIDS(List<String> uuidStrings) {
+        if (uuidStrings.isEmpty()) return new ArrayList<>();
+        return uuidStrings.stream().map(UUID::fromString).toList();
     }
 }

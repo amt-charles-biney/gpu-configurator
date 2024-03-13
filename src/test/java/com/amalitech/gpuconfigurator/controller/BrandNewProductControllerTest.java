@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.controller;
 
+import com.amalitech.gpuconfigurator.dto.product.FeaturedProductDto;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -54,29 +56,20 @@ class BrandNewProductControllerTest {
     void getBrandNewProducts() throws Exception {
         Category category = Category.builder().categoryName("Test").build();
 
-        List<Product> expectedProduct = Arrays.asList(
-                Product.builder()
-                        .id(UUID.fromString("c6409193-44e8-4791-1232-c58f2e2aba4b"))
-                        .productName("Product 2")
-                        .productDescription("powerful gpu")
-                        .productPrice(20.00)
-                        .productAvailability(true)
-                        .inStock(10)
-                        .category(category)
-                        .createdAt(LocalDateTime.now())
-                        .productId("abcd")
+        List<FeaturedProductDto> expectedProduct = Arrays.asList(
+                FeaturedProductDto.builder()
+                        .id("c6409193-44e8-4791-1232-c58f2e2aba4b")
+                        .productName("Product 1")
+                        .productPrice(BigDecimal.valueOf(100))
+                        .productBrand(category.getCategoryName())
                         .build(),
-                Product.builder()
-                        .id(UUID.fromString("c6409193-44e8-4791-1232-c58f2e2aba4b"))
+                FeaturedProductDto.builder()
+                        .id("c6409193-44e8-4791-1232-c58f2e2aba4b")
                         .productName("Product 2")
-                        .productDescription("powerful gpu")
-                        .productPrice(20.00)
-                        .productAvailability(true)
-                        .inStock(10)
-                        .category(category)
-                        .createdAt(LocalDateTime.now().minusHours(3))
-                        .productId("abcd")
+                        .productPrice(BigDecimal.valueOf(100))
+                        .productBrand(category.getCategoryName())
                         .build()
+
         );
 
         when(productService.getNewProducts()).thenReturn(expectedProduct);

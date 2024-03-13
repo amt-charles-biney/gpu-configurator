@@ -11,13 +11,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BrandService {
-
-
-    Brand createBrand(BrandRequest request) ;
-
     List<BrandDto> getAllBrands();
 
-    GenericResponse deleteBrand(UUID id);
-
-    GenericResponse updatedBrand(UUID id, @NotNull BrandRequest request);
 }

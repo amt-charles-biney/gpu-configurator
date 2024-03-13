@@ -3,7 +3,9 @@ package com.amalitech.gpuconfigurator.dto.attribute;
 import lombok.Builder;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Builder
-public record AttributeOptionResponseDto(String id, String optionName, AttributeVariantDto additionalInfo, BigDecimal optionPrice, String optionMedia, AttributeResponseDto attribute) {
+public record AttributeOptionResponseDto(String id, String optionName, AttributeVariantDto additionalInfo, BigDecimal optionPrice, String optionMedia, AttributeResponseDto attribute,
+                                         List<IncompatibleAttributeResponse> incompatibleAttributeOptions, String brand, Integer inStock) {
 }

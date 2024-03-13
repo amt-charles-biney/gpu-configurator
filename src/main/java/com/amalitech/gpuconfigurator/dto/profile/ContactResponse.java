@@ -1,20 +1,19 @@
 package com.amalitech.gpuconfigurator.dto.profile;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public interface ContactResponse {
+    String getPhoneNumber();
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class ContactResponse {
-    private String phoneNumber;
+    void setPhoneNumber(String phoneNumber);
 
-    private String country;
+    String getCountry();
 
-    private String iso2Code;
+    void setCountry(String country);
 
-    private String dialCode;
+    String getIso2Code();
+
+    void setIso2Code(String iso2Code);
+
+    String getDialCode();
+
+    void setDialCode(String dialCode);
 }

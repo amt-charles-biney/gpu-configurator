@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.jwt;
 
+import com.amalitech.gpuconfigurator.model.UserSession;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,6 +17,10 @@ public interface JwtService {
     String generateToken(Map<String, Object> extraClaims, UserDetails userDetails);
 
     String generateToken(UserDetails userDetails);
+
+    String generateTokenForUserSession(UserSession userSession);
+
+    String extractSubject(String jwtToken);
 
     boolean isTokenValid(String jwtToken, UserDetails userDetails);
 

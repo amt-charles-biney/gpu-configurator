@@ -1,19 +1,21 @@
 package com.amalitech.gpuconfigurator.service.profile;
 
 import com.amalitech.gpuconfigurator.constant.ProfileConstants;
-import com.amalitech.gpuconfigurator.dto.profile.BasicInformationRequest;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.auth.UserPasswordRequest;
-import com.amalitech.gpuconfigurator.dto.profile.BasicInformationResponse;
-import com.amalitech.gpuconfigurator.dto.profile.ContactResponse;
+import com.amalitech.gpuconfigurator.dto.profile.*;
+import com.amalitech.gpuconfigurator.dto.shipping.ShippingResponse;
 import com.amalitech.gpuconfigurator.exception.InvalidPasswordException;
+import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Contact;
+import com.amalitech.gpuconfigurator.model.Shipping;
 import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.repository.ShippingRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.service.contact.ContactService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,29 +27,27 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ContactService contactService;
+    private final ShippingRepository shippingRepository;
 
     @Override
-    public GenericResponse updateBasicInformation(BasicInformationRequest dto, Principal principal) {
+    public BasicInformationResponse updateBasicInformation(BasicInformationRequest dto, Principal principal) {
         var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
 
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
-        user.setContact(contactService.createOrUpdate(user, dto.getContact()));
+        if (dto.getContact() != null) {
+            user.setContact(contactService.createOrUpdate(user, dto.getContact()));
+        }
 
         userRepository.save(user);
 
-        return new GenericResponse(200, ProfileConstants.BASIC_INFORMATION_UPDATE_SUCCESS);
+        return userRepository.findBasicInformationByEmail(user.getEmail());
     }
 
-    public BasicInformationResponse getUserProfile(Principal principal) throws UsernameNotFoundException {
-        var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+    public BasicInformationResponse getUserProfile(Principal principal) {
+        String email = principal.getName();
 
-        return BasicInformationResponse.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .contact(this.mapToContactResponse(user.getContact()))
-                .build();
+        return userRepository.findBasicInformationByEmail(email);
     }
 
     @Override
@@ -66,15 +66,83 @@ public class ProfileServiceImpl implements ProfileService {
         return new GenericResponse(201, ProfileConstants.PASSWORD_UPDATE_SUCCESS);
     }
 
-    private ContactResponse mapToContactResponse(Contact contact) {
-        if (contact == null) {
-            return null;
+    @Override
+    public ProfileShippingResponse getUserShippingInformation(User user) {
+        if (user.getShippingInformation() == null) {
+            throw new NotFoundException("User has no shipping information");
         }
-        return ContactResponse.builder()
-                .country(contact.getCountry())
+
+        Shipping shipping = shippingRepository.findById(user.getShippingInformation().getId())
+                .orElseThrow(() -> new NotFoundException("User has no shipping information"));
+
+        ProfileShippingResponse profileShippingResponse = mapToProfileShippingResponse(shipping);
+
+        if (shipping.getEmail() == null) {
+            profileShippingResponse.setEmail(user.getEmail());
+        }
+
+        return profileShippingResponse;
+    }
+
+    @Transactional
+    @Override
+    public ShippingResponse addUserShippingInformation(ProfileShippingRequest dto, User user) {
+        Shipping newShipping = mapProfileShippingRequestToShipping(dto);
+
+        Shipping savedShipping = shippingRepository.save(newShipping);
+
+        user.setShippingInformation(savedShipping);
+        userRepository.save(user);
+
+        return shippingRepository.findShippingResponseById(savedShipping.getId());
+    }
+
+    private Shipping mapProfileShippingRequestToShipping(ProfileShippingRequest shippingRequest) {
+        Shipping.ShippingBuilder builder = Shipping.builder()
+                .firstName(shippingRequest.getFirstName())
+                .lastName(shippingRequest.getLastName())
+                .address1(shippingRequest.getAddress1())
+                .country(shippingRequest.getCountry())
+                .state(shippingRequest.getState())
+                .city(shippingRequest.getCity())
+                .zipCode(shippingRequest.getZipCode())
+                .email(shippingRequest.getEmail())
+                .contact(Contact.builder()
+                        .country(shippingRequest.getContact().getCountry())
+                        .phoneNumber(shippingRequest.getContact().getPhoneNumber())
+                        .iso2Code(shippingRequest.getContact().getIso2Code())
+                        .dialCode(shippingRequest.getContact().getDialCode())
+                        .build());
+
+        if (shippingRequest.getAddress2() != null) {
+            builder.address2(shippingRequest.getAddress2());
+        }
+
+        return builder.build();
+    }
+
+    private ProfileShippingResponse mapToProfileShippingResponse(Shipping shipping) {
+        return ProfileShippingResponse.builder()
+                .id(shipping.getId())
+                .firstName(shipping.getFirstName())
+                .lastName(shipping.getLastName())
+                .address1(shipping.getAddress1())
+                .address2(shipping.getAddress2())
+                .country(shipping.getCountry())
+                .state(shipping.getState())
+                .city(shipping.getCity())
+                .zipCode(shipping.getZipCode())
+                .email(shipping.getEmail())
+                .contact(mapToProfileContactResponse(shipping.getContact()))
+                .build();
+    }
+
+    private ProfileContactResponse mapToProfileContactResponse(Contact contact) {
+        return ProfileContactResponse.builder()
+                .phoneNumber(contact.getPhoneNumber())
                 .dialCode(contact.getDialCode())
                 .iso2Code(contact.getIso2Code())
-                .phoneNumber(contact.getPhoneNumber())
+                .country(contact.getCountry())
                 .build();
     }
 }

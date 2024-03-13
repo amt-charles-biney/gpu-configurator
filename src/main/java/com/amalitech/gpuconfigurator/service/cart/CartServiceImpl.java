@@ -1,28 +1,21 @@
 package com.amalitech.gpuconfigurator.service.cart;
 
-import com.amalitech.gpuconfigurator.dto.cart.AddCartItemResponse;
-import com.amalitech.gpuconfigurator.dto.cart.CartItemsCountResponse;
-import com.amalitech.gpuconfigurator.dto.cart.CartItemsResponse;
-import com.amalitech.gpuconfigurator.dto.cart.DeleteCartItemResponse;
+import com.amalitech.gpuconfigurator.dto.cart.*;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
-import com.amalitech.gpuconfigurator.model.Cart;
-import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.exception.CannotAddItemToCartException;
+import com.amalitech.gpuconfigurator.exception.NotFoundException;
+import com.amalitech.gpuconfigurator.model.*;
+import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
-import com.amalitech.gpuconfigurator.repository.CartRepository;
-import com.amalitech.gpuconfigurator.repository.ConfigurationRepository;
-import com.amalitech.gpuconfigurator.repository.UserRepository;
+import com.amalitech.gpuconfigurator.repository.*;
 import com.amalitech.gpuconfigurator.service.configuration.ConfigurationService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,16 +24,17 @@ public class CartServiceImpl implements CartService {
     private final ConfigurationService configuredProductService;
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
+    private final UserSessionRepository userSessionRepository;
+    private final CompatibleOptionRepository compatibleOptionRepository;
 
     @Override
-    public CartItemsCountResponse getCartItemsCount(Principal principal, HttpSession session) {
-        User user = this.getUser(principal);
-        var optionalCart = this.getUserOrGuestCart(user, session);
+    public CartItemsCountResponse getCartItemsCount(Principal principal, UserSession userSession) {
+        User user = getUser(principal);
+        Optional<Cart> optionalCart = getUserOrGuestCart(user, userSession);
 
-        long cartItemsCount = 0;
-        if (optionalCart.isPresent()) {
-            cartItemsCount = configuredProductRepository.countByCartId(optionalCart.get().getId());
-        }
+        long cartItemsCount = optionalCart
+                .map(cart -> configuredProductRepository.countByCartId(cart.getId()))
+                .orElse(0L);
 
         return CartItemsCountResponse.builder()
                 .count(cartItemsCount)
@@ -48,46 +42,53 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public AddCartItemResponse addCartItem(UUID productId, Boolean warranty, String components, Principal principal, HttpSession session) {
-        var user = this.getUser(principal);
-        Cart cart = this.getUserOrGuestCart(user, session).orElseGet(Cart::new);
-
-        if (cart.getId() == null) {
-            cart = cartRepository.save(cart);
-        }
+    public AddCartItemResponse addCartItem(UUID productId, Boolean warranty, String components, Principal principal, UserSession userSession) {
+        User user = getUser(principal);
+        Optional<Cart> cartOptional = getUserOrGuestCart(user, userSession);
+        Cart cart = cartOptional.orElseGet(() -> cartRepository.save(new Cart()));
 
         if (user == null) {
-            session.setAttribute("cart_id", cart.getId());
+            userSession.setCart(cart);
+            userSessionRepository.save(userSession);
         } else if (user.getCart() == null) {
             user.setCart(cart);
             userRepository.save(user);
         }
 
-        var configuredProductResponse = configuredProductService.saveConfiguration(productId.toString(), warranty, components, cart);
+        long cartItemsCount = configuredProductRepository.countByCartId(cart.getId());
+
+        if (cartItemsCount != 0) {
+            throw new CannotAddItemToCartException("Cart already contains one configured product. Checkout configured product to continue.");
+        }
+
+        ConfigurationResponseDto configuredProductResponse = configuredProductService.saveConfiguration(productId.toString(), warranty, components, cart);
 
         return AddCartItemResponse.builder()
                 .message("Configured product added to cart successfully")
-                .configuration(configuredProductResponse)
+                .configuration(setMaximumStock(configuredProductResponse))
                 .build();
     }
 
     @Override
-    public DeleteCartItemResponse deleteCartItem(UUID configuredProductId, Principal principal, HttpSession session) {
-        var optionalCart = this.getUserOrGuestCart(this.getUser(principal), session);
+    public DeleteCartItemResponse deleteCartItem(UUID configuredProductId, Principal principal, UserSession userSession) {
+        User user = getUser(principal);
+        Optional<Cart> optionalCart = getUserOrGuestCart(user, userSession);
 
         if (optionalCart.isEmpty()) {
-            return DeleteCartItemResponse.builder().message("User has no items in cart").build();
+            return DeleteCartItemResponse.builder().message("Configured product deleted successfully").build();
         }
 
-        var optionalConfiguredProduct = configuredProductRepository.findByIdAndCartId(configuredProductId, optionalCart.get().getId());
-        optionalConfiguredProduct.ifPresent(configuredProductRepository::delete);
+        configuredProductRepository
+                .findByIdAndCartId(configuredProductId, optionalCart.get().getId())
+                .ifPresent(configuredProductRepository::delete);
 
         return DeleteCartItemResponse.builder().message("Configured product deleted successfully").build();
     }
 
     @Override
-    public CartItemsResponse getCartItems(Principal principal, HttpSession session) {
-        var optionalCart = this.getUserOrGuestCart(this.getUser(principal), session);
+    public CartItemsResponse getCartItems(Principal principal, UserSession userSession) {
+        User user = getUser(principal);
+        Optional<Cart> optionalCart = this.getUserOrGuestCart(user, userSession);
 
         if (optionalCart.isEmpty()) {
             return new CartItemsResponse(new ArrayList<>(), 0);
@@ -96,28 +97,43 @@ public class CartServiceImpl implements CartService {
         List<ConfigurationResponseDto> configuredProducts = configuredProductRepository.findByCartId(optionalCart.get().getId())
                 .stream()
                 .map(this::mapToConfigurationResponseDto)
+                .map(this::setMaximumStock)
                 .toList();
 
         return new CartItemsResponse(configuredProducts, configuredProducts.size());
     }
 
-    private Optional<Cart> getUserOrGuestCart(User user, HttpSession session) {
+    @Override
+    public UpdateCartItemQuantityResponse updateCartItemQuantity(UpdateCartItemQuantityRequest dto, User user, UserSession userSession) {
+        Optional<Cart> optionalCart = getUserOrGuestCart(user, userSession);
+        if (optionalCart.isEmpty()) {
+            throw new NotFoundException("Configured product with ID " + dto.getConfiguredProductId() + " not found.");
+        }
+
+        Optional<Configuration> optionalConfiguredProduct = configuredProductRepository.findByIdAndCartId(dto.getConfiguredProductId(), optionalCart.get().getId());
+        if (optionalConfiguredProduct.isEmpty()) {
+            throw new NotFoundException("Configured product with ID " + dto.getConfiguredProductId() + " not found.");
+        }
+
+        Configuration configuredProduct = optionalConfiguredProduct.get();
+
+        if (configuredProduct.getQuantity() != dto.getQuantity()) {
+            configuredProduct.setQuantity(dto.getQuantity());
+            configuredProductRepository.save(configuredProduct);
+        }
+
+        return UpdateCartItemQuantityResponse.builder()
+                .message("Quantity updated successfully.")
+                .configuredProductId(dto.getConfiguredProductId())
+                .quantity(dto.getQuantity())
+                .build();
+    }
+
+    private Optional<Cart> getUserOrGuestCart(User user, UserSession userSession) {
         if (user == null) {
-            return Optional.ofNullable(this.getGuestCart(session));
+            return Optional.ofNullable(userSession.getCart());
         }
-        return Optional.ofNullable(this.getUserCart(user));
-    }
-
-    private Cart getGuestCart(HttpSession session) {
-        UUID cartId = (UUID) session.getAttribute("cart_id");
-        if (cartId == null) {
-            return null;
-        }
-        return cartRepository.findById(cartId).orElse(null);
-    }
-
-    private Cart getUserCart(User user) {
-        return user.getCart();
+        return Optional.ofNullable(user.getCart());
     }
 
     private User getUser(Principal principal) {
@@ -128,20 +144,52 @@ public class CartServiceImpl implements CartService {
     }
 
     private ConfigurationResponseDto mapToConfigurationResponseDto(Configuration configuredProduct) {
-        var product = configuredProduct.getProduct();
+        Product product = configuredProduct.getProduct();
 
         return ConfigurationResponseDto.builder()
                 .Id(String.valueOf(configuredProduct.getId()))
                 .productId(product.getProductId())
                 .productName(product.getProductName())
-                .productPrice(BigDecimal.valueOf(product.getProductPrice()))
+                .productPrice(product.getTotalProductPrice())
                 .productDescription(product.getProductDescription())
-                .productCoverImage(product.getCoverImage())
+                .productCoverImage(product.getProductCase().getCoverImageUrl())
                 .totalPrice(configuredProduct.getTotalPrice())
                 .warranty(null)
                 .vat(null)
                 .configuredPrice(null)
                 .configured(configuredProduct.getConfiguredOptions())
+                .quantity(configuredProduct.getQuantity())
+                .build();
+    }
+
+    private ConfigurationResponseDto setMaximumStock(ConfigurationResponseDto dto) {
+        Set<UUID> compatibleOptionIds = dto.configured()
+                .stream()
+                .map(ConfigOptions::getOptionId)
+                .map(UUID::fromString)
+                .collect(Collectors.toSet());
+
+        List<CompatibleOption> compatibleOptions = compatibleOptionRepository.findAllById(compatibleOptionIds);
+
+        int stock = Integer.MAX_VALUE;
+        for (CompatibleOption compatibleOption : compatibleOptions) {
+            stock = Math.min(stock, compatibleOption.getAttributeOption().getInStock());
+        }
+
+        return ConfigurationResponseDto.builder()
+                .Id(dto.Id())
+                .totalPrice(dto.totalPrice())
+                .productId(dto.productId())
+                .productName(dto.productName())
+                .productPrice(dto.productPrice())
+                .productDescription(dto.productDescription())
+                .productCoverImage(dto.productCoverImage())
+                .configuredPrice(dto.configuredPrice())
+                .configured(dto.configured())
+                .vat(dto.vat())
+                .warranty(dto.warranty())
+                .stock(compatibleOptions.isEmpty() ? 0 : stock)
+                .quantity(dto.quantity())
                 .build();
     }
 }

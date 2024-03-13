@@ -1,8 +1,10 @@
 package com.amalitech.gpuconfigurator.config;
 
+import com.amalitech.gpuconfigurator.model.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,8 +24,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
-        http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/**", "/api/v1/carts/**").permitAll()
+        http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/**", "/api/v1/carts/**", "/api/v1/shipping/**").permitAll()
+                .requestMatchers("/api/v1/profile/**").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())
+                .requestMatchers(HttpMethod.GET, "/api/v1/admin/orders/{id}").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())
                 .requestMatchers("/api/v1/admin/**").hasAnyAuthority("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/v1/cases/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/product/**").permitAll()
                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
                 .permitAll()
                 .requestMatchers("/api/v1/**").permitAll()

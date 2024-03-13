@@ -1,5 +1,7 @@
 package com.amalitech.gpuconfigurator.service.configuration;
 
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigResponseDto;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Cart;
@@ -9,9 +11,14 @@ import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
+import com.amalitech.gpuconfigurator.repository.CompatibleOptionRepository;
 import com.amalitech.gpuconfigurator.repository.ConfigurationRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
+import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
+import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,13 +27,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ConfigurationServiceImpl implements ConfigurationService {
     private final CompatibleOptionService compatibleOptionService;
-    private final ProductRepository productRepository;
+    private final ProductServiceImpl productService;
     private final CategoryConfigRepository categoryConfigRepository;
     private final ConfigurationRepository configurationRepository;
 
@@ -39,7 +47,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         List<CompatibleOption> compatibleOptions = getCompatibleOptions(categoryConfig);
         List<ConfigOptions> configOptions = getConfigOptions(components, compatibleOptions);
 
-        BigDecimal optionalTotal = calculateOptionalTotal(configOptions);
+        BigDecimal optionalTotal = calculateOptionalTotal(configOptions).subtract(product.getBaseConfigPrice());
+
+
         totalPrice = totalPrice.add(optionalTotal);
 
         BigDecimal vat = calculateVat(totalPrice);
@@ -54,12 +64,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public ConfigurationResponseDto saveConfiguration(String productId, Boolean warranty, String components, Cart cart) {
 
         Product product = getProductById(productId);
-        BigDecimal totalPrice = calculateTotalPrice(product);
         CategoryConfig categoryConfig = getCategoryConfig(product);
+        BigDecimal totalPrice = calculateTotalPrice(product);
         List<CompatibleOption> compatibleOptions = getCompatibleOptions(categoryConfig);
         List<ConfigOptions> configOptions = getConfigOptions(components, compatibleOptions);
 
-        BigDecimal optionalTotal = calculateOptionalTotal(configOptions);
+        BigDecimal optionalTotal = calculateOptionalTotal(configOptions).subtract(product.getBaseConfigPrice());
+
         totalPrice = totalPrice.add(optionalTotal);
 
         BigDecimal vat = calculateVat(totalPrice);
@@ -67,6 +78,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         Configuration configuration = createConfiguration(product, configOptions, cart);
         configuration.setTotalPrice(totalPriceWithVat);
+        configuration.setQuantity(1);
         saveConfiguration(configuration);
 
         return createResponseDto(configuration, totalPriceWithVat, warranty, vat, optionalTotal, product);
@@ -83,12 +95,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     private Product getProductById(String productId) {
-        return productRepository.findById(UUID.fromString(productId))
-                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+            return productService.getProductOnDemand(UUID.fromString(productId));
     }
 
     private BigDecimal calculateTotalPrice(Product product) {
-        return BigDecimal.valueOf(product.getProductPrice());
+        return product.getTotalProductPrice();
     }
 
     private CategoryConfig getCategoryConfig(Product product) {
@@ -123,8 +134,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .toList();
     }
 
+
     private ConfigOptions createConfigOption(CompatibleOption option, String[] componentIsSizableList) {
-        Boolean isMeasured = option.getAttributeOption().getAttribute().isMeasured();
+        boolean isMeasured = option.getAttributeOption().getAttribute().isMeasured();
         if (isMeasured) {
             String size = Arrays.stream(componentIsSizableList)
                     .filter(pair -> pair.split("_")[0].equals(String.valueOf(option.getId())))
@@ -141,10 +153,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .multiply(BigDecimal.valueOf(option.getAttributeOption().getPriceFactor()))
                     .setScale(2, RoundingMode.HALF_UP);
 
+            BigDecimal optionPrice = option.getIsIncluded() ? calculatedPrice : calculatedPrice.subtract(option.getAttributeOption().getPriceAdjustment());
+
             return ConfigOptions.builder()
                     .optionId(String.valueOf(option.getId()))
                     .optionName(option.getAttributeOption().getOptionName())
-                    .optionPrice(option.getIsIncluded() ? calculatedPrice :calculatedPrice.subtract(option.getAttributeOption().getPriceAdjustment()))
+                    .optionPrice((optionPrice.compareTo(BigDecimal.ZERO) == 0) ? option.getAttributeOption().getPriceAdjustment() : optionPrice)
                     .optionType(option.getAttributeOption().getAttribute().getAttributeName())
                     .baseAmount(BigDecimal.valueOf(option.getAttributeOption().getBaseAmount()))
                     .isIncluded(option.getIsIncluded())
@@ -165,6 +179,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
     }
 
+
     private ConfigOptions createConfigOptionWithoutSize(CompatibleOption option) {
         return ConfigOptions.builder()
                 .optionId(String.valueOf(option.getId()))
@@ -177,6 +192,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
                 .build();
     }
+
 
     private BigDecimal calculateOptionalTotal(List<ConfigOptions> configOptions) {
         return configOptions.stream()
@@ -213,17 +229,20 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private ConfigurationResponseDto createResponseDto(Configuration configuration, BigDecimal totalPriceWithVat,
                                                        Boolean warranty, BigDecimal vat, BigDecimal optionalTotal, Product product) {
+
         return ConfigurationResponseDto.builder()
                 .Id(String.valueOf(configuration.getId()))
                 .productName(product.getProductName())
+                .coverImage(product.getProductCase().getCoverImageUrl())
                 .productId(String.valueOf(configuration.getProduct().getId()))
                 .totalPrice(totalPriceWithVat)
                 .warranty(warranty)
                 .vat(vat)
                 .configuredPrice(optionalTotal)
-                .productPrice(BigDecimal.valueOf(product.getProductPrice()))
+                .productPrice(product.getTotalProductPrice())
                 .configured(configuration.getConfiguredOptions())
                 .productDescription(configuration.getProduct().getProductDescription())
+                .quantity(configuration.getQuantity())
                 .build();
     }
 

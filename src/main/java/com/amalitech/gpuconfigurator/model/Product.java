@@ -1,17 +1,20 @@
 package com.amalitech.gpuconfigurator.model;
 
+import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,14 +34,24 @@ public class Product {
     @Column(name = "product_description", nullable = false)
     private String productDescription;
 
+    @Column(name = "service_charge", nullable = false)
+    private Double serviceCharge;
+
     @Column(name = "product_price", nullable = false)
-    private Double productPrice;
+    private BigDecimal totalProductPrice;
 
-    @Column(name = "product_brand", nullable = false)
-    private String productBrand;
+    @Column(name = "base_config_price", nullable = false)
+    private BigDecimal baseConfigPrice;
 
-    @Column(name = "product_instock", nullable = false)
-    private Integer inStock;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "case_id", referencedColumnName = "id", foreignKey = @ForeignKey(
+            name = "case_id_fk"
+    ))
+    private Case productCase;
+
+//    @Column(name = "product_instock", nullable = false)
+//    private Integer inStock;
 
     @JsonIgnore
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -47,15 +60,12 @@ public class Product {
     ))
     private Category category;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<Configuration> configurations;
+
     @Column(name = "product_featured")
     private Boolean featured;
-
-    @Column(name = "image_url", nullable = false)
-    private List<String> imageUrl;
-
-
-    @Column(name = "cover_image_url", nullable = false)
-    private String coverImage;
 
     @Column(name = "product_availability", nullable = false)
     private Boolean productAvailability;
@@ -74,4 +84,34 @@ public class Product {
         featured = false;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Product product)) return false;
+        return Objects.equals(getId(), product.getId()) &&
+                Objects.equals(getProductName(), product.getProductName())
+                && Objects.equals(getProductId(), product.getProductId()) &&
+                Objects.equals(getProductDescription(), product.getProductDescription()) &&
+                Objects.equals(getServiceCharge(), product.getServiceCharge()) &&
+                Objects.equals(getTotalProductPrice(), product.getTotalProductPrice()) &&
+                Objects.equals(getBaseConfigPrice(), product.getBaseConfigPrice()) && Objects.equals(getProductCase(), product.getProductCase())
+                && Objects.equals(getCategory(), product.getCategory())
+                && Objects.equals(getConfigurations(), product.getConfigurations())
+                && Objects.equals(getFeatured(), product.getFeatured())
+                && Objects.equals(getProductAvailability(), product.getProductAvailability())
+                && Objects.equals(getCreatedAt(), product.getCreatedAt())
+                && Objects.equals(getUpdatedAt(), product.getUpdatedAt())
+                && Objects.equals(getDeletedAt(), product.getDeletedAt());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(),
+                getProductName(),
+                getProductId(), getProductDescription(), getServiceCharge(),
+                getTotalProductPrice(), getBaseConfigPrice(), getProductCase(), getCategory(),
+                getConfigurations(), getFeatured(), getProductAvailability(), getCreatedAt(), getUpdatedAt(),
+                getDeletedAt());
+    }
 }
