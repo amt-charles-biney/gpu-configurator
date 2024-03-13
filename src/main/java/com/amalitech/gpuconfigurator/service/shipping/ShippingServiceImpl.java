@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.shipping;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.profile.ContactRequest;
+import com.amalitech.gpuconfigurator.dto.shipping.AddressRequestDto;
 import com.amalitech.gpuconfigurator.dto.shipping.ShippingRequest;
 import com.amalitech.gpuconfigurator.dto.shipping.ShippingResponse;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
@@ -12,6 +13,8 @@ import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.repository.ShippingRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
+import com.amalitech.gpuconfigurator.service.verifyAddress.AddressVerification;
+import com.easypost.exception.EasyPostException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,10 +30,13 @@ public class ShippingServiceImpl implements ShippingService {
     private final ShippingRepository shippingRepository;
     private final UserSessionRepository userSessionRepository;
     private final UserRepository userRepository;
+    private final AddressVerification addressVerification;
 
     @Transactional
     @Override
-    public ShippingResponse create(ShippingRequest dto, User currentUser, UserSession userSession) {
+    public ShippingResponse create(ShippingRequest dto, User currentUser, UserSession userSession) throws EasyPostException {
+        addressVerification.verifyAddress(mapShippingRequestToAddressRequestDto(dto));
+
         Shipping newShipping = mapShippingRequestToShipping(dto);
 
         Shipping savedShipping = shippingRepository.save(newShipping);
@@ -110,5 +116,17 @@ public class ShippingServiceImpl implements ShippingService {
                 .iso2Code(contactRequest.getIso2Code())
                 .dialCode(contactRequest.getDialCode())
                 .build();
+    }
+
+    private AddressRequestDto mapShippingRequestToAddressRequestDto(ShippingRequest dto) {
+        return new AddressRequestDto(
+                dto.getAddress1(),
+                dto.getCity(),
+                dto.getState(),
+                dto.getZipCode(),
+                dto.getCountry(),
+                null,
+                dto.getContact().getPhoneNumber()
+        );
     }
 }

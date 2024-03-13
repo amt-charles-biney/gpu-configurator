@@ -1,7 +1,7 @@
 package com.amalitech.gpuconfigurator.service.order;
 
 
-import com.amalitech.gpuconfigurator.constant.ShippoContants;
+import com.amalitech.gpuconfigurator.constant.ShipmentContants;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
@@ -14,14 +14,9 @@ import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
-import com.shippo.Shippo;
-import com.shippo.exception.APIConnectionException;
-import com.shippo.exception.APIException;
-import com.shippo.exception.AuthenticationException;
-import com.shippo.exception.InvalidRequestException;
-import com.shippo.model.Rate;
-import com.shippo.model.Shipment;
-import com.shippo.model.Transaction;
+import com.easypost.exception.EasyPostException;
+import com.easypost.model.Shipment;
+import com.easypost.service.EasyPostClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,16 +40,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final UserSessionRepository userSessionRepository;
-    @Value("${shippo-test-key}")
-    private String shippoTestKey;
+    @Value("${easy-test-key}")
+    private String easyPost;
 
     @Override
     @Transactional
-    public CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession) throws APIConnectionException, APIException, AuthenticationException, InvalidRequestException {
+    public CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession) throws EasyPostException {
 
-        Shippo.setApiKey(shippoTestKey);
-
-        HashMap<String, Object> addressToMap = new HashMap<>();
+        EasyPostClient client = new EasyPostClient(easyPost);
 
 
         User user = null;
@@ -67,68 +60,60 @@ public class OrderServiceImpl implements OrderService {
 
         Order.OrderBuilder orderBuilder = Order.builder();
 
+
         if (user != null) {
             orderBuilder.cart(user.getCart());
             user.setCart(null);
             userRepository.save(user);
-            addressToMap.put("name", user.getShippingInformation().getFirstName());
 
 
         } else {
             orderBuilder.cart(userSession.getCart());
             userSession.setCart(null);
             userSessionRepository.save(userSession);
-            addressToMap.put("name", userSession.getCurrentShipping().getFirstName());
-            addressToMap.put("company", "S3vers");
 
         }
-        addressToMap.put("street1", "215 Clayton St.");
-        addressToMap.put("city", "San Francisco");
-        addressToMap.put("state", "CA");
-        addressToMap.put("zip", "94117");
-        addressToMap.put("country", "US");
 
 
+        Map<String, Object> fromAddressMap = new HashMap<String, Object>();
+        fromAddressMap.put("company", "EasyPost");
+        fromAddressMap.put("street1", "417 MONTGOMERY ST");
+        fromAddressMap.put("street2", "FLOOR 5");
+        fromAddressMap.put("city", "SAN FRANCISCO");
+        fromAddressMap.put("state", "CA");
+        fromAddressMap.put("country", "US");
+        fromAddressMap.put("zip", "94104");
+        fromAddressMap.put("phone", "415-123-4567");
 
-// From Address
-        HashMap<String, Object> addressFromMap = new HashMap<>();
-        addressFromMap.put("name", ShippoContants.ADDRESS_FROM_COMPANY);
-        addressFromMap.put("company", ShippoContants.ADDRESS_FROM_COMPANY);
-        addressFromMap.put("street1", ShippoContants.ADDRESS_FROM);
-        addressFromMap.put("city", ShippoContants.ADDRESS_FROM_CITY);
-        addressFromMap.put("state", ShippoContants.ADDRESS_FROM_STATE);
-        addressFromMap.put("zip", ShippoContants.ADDRESS_FROM_ZIP);
-        addressFromMap.put("country", ShippoContants.ADDRESS_FROM_COUNTRY);
+        Map<String, Object> toAddressMap = new HashMap<String, Object>();
+        toAddressMap.put("name", "Dr. Steve Brule");
+        toAddressMap.put("street1", "179 N Harbor Dr");
+        toAddressMap.put("city", "Redondo Beach");
+        toAddressMap.put("state", "CA");
+        toAddressMap.put("country", "US");
+        toAddressMap.put("zip", "90277");
+        toAddressMap.put("phone", "310-808-5243");
 
-// Parcel
-        HashMap<String, Object> parcelMap = new HashMap<>();
-        parcelMap.put("length", "5");
-        parcelMap.put("width", "5");
-        parcelMap.put("height", "5");
-        parcelMap.put("distance_unit", "in");
-        parcelMap.put("weight", "2");
-        parcelMap.put("mass_unit", "lb");
+        Map<String, Object> parcelMap = new HashMap<String, Object>();
+        parcelMap.put("weight", 22.9);
+        parcelMap.put("height", 12.1);
+        parcelMap.put("width", 8);
+        parcelMap.put("length", 19.8);
 
-// Shipment
-        HashMap<String, Object> shipmentMap = new HashMap<>();
-        shipmentMap.put("address_to", addressToMap);
-        shipmentMap.put("address_from", addressFromMap);
-        shipmentMap.put("parcels", parcelMap);
-        shipmentMap.put("async", false);
-        Shipment shipment = Shipment.create(shipmentMap);
+        Map<String, Object> shipmentMap = new HashMap<String, Object>();
+        shipmentMap.put("from_address", fromAddressMap);
+        shipmentMap.put("to_address", toAddressMap);
+        shipmentMap.put("parcel", parcelMap);
 
-        List<Rate> rates = shipment.getRates();
-        Rate rate = rates.get(0);
 
-        Map<String, Object> transParams = new HashMap<>();
-        transParams.put("rate", rate.getObjectId());
-        transParams.put("async", false);
-        Transaction transaction = Transaction.create(transParams);
+        Shipment shipment = client.shipment.create(shipmentMap);
+
+        Shipment boughtShipment = client.shipment.buy(shipment.getId(), shipment.lowestRate());
 
 
         Order order = orderBuilder
-                .tracking_id((String) transaction.getTrackingNumber())
-                .status((String) transaction.getTrackingStatus())
+                .tracking_id((boughtShipment.getTrackingCode()))
+                .status(boughtShipment.getStatus())
                 .user(user)
                 .payment(payment).build();
         orderRepository.save(order);
