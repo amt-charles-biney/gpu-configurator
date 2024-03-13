@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.dto.shipping.ShippingResponse;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.service.shipping.ShippingService;
+import com.easypost.exception.EasyPostException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class ShippingController {
             @RequestBody @Valid ShippingRequest dto,
             @RequestAttribute("userSession") UserSession userSession,
             Principal principal
-    ) {
+    ) throws EasyPostException {
         User user = principal == null
                 ? null
                 : (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
