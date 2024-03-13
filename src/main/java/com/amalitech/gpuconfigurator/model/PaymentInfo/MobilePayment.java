@@ -12,6 +12,9 @@ import org.springframework.data.annotation.TypeAlias;
 @Entity
 @TypeAlias("MOBILE_MONEY")
 public class MobilePayment extends PaymentInfoType {
-    private String phoneNumber;
     private String network;
+    private String phoneNumber;
+    private String iso2Code;
+    private String dialCode;
+    private String country;
 }
