@@ -26,6 +26,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/**", "/api/v1/carts/**", "/api/v1/shipping/**").permitAll()
                 .requestMatchers("/api/v1/profile/**").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())
+                .requestMatchers(HttpMethod.GET, "/api/v1/admin/orders/{id}").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())
                 .requestMatchers("/api/v1/admin/**").hasAnyAuthority("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/v1/cases/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/product/**").permitAll()
