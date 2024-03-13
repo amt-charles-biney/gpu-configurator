@@ -1,6 +1,6 @@
 package com.amalitech.gpuconfigurator.constant;
 
-public class ShippoContants {
+public class ShipmentContants {
     public static final String ADDRESS_FROM_COMPANY = "S3VERS";
     public static final String ADDRESS_FROM = "Amalitech 123 st.";
     public static final String ADDRESS_FROM_CITY = "San Francisco";
