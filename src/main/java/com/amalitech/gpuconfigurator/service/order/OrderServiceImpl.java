@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.constant.ShipmentContants;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
+import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.Order;
 import com.amalitech.gpuconfigurator.model.User;
@@ -21,6 +22,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -169,9 +171,19 @@ public class OrderServiceImpl implements OrderService {
         List<UUID> selectedProductUUID = ids.stream()
                 .map(UUID::fromString)
                 .toList();
-
         orderRepository.deleteAllById(selectedProductUUID);
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "deleted bulk products successful");
+    }
+
+    @Override
+    public GenericResponse updateStatus(UUID id, OrderStatusUpdate status) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
+        order.setStatus(status.status());
+        orderRepository.save(order);
+        return GenericResponse.builder()
+                .status(200)
+                .message("order id" + " " + id + " " + "updated")
+                .build();
     }
 
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
