@@ -19,6 +19,7 @@ import com.easypost.model.Shipment;
 import com.easypost.service.EasyPostClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 
@@ -49,7 +50,6 @@ public class OrderServiceImpl implements OrderService {
 
         EasyPostClient client = new EasyPostClient(easyPost);
 
-
         User user = null;
         UsernamePasswordAuthenticationToken authenticationToken = ((UsernamePasswordAuthenticationToken) principal);
 
@@ -57,59 +57,45 @@ public class OrderServiceImpl implements OrderService {
             user = (User) authenticationToken.getPrincipal();
         }
 
-
         Order.OrderBuilder orderBuilder = Order.builder();
 
+        Map<String, Object> fromAddressMap = getFromAddressMap();
+        Map<String, Object> toAddressMap = new HashMap<>();
 
         if (user != null) {
             orderBuilder.cart(user.getCart());
             user.setCart(null);
             userRepository.save(user);
 
+            toAddressMap.put("name", user.getShippingInformation().getFirstName());
+            toAddressMap.put("street1", user.getShippingInformation().getAddress1());
+            toAddressMap.put("city", user.getShippingInformation().getCity());
+            toAddressMap.put("state", user.getShippingInformation().getState());
+            toAddressMap.put("country", user.getShippingInformation().getCountry());
+            toAddressMap.put("zip", user.getShippingInformation().getZipCode());
 
         } else {
             orderBuilder.cart(userSession.getCart());
             userSession.setCart(null);
             userSessionRepository.save(userSession);
 
+            toAddressMap.put("name", userSession.getCurrentShipping().getFirstName());
+            toAddressMap.put("street1", userSession.getCurrentShipping().getAddress1());
+            toAddressMap.put("city", userSession.getCurrentShipping().getCity());
+            toAddressMap.put("state", userSession.getCurrentShipping().getState());
+            toAddressMap.put("country", userSession.getCurrentShipping().getCountry());
+            toAddressMap.put("zip", userSession.getCurrentShipping().getZipCode());
+
         }
 
 
-        Map<String, Object> fromAddressMap = new HashMap<String, Object>();
-        fromAddressMap.put("company", "EasyPost");
-        fromAddressMap.put("street1", "417 MONTGOMERY ST");
-        fromAddressMap.put("street2", "FLOOR 5");
-        fromAddressMap.put("city", "SAN FRANCISCO");
-        fromAddressMap.put("state", "CA");
-        fromAddressMap.put("country", "US");
-        fromAddressMap.put("zip", "94104");
-        fromAddressMap.put("phone", "415-123-4567");
+        Map<String, Object> parcelMap = getParcelMap();
 
-        Map<String, Object> toAddressMap = new HashMap<String, Object>();
-        toAddressMap.put("name", "Dr. Steve Brule");
-        toAddressMap.put("street1", "179 N Harbor Dr");
-        toAddressMap.put("city", "Redondo Beach");
-        toAddressMap.put("state", "CA");
-        toAddressMap.put("country", "US");
-        toAddressMap.put("zip", "90277");
-        toAddressMap.put("phone", "310-808-5243");
-
-        Map<String, Object> parcelMap = new HashMap<String, Object>();
-        parcelMap.put("weight", 22.9);
-        parcelMap.put("height", 12.1);
-        parcelMap.put("width", 8);
-        parcelMap.put("length", 19.8);
-
-        Map<String, Object> shipmentMap = new HashMap<String, Object>();
-        shipmentMap.put("from_address", fromAddressMap);
-        shipmentMap.put("to_address", toAddressMap);
-        shipmentMap.put("parcel", parcelMap);
-
+        Map<String, Object> shipmentMap = getShipmentMap(fromAddressMap, toAddressMap, parcelMap);
 
         Shipment shipment = client.shipment.create(shipmentMap);
 
         Shipment boughtShipment = client.shipment.buy(shipment.getId(), shipment.lowestRate());
-
 
         Order order = orderBuilder
                 .tracking_id((boughtShipment.getTrackingCode()))
@@ -123,6 +109,37 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+    @NotNull
+    private static Map<String, Object> getShipmentMap(Map<String, Object> fromAddressMap, Map<String, Object> toAddressMap, Map<String, Object> parcelMap) {
+        Map<String, Object> shipmentMap = new HashMap<>();
+        shipmentMap.put("from_address", fromAddressMap);
+        shipmentMap.put("to_address", toAddressMap);
+        shipmentMap.put("parcel", parcelMap);
+        return shipmentMap;
+    }
+
+    @NotNull
+    private static Map<String, Object> getParcelMap() {
+        Map<String, Object> parcelMap = new HashMap<>();
+        parcelMap.put("weight", 22.9);
+        parcelMap.put("height", 12.1);
+        parcelMap.put("width", 8);
+        parcelMap.put("length", 19.8);
+        return parcelMap;
+    }
+
+    @NotNull
+    private static Map<String, Object> getFromAddressMap() {
+        Map<String, Object> fromAddressMap = new HashMap<>();
+        fromAddressMap.put("company", ShipmentContants.ADDRESS_FROM_COMPANY);
+        fromAddressMap.put("street1", ShipmentContants.ADDRESS_FROM);
+        fromAddressMap.put("city", ShipmentContants.ADDRESS_FROM_CITY);
+        fromAddressMap.put("state", ShipmentContants.ADDRESS_FROM_STATE);
+        fromAddressMap.put("country", ShipmentContants.ADDRESS_FROM_COUNTRY);
+        fromAddressMap.put("zip", ShipmentContants.ADDRESS_FROM_ZIP);
+        return fromAddressMap;
+    }
+
     @Override
     public Page<OrderResponseDto> getAllOrders(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -133,7 +150,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponseDto getOrderById(UUID id) {
-
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
 
         return mapOrderToOrderResponseDto(order);
