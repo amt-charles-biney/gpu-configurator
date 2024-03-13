@@ -20,7 +20,7 @@ import java.util.Optional;
 public interface PaymentInfoService {
     List<MobileMoneyResponse> getAllMobilePaymentByUser();
 
-    List<CardPayment> getAllCardPaymentByUser();
+    List<CardInfoResponse> getAllCardPaymentByUser();
 
     MobileMoneyResponse saveMobileMoneyPayment(MobileMoneyRequest mobileMoneyRequest);
 

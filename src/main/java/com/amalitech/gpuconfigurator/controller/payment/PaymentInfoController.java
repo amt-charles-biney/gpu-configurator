@@ -46,8 +46,8 @@ public class PaymentInfoController {
     }
 
     @GetMapping("v1/payment_info/card")
-    public ResponseEntity<ApiResponse<List<CardPayment>>> getCardInfo() {
-        List<CardPayment> paymentInfoTypes = paymentInfoService.getAllCardPaymentByUser();
+    public ResponseEntity<ApiResponse<List<CardInfoResponse>>> getCardInfo() throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        List<CardInfoResponse> paymentInfoTypes = paymentInfoService.getAllCardPaymentByUser();
         return ResponseEntity.ok(new ApiResponse<>(paymentInfoTypes, "success", "200"));
     }
 
