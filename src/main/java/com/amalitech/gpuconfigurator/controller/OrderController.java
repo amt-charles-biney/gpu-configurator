@@ -1,10 +1,9 @@
 package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.order.OrderPageResponseDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 
-
+import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
 import com.amalitech.gpuconfigurator.service.order.OrderFiltering;
 import com.amalitech.gpuconfigurator.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,6 +52,14 @@ public class OrderController {
 
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
+    }
+
+    @PatchMapping("/v1/admin/orders/{id}")
+    public ResponseEntity<GenericResponse> updateStatus(
+            @PathVariable("id") UUID id,
+            @RequestBody OrderStatusUpdate status
+    ) {
+        return ResponseEntity.ok(orderService.updateStatus(id,status));
     }
 
 

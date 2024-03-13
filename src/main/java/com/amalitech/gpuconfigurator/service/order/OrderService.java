@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.service.order;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
+import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.easypost.exception.EasyPostException;
@@ -29,4 +30,6 @@ public interface OrderService {
 
     @Transactional
     GenericResponse deleteBulkProducts(List<String> ids);
+
+    GenericResponse updateStatus(UUID id, OrderStatusUpdate status);
 }
