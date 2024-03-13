@@ -88,7 +88,7 @@ class PaymentInfoServiceTest {
 
         cardInfoResponse = CardInfoResponse
                 .builder()
-                .cardholderName("name")
+                .cardHolderName("name")
                 .expirationDate("12/3")
                 .cardNumber("xxx-tentaction")
                 .build();
