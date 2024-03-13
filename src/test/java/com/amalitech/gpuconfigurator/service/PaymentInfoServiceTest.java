@@ -1,9 +1,7 @@
 package com.amalitech.gpuconfigurator.service;
 
-import com.amalitech.gpuconfigurator.dto.PaymentInfo.CardInfoRequest;
-import com.amalitech.gpuconfigurator.dto.PaymentInfo.CardInfoResponse;
-import com.amalitech.gpuconfigurator.dto.PaymentInfo.MobileMoneyRequest;
-import com.amalitech.gpuconfigurator.dto.PaymentInfo.MobileMoneyResponse;
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.PaymentInfo.*;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.CardPayment;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.MobilePayment;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.PaymentInfo;
@@ -29,6 +27,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -57,15 +56,19 @@ class PaymentInfoServiceTest {
     private UUID userId;
 
     private UUID cardPaymentId;
-    private CardPayment cardPayment;
-    private MobilePayment mobilePayment;
+    private CardPayment cardPayment = new CardPayment();
+    private MobilePayment mobilePayment = new MobilePayment();
     private UUID mobilePaymentId;
+
+    private ContactRequest contact;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        mobilePaymentId = UUID.randomUUID();
         userId = UUID.randomUUID();
+        cardPaymentId = UUID.randomUUID();
 
         user = User
                 .builder()
@@ -74,8 +77,14 @@ class PaymentInfoServiceTest {
                 .role(Role.ADMIN)
                 .build();
 
-        cardPaymentId = UUID.randomUUID();
-        cardPayment = new CardPayment();
+        contact = ContactRequest
+                .builder()
+                .phoneNumber("0248267980")
+                .iso2Code("233")
+                .dialCode("323")
+                .country("ghana")
+                .build();
+
 
         cardPayment.setId(cardPaymentId);
         cardPayment.setPaymentType(PaymentInfo.CARD);
@@ -84,14 +93,14 @@ class PaymentInfoServiceTest {
         cardPayment.setCardholderName("dickson anyaele");
         cardPayment.setExpirationDate("12-01-4");
 
-        mobilePaymentId = UUID.randomUUID();
-
-        mobilePayment = new MobilePayment();
-
         mobilePayment.setId(mobilePaymentId);
         mobilePayment.setPaymentType(PaymentInfo.MOBILE_MONEY);
         mobilePayment.setUser(user);
-        mobilePayment.setPhoneNumber("0248267980");
+        mobilePayment.setIso2Code(contact.iso2Code());
+        mobilePayment.setCountry(contact.country());
+        mobilePayment.setDialCode(contact.dialCode());
+        mobilePayment.setNetwork("MTN");
+        mobilePayment.setPhoneNumber(contact.phoneNumber());
 
         mockAuthenticatedUser();
 
@@ -107,43 +116,63 @@ class PaymentInfoServiceTest {
 
 
     @Test
-    void testGetOneMobileMoneyPayments() {
-        when(mobileMoneyInfoRepository.findOneByUser(any())).thenReturn(Optional.ofNullable(mobilePayment));
+    void testGetAllMobileMoneyByUser_shouldReturnAllMobileMoneyInfo() {
+        List<MobilePayment> mobilePayments = List.of(mobilePayment);
+        when(mobileMoneyInfoRepository.findAllByUser(any())).thenReturn(mobilePayments);
 
-        Optional<MobilePayment> result = paymentInfoService.getOneMobileMoneyPayment();
+        List<MobileMoneyResponse> result = paymentInfoService.getAllMobilePaymentByUser();
 
         assertNotNull(result);
-        verify(mobileMoneyInfoRepository, times(1)).findOneByUser(any());
+        assertEquals(result.size(), mobilePayments.size());
+        verify(mobileMoneyInfoRepository, times(1)).findAllByUser(any());
     }
+
+    /*
+    @Test
+    void testGetOneMobileMoneyByAuthenticatedUser_shouldReturnValidInfo() {
+        MobilePayment result =  new MobilePayment();
+        mobilePayment.setId(UUID.randomUUID());
+        when(mobileMoneyInfoRepository.findOneByIdAndUser(any(UUID.class), any(User.class))).thenReturn(Optional.ofNullable(mobilePayment));
+
+        MobileMoneyResponse response = paymentInfoService.getOneMobileMoneyPaymentInfo(String.valueOf(mobilePaymentId));
+
+        assertNotNull(response);
+        assertEquals(response.id(), mobilePayment.getId().toString());
+        verify(mobileMoneyInfoRepository, times(1)).findOneByIdAndUser(any(UUID.class), any(User.class));
+    }
+
+    @Test
+    void testGetOneCardPaymentInfoByAuthenticatedUser_shouldReturnValidInfo() throws InvalidAlgorithmParameterException,
+            NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        when(cardPaymentInfoRepository.findOneByIdAndUser(cardPaymentId, cardPayment.getUser())).thenReturn(Optional.ofNullable(cardPayment));
+
+        CardInfoResponse response = paymentInfoService.getOneCardPaymentInfo(mobilePaymentId.toString());
+
+        assertNotNull(response);
+        assertEquals(response.id(), cardPayment.getId().toString());
+        verify(cardPaymentInfoRepository, times(1)).findOneByIdAndUser(any(UUID.class), any(User.class));
+    }
+*/
 
 
     @Test
     void testGetAllCardPayments() {
-        when(cardPaymentInfoRepository.findOneByUser(any())).thenReturn(Optional.ofNullable(cardPayment));
+        when(cardPaymentInfoRepository.findAllByUser(any())).thenReturn(List.of(cardPayment));
 
-        Optional<CardPayment> result = paymentInfoService.getOneCardPayment();
+        List<CardPayment> result = paymentInfoService.getAllCardPaymentByUser();
 
         assertNotNull(result);
-        verify(cardPaymentInfoRepository, times(1)).findOneByUser(any());
+        assertEquals(result.size(), List.of(cardPayment).size());
+        verify(cardPaymentInfoRepository, times(1)).findAllByUser(any());
     }
 
     @Test
     void testSaveMobileMoneyPayment() throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        String mobileNumber = "0248267980";
         String mobileNetwork = "MTN";
-        UUID mobilePaymentId = UUID.randomUUID();
 
-        MobileMoneyRequest mobileMoneyRequest = new MobileMoneyRequest(mobileNumber, mobileNetwork);
-        MobilePayment mobilePayment = new MobilePayment();
-
-
-        mobilePayment.setId(mobilePaymentId);
-        mobilePayment.setUser(user);
-        mobilePayment.setPhoneNumber(mobileNumber);
-        mobilePayment.setNetwork(mobileNetwork);
+        MobileMoneyRequest mobileMoneyRequest = new MobileMoneyRequest(contact, mobileNetwork);
 
         when(paymentInfoRepository.save(any())).thenReturn(mobilePayment);
-        when(encryptionService.encrypt(any(String.class))).thenReturn("encrypted");
 
         MobileMoneyResponse result = paymentInfoService.saveMobileMoneyPayment(mobileMoneyRequest);
 
@@ -188,5 +217,16 @@ class PaymentInfoServiceTest {
         paymentInfoService.getCurrentUserHelper();
 
         verify(securityContext, times(1)).getAuthentication();
+    }
+
+    @Test
+    void testDeletePaymentInfo() {
+
+        doNothing().when(paymentInfoRepository).deleteById(any(UUID.class));
+
+        GenericResponse result = paymentInfoService.deletePaymentInfo(String.valueOf(mobilePaymentId));
+
+        assertNotNull(result);
+        verify(paymentInfoRepository, times(1)).deleteById(any(UUID.class));
     }
 }

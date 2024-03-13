@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.PaymentInfo;
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.CardInfoRequest;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.CardInfoResponse;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.MobileMoneyRequest;
@@ -13,14 +14,23 @@ import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Optional;
 
 public interface PaymentInfoService {
-    Optional<MobilePayment> getOneMobileMoneyPayment();
+    List<MobileMoneyResponse> getAllMobilePaymentByUser();
 
-    Optional<CardPayment> getOneCardPayment();
+    List<CardPayment> getAllCardPaymentByUser();
 
     MobileMoneyResponse saveMobileMoneyPayment(MobileMoneyRequest mobileMoneyRequest);
 
     CardInfoResponse saveCardPayment(CardInfoRequest cardInfoRequest) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException;
+
+    GenericResponse deletePaymentInfo(String id);
+
+    MobileMoneyResponse getOneMobileMoneyPaymentInfo(String id);
+
+    CardInfoResponse getOneCardPaymentInfo(String id) throws InvalidAlgorithmParameterException,
+            NoSuchPaddingException, IllegalBlockSizeException,
+            NoSuchAlgorithmException, BadPaddingException, InvalidKeyException;
 }
