@@ -5,6 +5,8 @@ import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
+import com.easypost.exception.EasyPostException;
+import com.easypost.exception.General.MissingParameterError;
 import com.shippo.exception.APIConnectionException;
 import com.shippo.exception.APIException;
 import com.shippo.exception.AuthenticationException;
@@ -18,7 +20,7 @@ import java.util.UUID;
 
 public interface OrderService {
     @Transactional
-    CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession) throws APIConnectionException, APIException, AuthenticationException, InvalidRequestException;
+    CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession) throws APIConnectionException, APIException, AuthenticationException, InvalidRequestException, EasyPostException;
 
     Page<OrderResponseDto> getAllOrders(Integer page, Integer size);
 
