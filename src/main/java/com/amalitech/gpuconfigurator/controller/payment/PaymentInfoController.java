@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.controller.payment;
 
 import com.amalitech.gpuconfigurator.dto.ApiResponse;
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.CardInfoRequest;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.CardInfoResponse;
 import com.amalitech.gpuconfigurator.dto.PaymentInfo.MobileMoneyRequest;
@@ -21,6 +22,8 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -31,15 +34,27 @@ public class PaymentInfoController {
     private final PaymentInfoServiceImpl paymentInfoService;
 
     @GetMapping("v1/payment_info/mobile_money")
-    public ResponseEntity<ApiResponse<Optional<MobilePayment>>> getMobileMoneyInfo() {
-        Optional<MobilePayment> paymentInfoTypes = paymentInfoService.getOneMobileMoneyPayment();
+    public ResponseEntity<ApiResponse<List<MobileMoneyResponse>>> getMobileMoneyInfo() {
+        List<MobileMoneyResponse> paymentInfoTypes = paymentInfoService.getAllMobilePaymentByUser();
         return ResponseEntity.ok(new ApiResponse<>(paymentInfoTypes, "success", "200"));
     }
 
+    @GetMapping("v1/payment_info/mobile_money/{paymentInfoId}")
+    public ResponseEntity<ApiResponse<MobileMoneyResponse>> getOneMobileMoneyInfo(@PathVariable String paymentInfoId) {
+        MobileMoneyResponse paymentInfoType = paymentInfoService.getOneMobileMoneyPaymentInfo(paymentInfoId);
+        return ResponseEntity.ok(new ApiResponse<>(paymentInfoType, "success", "200"));
+    }
+
     @GetMapping("v1/payment_info/card")
-    public ResponseEntity<ApiResponse<Optional<CardPayment>>> getCardInfo() {
-        Optional<CardPayment> paymentInfoTypes = paymentInfoService.getOneCardPayment();
+    public ResponseEntity<ApiResponse<List<CardPayment>>> getCardInfo() {
+        List<CardPayment> paymentInfoTypes = paymentInfoService.getAllCardPaymentByUser();
         return ResponseEntity.ok(new ApiResponse<>(paymentInfoTypes, "success", "200"));
+    }
+
+    @GetMapping("v1/payment_info/card/{paymentInfoId}")
+    public ResponseEntity<ApiResponse<CardInfoResponse>> getOneCardInfo(@PathVariable String paymentInfoId) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        CardInfoResponse paymentInfoType = paymentInfoService.getOneCardPaymentInfo(paymentInfoId);
+        return ResponseEntity.ok(new ApiResponse<>(paymentInfoType, "success", "200"));
     }
 
     @PostMapping("v1/payment_info/card")
@@ -51,8 +66,14 @@ public class PaymentInfoController {
     }
 
     @PostMapping("v1/payment_info/mobile_money")
-    public ResponseEntity<ApiResponse<MobileMoneyResponse>> saveCardInfo(@RequestBody @Validated MobileMoneyRequest mobileMoneyRequest, Principal user) {
+    public ResponseEntity<ApiResponse<MobileMoneyResponse>> saveCardInfo(@RequestBody @Validated MobileMoneyRequest mobileMoneyRequest) {
         MobileMoneyResponse mobileMoneyResponse = paymentInfoService.saveMobileMoneyPayment(mobileMoneyRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(mobileMoneyResponse, "successfully added mobile money", "201"));
+    }
+
+    @DeleteMapping("v1/payment_info/{paymentInfoId}")
+    public ResponseEntity<ApiResponse> deletePaymentInfo(@PathVariable String paymentInfoId) {
+        GenericResponse result = paymentInfoService.deletePaymentInfo(paymentInfoId);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(new ApiResponse<>(null, result.message(), String.valueOf(result.status())));
     }
 }
