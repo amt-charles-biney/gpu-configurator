@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 
+import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
 import com.amalitech.gpuconfigurator.service.order.OrderFiltering;
 import com.amalitech.gpuconfigurator.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,14 @@ public class OrderController {
 
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
+    }
+
+    @PatchMapping("/v1/admin/orders/{id}")
+    public ResponseEntity<GenericResponse> updateStatus(
+            @PathVariable("id") UUID id,
+            @RequestBody OrderStatusUpdate status
+    ) {
+        return ResponseEntity.ok(orderService.updateStatus(id,status));
     }
 
 
