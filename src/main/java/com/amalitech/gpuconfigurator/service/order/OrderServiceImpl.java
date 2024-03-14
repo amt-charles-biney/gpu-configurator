@@ -109,6 +109,8 @@ public class OrderServiceImpl implements OrderService {
 
         return CreateOrderDto.builder()
                 .orderId(order.getId())
+                .trackingId(order.getTrackingId())
+                .trackingUrl(order.getTrackingUrl())
                 .build();
     }
 
