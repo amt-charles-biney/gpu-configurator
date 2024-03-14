@@ -53,7 +53,7 @@ public class OrderFilteringImpl implements OrderFiltering {
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
         return OrderResponseDto.builder()
                 .id(order.getId())
-                .orderId(order.getTracking_id())
+                .orderId(order.getTrackingId())
                 .configuredProduct(order.getCart().getConfiguredProducts())
                 .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
                         .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
