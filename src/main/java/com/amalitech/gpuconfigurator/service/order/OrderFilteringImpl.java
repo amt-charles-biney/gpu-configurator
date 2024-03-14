@@ -44,7 +44,7 @@ public class OrderFilteringImpl implements OrderFiltering {
     }
 
     private Specification<Order> applyStatusFilter(Specification<Order> spec, String status) {
-        if (status != null && !"all".equals(status) && !status.isEmpty()) {
+        if (status != null && !"all".equalsIgnoreCase(status) && !status.isEmpty()) {
             spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status));
         }
         return spec;
