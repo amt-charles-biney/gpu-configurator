@@ -4,10 +4,8 @@ package com.amalitech.gpuconfigurator.controller;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.model.Product;
-import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
 import com.amalitech.gpuconfigurator.service.product.FilteringService;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
-import com.amalitech.gpuconfigurator.service.search.SearchService;
 import com.amalitech.gpuconfigurator.util.ResponseMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +26,6 @@ public class ProductController {
 
     private final ProductServiceImpl productService;
     private final FilteringService filteringService;
-    private final SearchService searchService;
 
 
     @CrossOrigin
@@ -92,26 +89,6 @@ public class ProductController {
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String query,
             @RequestParam(required = false) String categories) {
-        if (query != null && !query.isBlank()) {
-            String[] brands = null;
-            String[] priceRanges = null;
-            if (productCase != null && !productCase.isBlank()) {
-                brands = productCase.strip().split(",");
-            }
-            if (price != null && !price.isBlank()) {
-                priceRanges = price.strip().split(",");
-            }
-            return ResponseEntity.ok(
-                    searchService.findProducts(
-                            query,
-                            page,
-                            size == null ? 10 : size,
-                            sort == null ? "createdAt" : sort,
-                            brands,
-                            priceRanges
-                    )
-            );
-        }
 
         PageResponseDto productsResponse = new PageResponseDto();
 
