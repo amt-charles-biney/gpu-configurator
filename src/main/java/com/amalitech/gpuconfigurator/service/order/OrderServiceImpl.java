@@ -100,8 +100,9 @@ public class OrderServiceImpl implements OrderService {
         Shipment boughtShipment = client.shipment.buy(shipment.getId(), shipment.lowestRate());
 
         Order order = orderBuilder
-                .tracking_id((boughtShipment.getTrackingCode()))
-                .status(boughtShipment.getStatus())
+                .trackingId((boughtShipment.getTracker().getTrackingCode()))
+                .trackingUrl(boughtShipment.getTracker().getPublicUrl())
+                .status(boughtShipment.getTracker().getStatus())
                 .user(user)
                 .payment(payment).build();
         orderRepository.save(order);
@@ -152,7 +153,7 @@ public class OrderServiceImpl implements OrderService {
     public Page<OrderResponseDto> getAllUserOrders(Integer page, Integer size, Principal principal) {
         Pageable pageable = PageRequest.of(page, size);
 
-        if(principal == null) throw new UsernameNotFoundException("user cannot be found");
+        if (principal == null) throw new UsernameNotFoundException("user cannot be found");
 
         User user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
 
@@ -189,7 +190,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
         return OrderResponseDto.builder()
                 .id(order.getId())
-                .orderId(order.getTracking_id())
+                .orderId(order.getTrackingId())
                 .configuredProduct(order.getCart().getConfiguredProducts())
                 .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
                         .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
