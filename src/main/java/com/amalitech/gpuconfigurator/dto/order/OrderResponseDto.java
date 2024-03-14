@@ -17,11 +17,10 @@ public record OrderResponseDto(
 
         UUID id,
         String productCoverImage,
-
         String productName,
         Set<Configuration> configuredProduct,
         String orderId,
-
+        String trackingUrl,
         String customerName,
         String paymentMethod,
         String status,
