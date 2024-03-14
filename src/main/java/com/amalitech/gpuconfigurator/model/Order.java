@@ -35,6 +35,9 @@ public class Order {
     @Column(name = "tracking_url", nullable = false)
     private String trackingUrl;
 
+    @Column(name = "tracker_code", nullable = false)
+    private String trackercode;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = true)
     private User user;

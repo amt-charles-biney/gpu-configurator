@@ -17,6 +17,7 @@ import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
 import com.easypost.exception.EasyPostException;
 import com.easypost.model.Shipment;
+import com.easypost.model.Tracker;
 import com.easypost.service.EasyPostClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -103,6 +104,7 @@ public class OrderServiceImpl implements OrderService {
                 .trackingId((boughtShipment.getTracker().getTrackingCode()))
                 .trackingUrl(boughtShipment.getTracker().getPublicUrl())
                 .status(boughtShipment.getTracker().getStatus())
+                .trackercode(boughtShipment.getTracker().getId())
                 .user(user)
                 .payment(payment).build();
         orderRepository.save(order);
@@ -164,9 +166,13 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public OrderResponseDto getOrderById(UUID id) {
+    public OrderResponseDto getOrderById(UUID id) throws EasyPostException {
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
-        return mapOrderToOrderResponseDto(order);
+
+        EasyPostClient client = new EasyPostClient(easyPost);
+        Tracker tracker = client.tracker.retrieve(order.getTrackercode());
+
+        return mapOrderToOrderResponseDto(order,tracker);
     }
 
     @Override
@@ -186,6 +192,29 @@ public class OrderServiceImpl implements OrderService {
         return GenericResponse.builder()
                 .status(200)
                 .message("order id" + " " + id + " " + "updated")
+                .build();
+    }
+
+    private OrderResponseDto mapOrderToOrderResponseDto(Order order, Tracker tracker) {
+        return OrderResponseDto.builder()
+                .id(order.getId())
+                .orderId(order.getTrackingId())
+                .configuredProduct(order.getCart().getConfiguredProducts())
+                .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
+                .paymentMethod(order.getPayment().getChannel())
+                .productName(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductName()).orElse(null))
+                .paymentMethod(order.getPayment().getChannel())
+                .status(tracker.getStatus())
+                .trackingUrl(order.getTrackingUrl())
+                .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
+                .totalPrice(order.getCart().getConfiguredProducts().stream()
+                        .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
+                .date(order.getCreatedAt())
+                .estArrival(tracker.getEstDeliveryDate())
+                .brandName(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductCase().getName()).orElse(null))
                 .build();
     }
 
