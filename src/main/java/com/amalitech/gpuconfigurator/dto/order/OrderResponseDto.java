@@ -9,6 +9,7 @@ import lombok.Builder;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,6 +26,10 @@ public record OrderResponseDto(
         String paymentMethod,
         String status,
         LocalDate date,
-        BigDecimal totalPrice
+        BigDecimal totalPrice,
+
+        Date estArrival,
+
+        String brandName
 ) {
 }
