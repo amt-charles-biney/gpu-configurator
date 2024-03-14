@@ -47,9 +47,14 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
     }
 
     @Override
-    public List<CardPayment> getAllCardPaymentByUser() {
+    public List<CardInfoResponse> getAllCardPaymentByUser() {
         User user = getCurrentUserHelper();
-        return cardPaymentInfoRepository.findAllByUser(user);
+        List<CardPayment> cardPayments = cardPaymentInfoRepository.findAllByUser(user);
+
+        return cardPayments
+                .stream()
+                .map(this::mapToCardInfoResponse)
+                .toList();
     }
 
     @Override
@@ -143,13 +148,33 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
     }
 
     private CardInfoResponse buildCardInfoResponse(CardPayment cardPayment) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        String decryptedCardNumber = encryptionService.decrypt(cardPayment.getCardNumber());
+        String formattedCardNumber = decryptedCardNumber != null ? cardFormatter(decryptedCardNumber) : null;
+
         return CardInfoResponse
                 .builder()
                 .id(cardPayment.getId().toString())
-                .cardholderName(encryptionService.decrypt(cardPayment.getCardholderName()))
+                .cardHolderName(encryptionService.decrypt(cardPayment.getCardholderName()))
                 .expirationDate(encryptionService.decrypt(cardPayment.getExpirationDate()))
-                .cardNumber(encryptionService.decrypt(cardPayment.getCardNumber()))
+                .cardNumber(formattedCardNumber)
                 .build();
+    }
+
+
+    private CardInfoResponse mapToCardInfoResponse(CardPayment cardPayment) {
+        try {
+            return this.buildCardInfoResponse(cardPayment);
+        } catch (InvalidAlgorithmParameterException | NoSuchPaddingException |
+                 IllegalBlockSizeException | NoSuchAlgorithmException |
+                 BadPaddingException | InvalidKeyException e) {
+            throw new RuntimeException("Error occurred while processing card payment info", e);
+        }
+    }
+
+    private String cardFormatter(String cardNumber) {
+            String lastFourDigits = cardNumber.substring(cardNumber.length() - 4);
+            String formattedNumber = "XXX-XXX-XXX-" + lastFourDigits;
+            return formattedNumber;
     }
 
 
