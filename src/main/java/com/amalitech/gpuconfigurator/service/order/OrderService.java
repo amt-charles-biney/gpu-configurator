@@ -25,8 +25,7 @@ public interface OrderService {
 
     Page<OrderResponseDto> getAllOrders(Integer page, Integer size);
 
-
-    OrderResponseDto getOrderById(UUID id);
+    OrderResponseDto getOrderById(UUID id) throws EasyPostException;
 
     @Transactional
     GenericResponse deleteBulkProducts(List<String> ids);

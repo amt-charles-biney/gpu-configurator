@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
 import com.amalitech.gpuconfigurator.service.order.OrderFiltering;
 import com.amalitech.gpuconfigurator.service.order.OrderService;
+import com.easypost.exception.EasyPostException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -50,7 +51,7 @@ public class OrderController {
 
     @GetMapping("/v1/admin/orders/{id}")
 
-    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) {
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) throws EasyPostException {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
