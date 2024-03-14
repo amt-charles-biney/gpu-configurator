@@ -62,6 +62,7 @@ public class OrderFilteringImpl implements OrderFiltering {
                         .map(prod -> prod.getProduct().getProductName()).orElse(null))
                 .paymentMethod(order.getPayment().getChannel())
                 .status(order.getStatus())
+                .trackingUrl(order.getTrackingUrl())
                 .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
                 .totalPrice(order.getCart().getConfiguredProducts().stream()
                         .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
