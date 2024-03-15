@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.dto.order;
 import com.amalitech.gpuconfigurator.dto.cart.CartItemsResponse;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.model.OrderType;
+import com.amalitech.gpuconfigurator.model.Shipping;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import lombok.Builder;
 
@@ -30,6 +31,8 @@ public record OrderResponseDto(
 
         Date estArrival,
 
-        String brandName
+        String brandName,
+
+        String shippingAddress
 ) {
 }
