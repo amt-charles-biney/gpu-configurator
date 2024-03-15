@@ -162,7 +162,7 @@ public class OrderServiceImpl implements OrderService {
         EasyPostClient client = new EasyPostClient(easyPost);
         Tracker tracker = client.tracker.retrieve(order.getTrackercode());
 
-        return mapOrderToOrderResponseDto(order,tracker);
+        return mapOrderToOrderResponseDto(order, tracker);
     }
 
     @Override
@@ -205,6 +205,7 @@ public class OrderServiceImpl implements OrderService {
                 .estArrival(tracker.getEstDeliveryDate())
                 .brandName(order.getCart().getConfiguredProducts().stream().findFirst()
                         .map(prod -> prod.getProduct().getProductCase().getName()).orElse(null))
+                .shippingAddress(order.getUser().getShippingInformation().getAddress1())
                 .build();
     }
 
