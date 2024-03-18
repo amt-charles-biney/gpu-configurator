@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
 import com.amalitech.gpuconfigurator.service.order.OrderFiltering;
 import com.amalitech.gpuconfigurator.service.order.OrderService;
+import com.easypost.exception.EasyPostException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,7 +71,6 @@ public class OrderController {
     }
 
 
-
     @GetMapping("/v1/admin/orders/{id}")
 
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) {
@@ -83,7 +82,7 @@ public class OrderController {
             @PathVariable("id") UUID id,
             @RequestBody OrderStatusUpdate status
     ) {
-        return ResponseEntity.ok(orderService.updateStatus(id,status));
+        return ResponseEntity.ok(orderService.updateStatus(id, status));
     }
 
 

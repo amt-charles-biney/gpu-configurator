@@ -17,6 +17,7 @@ import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
 import com.easypost.exception.EasyPostException;
 import com.easypost.model.Shipment;
+import com.easypost.model.Tracker;
 import com.easypost.service.EasyPostClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -48,66 +49,75 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession) throws EasyPostException {
+        try {
+            EasyPostClient client = new EasyPostClient(easyPost);
 
-        EasyPostClient client = new EasyPostClient(easyPost);
+            User user = null;
+            UsernamePasswordAuthenticationToken authenticationToken = ((UsernamePasswordAuthenticationToken) principal);
 
-        User user = null;
-        UsernamePasswordAuthenticationToken authenticationToken = ((UsernamePasswordAuthenticationToken) principal);
+            if (authenticationToken != null) {
+                user = (User) authenticationToken.getPrincipal();
+            }
 
-        if (authenticationToken != null) {
-            user = (User) authenticationToken.getPrincipal();
+            Order.OrderBuilder orderBuilder = Order.builder();
+
+            Map<String, Object> fromAddressMap = getFromAddressMap();
+            Map<String, Object> toAddressMap = new HashMap<>();
+
+            if (user != null) {
+                orderBuilder.cart(user.getCart());
+                user.setCart(null);
+                userRepository.save(user);
+
+                toAddressMap.put("name", user.getShippingInformation().getFirstName());
+                toAddressMap.put("street1", user.getShippingInformation().getAddress1());
+                toAddressMap.put("city", user.getShippingInformation().getCity());
+                toAddressMap.put("state", user.getShippingInformation().getState());
+                toAddressMap.put("country", user.getShippingInformation().getCountry());
+                toAddressMap.put("zip", user.getShippingInformation().getZipCode());
+
+            } else {
+                orderBuilder.cart(userSession.getCart());
+                userSession.setCart(null);
+                userSessionRepository.save(userSession);
+
+                toAddressMap.put("name", userSession.getCurrentShipping().getFirstName());
+                toAddressMap.put("street1", userSession.getCurrentShipping().getAddress1());
+                toAddressMap.put("city", userSession.getCurrentShipping().getCity());
+                toAddressMap.put("state", userSession.getCurrentShipping().getState());
+                toAddressMap.put("country", userSession.getCurrentShipping().getCountry());
+                toAddressMap.put("zip", userSession.getCurrentShipping().getZipCode());
+
+            }
+
+
+            Map<String, Object> parcelMap = getParcelMap();
+
+            Map<String, Object> shipmentMap = getShipmentMap(fromAddressMap, toAddressMap, parcelMap);
+
+            Shipment shipment = client.shipment.create(shipmentMap);
+
+            Shipment boughtShipment = client.shipment.buy(shipment.getId(), shipment.lowestRate());
+
+            Order order = orderBuilder
+                    .trackingId((boughtShipment.getTracker().getTrackingCode()))
+                    .trackingUrl(boughtShipment.getTracker().getPublicUrl())
+                    .status(boughtShipment.getTracker().getStatus())
+                    .estDeliveryDate(boughtShipment.getTracker().getEstDeliveryDate() != null ? boughtShipment.getTracker().getEstDeliveryDate().toString() : null)
+                    .user(user)
+                    .payment(payment).build();
+            orderRepository.save(order);
+
+            return CreateOrderDto.builder()
+                    .orderId(order.getId())
+                    .trackingId(order.getTrackingId())
+                    .trackingUrl(order.getTrackingUrl())
+                    .build();
+        } catch (EasyPostException e) {
+            throw new EasyPostException(e.getMessage());
+
         }
 
-        Order.OrderBuilder orderBuilder = Order.builder();
-
-        Map<String, Object> fromAddressMap = getFromAddressMap();
-        Map<String, Object> toAddressMap = new HashMap<>();
-
-        if (user != null) {
-            orderBuilder.cart(user.getCart());
-            user.setCart(null);
-            userRepository.save(user);
-
-            toAddressMap.put("name", user.getShippingInformation().getFirstName());
-            toAddressMap.put("street1", user.getShippingInformation().getAddress1());
-            toAddressMap.put("city", user.getShippingInformation().getCity());
-            toAddressMap.put("state", user.getShippingInformation().getState());
-            toAddressMap.put("country", user.getShippingInformation().getCountry());
-            toAddressMap.put("zip", user.getShippingInformation().getZipCode());
-
-        } else {
-            orderBuilder.cart(userSession.getCart());
-            userSession.setCart(null);
-            userSessionRepository.save(userSession);
-
-            toAddressMap.put("name", userSession.getCurrentShipping().getFirstName());
-            toAddressMap.put("street1", userSession.getCurrentShipping().getAddress1());
-            toAddressMap.put("city", userSession.getCurrentShipping().getCity());
-            toAddressMap.put("state", userSession.getCurrentShipping().getState());
-            toAddressMap.put("country", userSession.getCurrentShipping().getCountry());
-            toAddressMap.put("zip", userSession.getCurrentShipping().getZipCode());
-
-        }
-
-
-        Map<String, Object> parcelMap = getParcelMap();
-
-        Map<String, Object> shipmentMap = getShipmentMap(fromAddressMap, toAddressMap, parcelMap);
-
-        Shipment shipment = client.shipment.create(shipmentMap);
-
-        Shipment boughtShipment = client.shipment.buy(shipment.getId(), shipment.lowestRate());
-
-        Order order = orderBuilder
-                .trackingId((boughtShipment.getTrackingCode()))
-                .status(boughtShipment.getStatus())
-                .user(user)
-                .payment(payment).build();
-        orderRepository.save(order);
-
-        return CreateOrderDto.builder()
-                .orderId(order.getId())
-                .build();
     }
 
     @NotNull
@@ -151,7 +161,7 @@ public class OrderServiceImpl implements OrderService {
     public Page<OrderResponseDto> getAllUserOrders(Integer page, Integer size, Principal principal) {
         Pageable pageable = PageRequest.of(page, size);
 
-        if(principal == null) throw new UsernameNotFoundException("user cannot be found");
+        if (principal == null) throw new UsernameNotFoundException("user cannot be found");
 
         User user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
 
@@ -160,7 +170,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public OrderResponseDto getOrderById(UUID id) {
+    public OrderResponseDto getOrderById(UUID id){
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
         return mapOrderToOrderResponseDto(order);
     }
@@ -189,6 +199,7 @@ public class OrderServiceImpl implements OrderService {
     public GenericResponse updateStatusByTrackingCode(String trackingCode, String status, String deliveryDate) {
         Order order = orderRepository.findByTrackingId(trackingCode).orElseThrow(() -> new NotFoundException("Order not found"));
         order.setStatus(status);
+        order.setEstDeliveryDate(deliveryDate);
         orderRepository.save(order);
         return GenericResponse.builder()
                 .status(200)
@@ -208,12 +219,16 @@ public class OrderServiceImpl implements OrderService {
                         .map(prod -> prod.getProduct().getProductName()).orElse(null))
                 .paymentMethod(order.getPayment().getChannel())
                 .status(order.getStatus())
+                .trackingUrl(order.getTrackingUrl())
                 .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
                 .totalPrice(order.getCart().getConfiguredProducts().stream()
                         .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
                 .date(order.getCreatedAt())
+                .estArrival(order.getEstDeliveryDate())
+                .brandName(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductCase().getName()).orElse(null))
+                .shippingAddress(order.getUser().getShippingInformation().getAddress1())
                 .build();
     }
-
 
 }

@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.payment;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.Payment.*;
+import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
@@ -89,17 +90,18 @@ public class PaymentServiceImpl implements PaymentService {
         ).getBody();
 
         PaymentObjectRequest paymentResponseJson = mapPaymentResponseToPayment(paymentResponse);
-        UUID orderId = null;
+        CreateOrderDto order = null;
 
         if(paymentResponseJson.status()) {
             Payment paymentTransaction = savePaymentTransaction(paymentResponseJson, user,  userSession);
-            orderId = orderService.createOrder(paymentTransaction, user, userSession).orderId();
+            order = orderService.createOrder(paymentTransaction, user, userSession);
 
         }
 
         return VerifyPaymentResponse
                 .builder()
-                .orderId(orderId != null ? orderId.toString() : null)
+                .trackingId(order != null ? order.trackingId() : null)
+                .trackingUrl(order.trackingUrl())
                 .message("payment verified successfully")
                 .status(200)
                 .build();

@@ -5,8 +5,8 @@ import com.amalitech.gpuconfigurator.dto.PaymentInfo.*;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.CardPayment;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.MobilePayment;
 import com.amalitech.gpuconfigurator.model.PaymentInfo.PaymentInfo;
-import com.amalitech.gpuconfigurator.model.Role;
 import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.model.enums.Role;
 import com.amalitech.gpuconfigurator.repository.PaymentInfoRepository.CardPaymentInfoRepository;
 import com.amalitech.gpuconfigurator.repository.PaymentInfoRepository.MobileMoneyInfoRepository;
 import com.amalitech.gpuconfigurator.repository.PaymentInfoRepository.PaymentInfoRepository;
@@ -28,7 +28,6 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

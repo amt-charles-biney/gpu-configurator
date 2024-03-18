@@ -44,7 +44,7 @@ public class OrderFilteringImpl implements OrderFiltering {
     }
 
     private Specification<Order> applyStatusFilter(Specification<Order> spec, String status) {
-        if (status != null && !"all".equals(status) && !status.isEmpty()) {
+        if (status != null && !"all".equalsIgnoreCase(status) && !status.isEmpty()) {
             spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status));
         }
         return spec;
@@ -62,6 +62,7 @@ public class OrderFilteringImpl implements OrderFiltering {
                         .map(prod -> prod.getProduct().getProductName()).orElse(null))
                 .paymentMethod(order.getPayment().getChannel())
                 .status(order.getStatus())
+                .trackingUrl(order.getTrackingUrl())
                 .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
                 .totalPrice(order.getCart().getConfiguredProducts().stream()
                         .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
