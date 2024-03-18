@@ -3,12 +3,7 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.product.*;
-import com.amalitech.gpuconfigurator.model.Product;
-import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
-import com.amalitech.gpuconfigurator.service.product.FilteringService;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
-import com.amalitech.gpuconfigurator.service.search.SearchService;
-import com.amalitech.gpuconfigurator.util.ResponseMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,8 +20,6 @@ import java.util.UUID;
 public class ProductController {
 
     private final ProductServiceImpl productService;
-    private final FilteringService filteringService;
-    private final SearchService searchService;
 
 
     @CrossOrigin
@@ -81,67 +72,25 @@ public class ProductController {
 
     @CrossOrigin
     @GetMapping("/v1/product")
-    public ResponseEntity<PageResponseDto> getAllProductUsers(
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(required = false) Integer size,
-            @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String productCase,
-            @RequestParam(required = false) String price,
-            @RequestParam(required = false) String productType,
-            @RequestParam(required = false) String processor,
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String query,
-            @RequestParam(required = false) String categories) {
-        if (query != null && !query.isBlank()) {
-            String[] brands = null;
-            String[] priceRanges = null;
-            if (productCase != null && !productCase.isBlank()) {
-                brands = productCase.strip().split(",");
-            }
-            if (price != null && !price.isBlank()) {
-                priceRanges = price.strip().split(",");
-            }
-            return ResponseEntity.ok(
-                    searchService.findProducts(
-                            query,
-                            page,
-                            size == null ? 10 : size,
-                            sort == null ? "createdAt" : sort,
-                            brands,
-                            priceRanges
-                    )
-            );
-        }
+    public ResponseEntity<Page<ProductResponse>> getAllProductUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size,
+            @RequestParam(defaultValue = "") List<String> productCase,
+            @RequestParam(defaultValue = "") List<String> price,
+            @RequestParam(defaultValue = "") List<String> brand,
+            @RequestParam(defaultValue = "") List<String> categories,
+            @RequestParam(defaultValue = "") String query) {
+        ProductSearchRequest productSearchRequest = ProductSearchRequest.builder()
+                .query(query)
+                .cases(productCase)
+                .prices(price)
+                .brands(brand)
+                .categories(categories)
+                .build();
 
-        PageResponseDto productsResponse = new PageResponseDto();
+        Page<ProductResponse> response = productService.getAllProductsUsers(page, size, productSearchRequest);
 
-        List<ProductResponse> products = new ArrayList<>();
-
-        if (productCase != null || price != null || productType != null || processor != null || categories != null || brand != null) {
-            List<Product> filteredProducts = filteringService.filterProduct(productCase, price, productType, processor, categories, brand);
-            if (!filteredProducts.isEmpty()) {
-                products = new ResponseMapper().getProductResponses(filteredProducts);
-                productsResponse.setProducts(products);
-                productsResponse.setTotal(products.size());
-            } else {
-                productsResponse.setProducts(Collections.emptyList());
-                productsResponse.setTotal(0);
-            }
-
-        } else if (page != null && size != null) {
-
-            Page<ProductResponse> pagedProducts = productService.getAllProducts(page, size, sort);
-            products = pagedProducts.getContent();
-            productsResponse.setTotal(pagedProducts.getTotalElements());
-
-        } else {
-            products = productService.getAllProducts();
-            productsResponse.setProducts(products);
-            productsResponse.setTotal(products.size());
-        }
-
-        productsResponse.setProducts(products);
-        return ResponseEntity.ok(productsResponse);
+        return ResponseEntity.ok(response);
     }
 
 
