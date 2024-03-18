@@ -24,7 +24,7 @@ public class EasyPostService {
     private final ObjectMapper objectMapper;
 
     public void handleTrackerUpdatedEvent(Event event) throws Exception {
-        if("tracker.updated".equals(event.getDescription())) {
+        if("tracker.updated".equals(event.getDescription()) || "tracker.created".equals(event.getDescription())) {
 
             TrackerResult tracker = objectMapper.convertValue(event.getResult(), TrackerResult.class);
             String trackerId = tracker.getTracking_code();
