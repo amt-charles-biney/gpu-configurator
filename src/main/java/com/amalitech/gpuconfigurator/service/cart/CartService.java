@@ -17,4 +17,6 @@ public interface CartService {
     CartItemsResponse getCartItems(Principal principal, UserSession userSession);
 
     UpdateCartItemQuantityResponse updateCartItemQuantity(UpdateCartItemQuantityRequest dto, User user, UserSession userSession);
+
+    void mergeUserAndSessionCarts(User user, UserSession userSession);
 }
