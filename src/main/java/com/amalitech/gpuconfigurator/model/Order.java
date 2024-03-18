@@ -30,7 +30,7 @@ public class Order {
     private String status;
 
     @Column(name = "tracking_id", nullable = false)
-    private String tracking_id;
+    private String trackingId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = true)
