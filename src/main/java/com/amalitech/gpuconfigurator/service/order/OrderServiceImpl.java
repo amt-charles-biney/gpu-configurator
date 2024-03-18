@@ -115,7 +115,7 @@ public class OrderServiceImpl implements OrderService {
                     .trackingUrl(order.getTrackingUrl())
                     .build();
         } catch (EasyPostException e) {
-            throw new EasyPostException("Something went wrong, try again");
+            throw new EasyPostException(e.getMessage());
 
         }
 
