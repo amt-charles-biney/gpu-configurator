@@ -71,10 +71,9 @@ public class OrderController {
     }
 
 
-
     @GetMapping("/v1/admin/orders/{id}")
 
-    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) throws EasyPostException {
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
@@ -83,7 +82,7 @@ public class OrderController {
             @PathVariable("id") UUID id,
             @RequestBody OrderStatusUpdate status
     ) {
-        return ResponseEntity.ok(orderService.updateStatus(id,status));
+        return ResponseEntity.ok(orderService.updateStatus(id, status));
     }
 
 

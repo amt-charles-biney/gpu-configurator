@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -35,8 +36,8 @@ public class Order {
     @Column(name = "tracking_url", nullable = false)
     private String trackingUrl;
 
-    @Column(name = "tracker_code", nullable = false)
-    private String trackercode;
+    @Column(name = "estimated_delivery", nullable = false)
+    private Date estDeliveryDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = true)
