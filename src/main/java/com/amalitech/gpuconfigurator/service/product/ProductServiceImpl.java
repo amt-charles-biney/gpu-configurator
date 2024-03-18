@@ -13,24 +13,21 @@ import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.service.attribute.AttributeService;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
+import com.amalitech.gpuconfigurator.util.ResponseMapper;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 
@@ -306,6 +303,79 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void updateTotalPriceWhenUpdatingCase(UUID caseId, BigDecimal casePrice) {
         updateProductPrices(productRepository.findProductsByProductCase(caseId), casePrice);
+    }
+
+    @Override
+    public Page<ProductResponse> getAllProductsUsers(int page, int size, ProductSearchRequest dto) {
+        Specification<Product> specification = (root, query, builder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            query.orderBy(builder.desc(root.get("createdAt")));
+
+            predicates.add(builder.notEqual(root.get("category").get("categoryName"), "unassigned")); // exclude products without category
+
+            if (!dto.query().isBlank()) {
+                predicates.add(getQueryPredicate(dto.query(), root, builder));
+            }
+
+            if (!dto.brands().isEmpty()) {
+                predicates.add(getBrandsPredicate(dto.brands(), root, query, builder));
+            }
+
+            if (!dto.categories().isEmpty()) {
+                predicates.add(builder.in(root.get("category").get("categoryName")).value(dto.categories()));
+            }
+
+            if (!dto.cases().isEmpty()) {
+                predicates.add(builder.in(root.get("productCase").get("name")).value(dto.cases()));
+            }
+
+            if (!dto.prices().isEmpty()) {
+                predicates.add(builder.or(getPricePredicates(dto.prices(), root, builder).toArray(new Predicate[]{})));
+            }
+
+            return builder.and(predicates.toArray(new Predicate[]{}));
+        };
+
+        return productRepository.findAll(specification, PageRequest.of(page, size))
+                .map((new ResponseMapper())::mapProductToProductResponse);
+    }
+
+    private static Predicate getQueryPredicate(String query, Root<Product> root, CriteriaBuilder builder) {
+        return builder.or(
+                builder.like(builder.lower(root.get("productName")), "%" + query + "%"),
+                builder.like(builder.lower(root.get("productDescription")), "%" + query + "%")
+        );
+    }
+
+    @NotNull
+    private static List<Predicate> getPricePredicates(List<String> priceRanges, Root<Product> root, CriteriaBuilder builder) {
+        List<Predicate> pricePredicates = new ArrayList<>();
+
+        for (String priceRange : priceRanges) {
+            if (priceRange.trim().startsWith(">")) {
+                double minValue = Double.parseDouble(priceRange.trim().substring(1));
+                pricePredicates.add(builder.or(builder.greaterThanOrEqualTo(root.get("totalProductPrice"), minValue)));
+            } else if (priceRange.contains("-")) {
+                var ranges = Arrays.stream(priceRange.split("-")).map(Double::parseDouble).toList();
+                pricePredicates.add(builder.or(builder.between(root.get("totalProductPrice"), ranges.get(0), ranges.get(1))));
+            }
+        }
+
+        return pricePredicates;
+    }
+
+    private static Predicate getBrandsPredicate(List<String> brands, Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        Subquery<Long> brandSubquery = query.subquery(Long.class);
+
+        Join<Product, Category> categoryJoin = brandSubquery.correlate(root).join("category");
+        Join<Category, CategoryConfig> categoryConfigJoin = categoryJoin.join("categoryConfig");
+        Join<CategoryConfig, CompatibleOption> compatibleOptionJoin = categoryConfigJoin.join("compatibleOptions");
+
+        brandSubquery.select(builder.literal(1L));
+        brandSubquery.where(builder.and(builder.in(compatibleOptionJoin.get("attributeOption").get("brand")).value(brands)));
+
+        return builder.exists(brandSubquery);
     }
 
     private void updateProductPrices(List<Product> products, BigDecimal baseConfigPrice) {
