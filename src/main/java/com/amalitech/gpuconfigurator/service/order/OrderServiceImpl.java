@@ -22,7 +22,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -100,7 +99,7 @@ public class OrderServiceImpl implements OrderService {
         Shipment boughtShipment = client.shipment.buy(shipment.getId(), shipment.lowestRate());
 
         Order order = orderBuilder
-                .tracking_id((boughtShipment.getTrackingCode()))
+                .trackingId((boughtShipment.getTrackingCode()))
                 .status(boughtShipment.getStatus())
                 .user(user)
                 .payment(payment).build();
@@ -186,10 +185,21 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+    @Override
+    public GenericResponse updateStatusByTrackingCode(String trackingCode, String status, String deliveryDate) {
+        Order order = orderRepository.findByTrackingId(trackingCode).orElseThrow(() -> new NotFoundException("Order not found"));
+        order.setStatus(status);
+        orderRepository.save(order);
+        return GenericResponse.builder()
+                .status(200)
+                .message("order id" + " " + order.getId() + " " + "updated")
+                .build();
+    }
+
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
         return OrderResponseDto.builder()
                 .id(order.getId())
-                .orderId(order.getTracking_id())
+                .orderId(order.getTrackingId())
                 .configuredProduct(order.getCart().getConfiguredProducts())
                 .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
                         .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
