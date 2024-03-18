@@ -373,7 +373,12 @@ public class ProductServiceImpl implements ProductService {
         Join<CategoryConfig, CompatibleOption> compatibleOptionJoin = categoryConfigJoin.join("compatibleOptions");
 
         brandSubquery.select(builder.literal(1L));
-        brandSubquery.where(builder.and(builder.in(compatibleOptionJoin.get("attributeOption").get("brand")).value(brands)));
+        brandSubquery.where(
+                builder.and(
+                        builder.in(compatibleOptionJoin.get("attributeOption").get("brand")).value(brands),
+                        builder.isTrue(compatibleOptionJoin.get("isCompatible"))
+                )
+        );
 
         return builder.exists(brandSubquery);
     }
