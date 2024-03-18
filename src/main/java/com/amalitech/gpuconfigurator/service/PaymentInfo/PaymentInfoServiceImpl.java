@@ -148,15 +148,13 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
     }
 
     private CardInfoResponse buildCardInfoResponse(CardPayment cardPayment) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        String decryptedCardNumber = encryptionService.decrypt(cardPayment.getCardNumber());
-        String formattedCardNumber = decryptedCardNumber != null ? cardFormatter(decryptedCardNumber) : null;
 
         return CardInfoResponse
                 .builder()
                 .id(cardPayment.getId().toString())
                 .cardHolderName(encryptionService.decrypt(cardPayment.getCardholderName()))
                 .expirationDate(encryptionService.decrypt(cardPayment.getExpirationDate()))
-                .cardNumber(formattedCardNumber)
+                .cardNumber(encryptionService.decrypt(cardPayment.getCardNumber()))
                 .build();
     }
 
