@@ -50,70 +50,75 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession) throws EasyPostException {
+        try {
+            EasyPostClient client = new EasyPostClient(easyPost);
 
-        EasyPostClient client = new EasyPostClient(easyPost);
+            User user = null;
+            UsernamePasswordAuthenticationToken authenticationToken = ((UsernamePasswordAuthenticationToken) principal);
 
-        User user = null;
-        UsernamePasswordAuthenticationToken authenticationToken = ((UsernamePasswordAuthenticationToken) principal);
+            if (authenticationToken != null) {
+                user = (User) authenticationToken.getPrincipal();
+            }
 
-        if (authenticationToken != null) {
-            user = (User) authenticationToken.getPrincipal();
+            Order.OrderBuilder orderBuilder = Order.builder();
+
+            Map<String, Object> fromAddressMap = getFromAddressMap();
+            Map<String, Object> toAddressMap = new HashMap<>();
+
+            if (user != null) {
+                orderBuilder.cart(user.getCart());
+                user.setCart(null);
+                userRepository.save(user);
+
+                toAddressMap.put("name", user.getShippingInformation().getFirstName());
+                toAddressMap.put("street1", user.getShippingInformation().getAddress1());
+                toAddressMap.put("city", user.getShippingInformation().getCity());
+                toAddressMap.put("state", user.getShippingInformation().getState());
+                toAddressMap.put("country", user.getShippingInformation().getCountry());
+                toAddressMap.put("zip", user.getShippingInformation().getZipCode());
+
+            } else {
+                orderBuilder.cart(userSession.getCart());
+                userSession.setCart(null);
+                userSessionRepository.save(userSession);
+
+                toAddressMap.put("name", userSession.getCurrentShipping().getFirstName());
+                toAddressMap.put("street1", userSession.getCurrentShipping().getAddress1());
+                toAddressMap.put("city", userSession.getCurrentShipping().getCity());
+                toAddressMap.put("state", userSession.getCurrentShipping().getState());
+                toAddressMap.put("country", userSession.getCurrentShipping().getCountry());
+                toAddressMap.put("zip", userSession.getCurrentShipping().getZipCode());
+
+            }
+
+
+            Map<String, Object> parcelMap = getParcelMap();
+
+            Map<String, Object> shipmentMap = getShipmentMap(fromAddressMap, toAddressMap, parcelMap);
+
+            Shipment shipment = client.shipment.create(shipmentMap);
+
+            Shipment boughtShipment = client.shipment.buy(shipment.getId(), shipment.lowestRate());
+
+            Order order = orderBuilder
+                    .trackingId((boughtShipment.getTracker().getTrackingCode()))
+                    .trackingUrl(boughtShipment.getTracker().getPublicUrl())
+                    .status(boughtShipment.getTracker().getStatus())
+                    .trackercode(boughtShipment.getTracker().getId())
+                    .user(user)
+                    .payment(payment).build();
+            orderRepository.save(order);
+
+            return CreateOrderDto.builder()
+                    .orderId(order.getId())
+                    .trackingId(order.getTrackingId())
+                    .trackingUrl(order.getTrackingUrl())
+                    .build();
+        } catch (EasyPostException e) {
+            throw new EasyPostException("Something went wrong, try again");
+
         }
 
-        Order.OrderBuilder orderBuilder = Order.builder();
-
-        Map<String, Object> fromAddressMap = getFromAddressMap();
-        Map<String, Object> toAddressMap = new HashMap<>();
-
-        if (user != null) {
-            orderBuilder.cart(user.getCart());
-            user.setCart(null);
-            userRepository.save(user);
-
-            toAddressMap.put("name", user.getShippingInformation().getFirstName());
-            toAddressMap.put("street1", user.getShippingInformation().getAddress1());
-            toAddressMap.put("city", user.getShippingInformation().getCity());
-            toAddressMap.put("state", user.getShippingInformation().getState());
-            toAddressMap.put("country", user.getShippingInformation().getCountry());
-            toAddressMap.put("zip", user.getShippingInformation().getZipCode());
-
-        } else {
-            orderBuilder.cart(userSession.getCart());
-            userSession.setCart(null);
-            userSessionRepository.save(userSession);
-
-            toAddressMap.put("name", userSession.getCurrentShipping().getFirstName());
-            toAddressMap.put("street1", userSession.getCurrentShipping().getAddress1());
-            toAddressMap.put("city", userSession.getCurrentShipping().getCity());
-            toAddressMap.put("state", userSession.getCurrentShipping().getState());
-            toAddressMap.put("country", userSession.getCurrentShipping().getCountry());
-            toAddressMap.put("zip", userSession.getCurrentShipping().getZipCode());
-
-        }
-
-
-        Map<String, Object> parcelMap = getParcelMap();
-
-        Map<String, Object> shipmentMap = getShipmentMap(fromAddressMap, toAddressMap, parcelMap);
-
-        Shipment shipment = client.shipment.create(shipmentMap);
-
-        Shipment boughtShipment = client.shipment.buy(shipment.getId(), shipment.lowestRate());
-
-        Order order = orderBuilder
-                .trackingId((boughtShipment.getTracker().getTrackingCode()))
-                .trackingUrl(boughtShipment.getTracker().getPublicUrl())
-                .status(boughtShipment.getTracker().getStatus())
-                .trackercode(boughtShipment.getTracker().getId())
-                .user(user)
-                .payment(payment).build();
-        orderRepository.save(order);
-
-        return CreateOrderDto.builder()
-                .orderId(order.getId())
-                .trackingId(order.getTrackingId())
-                .trackingUrl(order.getTrackingUrl())
-                .build();
     }
 
     @NotNull
