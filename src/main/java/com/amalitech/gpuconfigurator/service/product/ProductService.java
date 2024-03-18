@@ -33,4 +33,6 @@ public interface ProductService {
 
     @Transactional
     void updateTotalPriceWhenUpdatingCase(UUID caseId, BigDecimal casePrice);
+
+    Page<ProductResponse> getAllProductsUsers(int page, int size, ProductSearchRequest dto);
 }
