@@ -34,4 +34,6 @@ public interface OrderService {
     GenericResponse deleteBulkProducts(List<String> ids);
 
     GenericResponse updateStatus(UUID id, OrderStatusUpdate status);
+
+    GenericResponse updateStatusByTrackingCode(String trackingCode, String status, String deliveryDate);
 }
