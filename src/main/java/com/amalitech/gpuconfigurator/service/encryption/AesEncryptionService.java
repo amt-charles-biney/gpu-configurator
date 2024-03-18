@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.encryption;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.*;
@@ -15,7 +16,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Service
 public class AesEncryptionService implements EncryptionService {
 
-    private final static String secretKey = "2b7e151628aed2a6abf7158809cf4f3c";
+    @Value("${encryption-secret-key}")
+    private String secretKey;
     private final static String algorithm = "AES/CBC/PKCS5PADDING";
 
     public static SecretKey getSecretKey(String secretKey) {
