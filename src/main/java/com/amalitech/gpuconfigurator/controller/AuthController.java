@@ -7,6 +7,7 @@ import com.amalitech.gpuconfigurator.dto.otp.VerifyOTPResponse;
 import com.amalitech.gpuconfigurator.dto.otp.VerifyOtpDTO;
 import com.amalitech.gpuconfigurator.dto.otp.VerifyUserDto;
 import com.amalitech.gpuconfigurator.dto.profile.ChangePasswordDTO;
+import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.service.user.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -50,8 +51,11 @@ public class AuthController {
 
     @CrossOrigin
     @PostMapping("/v1/auth/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDto request) {
-        return ResponseEntity.ok(userService.login(request));
+    public ResponseEntity<AuthenticationResponse> login(
+            @RequestBody LoginDto request,
+            @RequestAttribute("userSession") UserSession userSession
+    ) {
+        return ResponseEntity.ok(userService.login(request, userSession));
     }
 
     @CrossOrigin
