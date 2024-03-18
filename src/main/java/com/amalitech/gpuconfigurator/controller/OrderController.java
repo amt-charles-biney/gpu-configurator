@@ -48,10 +48,31 @@ public class OrderController {
         return ResponseEntity.ok(resultPage);
     }
 
+    @GetMapping("/v1/orders")
+    public ResponseEntity<Page<OrderResponseDto>> getUserOrders(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "100") Integer size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+            Principal principal
+    ) {
+        Page<OrderResponseDto> resultPage;
+
+        if (status != null || startDate != null || endDate != null) {
+            List<OrderResponseDto> orderByStatus = orderFiltering.orders(status, startDate, endDate);
+            resultPage = new PageImpl<>(orderByStatus, PageRequest.of(page, size), orderByStatus.size());
+        } else {
+            resultPage = orderService.getAllUserOrders(page, size, principal);
+        }
+
+        return ResponseEntity.ok(resultPage);
+    }
+
 
     @GetMapping("/v1/admin/orders/{id}")
 
-    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) throws EasyPostException {
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
@@ -60,7 +81,7 @@ public class OrderController {
             @PathVariable("id") UUID id,
             @RequestBody OrderStatusUpdate status
     ) {
-        return ResponseEntity.ok(orderService.updateStatus(id,status));
+        return ResponseEntity.ok(orderService.updateStatus(id, status));
     }
 
 

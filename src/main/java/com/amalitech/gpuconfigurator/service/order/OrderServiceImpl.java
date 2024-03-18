@@ -104,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
                     .trackingId((boughtShipment.getTracker().getTrackingCode()))
                     .trackingUrl(boughtShipment.getTracker().getPublicUrl())
                     .status(boughtShipment.getTracker().getStatus())
-                    .trackercode(boughtShipment.getTracker().getId())
+                    .estDeliveryDate(boughtShipment.getTracker().getEstDeliveryDate())
                     .user(user)
                     .payment(payment).build();
             orderRepository.save(order);
@@ -161,13 +161,9 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public OrderResponseDto getOrderById(UUID id) throws EasyPostException {
+    public OrderResponseDto getOrderById(UUID id){
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
-
-        EasyPostClient client = new EasyPostClient(easyPost);
-        Tracker tracker = client.tracker.retrieve(order.getTrackercode());
-
-        return mapOrderToOrderResponseDto(order, tracker);
+        return mapOrderToOrderResponseDto(order);
     }
 
     @Override
@@ -190,30 +186,6 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    private OrderResponseDto mapOrderToOrderResponseDto(Order order, Tracker tracker) {
-        return OrderResponseDto.builder()
-                .id(order.getId())
-                .orderId(order.getTrackingId())
-                .configuredProduct(order.getCart().getConfiguredProducts())
-                .productCoverImage(order.getCart().getConfiguredProducts().stream().findFirst()
-                        .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
-                .paymentMethod(order.getPayment().getChannel())
-                .productName(order.getCart().getConfiguredProducts().stream().findFirst()
-                        .map(prod -> prod.getProduct().getProductName()).orElse(null))
-                .paymentMethod(order.getPayment().getChannel())
-                .status(tracker.getStatus())
-                .trackingUrl(order.getTrackingUrl())
-                .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
-                .totalPrice(order.getCart().getConfiguredProducts().stream()
-                        .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
-                .date(order.getCreatedAt())
-                .estArrival(tracker.getEstDeliveryDate())
-                .brandName(order.getCart().getConfiguredProducts().stream().findFirst()
-                        .map(prod -> prod.getProduct().getProductCase().getName()).orElse(null))
-                .shippingAddress(order.getUser().getShippingInformation().getAddress1())
-                .build();
-    }
-
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
         return OrderResponseDto.builder()
                 .id(order.getId())
@@ -231,8 +203,11 @@ public class OrderServiceImpl implements OrderService {
                 .totalPrice(order.getCart().getConfiguredProducts().stream()
                         .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
                 .date(order.getCreatedAt())
+                .estArrival(order.getEstDeliveryDate())
+                .brandName(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductCase().getName()).orElse(null))
+                .shippingAddress(order.getUser().getShippingInformation().getAddress1())
                 .build();
     }
-
 
 }

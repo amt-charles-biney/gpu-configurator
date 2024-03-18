@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -22,10 +23,6 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "status", nullable = false)
-//    private OrderType status;
-
     @Column(name = "status", nullable = false)
     private String status;
 
@@ -35,8 +32,8 @@ public class Order {
     @Column(name = "tracking_url", nullable = false)
     private String trackingUrl;
 
-    @Column(name = "tracker_code", nullable = false)
-    private String trackercode;
+    @Column(name = "estimated_delivery", nullable = false)
+    private Date estDeliveryDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = true)
