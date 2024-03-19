@@ -80,6 +80,7 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
         cardPayment.setCardNumber(encryptedCardNumber);
         cardPayment.setCardholderName(encryptedCardHolderName);
         cardPayment.setExpirationDate(encryptedCardExpiry);
+        cardPayment.setPaymentMethod(cardInfoRequest.paymentMethod());
         cardPayment.setUser(user);
 
         CardPayment savedCardPayment = paymentInfoRepository.save(cardPayment);
@@ -155,6 +156,7 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
                 .cardHolderName(encryptionService.decrypt(cardPayment.getCardholderName()))
                 .expirationDate(encryptionService.decrypt(cardPayment.getExpirationDate()))
                 .cardNumber(encryptionService.decrypt(cardPayment.getCardNumber()))
+                .paymentMethod(cardPayment.getPaymentMethod())
                 .build();
     }
 
@@ -167,12 +169,6 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
                  BadPaddingException | InvalidKeyException e) {
             throw new RuntimeException("Error occurred while processing card payment info", e);
         }
-    }
-
-    private String cardFormatter(String cardNumber) {
-            String lastFourDigits = cardNumber.substring(cardNumber.length() - 4);
-            String formattedNumber = "XXX-XXX-XXX-" + lastFourDigits;
-            return formattedNumber;
     }
 
 

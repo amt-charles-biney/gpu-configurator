@@ -11,6 +11,8 @@ public record CardInfoRequest(
         String cardNumber,
         @NotBlank(message = "expiration date cannot be blank")
         String expirationDate,
+        @NotBlank(message= "payment method cannot be blank")
+        String paymentMethod,
         @NotBlank(message = "card holder name cannot be blank")
         String cardHolderName) {
 
