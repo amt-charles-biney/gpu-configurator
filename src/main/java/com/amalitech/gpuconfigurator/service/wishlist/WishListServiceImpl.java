@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.wishlist;
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.dto.wishlist.AddWishListItemResponse;
 import com.amalitech.gpuconfigurator.model.User;
@@ -44,6 +45,17 @@ public class WishListServiceImpl implements WishListService {
 
         return configuredProductRepository.findByWishListId(wishList.getId(), pageable)
                 .map((new ResponseMapper())::mapConfigurationToConfigurationResponseDto);
+    }
+
+    @Override
+    public GenericResponse removeWishListItem(UUID configuredProductId, User user, UserSession userSession) {
+        WishList wishList = getUserOrSessionWishList(user, userSession);
+
+        configuredProductRepository
+                .findByIdAndWishListId(configuredProductId, wishList.getId())
+                .ifPresent(configuredProductRepository::delete);
+
+        return new GenericResponse(200, "Product removed from wish list successfully.");
     }
 
     private WishList getUserOrSessionWishList(User user, UserSession userSession) {

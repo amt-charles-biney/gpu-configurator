@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.controller;
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.dto.wishlist.AddWishListItemResponse;
 import com.amalitech.gpuconfigurator.model.User;
@@ -50,5 +51,18 @@ public class WishListController {
                 : (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
 
         return ResponseEntity.ok(wishListService.getWishListItems(page, size, user, userSession));
+    }
+
+    @DeleteMapping("/v1/wishlists/{configuredProductId}")
+    public ResponseEntity<GenericResponse> removeWishListItem(
+            @PathVariable UUID configuredProductId,
+            @RequestAttribute("userSession") UserSession userSession,
+            Principal principal
+    ) {
+        User user = principal == null
+                ? null
+                : (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+
+        return ResponseEntity.ok(wishListService.removeWishListItem(configuredProductId, user, userSession));
     }
 }

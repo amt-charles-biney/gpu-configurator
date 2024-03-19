@@ -21,4 +21,6 @@ public interface ConfigurationRepository extends JpaRepository<Configuration, UU
     void deleteByCartId(UUID cartId);
 
     Page<Configuration> findByWishListId(UUID wishListId, Pageable pageable);
+
+    Optional<Configuration> findByIdAndWishListId(UUID configuredProductId, UUID wishListId);
 }

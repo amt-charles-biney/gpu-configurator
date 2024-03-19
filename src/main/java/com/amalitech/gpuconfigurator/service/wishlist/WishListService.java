@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.wishlist;
 
+import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.dto.wishlist.AddWishListItemResponse;
 import com.amalitech.gpuconfigurator.model.User;
@@ -12,4 +13,6 @@ public interface WishListService {
     AddWishListItemResponse addWishListItem(UUID productId, String components, User user, UserSession userSession);
 
     Page<ConfigurationResponseDto> getWishListItems(int page, int size, User user, UserSession userSession);
+
+    GenericResponse removeWishListItem(UUID configuredProductId, User user, UserSession userSession);
 }
