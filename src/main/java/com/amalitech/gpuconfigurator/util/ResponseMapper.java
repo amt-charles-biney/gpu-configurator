@@ -1,8 +1,10 @@
 package com.amalitech.gpuconfigurator.util;
 
+import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.ProductResponse;
 import com.amalitech.gpuconfigurator.dto.product.ProductResponseDto;
 import com.amalitech.gpuconfigurator.model.Product;
+import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 
 import java.util.List;
 
@@ -27,6 +29,25 @@ public class ResponseMapper {
                         .build())
                 .productDescription(product.getProductDescription())
                 .productAvailability(product.getProductAvailability())
+                .build();
+    }
+
+    public ConfigurationResponseDto mapConfigurationToConfigurationResponseDto(Configuration configuredProduct) {
+        Product product = configuredProduct.getProduct();
+
+        return ConfigurationResponseDto.builder()
+                .Id(String.valueOf(configuredProduct.getId()))
+                .productId(String.valueOf(product.getId()))
+                .productName(product.getProductName())
+                .productPrice(product.getTotalProductPrice())
+                .productDescription(product.getProductDescription())
+                .productCoverImage(product.getProductCase().getCoverImageUrl())
+                .totalPrice(configuredProduct.getTotalPrice())
+                .warranty(null)
+                .vat(null)
+                .configuredPrice(null)
+                .configured(configuredProduct.getConfiguredOptions())
+                .quantity(configuredProduct.getQuantity())
                 .build();
     }
 }

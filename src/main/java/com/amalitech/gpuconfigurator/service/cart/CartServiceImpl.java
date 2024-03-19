@@ -4,11 +4,15 @@ import com.amalitech.gpuconfigurator.dto.cart.*;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.exception.CannotAddItemToCartException;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
-import com.amalitech.gpuconfigurator.model.*;
+import com.amalitech.gpuconfigurator.model.Cart;
+import com.amalitech.gpuconfigurator.model.CompatibleOption;
+import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.*;
 import com.amalitech.gpuconfigurator.service.configuration.ConfigurationService;
+import com.amalitech.gpuconfigurator.util.ResponseMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -62,7 +66,7 @@ public class CartServiceImpl implements CartService {
             throw new CannotAddItemToCartException("Cart already contains one configured product. Checkout configured product to continue.");
         }
 
-        ConfigurationResponseDto configuredProductResponse = configuredProductService.saveConfiguration(productId.toString(), warranty, components, cart);
+        ConfigurationResponseDto configuredProductResponse = configuredProductService.saveConfiguration(productId.toString(), warranty, components, cart, null);
 
         return AddCartItemResponse.builder()
                 .message("Configured product added to cart successfully")
@@ -97,7 +101,7 @@ public class CartServiceImpl implements CartService {
 
         List<ConfigurationResponseDto> configuredProducts = configuredProductRepository.findByCartId(optionalCart.get().getId())
                 .stream()
-                .map(this::mapToConfigurationResponseDto)
+                .map((new ResponseMapper())::mapConfigurationToConfigurationResponseDto)
                 .map(this::setMaximumStock)
                 .toList();
 
@@ -172,25 +176,6 @@ public class CartServiceImpl implements CartService {
             return (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
         }
         return null;
-    }
-
-    private ConfigurationResponseDto mapToConfigurationResponseDto(Configuration configuredProduct) {
-        Product product = configuredProduct.getProduct();
-
-        return ConfigurationResponseDto.builder()
-                .Id(String.valueOf(configuredProduct.getId()))
-                .productId(product.getProductId())
-                .productName(product.getProductName())
-                .productPrice(product.getTotalProductPrice())
-                .productDescription(product.getProductDescription())
-                .productCoverImage(product.getProductCase().getCoverImageUrl())
-                .totalPrice(configuredProduct.getTotalPrice())
-                .warranty(null)
-                .vat(null)
-                .configuredPrice(null)
-                .configured(configuredProduct.getConfiguredOptions())
-                .quantity(configuredProduct.getQuantity())
-                .build();
     }
 
     private ConfigurationResponseDto setMaximumStock(ConfigurationResponseDto dto) {
