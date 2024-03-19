@@ -19,12 +19,17 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Page<CustomerResponseDto> getAllCustomers(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        return orderRepository.selectAllUsers(pageable).map(this::mapToCustomerResponse);
+        return orderRepository.selectAllUsersWithOrderCount(pageable).map(this::mapToCustomerResponse);
     }
 
-    private CustomerResponseDto mapToCustomerResponse(User user) {
+
+    private CustomerResponseDto mapToCustomerResponse(Object[] result) {
+        User user = (User) result[0];
+        Long numberOfOrders = (Long) result[1];
+
         return CustomerResponseDto.builder()
                 .name(user.getFirstName() + " " + user.getLastName())
+                .numberOfOrders(numberOfOrders.intValue()) // Assuming numberOfOrders is an integer
                 .build();
     }
 }
