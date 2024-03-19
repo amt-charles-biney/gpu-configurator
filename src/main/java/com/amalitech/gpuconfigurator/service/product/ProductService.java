@@ -35,4 +35,6 @@ public interface ProductService {
     void updateTotalPriceWhenUpdatingCase(UUID caseId, BigDecimal casePrice);
 
     Page<ProductResponse> getAllProductsUsers(int page, int size, ProductSearchRequest dto);
+
+    Page<ProductResponse> getAllProductsAdmin(Integer page, Integer size);
 }

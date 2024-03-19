@@ -4,6 +4,7 @@ package com.amalitech.gpuconfigurator.service.product;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.VariantStockLeastDto;
+import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
@@ -167,17 +168,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    public Page<ProductResponse> getAllProductsAdmin(int page, int size, String sort) {
-        if (sort == null) {
-            sort = "createdAt";
-        }
-
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sort).descending());
-        Page<Product> productPage = productRepository.findAll(pageRequest);
-
-        return productPage
-                .map(getProductProductResponseFunction());
-
+    @Override
+    public Page<ProductResponse> getAllProductsAdmin(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productRepository.findAll(pageable).map(getProductProductResponseFunction());
     }
 
     @NotNull
@@ -373,7 +367,12 @@ public class ProductServiceImpl implements ProductService {
         Join<CategoryConfig, CompatibleOption> compatibleOptionJoin = categoryConfigJoin.join("compatibleOptions");
 
         brandSubquery.select(builder.literal(1L));
-        brandSubquery.where(builder.and(builder.in(compatibleOptionJoin.get("attributeOption").get("brand")).value(brands)));
+        brandSubquery.where(
+                builder.and(
+                        builder.in(compatibleOptionJoin.get("attributeOption").get("brand")).value(brands),
+                        builder.isTrue(compatibleOptionJoin.get("isCompatible"))
+                )
+        );
 
         return builder.exists(brandSubquery);
     }
@@ -435,8 +434,8 @@ public class ProductServiceImpl implements ProductService {
 
     private BigDecimal getPercentageOfServiceChargeMultiplyByCasePrice(double serviceCharge, Case productCase, BigDecimal totalConfigPrice) {
         return BigDecimal.valueOf(serviceCharge)
-            .divide(BigDecimal.valueOf(100))
-            .multiply(productCase.getPrice().add(totalConfigPrice)).setScale(2, RoundingMode.HALF_UP);
+                .divide(BigDecimal.valueOf(100))
+                .multiply(productCase.getPrice().add(totalConfigPrice)).setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal getProductTotalPrice(BigDecimal percentageOfServiceChargeXCasePrice, BigDecimal totalConfigPrice, Case productCase) {

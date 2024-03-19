@@ -9,6 +9,7 @@ import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.*;
 import com.amalitech.gpuconfigurator.service.configuration.ConfigurationService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -127,6 +128,36 @@ public class CartServiceImpl implements CartService {
                 .configuredProductId(dto.getConfiguredProductId())
                 .quantity(dto.getQuantity())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void mergeUserAndSessionCarts(User user, UserSession userSession) {
+        Cart userCart = user.getCart();
+        Cart sessionCart = userSession.getCart();
+
+        if (userCart == null && sessionCart != null) {
+            var sessionCartItems = configuredProductRepository.findByCartId(sessionCart.getId());
+            Cart newUserCart = new Cart();
+            for (var cartItem : sessionCartItems) {
+                cartItem.setCart(newUserCart);
+            }
+            user.setCart(newUserCart);
+            userRepository.save(user);
+        }
+
+        if (userCart != null && sessionCart != null) {
+            var userCartItems = configuredProductRepository.findByCartId(userCart.getId());
+            var sessionCartItems = configuredProductRepository.findByCartId(sessionCart.getId());
+            if (userCartItems.isEmpty()) {
+                for (var cartItem : sessionCartItems) {
+                    cartItem.setCart(userCart);
+                }
+                configuredProductRepository.saveAll(sessionCartItems);
+            } else {
+                configuredProductRepository.deleteByCartId(sessionCart.getId());
+            }
+        }
     }
 
     private Optional<Cart> getUserOrGuestCart(User user, UserSession userSession) {

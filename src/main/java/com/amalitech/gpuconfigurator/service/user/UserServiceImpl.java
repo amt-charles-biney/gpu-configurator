@@ -9,10 +9,12 @@ import com.amalitech.gpuconfigurator.dto.otp.ResendOtpDto;
 import com.amalitech.gpuconfigurator.dto.otp.VerifyOtpDTO;
 import com.amalitech.gpuconfigurator.dto.otp.VerifyUserDto;
 import com.amalitech.gpuconfigurator.dto.profile.ChangePasswordDTO;
+import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.enums.OtpType;
 import com.amalitech.gpuconfigurator.model.enums.Role;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
+import com.amalitech.gpuconfigurator.service.cart.CartService;
 import com.amalitech.gpuconfigurator.service.email.EmailServiceImpl;
 import com.amalitech.gpuconfigurator.service.jwt.JwtServiceImpl;
 import com.amalitech.gpuconfigurator.service.otp.OtpServiceImpl;
@@ -41,6 +43,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final OtpServiceImpl otpService;
     private final EmailServiceImpl emailService;
+    private final CartService cartService;
 
     @Override
     public void signup(SignUpDto request) throws MessagingException, BadRequestException {
@@ -67,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticationResponse login(LoginDto request) {
+    public AuthenticationResponse login(LoginDto request, UserSession userSession) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         User user = repository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Email or Password incorrect"));
         if (!user.getIsVerified()) {
@@ -78,6 +81,8 @@ public class UserServiceImpl implements UserService {
         extraClaim.put("role", user.getRole());
 
         var jwtToken = jwtServiceImpl.generateToken(extraClaim, user);
+
+        cartService.mergeUserAndSessionCarts(user, userSession);
 
         return AuthenticationResponse.builder()
                 .email(user.getEmail())

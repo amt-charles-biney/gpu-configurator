@@ -2,15 +2,20 @@ package com.amalitech.gpuconfigurator.controller;
 
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,27 +53,14 @@ public class ProductController {
 
     @CrossOrigin
     @GetMapping("/v1/admin/product")
-    public ResponseEntity<PageResponseDto> getAllProducts(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(required = false) Integer size,
-            @RequestParam(required = false) String sort
+    public ResponseEntity<Page<ProductResponse>> getAllProducts(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "100") Integer size
     ) {
+        Page<ProductResponse> resultPage = productService.getAllProductsAdmin(page, size);
 
-        PageResponseDto productsResponse = new PageResponseDto();
-
-        if (page != null && size != null) {
-            Page<ProductResponse> products = productService.getAllProductsAdmin(page, size, sort);
-            productsResponse.setProducts(products.getContent());
-            productsResponse.setTotal(products.getTotalElements());
-        } else {
-            List<ProductResponse> products = productService.getAllProducts();
-            productsResponse.setProducts(products);
-            productsResponse.setTotal(products.size());
-        }
-
-        return ResponseEntity.ok(productsResponse);
+        return ResponseEntity.ok(resultPage);
     }
-
 
     @CrossOrigin
     @GetMapping("/v1/product")

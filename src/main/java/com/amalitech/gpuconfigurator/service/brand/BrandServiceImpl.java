@@ -31,13 +31,13 @@ public class BrandServiceImpl implements BrandService {
 
         return brands.stream()
                 .map(brand -> BrandDto.builder()
-                        .name(brand.getBrand().toLowerCase())
+                        .name(brand.getBrand())
                         .id(String.valueOf(brand.getId()))
                         .thumbnail(brand.getMedia())
                         .description(brand.getAttribute().getDescription())
                         .build())
                 .collect(Collectors.toMap(
-                        BrandDto::name,
+                        brand -> brand.name().toLowerCase(),
                         brand -> brand,
                         (existing, replacement) -> existing))
                 .values().stream()

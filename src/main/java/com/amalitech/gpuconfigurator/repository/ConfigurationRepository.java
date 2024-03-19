@@ -15,4 +15,6 @@ public interface ConfigurationRepository extends JpaRepository<Configuration, UU
     Optional<Configuration> findByIdAndCartId(UUID configuredProductId, UUID cardId);
 
     List<Configuration> findByCartId(UUID cartId);
+
+    void deleteByCartId(UUID cartId);
 }

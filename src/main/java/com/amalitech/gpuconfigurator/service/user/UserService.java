@@ -9,13 +9,14 @@ import com.amalitech.gpuconfigurator.dto.otp.ResendOtpDto;
 import com.amalitech.gpuconfigurator.dto.otp.VerifyOtpDTO;
 import com.amalitech.gpuconfigurator.dto.otp.VerifyUserDto;
 import com.amalitech.gpuconfigurator.dto.profile.ChangePasswordDTO;
+import com.amalitech.gpuconfigurator.model.UserSession;
 import jakarta.mail.MessagingException;
 import org.apache.coyote.BadRequestException;
 
 public interface UserService {
     void signup(SignUpDto request) throws MessagingException, BadRequestException;
 
-    AuthenticationResponse login(LoginDto request);
+    AuthenticationResponse login(LoginDto request, UserSession userSession);
 
     AuthenticationResponse verifyUserSignup(VerifyUserDto request);
 
