@@ -89,6 +89,7 @@ class PaymentInfoServiceTest {
                 .builder()
                 .cardHolderName("name")
                 .expirationDate("12/3")
+                .paymentMethod("visa")
                 .cardNumber("xxx-tentaction")
                 .build();
 
@@ -98,6 +99,7 @@ class PaymentInfoServiceTest {
         cardPayment.setUser(user);
         cardPayment.setCardNumber("1234567891054123");
         cardPayment.setCardholderName("dickson anyaele");
+        cardPayment.setPaymentMethod("visa");
         cardPayment.setExpirationDate("12-01-4");
 
         mobilePayment.setId(mobilePaymentId);
