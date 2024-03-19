@@ -15,4 +15,5 @@ public class CardPayment extends PaymentInfoType {
     private String cardNumber;
     private String expirationDate;
     private String cardholderName;
+    private String paymentMethod;
 }
