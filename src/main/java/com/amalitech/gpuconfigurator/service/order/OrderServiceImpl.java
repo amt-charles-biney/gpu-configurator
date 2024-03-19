@@ -15,6 +15,7 @@ import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
+import com.amalitech.gpuconfigurator.service.status.StatusService;
 import com.easypost.exception.EasyPostException;
 import com.easypost.model.Shipment;
 import com.easypost.model.Tracker;
@@ -102,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
             Order order = orderBuilder
                     .trackingId((boughtShipment.getTracker().getTrackingCode()))
                     .trackingUrl(boughtShipment.getTracker().getPublicUrl())
-                    .status(boughtShipment.getTracker().getStatus())
+                    .status(StatusService.mapEasyPostStatus(boughtShipment.getTracker().getStatus()))
                     .estDeliveryDate(boughtShipment.getTracker().getEstDeliveryDate() != null ? boughtShipment.getTracker().getEstDeliveryDate().toString() : null)
                     .user(user)
                     .payment(payment).build();
