@@ -62,7 +62,7 @@ public class CartServiceImpl implements CartService {
             throw new CannotAddItemToCartException("Cart already contains one configured product. Checkout configured product to continue.");
         }
 
-        ConfigurationResponseDto configuredProductResponse = configuredProductService.saveConfiguration(productId.toString(), warranty, components, cart);
+        ConfigurationResponseDto configuredProductResponse = configuredProductService.saveConfiguration(productId.toString(), warranty, components, cart, null);
 
         return AddCartItemResponse.builder()
                 .message("Configured product added to cart successfully")

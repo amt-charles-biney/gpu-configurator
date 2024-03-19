@@ -4,10 +4,7 @@ import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigResponseDt
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
-import com.amalitech.gpuconfigurator.model.Cart;
-import com.amalitech.gpuconfigurator.model.CategoryConfig;
-import com.amalitech.gpuconfigurator.model.CompatibleOption;
-import com.amalitech.gpuconfigurator.model.Product;
+import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
@@ -61,7 +58,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public ConfigurationResponseDto saveConfiguration(String productId, Boolean warranty, String components, Cart cart) {
+    public ConfigurationResponseDto saveConfiguration(String productId, Boolean warranty, String components, Cart cart, WishList wishList) {
 
         Product product = getProductById(productId);
         CategoryConfig categoryConfig = getCategoryConfig(product);
@@ -76,7 +73,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         BigDecimal vat = calculateVat(totalPrice);
         BigDecimal totalPriceWithVat = totalPrice.add(vat).setScale(2, RoundingMode.HALF_UP);
 
-        Configuration configuration = createConfiguration(product, configOptions, cart);
+        Configuration configuration = createConfiguration(product, configOptions, cart, wishList);
         configuration.setTotalPrice(totalPriceWithVat);
         configuration.setQuantity(1);
         saveConfiguration(configuration);
@@ -214,12 +211,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .build();
     }
 
-    private Configuration createConfiguration(Product product, List<ConfigOptions> configOptions, Cart cart) {
+    private Configuration createConfiguration(Product product, List<ConfigOptions> configOptions, Cart cart, WishList wishList) {
         return Configuration.builder()
                 .totalPrice(calculateTotalPrice(product).setScale(2, RoundingMode.HALF_UP))
                 .product(product)
                 .configuredOptions(configOptions)
                 .cart(cart)
+                .wishList(wishList)
                 .build();
     }
 

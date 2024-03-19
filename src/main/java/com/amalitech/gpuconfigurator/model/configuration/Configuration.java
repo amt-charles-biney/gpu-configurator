@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.model.configuration;
 
 import com.amalitech.gpuconfigurator.model.Cart;
 import com.amalitech.gpuconfigurator.model.Product;
+import com.amalitech.gpuconfigurator.model.WishList;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -49,6 +50,12 @@ public class Configuration {
     @JoinColumn(name = "cart_id")
     @ToString.Exclude
     private Cart cart;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    @ToString.Exclude
+    private WishList wishList;
 
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;
