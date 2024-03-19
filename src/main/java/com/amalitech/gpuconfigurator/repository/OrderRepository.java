@@ -19,6 +19,10 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
 
     Optional<Order> findByTrackingId(String trackingCode);
 
-    @Query("SELECT DISTINCT o.user FROM Order o WHERE o.user IS NOT NULL")
-    Page<User> selectAllUsers(Pageable pageable);
+    @Query("SELECT u, COUNT(o) " +
+            "FROM User u " +
+            "LEFT JOIN u.orders o " +
+            "GROUP BY u.id " +
+            "HAVING COUNT(o) > 0")
+    Page<Object[]> selectAllUsersWithOrderCount(Pageable pageable);
 }

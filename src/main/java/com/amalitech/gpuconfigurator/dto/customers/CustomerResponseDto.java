@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record CustomerResponseDto(
-        String name
+        String name,
+        Integer numberOfOrders
 ) {
 }
