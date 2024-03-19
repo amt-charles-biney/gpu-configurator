@@ -1,2 +1,9 @@
-package com.amalitech.gpuconfigurator.dto.customers;public class CustomerResponseDto {
+package com.amalitech.gpuconfigurator.dto.customers;
+
+import lombok.Builder;
+
+@Builder
+public record CustomerResponseDto(
+        String name
+) {
 }
