@@ -29,7 +29,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         return CustomerResponseDto.builder()
                 .name(user.getFirstName() + " " + user.getLastName())
-                .numberOfOrders(numberOfOrders.intValue()) // Assuming numberOfOrders is an integer
+                .numberOfOrders(numberOfOrders.intValue())
                 .build();
     }
 }
