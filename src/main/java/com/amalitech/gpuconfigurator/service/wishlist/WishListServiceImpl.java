@@ -1,12 +1,18 @@
 package com.amalitech.gpuconfigurator.service.wishlist;
 
+import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.dto.wishlist.AddWishListItemResponse;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.WishList;
+import com.amalitech.gpuconfigurator.repository.ConfigurationRepository;
 import com.amalitech.gpuconfigurator.repository.WishListRepository;
 import com.amalitech.gpuconfigurator.service.configuration.ConfigurationService;
+import com.amalitech.gpuconfigurator.util.ResponseMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,6 +24,7 @@ public class WishListServiceImpl implements WishListService {
 
     private final WishListRepository wishListRepository;
     private final ConfigurationService configurationService;
+    private final ConfigurationRepository configuredProductRepository;
 
     @Override
     public AddWishListItemResponse addWishListItem(UUID productId, String components, User user, UserSession userSession) {
@@ -27,6 +34,16 @@ public class WishListServiceImpl implements WishListService {
                 configurationService.saveConfiguration(String.valueOf(productId), false, components, null, wishList),
                 "Product added to wish list successfully."
         );
+    }
+
+    @Override
+    public Page<ConfigurationResponseDto> getWishListItems(int page, int size, User user, UserSession userSession) {
+        WishList wishList = getUserOrSessionWishList(user, userSession);
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return configuredProductRepository.findByWishListId(wishList.getId(), pageable)
+                .map((new ResponseMapper())::mapConfigurationToConfigurationResponseDto);
     }
 
     private WishList getUserOrSessionWishList(User user, UserSession userSession) {
