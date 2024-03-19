@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.dto.wishlist.AddWishListItemResponse;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.WishList;
+import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.ConfigurationRepository;
 import com.amalitech.gpuconfigurator.repository.WishListRepository;
 import com.amalitech.gpuconfigurator.service.configuration.ConfigurationService;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -56,6 +58,31 @@ public class WishListServiceImpl implements WishListService {
                 .ifPresent(configuredProductRepository::delete);
 
         return new GenericResponse(200, "Product removed from wish list successfully.");
+    }
+
+    @Override
+    public void mergeUserAndSessionWishLists(User user, UserSession userSession) {
+        Optional<WishList> optionalUserWishList = wishListRepository.findByUserId(user.getId());
+        Optional<WishList> optionalSessionWishList = wishListRepository.findByUserSessionId(userSession.getId());
+
+        if (optionalUserWishList.isEmpty()) {
+            if (optionalSessionWishList.isPresent()) {
+                WishList wishList = optionalSessionWishList.get();
+                wishList.setUser(user);
+                wishList.setUserSession(null);
+                wishListRepository.save(wishList);
+            }
+        } else {
+            if (optionalSessionWishList.isPresent()) {
+                List<Configuration> configuredProducts = optionalSessionWishList.get().getConfiguredProducts().stream().toList();
+
+                for (Configuration configuredProduct : configuredProducts) {
+                    configuredProduct.setWishList(optionalUserWishList.get());
+                }
+
+                configuredProductRepository.saveAll(configuredProducts);
+            }
+        }
     }
 
     private WishList getUserOrSessionWishList(User user, UserSession userSession) {
