@@ -1,6 +1,8 @@
 package com.amalitech.gpuconfigurator.repository;
 
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +19,8 @@ public interface ConfigurationRepository extends JpaRepository<Configuration, UU
     List<Configuration> findByCartId(UUID cartId);
 
     void deleteByCartId(UUID cartId);
+
+    Page<Configuration> findByWishListId(UUID wishListId, Pageable pageable);
+
+    Optional<Configuration> findByIdAndWishListId(UUID configuredProductId, UUID wishListId);
 }

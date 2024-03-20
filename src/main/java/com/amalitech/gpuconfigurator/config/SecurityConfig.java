@@ -25,6 +25,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/**", "/api/v1/carts/**", "/api/v1/shipping/**").permitAll()
+                .requestMatchers("api/v1/wishlists/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/webhook/easypost").permitAll()
                 .requestMatchers("/api/v1/profile/**").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())
                 .requestMatchers(HttpMethod.GET, "/api/v1/admin/orders/{id}").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())

@@ -18,6 +18,7 @@ import com.amalitech.gpuconfigurator.service.cart.CartService;
 import com.amalitech.gpuconfigurator.service.email.EmailServiceImpl;
 import com.amalitech.gpuconfigurator.service.jwt.JwtServiceImpl;
 import com.amalitech.gpuconfigurator.service.otp.OtpServiceImpl;
+import com.amalitech.gpuconfigurator.service.wishlist.WishListService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -44,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final OtpServiceImpl otpService;
     private final EmailServiceImpl emailService;
     private final CartService cartService;
+    private final WishListService wishListService;
 
     @Override
     public void signup(SignUpDto request) throws MessagingException, BadRequestException {
@@ -83,6 +85,8 @@ public class UserServiceImpl implements UserService {
         var jwtToken = jwtServiceImpl.generateToken(extraClaim, user);
 
         cartService.mergeUserAndSessionCarts(user, userSession);
+
+        wishListService.mergeUserAndSessionWishLists(user, userSession);
 
         return AuthenticationResponse.builder()
                 .email(user.getEmail())

@@ -50,8 +50,6 @@ public class Product {
     ))
     private Case productCase;
 
-//    @Column(name = "product_instock", nullable = false)
-//    private Integer inStock;
 
     @JsonIgnore
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
