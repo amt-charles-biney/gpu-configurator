@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.email;
 
+import com.amalitech.gpuconfigurator.dto.email.EmailTemplateRequest;
 import com.amalitech.gpuconfigurator.model.OtpType;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -19,6 +20,7 @@ public class EmailServiceImpl implements EmailService{
 
     private final JavaMailSender javaMailSender;
     private final ITemplateEngine templateEngine;
+
 
     @Override
     public void sendOtpMessage(String to, String otp, OtpType type) throws MessagingException {
@@ -46,6 +48,21 @@ public class EmailServiceImpl implements EmailService{
 
         return matcher.matches();
 
+    }
+
+    @Override
+    public void sendGenericEmail(EmailTemplateRequest emailTemplateRequest) throws MessagingException {
+        Context context = new Context();
+        context.setVariable("message", emailTemplateRequest.message());
+
+        String process = templateEngine.process(emailTemplateRequest.templateString(), context);
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+        helper.setSubject(emailTemplateRequest.title());
+        helper.setText(process, true);
+        helper.setTo(emailTemplateRequest.to());
+
+        javaMailSender.send(mimeMessage);
     }
 
     @Override
