@@ -15,4 +15,6 @@ public interface CompatibleOptionRepository extends JpaRepository<CompatibleOpti
     List<CompatibleOption> findAllByCategoryConfigId(UUID configId);
 
     Optional<CompatibleOption> findByCategoryConfigIdAndAttributeOptionId(UUID categoryConfigId, UUID attributeOptionId);
+
+    List<CompatibleOption> findAllByAttributeOptionId(UUID uuid);
 }
