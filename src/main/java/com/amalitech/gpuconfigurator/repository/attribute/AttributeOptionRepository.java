@@ -13,4 +13,5 @@ public interface AttributeOptionRepository extends JpaRepository<AttributeOption
 
     void deleteByOptionName(String name);
 
+    List<AttributeOption> findByInStockLessThan(int i);
 }

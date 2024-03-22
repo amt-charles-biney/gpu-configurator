@@ -41,4 +41,6 @@ public interface AttributeService {
     GenericResponse deleteBulkAttributes(List<String> selectedAttributes);
 
     List<AttributeOption> getAllAttributeOptions();
+
+    List<AttributeResponse> getAllAttributesLowInStock();
 }
