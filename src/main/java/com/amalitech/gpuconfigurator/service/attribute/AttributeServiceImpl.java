@@ -31,7 +31,7 @@ public class AttributeServiceImpl implements AttributeService {
     private final AttributeRepository attributeRepository;
     private final AttributeOptionRepository attributeOptionRepository;
     private final CategoryConfigService categoryConfigService;
-    private final RedisPublisherImpl redisPublisher;
+    // private final RedisPublisherImpl redisPublisher;
 
     @Override
     public List<AttributeResponse> getAllAttributes() {
@@ -214,9 +214,9 @@ public class AttributeServiceImpl implements AttributeService {
             updateAttribute.setMedia(attributeOption.media());
             updateAttribute.setUpdatedAt(LocalDateTime.now());
 
-            if(attributeOption.inStock() > updateAttribute.getInStock() && updateAttribute.getInStock() <= 5) {
-                redisPublisher.publish(attributeOption.id());
-            }
+//            if(attributeOption.inStock() > updateAttribute.getInStock() && updateAttribute.getInStock() <= 5) {
+//                redisPublisher.publish(attributeOption.id());
+//            }
 
             updateAttribute.setInStock(attributeOption.inStock());
             updateAttribute.setBrand(attributeOption.brand());
