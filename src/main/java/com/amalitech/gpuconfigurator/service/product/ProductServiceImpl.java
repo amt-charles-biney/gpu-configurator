@@ -4,7 +4,6 @@ package com.amalitech.gpuconfigurator.service.product;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.VariantStockLeastDto;
-import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
@@ -107,6 +106,19 @@ public class ProductServiceImpl implements ProductService {
                         .imageUrl(product.getProductCase().getImageUrls())
                         .serviceCharge(product.getServiceCharge())
                         .build()).toList();
+    }
+    @Override
+    public List<ProductResponseDto> getAllProductsCompare() {
+        List<Product> products = productRepository.findAll();
+
+        return products.stream()
+                .filter(product -> !"unassigned".equals(product.getCategory().getCategoryName()))
+                .map(product -> ProductResponseDto
+                        .builder()
+                        .id(product.getProductId())
+                        .name(product.getProductName())
+                        .build())
+                .toList();
     }
 
     public Product getProductOnDemand(UUID productId) {
