@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 public record ConfigurationResponseDto(@JsonProperty("id") String Id, BigDecimal totalPrice, String productId,
                                        String productName, BigDecimal productPrice, String productDescription,
-                                       String productCoverImage,
+                                       String productCoverImage, String productCaseName,
                                        BigDecimal configuredPrice, List<ConfigOptions> configured, BigDecimal vat,
                                        String coverImage,
 
