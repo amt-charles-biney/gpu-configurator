@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -18,7 +19,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Page<CustomerResponseDto> getAllCustomers(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return orderRepository.selectAllUsersWithOrderCount(pageable).map(this::mapToCustomerResponse);
     }
 
