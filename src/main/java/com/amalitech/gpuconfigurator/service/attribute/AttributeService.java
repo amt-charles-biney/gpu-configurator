@@ -8,11 +8,15 @@ import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface AttributeService {
+
+    Page<AttributeResponse> getAllAttributesPageable(int size, int page, String query);
+
     List<AttributeResponse> getAllAttributes();
 
     CompatibleOptionGetResponse getAllAttributeOptionsEditable();

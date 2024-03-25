@@ -9,6 +9,7 @@ import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsExcepti
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.service.attribute.AttributeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -41,11 +42,21 @@ public class AttributeController {
     }
 
     @CrossOrigin
+    @GetMapping("/v1/admin/attributes/pageable")
+    public ResponseEntity<Page<AttributeResponse>> getAttributesPageable(
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "") String q
+            ) {
+        Page<AttributeResponse> attributes = attributeService.getAllAttributesPageable(size, page, q);
+        return ResponseEntity.ok(attributes);
+    }
+
+    @CrossOrigin
     @GetMapping("/v1/admin/attributes")
     public ResponseEntity<ApiResponse<List<AttributeResponse>>> getAttributes() {
         List<AttributeResponse> attributes = attributeService.getAllAttributes();
-        ApiResponse<List<AttributeResponse>> attributeResponse = new ApiResponse<List<AttributeResponse>>(attributes);
-        return ResponseEntity.ok(attributeResponse);
+        return ResponseEntity.ok(new ApiResponse<>(attributes));
     }
 
     @CrossOrigin

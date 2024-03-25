@@ -10,11 +10,12 @@ import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigService;
-import com.amalitech.gpuconfigurator.service.messageQueue.redis.publisher.RedisPublisherImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,11 @@ public class AttributeServiceImpl implements AttributeService {
     private final CategoryConfigService categoryConfigService;
     // private final RedisPublisherImpl redisPublisher;
 
+    @Override
+    public Page<AttributeResponse> getAllAttributesPageable(int size, int page, String query) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return attributeRepository.findAllByAttributeNameContainingIgnoreCase(query, pageRequest).map(this::createAttributeResponseType);
+    }
     @Override
     public List<AttributeResponse> getAllAttributes() {
         List<Attribute> attributes = attributeRepository.findAll();
