@@ -182,9 +182,9 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public Page<ProductResponse> getAllProductsAdmin(Integer page, Integer size) {
+    public Page<ProductResponse> getAllProductsAdmin(Integer page, Integer size, String query) {
         Pageable pageable = PageRequest.of(page, size);
-        return productRepository.findAll(pageable).map(getProductProductResponseFunction());
+        return productRepository.findAllByProductNameContainingIgnoreCase(query, pageable).map(getProductProductResponseFunction());
     }
 
     @NotNull

@@ -54,10 +54,10 @@ public class ProductController {
     @GetMapping("/v1/admin/product")
     public ResponseEntity<Page<ProductResponse>> getAllProducts(
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "100") Integer size
+            @RequestParam(defaultValue = "100") Integer size,
+            @RequestParam(defaultValue = "") String q
     ) {
-        Page<ProductResponse> resultPage = productService.getAllProductsAdmin(page, size);
-
+        Page<ProductResponse> resultPage = productService.getAllProductsAdmin(page, size, q);
         return ResponseEntity.ok(resultPage);
     }
 

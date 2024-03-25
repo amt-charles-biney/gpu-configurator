@@ -27,6 +27,8 @@ public interface ProductService {
     List<FeaturedProductDto> getNewProducts();
 
 
+    Page<ProductResponse> getAllProductsAdmin(Integer page, Integer size, String query);
+
     @Transactional
     ProductResponse updateProduct(UUID id, ProductUpdateDto updatedProductDto);
 
@@ -39,6 +41,4 @@ public interface ProductService {
     void updateTotalPriceWhenUpdatingCase(UUID caseId, BigDecimal casePrice);
 
     Page<ProductResponse> getAllProductsUsers(int page, int size, ProductSearchRequest dto, User user, UserSession userSession);
-
-    Page<ProductResponse> getAllProductsAdmin(Integer page, Integer size);
 }

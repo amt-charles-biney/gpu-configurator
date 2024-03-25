@@ -1,6 +1,9 @@
 package com.amalitech.gpuconfigurator.repository;
 
 import com.amalitech.gpuconfigurator.model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Range;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -47,4 +50,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
 
     @Query("SELECT COUNT(o) FROM Product o")
     Long productsTotal();
+
+    Page<Product> findAllByProductNameContainingIgnoreCase(String query, Pageable pageable);
 }
