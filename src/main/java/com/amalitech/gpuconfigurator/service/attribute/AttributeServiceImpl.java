@@ -5,14 +5,12 @@ import com.amalitech.gpuconfigurator.dto.attribute.*;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
-import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
-import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigService;
-import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
+import com.amalitech.gpuconfigurator.service.messageQueue.redis.publisher.RedisPublisherImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
@@ -33,6 +31,7 @@ public class AttributeServiceImpl implements AttributeService {
     private final AttributeRepository attributeRepository;
     private final AttributeOptionRepository attributeOptionRepository;
     private final CategoryConfigService categoryConfigService;
+    // private final RedisPublisherImpl redisPublisher;
 
     @Override
     public List<AttributeResponse> getAllAttributes() {
@@ -214,9 +213,15 @@ public class AttributeServiceImpl implements AttributeService {
             updateAttribute.setPriceFactor(attributeOption.priceFactor());
             updateAttribute.setMedia(attributeOption.media());
             updateAttribute.setUpdatedAt(LocalDateTime.now());
+
+//            if(attributeOption.inStock() > updateAttribute.getInStock() && updateAttribute.getInStock() <= 5) {
+//                redisPublisher.publish(attributeOption.id());
+//            }
+
             updateAttribute.setInStock(attributeOption.inStock());
             updateAttribute.setBrand(attributeOption.brand());
             updateAttribute.setIncompatibleAttributeOptions(convertStringsToUUIDS(attributeOption.incompatibleAttributeOptions()));
+
 
             AttributeOption savedAttribute = attributeOptionRepository.save(updateAttribute);
             newAttributeOptions.add(savedAttribute);
@@ -314,5 +319,15 @@ public class AttributeServiceImpl implements AttributeService {
     private List<UUID> convertStringsToUUIDS(List<String> uuidStrings) {
         if (uuidStrings.isEmpty()) return new ArrayList<>();
         return uuidStrings.stream().map(UUID::fromString).toList();
+    }
+
+    @Override
+    public List<AttributeResponse> getAllAttributesLowInStock() {
+        List<AttributeOption> attributeOptions = attributeOptionRepository.findByInStockLessThan(6);
+
+        return attributeOptions
+                .stream().map(attributeOption -> attributeOption.getAttribute())
+                .map(this::createAttributeResponseType)
+                .toList();
     }
 }

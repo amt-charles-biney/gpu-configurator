@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface OrderFiltering {
     List<OrderResponseDto> orders(String status, LocalDate startDate, LocalDate endDate);
+
+    List<OrderResponseDto> ordersUser(String status, LocalDate startDate, LocalDate endDate);
 }

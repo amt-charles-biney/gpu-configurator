@@ -43,4 +43,5 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
     @Query("SELECT p FROM Product p JOIN p.category c WHERE c.id = :categoryId")
     List<FeaturedProductAbstraction> selectAllProductByCategory(UUID categoryId);
 
+    List<Product> findAllByCategoryId(UUID id);
 }

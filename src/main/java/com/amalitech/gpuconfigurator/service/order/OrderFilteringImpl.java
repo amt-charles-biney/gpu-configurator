@@ -2,10 +2,12 @@ package com.amalitech.gpuconfigurator.service.order;
 
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.model.Order;
+import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -23,6 +25,16 @@ public class OrderFilteringImpl implements OrderFiltering {
     public List<OrderResponseDto> orders(String status, LocalDate startDate, LocalDate endDate) {
         Specification<Order> spec = createOrderSpecification(status, startDate, endDate);
         List<Order> orders = orderRepository.findAll(spec);
+        return orders.stream().map(this::mapOrderToOrderResponseDto).toList();
+    }
+
+    @Override
+    public List<OrderResponseDto> ordersUser(String status, LocalDate startDate, LocalDate endDate) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Specification<Order> userSpec = (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("user"), user);
+        Specification<Order> spec = createOrderSpecification(status, startDate, endDate);
+        Specification<Order> combinedSpec = userSpec.and(spec);
+        List<Order> orders = orderRepository.findAll(combinedSpec);
         return orders.stream().map(this::mapOrderToOrderResponseDto).toList();
     }
 
