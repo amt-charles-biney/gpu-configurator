@@ -330,4 +330,9 @@ public class AttributeServiceImpl implements AttributeService {
                 .map(this::createAttributeResponseType)
                 .toList();
     }
+
+    @Override
+    public List<Attribute> getAllAttributesByRequiredTrue() {
+        return attributeRepository.findAllByIsRequiredTrue();
+    }
 }
