@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,10 +18,11 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
 
     Optional<Order> findByTrackingId(String trackingCode);
 
-    @Query("SELECT u, COUNT(o) " +
+    @Query("SELECT u, COUNT(o), SUM(p.amount), o.createdAt " +
             "FROM User u " +
             "LEFT JOIN u.orders o " +
-            "GROUP BY u.id " +
+            "LEFT JOIN o.payment p " +
+            "GROUP BY u.id, o.createdAt " +
             "HAVING COUNT(o) > 0")
     Page<Object[]> selectAllUsersWithOrderCount(Pageable pageable);
 
