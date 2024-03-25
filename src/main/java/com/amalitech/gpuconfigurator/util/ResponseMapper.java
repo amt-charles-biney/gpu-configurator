@@ -50,6 +50,7 @@ public class ResponseMapper {
                 .configuredPrice(null)
                 .configured(configuredProduct.getConfiguredOptions())
                 .quantity(configuredProduct.getQuantity())
+                .configurationUrl(configuredProduct.getConfigurationUrl())
                 .build();
     }
 }
