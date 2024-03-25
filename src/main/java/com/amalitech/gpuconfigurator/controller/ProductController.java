@@ -2,20 +2,19 @@ package com.amalitech.gpuconfigurator.controller;
 
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
-import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.*;
+import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,7 +70,10 @@ public class ProductController {
             @RequestParam(defaultValue = "") List<String> price,
             @RequestParam(defaultValue = "") List<String> brand,
             @RequestParam(defaultValue = "") List<String> categories,
-            @RequestParam(defaultValue = "") String query) {
+            @RequestParam(defaultValue = "") String query,
+            @RequestAttribute("userSession") UserSession userSession,
+            Principal principal
+    ) {
         ProductSearchRequest productSearchRequest = ProductSearchRequest.builder()
                 .query(query)
                 .cases(productCase)
@@ -80,7 +82,9 @@ public class ProductController {
                 .categories(categories)
                 .build();
 
-        Page<ProductResponse> response = productService.getAllProductsUsers(page, size, productSearchRequest);
+        User user = principal == null ? null : (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+
+        Page<ProductResponse> response = productService.getAllProductsUsers(page, size, productSearchRequest, user, userSession);
 
         return ResponseEntity.ok(response);
     }

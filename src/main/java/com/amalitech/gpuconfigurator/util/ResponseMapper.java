@@ -29,6 +29,7 @@ public class ResponseMapper {
                         .build())
                 .productDescription(product.getProductDescription())
                 .productAvailability(product.getProductAvailability())
+                .isWishListItem(product.isWishListItem())
                 .build();
     }
 

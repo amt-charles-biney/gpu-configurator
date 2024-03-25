@@ -25,4 +25,10 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
             "GROUP BY u.id " +
             "HAVING COUNT(o) > 0")
     Page<Object[]> selectAllUsersWithOrderCount(Pageable pageable);
+
+    @Query("SELECT COUNT(DISTINCT u) FROM User u LEFT JOIN u.orders o")
+    Long customers();
+
+    @Query("SELECT COUNT(u) FROM Order u")
+    Long orders();
 }

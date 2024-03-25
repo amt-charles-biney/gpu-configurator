@@ -394,7 +394,7 @@ class ProductServiceImplTest {
                 .thenReturn(mockProductPage);
 
         // When
-        var result = productService.getAllProductsAdmin(page, size, sort);
+        var result = productService.getAllProductsAdmin(page, size);
 
         // Then
         assertNotNull(result);

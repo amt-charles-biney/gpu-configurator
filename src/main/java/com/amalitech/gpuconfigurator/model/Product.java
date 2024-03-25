@@ -4,7 +4,6 @@ import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -74,6 +73,9 @@ public class Product {
     private LocalDateTime updatedAt;
 
     private LocalDateTime deletedAt;
+
+    @Transient
+    private boolean isWishListItem = false;
 
     @PrePersist
     protected void onCreate() {

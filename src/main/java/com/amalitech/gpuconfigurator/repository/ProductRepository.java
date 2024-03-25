@@ -44,4 +44,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
     List<FeaturedProductAbstraction> selectAllProductByCategory(UUID categoryId);
 
     List<Product> findAllByCategoryId(UUID id);
+
+    @Query("SELECT COUNT(o) FROM Product o")
+    Long productsTotal();
 }
