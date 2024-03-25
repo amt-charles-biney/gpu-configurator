@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -154,7 +155,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderResponseDto> getAllOrders(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return orderRepository.findAll(pageable).map(this::mapOrderToOrderResponseDto);
     }
 
@@ -171,7 +172,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public OrderResponseDto getOrderById(UUID id){
+    public OrderResponseDto getOrderById(UUID id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
         return mapOrderToOrderResponseDto(order);
     }
