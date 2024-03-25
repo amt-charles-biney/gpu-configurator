@@ -1,8 +1,16 @@
 package com.amalitech.gpuconfigurator.service.user;
 
 import com.amalitech.gpuconfigurator.dto.*;
-import com.amalitech.gpuconfigurator.model.OtpType;
-import com.amalitech.gpuconfigurator.model.Role;
+import com.amalitech.gpuconfigurator.dto.auth.AuthenticationResponse;
+import com.amalitech.gpuconfigurator.dto.auth.LoginDto;
+import com.amalitech.gpuconfigurator.dto.auth.ResetPasswordDTO;
+import com.amalitech.gpuconfigurator.dto.auth.SignUpDto;
+import com.amalitech.gpuconfigurator.dto.otp.ResendOtpDto;
+import com.amalitech.gpuconfigurator.dto.otp.VerifyOtpDTO;
+import com.amalitech.gpuconfigurator.dto.otp.VerifyUserDto;
+import com.amalitech.gpuconfigurator.dto.profile.ChangePasswordDTO;
+import com.amalitech.gpuconfigurator.model.enums.OtpType;
+import com.amalitech.gpuconfigurator.model.enums.Role;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.service.email.EmailServiceImpl;
@@ -17,6 +25,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -59,17 +69,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthenticationResponse login(LoginDto request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        var user = repository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Email or Password incorrect"));
+        User user = repository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Email or Password incorrect"));
         if (!user.getIsVerified()) {
             throw new UsernameNotFoundException("email not verified");
         }
-        var jwtToken = jwtServiceImpl.generateToken(user);
+
+        Map<String, Object> extraClaim = new HashMap<>();
+        extraClaim.put("role", user.getRole());
+
+        var jwtToken = jwtServiceImpl.generateToken(extraClaim, user);
 
         return AuthenticationResponse.builder()
                 .email(user.getEmail())
                 .token(jwtToken)
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .role(String.valueOf(user.getRole()))
                 .build();
     }
 
@@ -86,7 +101,10 @@ public class UserServiceImpl implements UserService {
 
         repository.save(user);
 
-        var jwtToken = jwtServiceImpl.generateToken(user);
+        Map<String, Object> extraClaim = new HashMap<>();
+        extraClaim.put("role", user.getRole());
+
+        var jwtToken = jwtServiceImpl.generateToken(extraClaim, user);
 
         return AuthenticationResponse.builder()
                 .email(user.getEmail())
@@ -112,28 +130,24 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public String changePassword(ChangePasswordDTO changePasswordDTO) {
-        String email = changePasswordDTO.getEmail();
-        String otpCode = changePasswordDTO.getOtpCode();
-        if (otpService.isValidOtp(email, otpCode, OtpType.RESET)) {
-            otpService.deleteOtp(email, otpCode);
-            if (updateUserPassword(email, changePasswordDTO.getNewPassword())) {
-                return "Password was changed successfully";
-            }
+    public GenericResponse changePassword(ChangePasswordDTO changePasswordDTO) throws BadRequestException {
+        User user = repository.findByEmail(changePasswordDTO.getEmail()).orElseThrow(() -> new UsernameNotFoundException("cannot change password, try again"));
+        Boolean otpValid = otpService.isValidOtp(changePasswordDTO.getEmail(), changePasswordDTO.getOtpCode(), OtpType.RESET);
+        if(!otpValid) {
+            throw new BadRequestException("could not change password");
         }
-        return "Invalid OTP";
+
+        user.setPassword(passwordEncoder.encode(changePasswordDTO.newPassword));
+        repository.save(user);
+        return new GenericResponse(201, "user changed password successfully");
     }
 
-    private boolean updateUserPassword(String email, String newPassword) {
-        Optional<User> optionalUser = repository.findByEmail(email);
-        if (optionalUser.isPresent()) {
-            var user = optionalUser.get();
-            user.setPassword(passwordEncoder.encode(newPassword));
-            repository.save(user);
-            return true;
-        }
-        return false;
-    }
+    public GenericResponse resendOtp(ResendOtpDto resend) throws MessagingException {
+        User user = repository.findByEmail(resend.email()).orElseThrow(() -> new UsernameNotFoundException("could not send otp as this user does not exist"));
+        String otp = otpService.generateAndSaveOtp(user, OtpType.valueOf(resend.type()));
+        emailService.sendOtpMessage(user.getEmail(), otp, OtpType.valueOf(resend.type()));
 
+        return new GenericResponse(201, "otp has been sent");
+    }
 
 }

@@ -1,7 +1,7 @@
 package com.amalitech.gpuconfigurator.validation;
 
 import com.amalitech.gpuconfigurator.annotation.PasswordsMatch;
-import com.amalitech.gpuconfigurator.dto.ChangePasswordDTO;
+import com.amalitech.gpuconfigurator.dto.profile.ChangePasswordDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Repository;
+
 import java.util.UUID;
 
 @Repository
@@ -25,4 +27,5 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
             "GROUP BY u.id " +
             "HAVING COUNT(o) > 0")
     Page<Object[]> selectAllUsersWithOrderCount(Pageable pageable);
+
 }

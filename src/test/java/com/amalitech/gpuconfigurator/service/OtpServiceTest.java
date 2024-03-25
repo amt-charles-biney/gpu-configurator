@@ -1,8 +1,8 @@
 package com.amalitech.gpuconfigurator.service;
 
 import com.amalitech.gpuconfigurator.model.Otp;
-import com.amalitech.gpuconfigurator.model.OtpType;
-import com.amalitech.gpuconfigurator.model.Role;
+import com.amalitech.gpuconfigurator.model.enums.OtpType;
+import com.amalitech.gpuconfigurator.model.enums.Role;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.OtpRepository;
 import com.amalitech.gpuconfigurator.service.otp.OtpServiceImpl;
@@ -17,8 +17,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
 public class OtpServiceTest {
 
     @InjectMocks
@@ -64,10 +65,16 @@ public class OtpServiceTest {
 
     @Test
     public void generateAndSaveOtp_shouldGenerateAndSaveOtp() {
+        Otp otp = Otp
+                .builder()
+                .email("kaycydickson@gmail.com")
+                .build();
+        when(otpRepository.save(any())).thenReturn(otp);
         String code = otpService.generateAndSaveOtp(user, OtpType.CREATE);
 
         assertNotNull(code);
         assertFalse(code.isEmpty());
+        verify(otpRepository, times(1)).save(any());
     }
 
     @Test

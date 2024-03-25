@@ -1,6 +1,6 @@
 package com.amalitech.gpuconfigurator.service.email;
 
-import com.amalitech.gpuconfigurator.model.OtpType;
+import com.amalitech.gpuconfigurator.model.enums.OtpType;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

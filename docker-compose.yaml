@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: pg_db
+    env_file: .env
+    environment:
+      - POSTGRES_USER=${DOCKER_DB_USER}
+      - POSTGRES_PASSWORD=${DOCKER_DB_PASSWORD}
+      - POSTGRES_DB=${DOCKER_DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - network
+
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gpu-configurator-backend-dec-java
+    container_name: gpu-configurator-backend-dec-backend
+    restart: on-failure
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - DOCKER_BUILDKIT=1
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${DOCKER_DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${DOCKER_DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DOCKER_DB_PASSWORD}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  db:
