@@ -1,15 +1,10 @@
 package com.amalitech.gpuconfigurator.dto.product;
 
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionResponseDto;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.VariantStockLeastDto;
-import com.amalitech.gpuconfigurator.model.attributes.Attribute;
-import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @Builder
 public record ProductResponse(
@@ -34,6 +29,8 @@ public record ProductResponse(
 
         String stockStatus,
 
-        List<AttributeResponse> totalLeastStock
+        List<AttributeResponse> totalLeastStock,
+
+        boolean isWishListItem
 ) {
 }

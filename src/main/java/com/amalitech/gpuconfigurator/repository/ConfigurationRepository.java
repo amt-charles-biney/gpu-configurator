@@ -23,4 +23,6 @@ public interface ConfigurationRepository extends JpaRepository<Configuration, UU
     Page<Configuration> findByWishListId(UUID wishListId, Pageable pageable);
 
     Optional<Configuration> findByIdAndWishListId(UUID configuredProductId, UUID wishListId);
+
+    List<Configuration> findByWishListIdAndProductIdIn(UUID wishListId, List<UUID> productIds);
 }

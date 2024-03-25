@@ -7,9 +7,8 @@ import com.amalitech.gpuconfigurator.dto.categoryconfig.VariantStockLeastDto;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
-import com.amalitech.gpuconfigurator.repository.CaseRepository;
-import com.amalitech.gpuconfigurator.repository.CategoryRepository;
-import com.amalitech.gpuconfigurator.repository.ProductRepository;
+import com.amalitech.gpuconfigurator.model.configuration.Configuration;
+import com.amalitech.gpuconfigurator.repository.*;
 import com.amalitech.gpuconfigurator.service.attribute.AttributeService;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
@@ -29,6 +28,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -40,7 +40,8 @@ public class ProductServiceImpl implements ProductService {
     private final CaseRepository caseRepository;
     private final CategoryConfigServiceImpl categoryConfig;
     private final AttributeService attributeService;
-
+    private final ConfigurationRepository configurationRepository;
+    private final WishListRepository wishListRepository;
 
     @Override
 
@@ -312,7 +313,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductResponse> getAllProductsUsers(int page, int size, ProductSearchRequest dto) {
+    public Page<ProductResponse> getAllProductsUsers(int page, int size, ProductSearchRequest dto, User user, UserSession userSession) {
         Specification<Product> specification = (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -343,8 +344,61 @@ public class ProductServiceImpl implements ProductService {
             return builder.and(predicates.toArray(new Predicate[]{}));
         };
 
-        return productRepository.findAll(specification, PageRequest.of(page, size))
+        Page<Product> products = productRepository.findAll(specification, PageRequest.of(page, size));
+
+        Set<UUID> productsInWishList = getIdsOfProductsInWishList(products.getContent(), user, userSession);
+
+        return products
+                .map(product -> {
+                    product.setWishListItem(productsInWishList.contains(product.getId()));
+                    return product;
+                })
                 .map((new ResponseMapper())::mapProductToProductResponse);
+    }
+
+    private Set<UUID> getIdsOfProductsInWishList(List<Product> products, User user, UserSession userSession) {
+        Optional<WishList> optionalWishList = getUserOrSessionWishList(user, userSession);
+        if (optionalWishList.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        List<Configuration> wishListItems = configurationRepository.findByWishListIdAndProductIdIn(
+                optionalWishList.get().getId(),
+                products.stream().map(Product::getId).toList()
+        );
+
+        Set<UUID> productsInWishList = new HashSet<>();
+
+        for (Product product : products) {
+            Set<UUID> includedVariants = product.getCategory().getCategoryConfig().getCompatibleOptions()
+                    .stream().filter(CompatibleOption::getIsIncluded)
+                    .map(CompatibleOption::getId)
+                    .collect(Collectors.toSet());
+
+            for (Configuration item : wishListItems) {
+                if (item.getProduct().getId() != product.getId()) {
+                    continue;
+                }
+
+                Set<UUID> variants = item.getConfiguredOptions()
+                        .stream().map(variant -> UUID.fromString(variant.getOptionId()))
+                        .collect(Collectors.toSet());
+
+                if (includedVariants.equals(variants)) {
+                    productsInWishList.add(product.getId());
+                    break;
+                }
+            }
+        }
+
+        return productsInWishList;
+    }
+
+    private Optional<WishList> getUserOrSessionWishList(User user, UserSession userSession) {
+        if (user != null) {
+            return wishListRepository.findByUserId(user.getId());
+        }
+        return wishListRepository.findByUserSessionId(userSession.getId());
     }
 
     private static Predicate getQueryPredicate(String query, Root<Product> root, CriteriaBuilder builder) {
