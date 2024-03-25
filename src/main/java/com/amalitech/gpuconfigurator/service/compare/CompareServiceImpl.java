@@ -55,7 +55,7 @@ public class CompareServiceImpl implements CompareService {
         return compatibleOptionList.stream()
                 .filter(option -> option.getIsIncluded())
                 .collect(Collectors.groupingBy(
-                        option -> option.getAttributeOption().getAttribute().getAttributeName(),
+                        option -> option.getAttributeOption().getAttribute().getAttributeName().toLowerCase(),
                         Collectors.mapping(
                                 option -> option.getAttributeOption().getOptionName(),
                                 Collectors.joining(", ")
