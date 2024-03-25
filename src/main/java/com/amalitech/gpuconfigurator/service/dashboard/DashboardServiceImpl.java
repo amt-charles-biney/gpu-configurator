@@ -14,7 +14,12 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +43,20 @@ public class DashboardServiceImpl implements DashboardService {
                 .revenue(revenue.setScale(2, RoundingMode.HALF_UP))
                 .latestOrders(latestOrder())
                 .build();
+    }
+
+    @Override
+    public Map<DayOfWeek, BigDecimal> revenueStat(LocalDate startDate, LocalDate endDate) {
+        List<Object[]> revenueData = paymentRepository.revenueRange(startDate, endDate);
+        Map<DayOfWeek, BigDecimal> revenueByDayOfWeek = new EnumMap<>(DayOfWeek.class);
+
+        for (Object[] row : revenueData) {
+            LocalDate date = (LocalDate) row[0];
+            BigDecimal revenue = (BigDecimal) row[1];
+            DayOfWeek dayOfWeek = date.getDayOfWeek();
+            revenueByDayOfWeek.put(dayOfWeek, revenueByDayOfWeek.getOrDefault(dayOfWeek, BigDecimal.ZERO.add(revenue)));
+        }
+        return revenueByDayOfWeek;
     }
 
 
