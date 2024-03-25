@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service.dashboard;
 
 import com.amalitech.gpuconfigurator.dto.DashboardInfoDto;
+import com.amalitech.gpuconfigurator.dto.order.LatestOrderDto;
 import com.amalitech.gpuconfigurator.model.Order;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
@@ -35,6 +36,25 @@ public class DashboardServiceImpl implements DashboardService {
                 .orders(orders)
                 .products(products)
                 .revenue(revenue.setScale(2, RoundingMode.HALF_UP))
+                .latestOrders(latestOrder())
+                .build();
+    }
+
+
+    private List<LatestOrderDto> latestOrder() {
+        Pageable pageable = PageRequest.of(0, 6, Sort.by("createdAt").descending());
+
+        List<Order> orders = orderRepository.findAll(pageable).getContent();
+
+        return orders.stream().map(this::mapToLatestOrder).toList();
+    }
+
+    private LatestOrderDto mapToLatestOrder(Order order) {
+        return LatestOrderDto.builder()
+                .coverImage(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
+                .orderedTime(order.getCreatedAt())
+                .status(order.getStatus())
                 .build();
     }
 }
