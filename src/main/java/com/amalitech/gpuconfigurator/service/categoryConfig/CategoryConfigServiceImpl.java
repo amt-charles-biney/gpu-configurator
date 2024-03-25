@@ -11,12 +11,13 @@ import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
-import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,6 +98,18 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .build();
     }
 
+    @Override
+    public Page<CategoryListResponse> getCategoryListResponsesPageable(int size, int page, String query) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return categoryRepository.findAllByCategoryNameContainingIgnoreCaseAndCategoryNameNot(query,"unassigned",pageRequest)
+                .map(category -> CategoryListResponse.builder()
+                        .id(category.getId().toString())
+                        .name(category.getCategoryName())
+                        .config(this.extractAttributesFromCompatibleOptions(category.getCategoryConfig().getId()))
+                        .productCount(this.extractProductCount(category.getId()))
+                        .build());
+
+    }
     @Override
     public List<CategoryListResponse> getCategoryListResponses() {
         List<CategoryConfig> categoryConfigs = categoryConfigRepository.findAll();

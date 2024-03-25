@@ -1,6 +1,9 @@
 package com.amalitech.gpuconfigurator.repository;
 
 import com.amalitech.gpuconfigurator.model.Category;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Range;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -19,4 +22,6 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
     List<Category> findByCategoryNameList(String categoryName);
 
     boolean existsByCategoryName(String name);
+
+    Page<Category> findAllByCategoryNameContainingIgnoreCaseAndCategoryNameNot(String query,String excludedName, PageRequest pageRequest);
 }

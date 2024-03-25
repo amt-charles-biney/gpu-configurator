@@ -4,6 +4,7 @@ import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +43,17 @@ public class CategoryConfigController {
     @GetMapping("/v1/admin/category/config")
     public ResponseEntity<List<CategoryListResponse>> getAllCategoryConfig() {
         List<CategoryListResponse> result = categoryConfigServiceImpl.getCategoryListResponses();
+        return ResponseEntity.ok(result);
+    }
+
+    @CrossOrigin
+    @GetMapping("/v1/admin/category/config/pageable")
+    public ResponseEntity<Page<CategoryListResponse>> getAllCategoryConfigPageable(
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "") String q
+    ) {
+        Page<CategoryListResponse> result = categoryConfigServiceImpl.getCategoryListResponsesPageable(size, page, q);
         return ResponseEntity.ok(result);
     }
 
