@@ -63,6 +63,26 @@ public class Configuration {
     @Column(nullable = false, columnDefinition = "integer default 1")
     private int quantity;
 
+    @Transient
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String configurationUrl;
+
+    public String getConfigurationUrl() {
+//      /product/configure/{productId}?warranty=false&components={list of variantIds}
+
+        StringBuilder path = new StringBuilder("/product/configure/");
+
+        path.append(this.getProduct().getId());
+
+        path.append("?warranty=false&components=");
+
+        List<String> components = this.getConfiguredOptions().stream().map(ConfigOptions::getOptionId).toList();
+        path.append(String.join(",", components));
+
+        return path.toString();
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
