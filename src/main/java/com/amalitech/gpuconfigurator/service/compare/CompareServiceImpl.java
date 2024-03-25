@@ -74,9 +74,9 @@ public class CompareServiceImpl implements CompareService {
                 .description(product.getProductDescription())
                 .productName(product.getProductName())
                 .productId(product.getProductId().toString())
-                .price(product.getTotalProductPrice())
+                .productPrice(product.getTotalProductPrice())
                 .options(options)
-                .Case(product.getProductCase().getName())
+                .productCase(product.getProductCase().getName())
                 .build();
     }
 

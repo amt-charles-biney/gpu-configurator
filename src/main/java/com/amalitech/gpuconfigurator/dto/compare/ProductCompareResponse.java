@@ -11,8 +11,8 @@ public record ProductCompareResponse(
         String productId,
         String description,
         String coverImage,
-        String Case,
-        BigDecimal price,
+        String productCase,
+        BigDecimal productPrice,
 
         Map<String, String> options
 
