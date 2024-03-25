@@ -43,4 +43,6 @@ public interface AttributeService {
     List<AttributeOption> getAllAttributeOptions();
 
     List<AttributeResponse> getAllAttributesLowInStock();
+
+    List<Attribute> getAllAttributesByRequiredTrue();
 }

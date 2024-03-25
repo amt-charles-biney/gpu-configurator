@@ -6,5 +6,5 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record NotificationResponse(int count, List<AttributeResponse> attributeResponseList) {
+public record NotificationResponse(int count, List<NotificationItemResponse<AttributeResponse>> lowOrZeroStock, List<NotificationItemResponse> unassignedProducts, List<NotificationItemResponse> requiredCategories) {
 }
