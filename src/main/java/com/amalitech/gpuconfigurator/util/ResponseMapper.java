@@ -42,6 +42,7 @@ public class ResponseMapper {
                 .productPrice(product.getTotalProductPrice())
                 .productDescription(product.getProductDescription())
                 .productCoverImage(product.getProductCase().getCoverImageUrl())
+                .productCaseName(product.getProductCase().getName())
                 .totalPrice(configuredProduct.getTotalPrice())
                 .warranty(null)
                 .vat(null)

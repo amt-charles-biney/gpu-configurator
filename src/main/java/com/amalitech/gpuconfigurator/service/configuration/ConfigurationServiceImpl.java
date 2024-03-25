@@ -241,6 +241,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .configured(configuration.getConfiguredOptions())
                 .productDescription(configuration.getProduct().getProductDescription())
                 .quantity(configuration.getQuantity())
+                .productCaseName(product.getProductCase().getName())
                 .build();
     }
 

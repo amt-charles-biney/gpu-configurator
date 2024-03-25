@@ -9,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -26,18 +27,20 @@ public class CompareServiceImpl implements CompareService {
         Product product = productRepository.findById(UUID.fromString(productId))
                 .orElseThrow(() -> new EntityNotFoundException("product does not exist"));
 
-        Map<String, String> options = this.getIncludeCategoryConfigOptions(product);
+        return this.buildProduct(product);
 
-        return ProductCompareResponse
-                .builder()
-                .coverImage(product.getProductCase().getCoverImageUrl())
-                .description(product.getProductDescription())
-                .productName(product.getProductName())
-                .productId(product.getProductId().toString())
-                .options(options)
-                .build();
+    }
 
+    @Override
+    public List<ProductCompareResponse> getProductCompareList(List<String> productIds) {
+        if(productIds.isEmpty()) return new ArrayList<>();
 
+        List<UUID> productUUIDs = productIds.stream().map(UUID::fromString).toList();
+        List<Product> products = productRepository.findAllById(productUUIDs);
+        return products
+                .stream()
+                .map(this::buildProduct)
+                .toList();
     }
 
     private Map<String, String> getIncludeCategoryConfigOptions(Product product) {
@@ -59,6 +62,20 @@ public class CompareServiceImpl implements CompareService {
                         )
                 ));
 
+    }
+
+
+    private ProductCompareResponse buildProduct(Product product) {
+        Map<String, String> options = this.getIncludeCategoryConfigOptions(product);
+
+        return ProductCompareResponse
+                .builder()
+                .coverImage(product.getProductCase().getCoverImageUrl())
+                .description(product.getProductDescription())
+                .productName(product.getProductName())
+                .productId(product.getProductId().toString())
+                .options(options)
+                .build();
     }
 
 }

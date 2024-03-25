@@ -301,6 +301,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
     public List<VariantStockLeastDto> getTotalLeastStocks(List<CompatibleOption> compatibleOptions) {
         return compatibleOptions.stream()
+                .filter(compatibleOption -> compatibleOption.getIsIncluded())
                 .filter(co -> co.getAttributeOption() != null && co.getAttributeOption().getInStock() != null && co.getAttributeOption().getInStock() <= 5)
                 .map(co -> {
                     AttributeOption attributeOption = co.getAttributeOption();
@@ -311,6 +312,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
     public int getTotalLeastStock(List<CompatibleOption> compatibleOptions) {
         Optional<Integer> minStock = compatibleOptions.stream()
+                .filter(compatibleOption -> compatibleOption.getIsIncluded())
                 .map(co -> co.getAttributeOption().getInStock())
                 .filter(Objects::nonNull)
                 .min(Comparator.naturalOrder());
