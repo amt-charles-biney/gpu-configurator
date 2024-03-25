@@ -2,6 +2,8 @@ package com.amalitech.gpuconfigurator.service.product;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.product.*;
+import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.model.UserSession;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 
@@ -36,7 +38,7 @@ public interface ProductService {
     @Transactional
     void updateTotalPriceWhenUpdatingCase(UUID caseId, BigDecimal casePrice);
 
-    Page<ProductResponse> getAllProductsUsers(int page, int size, ProductSearchRequest dto);
+    Page<ProductResponse> getAllProductsUsers(int page, int size, ProductSearchRequest dto, User user, UserSession userSession);
 
     Page<ProductResponse> getAllProductsAdmin(Integer page, Integer size);
 }
