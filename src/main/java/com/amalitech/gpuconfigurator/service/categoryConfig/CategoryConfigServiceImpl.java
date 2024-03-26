@@ -323,6 +323,16 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .collect(Collectors.toList());
     }
 
+    public List<VariantStockLeastDto> getTotalLeastStocksInclusive(List<CompatibleOption> compatibleOptions) {
+        return compatibleOptions.stream()
+                .filter(co -> co.getAttributeOption() != null && co.getAttributeOption().getInStock() != null && co.getAttributeOption().getInStock() <= 5)
+                .map(co -> {
+                    AttributeOption attributeOption = co.getAttributeOption();
+                    return new VariantStockLeastDto(attributeOption.getOptionName(), attributeOption.getAttribute().getId().toString(), attributeOption.getInStock());
+                })
+                .collect(Collectors.toList());
+    }
+
     public int getTotalLeastStock(List<CompatibleOption> compatibleOptions) {
         Optional<Integer> minStock = compatibleOptions.stream()
                 .filter(compatibleOption -> compatibleOption.getIsIncluded())

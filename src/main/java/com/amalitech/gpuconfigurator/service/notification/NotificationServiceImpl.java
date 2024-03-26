@@ -4,6 +4,7 @@ import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionResponseDto;
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigDisplay;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryListResponse;
+import com.amalitech.gpuconfigurator.dto.categoryconfig.VariantStockLeastDto;
 import com.amalitech.gpuconfigurator.dto.notification.NotificationItemResponse;
 import com.amalitech.gpuconfigurator.dto.notification.NotificationResponse;
 import com.amalitech.gpuconfigurator.model.*;
@@ -29,15 +30,18 @@ public class NotificationServiceImpl {
     private final CategoryRepository categoryRepository;
     private final AttributeServiceImpl attributeService;
 
-    public Map<User, Product> getUsersToNotifyOfStockUpdate() {
+    public Map<User, Product> getUsersToNotifyOfStockUpdate(String attributeName) {
         Map<User, Product> notifyUsers = new HashMap<>();
-        List<Product> products = getAllNotifiableProducts();
+
+        List<Product> products = getAllNotifiableProducts(attributeName);
         List<WishList> wishLists = wishListRepository.findAll();
 
         for (WishList wishList : wishLists) {
             Set<Configuration> configurations = wishList.getConfiguredProducts();
             for (Configuration configuration : configurations) {
-                if (products.contains(configuration.getProduct())) {
+
+                boolean isProductPresent = this.isProductPresent(configuration, products);
+                if (isProductPresent) {
                     notifyUsers.put(wishList.getUser(), configuration.getProduct());
                     break;
                 }
@@ -47,34 +51,50 @@ public class NotificationServiceImpl {
         return notifyUsers;
     }
 
-    public List<Product> getAllNotifiableProducts() {
+    public boolean isProductPresent(Configuration configuration, List<Product> products) {
+        Optional<Product> foundProduct = this.findConfigurationProductInProducts(configuration, products);
+        return foundProduct.isPresent();
+    }
+
+    public Optional<Product> findConfigurationProductInProducts(Configuration configuration, List<Product> products) {
+        Product product = configuration.getProduct();
+        if (product == null) {
+            return Optional.empty();
+        }
+
+        return products.stream()
+                .filter(p -> Objects.equals(p.getId(), product.getId()))
+                .findFirst();
+    }
+
+
+    public List<Product> getAllNotifiableProducts(String attributeName) {
         List<Product> products = new ArrayList<>();
         List<CategoryConfig> categoryConfigs = categoryConfigRepository.findAll();
 
         for (CategoryConfig categoryConfig : categoryConfigs) {
-            int leastStock = configService.getTotalLeastStock(categoryConfig.getCompatibleOptions());
-            if (leastStock > 5) {
+            boolean leastStockGreaterThan = this.isLeastStockGreaterThan(categoryConfig.getCompatibleOptions(), attributeName);
+            if (leastStockGreaterThan) {
                 products.addAll(categoryConfig.getCategory().getProducts());
             }
         }
         return products;
     }
 
+    public boolean isLeastStockGreaterThan(List<CompatibleOption> compatibleOptions, String attributeName) {
+        List<VariantStockLeastDto> leastStockVariants = configService.getTotalLeastStocksInclusive(compatibleOptions);
+
+        if (leastStockVariants.size() > 1) return false;
+        if (leastStockVariants.isEmpty()) return true;
+
+        return leastStockVariants.getFirst().name().equals(attributeName);
+
+    }
+
     public NotificationResponse getAllAdminFixNotifications() {
-        List<NotificationItemResponse<AttributeResponse>> attributeNotificationResponses = attributeService.getAllAttributesLowInStock()
-                .stream()
-                .map(this::buildNotificationItemResponse)
-                .collect(Collectors.toList());
-
-        List<NotificationItemResponse> unassignedProducts = new ArrayList<>();
-
-        Optional<Category> category = categoryRepository.findByCategoryName("unassigned");
-
-        if (category.isPresent())
-            unassignedProducts = category.get().getProducts().stream().map(this::buildNotificationItemResponse).toList();
-
+        List<NotificationItemResponse<AttributeResponse>> attributeNotificationResponses = getAttributeNotificationResponses();
+        List<NotificationItemResponse> unassignedProducts = this.getUnassignedProduct();
         List<NotificationItemResponse> getRequiredCategories = this.getRequiredCategories();
-
 
         Integer count = attributeNotificationResponses.size() + unassignedProducts.size() + getRequiredCategories.size();
 
@@ -85,6 +105,22 @@ public class NotificationServiceImpl {
                 .unassignedProducts(unassignedProducts)
                 .requiredCategories(getRequiredCategories)
                 .build();
+    }
+
+    private List<NotificationItemResponse> getUnassignedProduct() {
+        return categoryRepository.findByCategoryName("unassigned")
+                .map(Category::getProducts)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(this::buildNotificationItemResponse)
+                .toList();
+    }
+
+    private List<NotificationItemResponse<AttributeResponse>> getAttributeNotificationResponses() {
+        return attributeService.getAllAttributesLowInStock()
+                .stream()
+                .map(this::buildNotificationItemResponse)
+                .collect(Collectors.toList());
     }
 
 
@@ -108,7 +144,7 @@ public class NotificationServiceImpl {
     private NotificationItemResponse<AttributeResponse> buildNotificationItemResponse(AttributeResponse attributeResponse) {
         AttributeOptionResponseDto getAttributeOptionLowInStock = getNotificationAttributeLowInStock(attributeResponse);
 
-        return new NotificationItemResponse<AttributeResponse>(
+        return new NotificationItemResponse<>(
                 getAttributeOptionLowInStock.optionName(),
                 getAttributeOptionLowInStock.id(),
                 "" + getAttributeOptionLowInStock.optionName() + " has " + getAttributeOptionLowInStock.inStock() + " stocks.",
