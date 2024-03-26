@@ -116,7 +116,7 @@ public class ProductServiceImpl implements ProductService {
                 .filter(product -> !"unassigned".equals(product.getCategory().getCategoryName()))
                 .map(product -> ProductResponseDto
                         .builder()
-                        .id(product.getProductId())
+                        .id(product.getId().toString())
                         .name(product.getProductName())
                         .build())
                 .toList();
