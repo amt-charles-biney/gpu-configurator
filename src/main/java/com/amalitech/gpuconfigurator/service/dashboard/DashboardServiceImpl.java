@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service.dashboard;
 
 import com.amalitech.gpuconfigurator.dto.DashboardInfoDto;
+import com.amalitech.gpuconfigurator.dto.DeliveryGoalDto;
 import com.amalitech.gpuconfigurator.dto.order.LatestOrderDto;
 import com.amalitech.gpuconfigurator.model.Order;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
@@ -16,6 +17,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +59,31 @@ public class DashboardServiceImpl implements DashboardService {
             revenueByDayOfWeek.put(dayOfWeek, revenueByDayOfWeek.getOrDefault(dayOfWeek, BigDecimal.ZERO.add(revenue)));
         }
         return revenueByDayOfWeek;
+    }
+
+    @Override
+    public DeliveryGoalDto deliveryStat(String month) {
+        Month convertMonth;
+        try {
+            convertMonth = Month.valueOf(month.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid month: " + month);
+        }
+
+        int monthValue = convertMonth.getValue();
+        int currentYear = Year.now().getValue();
+
+        Long deliveryStatusCount = orderRepository.deliveredStatusCount(monthValue, currentYear);
+
+        int target = 100; // this will change once we decided on how an admin will set a target
+
+        float percentage = (float) (deliveryStatusCount * 100.0 / target);
+        percentage = Math.round(percentage * 100) / 100f;
+
+        return DeliveryGoalDto.builder()
+                .percentage(percentage)
+                .totalDeliveredItems(deliveryStatusCount)
+                .build();
     }
 
 
