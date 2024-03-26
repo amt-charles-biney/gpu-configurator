@@ -53,8 +53,8 @@ class CategoryControllerTest {
     @DisplayName("Test success for getting all categories")
     void getAllCategoriesTest() {
         List<AllCategoryResponse> expectedCategories = Arrays.asList(
-                AllCategoryResponse.builder().name("SERVER").build(),
-                AllCategoryResponse.builder().name("GPU").build()
+                AllCategoryResponse.builder().name("SERVER").thumbnail("hellow").build(),
+                AllCategoryResponse.builder().name("GPU").thumbnail("hi").build()
         );
 
         when(categoryService.getAllCategories()).thenReturn(expectedCategories);
