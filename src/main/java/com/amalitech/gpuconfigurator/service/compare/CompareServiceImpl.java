@@ -9,11 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -23,17 +19,17 @@ public class CompareServiceImpl implements CompareService {
     private final CategoryConfigRepository categoryConfigRepository;
 
     @Override
-    public ProductCompareResponse getProductCompare(String productId) {
-        Product product = productRepository.findById(UUID.fromString(productId))
+    public ProductCompareResponse getProductCompare(String productIdString) {
+        UUID productId = UUID.fromString(productIdString);
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("product does not exist"));
 
         return this.buildProduct(product);
-
     }
 
     @Override
     public List<ProductCompareResponse> getProductCompareList(List<String> productIds) {
-        if(productIds.isEmpty()) return new ArrayList<>();
+        if (productIds.isEmpty()) return Collections.emptyList();
 
         List<UUID> productUUIDs = productIds.stream().map(UUID::fromString).toList();
         List<Product> products = productRepository.findAllById(productUUIDs);
@@ -45,23 +41,19 @@ public class CompareServiceImpl implements CompareService {
 
     private Map<String, String> getIncludeCategoryConfigOptions(Product product) {
         List<CompatibleOption> compatibleOptionList = categoryConfigRepository
-                .findById(product
-                        .getCategory()
-                        .getCategoryConfig()
-                        .getId())
-                .get()
+                .findById(product.getCategory().getCategoryConfig().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Category configuration not found"))
                 .getCompatibleOptions();
 
-        return compatibleOptionList.stream()
-                .filter(option -> option.getIsIncluded())
-                .collect(Collectors.groupingBy(
-                        option -> option.getAttributeOption().getAttribute().getAttributeName().toLowerCase(),
-                        Collectors.mapping(
-                                option -> option.getAttributeOption().getOptionName(),
-                                Collectors.joining(", ")
-                        )
-                ));
-
+        Map<String, String> includedOptions = new HashMap<>();
+        for (CompatibleOption option : compatibleOptionList) {
+            if (option.getIsIncluded()) {
+                String attributeName = option.getAttributeOption().getAttribute().getAttributeName().toLowerCase();
+                String optionName = option.getAttributeOption().getOptionName();
+                includedOptions.merge(attributeName, optionName, (oldValue, newValue) -> oldValue + ", " + newValue);
+            }
+        }
+        return includedOptions;
     }
 
 
@@ -73,7 +65,7 @@ public class CompareServiceImpl implements CompareService {
                 .coverImage(product.getProductCase().getCoverImageUrl())
                 .description(product.getProductDescription())
                 .productName(product.getProductName())
-                .productId(product.getProductId().toString())
+                .productId(product.getId().toString())
                 .productPrice(product.getTotalProductPrice())
                 .options(options)
                 .productCase(product.getProductCase().getName())
