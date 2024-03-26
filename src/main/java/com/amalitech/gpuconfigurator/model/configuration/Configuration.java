@@ -69,7 +69,7 @@ public class Configuration {
     private String configurationUrl;
 
     public String getConfigurationUrl() {
-//      /product/configure/{productId}?warranty=false&components={list of variantIds}
+//      /product/configure/{productId}?warranty={bool}&components={[variantIds underscore size info for measured variants]}
 
         StringBuilder path = new StringBuilder("/product/configure/");
 
@@ -77,7 +77,8 @@ public class Configuration {
 
         path.append("?warranty=false&components=");
 
-        List<String> components = this.getConfiguredOptions().stream().map(ConfigOptions::getOptionId).toList();
+        List<String> components = this.getConfiguredOptions().stream().map(option ->
+                option.getOptionId() + (option.getIsMeasured() ? "_" + option.getSize() : "_0")).toList();
         path.append(String.join(",", components));
 
         return path.toString();

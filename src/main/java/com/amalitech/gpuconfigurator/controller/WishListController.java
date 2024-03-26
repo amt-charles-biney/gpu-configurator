@@ -53,9 +53,9 @@ public class WishListController {
         return ResponseEntity.ok(wishListService.getWishListItems(page, size, user, userSession));
     }
 
-    @DeleteMapping("/v1/wishlists/{configuredProductId}")
+    @DeleteMapping("/v1/wishlists/{productIdOrConfiguredProductId}")
     public ResponseEntity<GenericResponse> removeWishListItem(
-            @PathVariable UUID configuredProductId,
+            @PathVariable UUID productIdOrConfiguredProductId,
             @RequestAttribute("userSession") UserSession userSession,
             Principal principal
     ) {
@@ -63,6 +63,6 @@ public class WishListController {
                 ? null
                 : (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
 
-        return ResponseEntity.ok(wishListService.removeWishListItem(configuredProductId, user, userSession));
+        return ResponseEntity.ok(wishListService.removeWishListItem(productIdOrConfiguredProductId, user, userSession));
     }
 }

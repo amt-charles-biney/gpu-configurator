@@ -14,7 +14,7 @@ public interface WishListService {
 
     Page<ConfigurationResponseDto> getWishListItems(int page, int size, User user, UserSession userSession);
 
-    GenericResponse removeWishListItem(UUID configuredProductId, User user, UserSession userSession);
+    GenericResponse removeWishListItem(UUID productIdOrConfiguredProductId, User user, UserSession userSession);
 
     void mergeUserAndSessionWishLists(User user, UserSession userSession);
 }
