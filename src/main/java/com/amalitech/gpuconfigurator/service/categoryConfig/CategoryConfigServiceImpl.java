@@ -332,6 +332,4 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
         return minStock.orElse(0);
     }
-
-
 }
