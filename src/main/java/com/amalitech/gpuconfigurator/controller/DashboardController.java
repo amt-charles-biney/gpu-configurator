@@ -40,7 +40,7 @@ public class DashboardController {
     }
 
     @CrossOrigin
-    @GetMapping("/v1/admin/dashboard/goals")
+    @GetMapping("/v1/admin/dashboard/target")
     public ResponseEntity<DeliveryGoalDto> getDeliveryGoalStats(
             @RequestParam String month
     ) {
