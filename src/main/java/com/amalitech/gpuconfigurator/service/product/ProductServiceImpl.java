@@ -7,6 +7,7 @@ import com.amalitech.gpuconfigurator.dto.categoryconfig.VariantStockLeastDto;
 import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
+import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.*;
 import com.amalitech.gpuconfigurator.service.attribute.AttributeService;
@@ -42,6 +43,48 @@ public class ProductServiceImpl implements ProductService {
     private final AttributeService attributeService;
     private final ConfigurationRepository configurationRepository;
     private final WishListRepository wishListRepository;
+
+    private static Predicate getQueryPredicate(String query, Root<Product> root, CriteriaBuilder builder) {
+        return builder.or(
+                builder.like(builder.lower(root.get("productName")), "%" + query + "%"),
+                builder.like(builder.lower(root.get("productDescription")), "%" + query + "%")
+        );
+    }
+
+    @NotNull
+    private static List<Predicate> getPricePredicates(List<String> priceRanges, Root<Product> root, CriteriaBuilder builder) {
+        List<Predicate> pricePredicates = new ArrayList<>();
+
+        for (String priceRange : priceRanges) {
+            if (priceRange.trim().startsWith(">")) {
+                double minValue = Double.parseDouble(priceRange.trim().substring(1));
+                pricePredicates.add(builder.or(builder.greaterThanOrEqualTo(root.get("totalProductPrice"), minValue)));
+            } else if (priceRange.contains("-")) {
+                var ranges = Arrays.stream(priceRange.split("-")).map(Double::parseDouble).toList();
+                pricePredicates.add(builder.or(builder.between(root.get("totalProductPrice"), ranges.get(0), ranges.get(1))));
+            }
+        }
+
+        return pricePredicates;
+    }
+
+    private static Predicate getBrandsPredicate(List<String> brands, Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        Subquery<Long> brandSubquery = query.subquery(Long.class);
+
+        Join<Product, Category> categoryJoin = brandSubquery.correlate(root).join("category");
+        Join<Category, CategoryConfig> categoryConfigJoin = categoryJoin.join("categoryConfig");
+        Join<CategoryConfig, CompatibleOption> compatibleOptionJoin = categoryConfigJoin.join("compatibleOptions");
+
+        brandSubquery.select(builder.literal(1L));
+        brandSubquery.where(
+                builder.and(
+                        builder.in(compatibleOptionJoin.get("attributeOption").get("brand")).value(brands),
+                        builder.isTrue(compatibleOptionJoin.get("isCompatible"))
+                )
+        );
+
+        return builder.exists(brandSubquery);
+    }
 
     @Override
 
@@ -108,6 +151,7 @@ public class ProductServiceImpl implements ProductService {
                         .serviceCharge(product.getServiceCharge())
                         .build()).toList();
     }
+
     @Override
     public List<ProductResponseDto> getAllProductsCompare() {
         List<Product> products = productRepository.findAll();
@@ -180,7 +224,6 @@ public class ProductServiceImpl implements ProductService {
         return new PageImpl<>(productResponseList, pageRequest, productResponseList.size());
     }
 
-
     @Override
     public Page<ProductResponse> getAllProductsAdmin(Integer page, Integer size, String query) {
         Pageable pageable = PageRequest.of(page, size);
@@ -236,7 +279,6 @@ public class ProductServiceImpl implements ProductService {
                     .build();
         };
     }
-
 
     @Override
     @Transactional
@@ -370,9 +412,11 @@ public class ProductServiceImpl implements ProductService {
         Set<UUID> productsInWishList = new HashSet<>();
 
         for (Product product : products) {
-            Set<UUID> includedVariants = product.getCategory().getCategoryConfig().getCompatibleOptions()
-                    .stream().filter(CompatibleOption::getIsIncluded)
-                    .map(CompatibleOption::getId)
+            Set<CompatibleOption> productVariants = product.getCategory()
+                    .getCategoryConfig()
+                    .getCompatibleOptions()
+                    .stream()
+                    .filter(CompatibleOption::getIsIncluded)
                     .collect(Collectors.toSet());
 
             for (Configuration item : wishListItems) {
@@ -380,13 +424,16 @@ public class ProductServiceImpl implements ProductService {
                     continue;
                 }
 
-                Set<UUID> variants = item.getConfiguredOptions()
-                        .stream().map(variant -> UUID.fromString(variant.getOptionId()))
-                        .collect(Collectors.toSet());
-
-                if (includedVariants.equals(variants)) {
-                    productsInWishList.add(product.getId());
-                    break;
+                for (ConfigOptions configOption : item.getConfiguredOptions()) {
+                    for (CompatibleOption productOption : productVariants) {
+                        if (productOption.getId().toString().equals(configOption.getOptionId())) {
+                            continue;
+                        }
+                        if (!productOption.getIsMeasured() || productOption.getSize().equals(Integer.valueOf(configOption.getSize()))) {
+                            productsInWishList.add(product.getId());
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -399,48 +446,6 @@ public class ProductServiceImpl implements ProductService {
             return wishListRepository.findByUserId(user.getId());
         }
         return wishListRepository.findByUserSessionId(userSession.getId());
-    }
-
-    private static Predicate getQueryPredicate(String query, Root<Product> root, CriteriaBuilder builder) {
-        return builder.or(
-                builder.like(builder.lower(root.get("productName")), "%" + query + "%"),
-                builder.like(builder.lower(root.get("productDescription")), "%" + query + "%")
-        );
-    }
-
-    @NotNull
-    private static List<Predicate> getPricePredicates(List<String> priceRanges, Root<Product> root, CriteriaBuilder builder) {
-        List<Predicate> pricePredicates = new ArrayList<>();
-
-        for (String priceRange : priceRanges) {
-            if (priceRange.trim().startsWith(">")) {
-                double minValue = Double.parseDouble(priceRange.trim().substring(1));
-                pricePredicates.add(builder.or(builder.greaterThanOrEqualTo(root.get("totalProductPrice"), minValue)));
-            } else if (priceRange.contains("-")) {
-                var ranges = Arrays.stream(priceRange.split("-")).map(Double::parseDouble).toList();
-                pricePredicates.add(builder.or(builder.between(root.get("totalProductPrice"), ranges.get(0), ranges.get(1))));
-            }
-        }
-
-        return pricePredicates;
-    }
-
-    private static Predicate getBrandsPredicate(List<String> brands, Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-        Subquery<Long> brandSubquery = query.subquery(Long.class);
-
-        Join<Product, Category> categoryJoin = brandSubquery.correlate(root).join("category");
-        Join<Category, CategoryConfig> categoryConfigJoin = categoryJoin.join("categoryConfig");
-        Join<CategoryConfig, CompatibleOption> compatibleOptionJoin = categoryConfigJoin.join("compatibleOptions");
-
-        brandSubquery.select(builder.literal(1L));
-        brandSubquery.where(
-                builder.and(
-                        builder.in(compatibleOptionJoin.get("attributeOption").get("brand")).value(brands),
-                        builder.isTrue(compatibleOptionJoin.get("isCompatible"))
-                )
-        );
-
-        return builder.exists(brandSubquery);
     }
 
     private void updateProductPrices(List<Product> products, BigDecimal baseConfigPrice) {
