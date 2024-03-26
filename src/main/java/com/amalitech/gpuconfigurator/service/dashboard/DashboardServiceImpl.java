@@ -20,6 +20,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -51,6 +52,11 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public RevenueDto revenueStat(LocalDate startDate, LocalDate endDate) {
+        if (startDate == null || endDate == null) {
+            endDate = LocalDate.now();
+            startDate = endDate.minus(7, ChronoUnit.DAYS);
+        }
+
         List<Object[]> revenueData = paymentRepository.revenueRange(startDate, endDate);
         Map<DayOfWeek, BigDecimal> revenueByDayOfWeek = new EnumMap<>(DayOfWeek.class);
 

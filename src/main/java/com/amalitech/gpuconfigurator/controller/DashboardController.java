@@ -31,8 +31,8 @@ public class DashboardController {
     @CrossOrigin
     @GetMapping("/v1/admin/dashboard/revenue")
     public ResponseEntity<RevenueDto> getRevenue(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
     ) {
 
         return ResponseEntity.ok(dashboardService.revenueStat(startDate, endDate));
