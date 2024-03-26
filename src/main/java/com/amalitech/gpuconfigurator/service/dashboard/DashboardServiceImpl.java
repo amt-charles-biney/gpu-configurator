@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.dashboard;
 
 import com.amalitech.gpuconfigurator.dto.DashboardInfoDto;
 import com.amalitech.gpuconfigurator.dto.DeliveryGoalDto;
+import com.amalitech.gpuconfigurator.dto.RevenueDto;
 import com.amalitech.gpuconfigurator.dto.order.LatestOrderDto;
 import com.amalitech.gpuconfigurator.model.Order;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
@@ -19,6 +20,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -48,17 +50,34 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public Map<DayOfWeek, BigDecimal> revenueStat(LocalDate startDate, LocalDate endDate) {
+    public RevenueDto revenueStat(LocalDate startDate, LocalDate endDate) {
         List<Object[]> revenueData = paymentRepository.revenueRange(startDate, endDate);
         Map<DayOfWeek, BigDecimal> revenueByDayOfWeek = new EnumMap<>(DayOfWeek.class);
 
+        // Initialize lists for dayOfWeeks and revenue
+        List<DayOfWeek> dayOfWeeks = new ArrayList<>();
+        List<BigDecimal> revenues = new ArrayList<>();
+
+        // Populate revenueByDayOfWeek map and lists
         for (Object[] row : revenueData) {
             LocalDate date = (LocalDate) row[0];
             BigDecimal revenue = (BigDecimal) row[1];
             DayOfWeek dayOfWeek = date.getDayOfWeek();
-            revenueByDayOfWeek.put(dayOfWeek, revenueByDayOfWeek.getOrDefault(dayOfWeek, BigDecimal.ZERO.add(revenue)));
+
+            revenueByDayOfWeek.put(dayOfWeek, revenueByDayOfWeek.getOrDefault(dayOfWeek, BigDecimal.ZERO).add(revenue));
         }
-        return revenueByDayOfWeek;
+
+        // Populate dayOfWeeks and revenues lists
+        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
+            BigDecimal dayRevenue = revenueByDayOfWeek.getOrDefault(dayOfWeek, BigDecimal.ZERO);
+            dayOfWeeks.add(dayOfWeek);
+            revenues.add(dayRevenue);
+        }
+
+        return RevenueDto.builder()
+                .dayOfWeeks(dayOfWeeks)
+                .revenue(revenues)
+                .build();
     }
 
     @Override
