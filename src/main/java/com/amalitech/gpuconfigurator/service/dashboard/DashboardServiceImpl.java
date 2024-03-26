@@ -54,11 +54,9 @@ public class DashboardServiceImpl implements DashboardService {
         List<Object[]> revenueData = paymentRepository.revenueRange(startDate, endDate);
         Map<DayOfWeek, BigDecimal> revenueByDayOfWeek = new EnumMap<>(DayOfWeek.class);
 
-        // Initialize lists for dayOfWeeks and revenue
         List<DayOfWeek> dayOfWeeks = new ArrayList<>();
         List<BigDecimal> revenues = new ArrayList<>();
 
-        // Populate revenueByDayOfWeek map and lists
         for (Object[] row : revenueData) {
             LocalDate date = (LocalDate) row[0];
             BigDecimal revenue = (BigDecimal) row[1];
@@ -67,7 +65,6 @@ public class DashboardServiceImpl implements DashboardService {
             revenueByDayOfWeek.put(dayOfWeek, revenueByDayOfWeek.getOrDefault(dayOfWeek, BigDecimal.ZERO).add(revenue));
         }
 
-        // Populate dayOfWeeks and revenues lists
         for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
             BigDecimal dayRevenue = revenueByDayOfWeek.getOrDefault(dayOfWeek, BigDecimal.ZERO);
             dayOfWeeks.add(dayOfWeek);
