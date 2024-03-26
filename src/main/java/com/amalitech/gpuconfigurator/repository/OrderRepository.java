@@ -7,8 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Month;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,9 +28,12 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
             "HAVING COUNT(o) > 0")
     Page<Object[]> selectAllUsersWithOrderCount(Pageable pageable);
 
-    @Query("SELECT COUNT(DISTINCT u) FROM User u LEFT JOIN u.orders o")
+    @Query("SELECT COUNT(DISTINCT u) FROM User u LEFT JOIN u.orders o WHERE o IS NOT NULL")
     Long customers();
 
     @Query("SELECT COUNT(u) FROM Order u")
     Long orders();
+
+    @Query("SELECT COUNT(u) FROM Order u WHERE u.status = 'Delivered' AND MONTH(u.createdAt) = :monthValue AND YEAR(u.createdAt) = :yearValue")
+    Long deliveredStatusCount(@Param("monthValue") int monthValue, @Param("yearValue") int yearValue);
 }
