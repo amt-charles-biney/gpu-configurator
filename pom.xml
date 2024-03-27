@@ -118,11 +118,19 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <!-- Exclude lombok from Spring Boot repackage -->
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -131,7 +139,22 @@
                     </excludes>
                 </configuration>
             </plugin>
+
+            <!-- Flyway Maven Plugin -->
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>8.5.0</version>
+                <configuration>
+                    <user>${DATABASE_USER}</user>
+                    <password>${DATABASE_PASSWORD}</password>
+                    <schemas>app-db</schemas>
+                    <url>jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}</url>
+                    <locations>filesystem:src/main/resources/db/migration</locations>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
 </project>
+
