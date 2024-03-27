@@ -119,6 +119,8 @@ public class DashboardServiceImpl implements DashboardService {
 
     private LatestOrderDto mapToLatestOrder(Order order) {
         return LatestOrderDto.builder()
+                .productName(order.getCart().getConfiguredProducts().stream().findFirst()
+                        .map(prod -> prod.getProduct().getProductName()).orElse(null))
                 .coverImage(order.getCart().getConfiguredProducts().stream().findFirst()
                         .map(prod -> prod.getProduct().getProductCase().getCoverImageUrl()).orElse(null))
                 .orderedTime(order.getCreatedAt())
