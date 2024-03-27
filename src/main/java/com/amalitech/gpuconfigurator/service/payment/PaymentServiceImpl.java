@@ -82,7 +82,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         HttpEntity<?> requestEntity = new HttpEntity<>(verifyPaymentHeaders);
 
-        Object paymentResponse =  restTemplate.exchange(
+        Object paymentResponse = restTemplate.exchange(
                 verifyPaymentUrl,
                 HttpMethod.GET,
                 requestEntity,
@@ -92,8 +92,8 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentObjectRequest paymentResponseJson = mapPaymentResponseToPayment(paymentResponse);
         CreateOrderDto order = null;
 
-        if(paymentResponseJson.status()) {
-            Payment paymentTransaction = savePaymentTransaction(paymentResponseJson, user,  userSession);
+        if (paymentResponseJson.status()) {
+            Payment paymentTransaction = savePaymentTransaction(paymentResponseJson, user, userSession);
             order = orderService.createOrder(paymentTransaction, user, userSession);
 
         }
@@ -111,9 +111,9 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment savePaymentTransaction(PaymentObjectRequest paymentObjectRequest, Principal principal, UserSession userSession) {
 
         User user = null;
-        UsernamePasswordAuthenticationToken authenticationToken =  ((UsernamePasswordAuthenticationToken) principal);
+        UsernamePasswordAuthenticationToken authenticationToken = ((UsernamePasswordAuthenticationToken) principal);
 
-        if(authenticationToken != null) {
+        if (authenticationToken != null) {
             user = (User) authenticationToken.getPrincipal();
         }
 
