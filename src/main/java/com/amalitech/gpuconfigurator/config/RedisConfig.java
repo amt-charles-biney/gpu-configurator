@@ -17,12 +17,12 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 @RequiredArgsConstructor
 public class RedisConfig {
 
-    @Value("${redis.pubsub.topic")
+    @Value("${redis.pubsub.topic:notify")
     private String topic;
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
+    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return template;
@@ -34,8 +34,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public MessageListenerAdapter messageListener() {
-        return new MessageListenerAdapter(new RedisStockUpdateListener());
+    public MessageListenerAdapter messageListener(RedisStockUpdateListener redisStockUpdateListener) {
+        return new MessageListenerAdapter(redisStockUpdateListener);
     }
 
     @Bean

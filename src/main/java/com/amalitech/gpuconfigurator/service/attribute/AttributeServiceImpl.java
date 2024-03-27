@@ -10,6 +10,7 @@ import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigService;
+import com.amalitech.gpuconfigurator.service.messageQueue.redis.publisher.RedisPublisherImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,7 +34,7 @@ public class AttributeServiceImpl implements AttributeService {
     private final AttributeRepository attributeRepository;
     private final AttributeOptionRepository attributeOptionRepository;
     private final CategoryConfigService categoryConfigService;
-    // private final RedisPublisherImpl redisPublisher;
+    private final RedisPublisherImpl redisPublisher;
 
     @Override
     public Page<AttributeResponse> getAllAttributesPageable(int size, int page, String query) {
@@ -211,6 +213,8 @@ public class AttributeServiceImpl implements AttributeService {
                         return newOption;
                     });
 
+            int previousStockValue = updateAttribute.getInStock();
+
             updateAttribute.setPriceAdjustment(attributeOption.price());
             updateAttribute.setAttribute(attribute);
             updateAttribute.setOptionName(attributeOption.name());
@@ -219,11 +223,6 @@ public class AttributeServiceImpl implements AttributeService {
             updateAttribute.setPriceFactor(attributeOption.priceFactor());
             updateAttribute.setMedia(attributeOption.media());
             updateAttribute.setUpdatedAt(LocalDateTime.now());
-
-//            if(attributeOption.inStock() > updateAttribute.getInStock() && updateAttribute.getInStock() <= 5) {
-//                redisPublisher.publish(attributeOption.id());
-//            }
-
             updateAttribute.setInStock(attributeOption.inStock());
             updateAttribute.setBrand(attributeOption.brand());
             updateAttribute.setIncompatibleAttributeOptions(convertStringsToUUIDS(attributeOption.incompatibleAttributeOptions()));
@@ -232,6 +231,9 @@ public class AttributeServiceImpl implements AttributeService {
             AttributeOption savedAttribute = attributeOptionRepository.save(updateAttribute);
             newAttributeOptions.add(savedAttribute);
 
+            if(attributeOption.inStock() > previousStockValue && previousStockValue <= 5) {
+                redisPublisher.publish(savedAttribute.getOptionName());
+            }
         }
 
         categoryConfigService.updateExistingCategoryConfigs(newAttributeOptions);
@@ -318,12 +320,12 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     private List<String> convertUUIDsToStrings(List<UUID> uuids) {
-        if (uuids.isEmpty()) return new ArrayList<>();
+        if (uuids.isEmpty()) return Collections.emptyList();
         return uuids.stream().map(String::valueOf).toList();
     }
 
     private List<UUID> convertStringsToUUIDS(List<String> uuidStrings) {
-        if (uuidStrings.isEmpty()) return new ArrayList<>();
+        if (uuidStrings.isEmpty()) return Collections.emptyList();
         return uuidStrings.stream().map(UUID::fromString).toList();
     }
 
