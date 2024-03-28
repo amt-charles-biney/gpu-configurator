@@ -54,7 +54,7 @@ public class DashboardServiceImpl implements DashboardService {
     public RevenueDto revenueStat(LocalDate startDate, LocalDate endDate) {
         if (startDate == null || endDate == null) {
             endDate = LocalDate.now();
-            startDate = endDate.minus(7, ChronoUnit.DAYS);
+            startDate = endDate.minus(6, ChronoUnit.DAYS);
         }
 
         List<Object[]> revenueData = paymentRepository.revenueRange(startDate, endDate);
@@ -71,10 +71,12 @@ public class DashboardServiceImpl implements DashboardService {
             revenueByDayOfWeek.put(dayOfWeek, revenueByDayOfWeek.getOrDefault(dayOfWeek, BigDecimal.ZERO).add(revenue));
         }
 
-        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
-            BigDecimal dayRevenue = revenueByDayOfWeek.getOrDefault(dayOfWeek, BigDecimal.ZERO);
-            dayOfWeeks.add(dayOfWeek);
+        DayOfWeek currentDay = startDate.getDayOfWeek();
+        for (int i = 0; i < DayOfWeek.values().length; i++) {
+            BigDecimal dayRevenue = revenueByDayOfWeek.getOrDefault(currentDay, BigDecimal.ZERO);
+            dayOfWeeks.add(currentDay);
             revenues.add(dayRevenue);
+            currentDay = currentDay.plus(1);
         }
 
         return RevenueDto.builder()
@@ -82,6 +84,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .revenue(revenues)
                 .build();
     }
+
 
     @Override
     public DeliveryGoalDto deliveryStat(String month) {
