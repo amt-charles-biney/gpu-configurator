@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         InitializePaymentRequest paymentDetails = InitializePaymentRequest
                 .builder()
-                .amount(paymentRequest.amount() * 100)
+                .amount((int) paymentRequest.amount() * 100)
                 .currency(paymentRequest.currency())
                 .email(paymentRequest.email())
                 .reference(paymentRequest.reference())
@@ -122,7 +123,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .ref(paymentObjectRequest.data().reference())
                 .channel(paymentObjectRequest.data().channel())
                 .currency(paymentObjectRequest.data().currency())
-                .amount(paymentObjectRequest.data().amount())
+                .amount(paymentObjectRequest.data().amount().divide(new BigDecimal(100)))
                 .user(user)
                 .sessionId(userSession.getId().toString())
                 .build();

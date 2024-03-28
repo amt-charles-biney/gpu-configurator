@@ -11,6 +11,7 @@ import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
+import com.amalitech.gpuconfigurator.service.messageQueue.redis.publisher.RedisPublisherImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,10 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +31,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AttributeServiceTest {
 
+    @Mock
+    private RedisPublisherImpl redisPublisher;
     @Mock
     private AttributeRepository attributeRepository;
     @Mock
@@ -65,6 +65,8 @@ class AttributeServiceTest {
                 .attributeName(attributeDto.attributeName())
                 .description(attributeDto.description())
                 .description(attributeDto.description())
+                .isRequired(true)
+                .isMeasured(false)
                 .unit(attributeDto.unit())
                 .build();
 
@@ -77,6 +79,7 @@ class AttributeServiceTest {
                 .priceFactor(1.4)
                 .baseAmount(23F)
                 .maxAmount(24F)
+                .inStock(45)
                 .attribute(attribute)
                 .build();
     }
@@ -209,16 +212,16 @@ class AttributeServiceTest {
         UUID attribute1 = UUID.randomUUID();
         UUID attribute2 = UUID.randomUUID();
         List<UpdateAttributeOptionDto> attributeOptionDtos = List.of(
-                new UpdateAttributeOptionDto(attribute1.toString(), "Option1", BigDecimal.valueOf(15.0), "nvidea", new ArrayList<>(), "updatedMedia1", 120.0f, 130.0f, 1.5,2),
-                new UpdateAttributeOptionDto(attribute2.toString(), "Option2", BigDecimal.valueOf(25.0), "nvidea", new ArrayList<>(), "updatedMedia2", 130.0f, 12.0f, 1.5, 2)
+                new UpdateAttributeOptionDto(attribute1.toString(), "Option1", BigDecimal.valueOf(15.0), "nvidea", Collections.emptyList(), "updatedMedia1", 120.0f, 130.0f, 1.5,45),
+                new UpdateAttributeOptionDto(attribute2.toString(), "Option2", BigDecimal.valueOf(25.0), "nvidea", Collections.emptyList(), "updatedMedia2", 130.0f, 12.0f, 1.5, 56)
         );
 
         when(attributeOptionRepository.findById(attribute1))
-                .thenReturn(Optional.of(new AttributeOption()));
+                .thenReturn(Optional.of(attributeOption));
         when(attributeOptionRepository.findById(attribute2))
-                .thenReturn(Optional.of(new AttributeOption()));
+                .thenReturn(Optional.of(attributeOption));
 
-        when(attributeOptionRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(attributeOptionRepository.save(any(AttributeOption.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         attributeService.updateAllAttributeOptions(attribute, attributeOptionDtos);
 
@@ -313,5 +316,27 @@ class AttributeServiceTest {
         verify(attributeOptionRepository, times(1)).findAll();
     }
 
+    @Test
+    public void testGetAllAttributesLowInStock() {
+        List<AttributeOption> attributeOptions = Collections.emptyList();
+
+        when(attributeOptionRepository.findByInStockLessThan(6)).thenReturn(attributeOptions);
+
+        List<AttributeResponse> response = attributeService.getAllAttributesLowInStock();
+
+
+        assertEquals(response.size(), 0);
+        verify(attributeOptionRepository, times(1)).findByInStockLessThan(6);
+    }
+
+    @Test
+    public void testGetAllAttributesByRequiredTrue() {
+        when(attributeRepository.findAllByIsRequiredTrue()).thenReturn(List.of(attribute));
+
+        List<Attribute> response = attributeService.getAllAttributesByRequiredTrue();
+
+        assertNotNull(response);
+        assertEquals(response.size(),1);
+    }
 
 }
