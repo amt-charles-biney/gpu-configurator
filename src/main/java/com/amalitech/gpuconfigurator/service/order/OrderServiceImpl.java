@@ -7,6 +7,7 @@ import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
+import com.amalitech.gpuconfigurator.model.Cart;
 import com.amalitech.gpuconfigurator.model.Order;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
@@ -68,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
 
             if (user != null) {
                 orderBuilder.cart(user.getCart());
-                user.setCart(null);
+                user.setCart(new Cart());
                 userRepository.save(user);
 
                 toAddressMap.put("name", user.getShippingInformation().getFirstName());
@@ -80,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
 
             } else {
                 orderBuilder.cart(userSession.getCart());
-                userSession.setCart(null);
+                userSession.setCart(new Cart());
                 userSessionRepository.save(userSession);
 
                 toAddressMap.put("name", userSession.getCurrentShipping().getFirstName());
@@ -109,6 +110,8 @@ public class OrderServiceImpl implements OrderService {
                     .user(user)
                     .payment(payment).build();
             orderRepository.save(order);
+
+            //update instock
 
             return CreateOrderDto.builder()
                     .orderId(order.getId())
