@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.service.wishlist;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.dto.wishlist.AddWishListItemResponse;
+import com.amalitech.gpuconfigurator.exception.ConfigurationAlreadyInWishListException;
 import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
@@ -35,6 +36,14 @@ public class WishListServiceImpl implements WishListService {
     @Override
     public AddWishListItemResponse addWishListItem(UUID productId, String components, User user, UserSession userSession) {
         WishList wishList = getUserOrSessionWishList(user, userSession);
+
+        List<Configuration> wishListItems = configuredProductRepository.findByWishListIdAndProductId(wishList.getId(), productId);
+        if (components != null && !components.isBlank()) {
+            validateConfigurationWithComponentsInWishListItems(components, wishListItems);
+        } else {
+            productRepository.findById(productId)
+                    .ifPresent(product -> validateBaseProductInWishListItems(product, wishListItems));
+        }
 
         return new AddWishListItemResponse(
                 configurationService.saveConfiguration(String.valueOf(productId), false, components, null, wishList),
@@ -93,27 +102,71 @@ public class WishListServiceImpl implements WishListService {
         }
     }
 
-    private void removeWishListItemGivenProductId(Product product, WishList wishList) {
-        List<Configuration> wishListItems = configuredProductRepository.findByWishListIdAndProductId(wishList.getId(), product.getId());
+    private void validateConfigurationWithComponentsInWishListItems(String components, List<Configuration> wishListItems) {
+        Set<String> componentsSet = Set.of(components.split(","));
+        for (Configuration item : wishListItems) {
+            Set<String> variantsSet = item.getConfiguredOptions()
+                    .stream()
+                    .map(variant -> variant.getOptionId() + "_" + (variant.getIsMeasured() ? variant.getSize() : "0"))
+                    .collect(Collectors.toSet());
+
+            if (componentsSet.equals(variantsSet)) {
+                throw new ConfigurationAlreadyInWishListException("Configuration already in wish list.");
+            }
+        }
+    }
+
+    private void validateBaseProductInWishListItems(Product product, List<Configuration> wishListItems) {
         Set<CompatibleOption> productVariants = product.getCategory()
                 .getCategoryConfig()
                 .getCompatibleOptions()
                 .stream()
                 .filter(CompatibleOption::getIsIncluded)
                 .collect(Collectors.toSet());
-        Set<Configuration> wishListItemsToDelete = wishListItems.stream()
+
+        for (Configuration item : wishListItems) {
+            boolean isVariantInProductBaseConfiguration = true;
+            for (ConfigOptions configOption : item.getConfiguredOptions()) {
+                if (configOption.getIsMeasured()) {
+                    isVariantInProductBaseConfiguration = isVariantInProductBaseConfiguration &&
+                            productVariants.stream().anyMatch(option -> option.getId().toString().equals(configOption.getOptionId())
+                                    && option.getSize().equals(Integer.valueOf(configOption.getSize())));
+                } else {
+                    isVariantInProductBaseConfiguration = isVariantInProductBaseConfiguration && configOption.isIncluded();
+                }
+            }
+            if (isVariantInProductBaseConfiguration) {
+                throw new ConfigurationAlreadyInWishListException("Configuration already in wish list.");
+            }
+        }
+    }
+
+    private void removeWishListItemGivenProductId(Product product, WishList wishList) {
+        List<Configuration> wishListItems = configuredProductRepository.findByWishListIdAndProductId(wishList.getId(), product.getId());
+
+        Set<CompatibleOption> productVariants = product.getCategory()
+                .getCategoryConfig()
+                .getCompatibleOptions()
+                .stream()
+                .filter(CompatibleOption::getIsIncluded)
+                .collect(Collectors.toSet());
+
+        wishListItems.stream()
                 .filter(item -> {
+                    boolean isVariantInProductBaseConfiguration = true;
                     for (ConfigOptions configOption : item.getConfiguredOptions()) {
-                        for (CompatibleOption productOption : productVariants) {
-                            if (productOption.getId().toString().equals(configOption.getOptionId())) {
-                                continue;
-                            }
-                            return !productOption.getIsMeasured() || productOption.getSize().equals(Integer.valueOf(configOption.getSize()));
+                        if (configOption.getIsMeasured()) {
+                            isVariantInProductBaseConfiguration = isVariantInProductBaseConfiguration &&
+                                    productVariants.stream().anyMatch(option -> option.getId().toString().equals(configOption.getOptionId())
+                                            && option.getSize().equals(Integer.valueOf(configOption.getSize())));
+                        } else {
+                            isVariantInProductBaseConfiguration = isVariantInProductBaseConfiguration && configOption.isIncluded();
                         }
                     }
-                    return false;
-                }).collect(Collectors.toSet());
-        configuredProductRepository.deleteAll(wishListItemsToDelete);
+                    return isVariantInProductBaseConfiguration;
+                })
+                .findFirst()
+                .ifPresent(configuredProductRepository::delete);
     }
 
     private WishList getUserOrSessionWishList(User user, UserSession userSession) {

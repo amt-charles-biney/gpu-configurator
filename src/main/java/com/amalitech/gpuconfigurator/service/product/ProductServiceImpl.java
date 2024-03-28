@@ -420,20 +420,23 @@ public class ProductServiceImpl implements ProductService {
                     .collect(Collectors.toSet());
 
             for (Configuration item : wishListItems) {
-                if (item.getProduct().getId() != product.getId()) {
+                if (!item.getProduct().getId().equals(product.getId())) {
                     continue;
                 }
 
+                boolean isVariantInProductBaseConfiguration = true;
                 for (ConfigOptions configOption : item.getConfiguredOptions()) {
-                    for (CompatibleOption productOption : productVariants) {
-                        if (productOption.getId().toString().equals(configOption.getOptionId())) {
-                            continue;
-                        }
-                        if (!productOption.getIsMeasured() || productOption.getSize().equals(Integer.valueOf(configOption.getSize()))) {
-                            productsInWishList.add(product.getId());
-                            break;
-                        }
+                    if (configOption.getIsMeasured()) {
+                        isVariantInProductBaseConfiguration = isVariantInProductBaseConfiguration
+                                && productVariants.stream().anyMatch(option -> option.getId().toString().equals(configOption.getOptionId())
+                                && option.getSize().equals(Integer.valueOf(configOption.getSize())));
+                    } else {
+                        isVariantInProductBaseConfiguration = isVariantInProductBaseConfiguration && configOption.isIncluded();
                     }
+                }
+                if (isVariantInProductBaseConfiguration) {
+                    productsInWishList.add(product.getId());
+                    break;
                 }
             }
         }

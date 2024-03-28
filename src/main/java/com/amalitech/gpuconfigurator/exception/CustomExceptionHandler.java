@@ -2,9 +2,9 @@ package com.amalitech.gpuconfigurator.exception;
 
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,6 +50,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(CannotAddItemToCartException.class)
     public ResponseEntity<Object> handleCannotAddItemToCartException(Exception e) {
+        return buildResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(ConfigurationAlreadyInWishListException.class)
+    public ResponseEntity<Object> handleConfigurationAlreadyInWishListException(Exception e) {
         return buildResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 

@@ -1,20 +1,13 @@
 package com.amalitech.gpuconfigurator.service.configuration;
 
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CategoryConfigResponseDto;
-import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetResponse;
 import com.amalitech.gpuconfigurator.dto.configuration.ConfigurationResponseDto;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
-import com.amalitech.gpuconfigurator.repository.CompatibleOptionRepository;
 import com.amalitech.gpuconfigurator.repository.ConfigurationRepository;
-import com.amalitech.gpuconfigurator.repository.ProductRepository;
-import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
-import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionService;
-import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigServiceImpl;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +17,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -92,7 +84,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     private Product getProductById(String productId) {
-            return productService.getProductOnDemand(UUID.fromString(productId));
+        return productService.getProductOnDemand(UUID.fromString(productId));
     }
 
     private BigDecimal calculateTotalPrice(Product product) {
@@ -178,6 +170,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
 
     private ConfigOptions createConfigOptionWithoutSize(CompatibleOption option) {
+        boolean isMeasured = option.getAttributeOption().getAttribute().isMeasured();
+
         return ConfigOptions.builder()
                 .optionId(String.valueOf(option.getId()))
                 .optionName(option.getAttributeOption().getOptionName())
@@ -185,8 +179,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .optionType(option.getAttributeOption().getAttribute().getAttributeName())
                 .baseAmount(option.getAttributeOption().getBaseAmount() != null ? BigDecimal.valueOf(option.getAttributeOption().getBaseAmount()) : new BigDecimal(0))
                 .isIncluded(option.getIsIncluded())
-                .size("")
-                .isMeasured(option.getAttributeOption().getAttribute().isMeasured())
+                .size(isMeasured ? String.valueOf(option.getSize()) : "")
+                .isMeasured(isMeasured)
                 .build();
     }
 
