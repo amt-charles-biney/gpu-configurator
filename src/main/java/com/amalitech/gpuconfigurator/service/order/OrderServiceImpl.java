@@ -8,7 +8,6 @@ import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
 import com.amalitech.gpuconfigurator.exception.NotFoundException;
 import com.amalitech.gpuconfigurator.model.*;
-import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
@@ -113,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
                     .payment(payment).build();
             orderRepository.save(order);
 
-            getAllCompactableOptions(order.getCart());
+            reduceStock(order.getCart());
 
             return CreateOrderDto.builder()
                     .orderId(order.getId())
@@ -239,7 +238,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    private void getAllCompactableOptions(Cart cart) {
+    private void reduceStock(Cart cart) {
         Set<Configuration> configuredProducts = cart.getConfiguredProducts();
 
         List<UUID> allOptionIds = configuredProducts.stream()
