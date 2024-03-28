@@ -44,7 +44,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class OrderServiceImpl implements OrdergService {
+public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
