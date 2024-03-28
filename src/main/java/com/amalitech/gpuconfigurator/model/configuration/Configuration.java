@@ -78,7 +78,7 @@ public class Configuration {
         path.append("?warranty=false&components=");
 
         List<String> components = this.getConfiguredOptions().stream().map(option ->
-                option.getOptionId() + (option.getIsMeasured() ? "_" + option.getSize() : "_0")).toList();
+                option.getOptionId() + "_" + (option.getIsMeasured() && !option.getSize().isBlank() ? option.getSize() : "0")).toList();
         path.append(String.join(",", components));
 
         return path.toString();
