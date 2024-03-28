@@ -12,6 +12,13 @@ import com.amalitech.gpuconfigurator.model.Order;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
+import com.amalitech.gpuconfigurator.exception.NotFoundException;
+import com.amalitech.gpuconfigurator.model.*;
+import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
+import com.amalitech.gpuconfigurator.model.configuration.ConfigOptions;
+import com.amalitech.gpuconfigurator.model.configuration.Configuration;
+import com.amalitech.gpuconfigurator.model.payment.Payment;
+import com.amalitech.gpuconfigurator.repository.CompatibleOptionRepository;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 
 
@@ -19,9 +26,11 @@ import com.amalitech.gpuconfigurator.model.*;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
+
+import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
+import com.amalitech.gpuconfigurator.service.status.StatusService;
 import com.easypost.exception.EasyPostException;
 import com.easypost.model.Shipment;
-import com.easypost.model.Tracker;
 import com.easypost.service.EasyPostClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +58,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final UserSessionRepository userSessionRepository;
+    private final CompatibleOptionRepository compatibleOptionRepository;
+    private final AttributeOptionRepository attributeOption;
     @Value("${easy-test-key}")
     private String easyPost;
 
@@ -114,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
                     .payment(payment).build();
             orderRepository.save(order);
 
-            //update instock
+            getAllCompactableOptions(order.getCart());
 
             return CreateOrderDto.builder()
                     .orderId(order.getId())
@@ -215,6 +226,26 @@ public class OrderServiceImpl implements OrderService {
                         .map(prod -> prod.getProduct().getProductCase().getName()).orElse(null))
                 .shippingAddress(order.getUser().getShippingInformation().getAddress1())
                 .build();
+    }
+
+
+    private void getAllCompactableOptions(Cart cart) {
+        Set<Configuration> configuredProducts = cart.getConfiguredProducts();
+
+        List<UUID> allOptionIds = configuredProducts.stream()
+                .flatMap(configuration -> configuration.getConfiguredOptions().stream())
+                .map(ConfigOptions::getOptionId)
+                .map(UUID::fromString)
+                .toList();
+        List<CompatibleOption> results = compatibleOptionRepository.findAllIdsIn(allOptionIds);
+        for (CompatibleOption result : results) {
+
+            for (Configuration x : configuredProducts) {
+                var inStockVar = result.getAttributeOption().getInStock();
+                result.getAttributeOption().setInStock(inStockVar - x.getQuantity());
+                attributeOption.save(result.getAttributeOption());
+            }
+        }
     }
 
 }
