@@ -20,13 +20,12 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
 
     Optional<Order> findByTrackingId(String trackingCode);
 
-    @Query("SELECT DISTINCT u, COUNT(o), SUM(p.amount), o.createdAt " +
+    @Query("SELECT u, COUNT(o), SUM(p.amount), MIN(o.createdAt) " +
             "FROM User u " +
             "LEFT JOIN u.orders o " +
             "LEFT JOIN o.payment p " +
             "WHERE o IS NOT NULL " +
-            "GROUP BY u.id, o.createdAt " +
-            "HAVING COUNT(o) > 0")
+            "GROUP BY u.id")
     Page<Object[]> selectAllUsersWithOrderCount(Pageable pageable);
 
     @Query("SELECT COUNT(DISTINCT u) FROM User u LEFT JOIN u.orders o WHERE o IS NOT NULL")
