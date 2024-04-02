@@ -6,10 +6,8 @@ import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,13 +26,14 @@ public class OrderFilteringImpl implements OrderFiltering {
     @Override
     public Page<OrderResponseDto> orders(String status, LocalDate startDate, LocalDate endDate, Integer page, Integer size) {
         Specification<Order> spec = createOrderSpecification(status, startDate, endDate);
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = getPageable(page, size);
         Page<Order> ordersPage = orderRepository.findAll(spec, pageable);
         List<OrderResponseDto> orderResponseDtos = ordersPage.getContent().stream()
                 .map(this::mapOrderToOrderResponseDto)
                 .toList();
         return new PageImpl<>(orderResponseDtos, ordersPage.getPageable(), ordersPage.getTotalElements());
     }
+
 
     @Override
 
@@ -44,7 +43,7 @@ public class OrderFilteringImpl implements OrderFiltering {
         Specification<Order> spec = createOrderSpecification(status, startDate, endDate);
         Specification<Order> combinedSpec = userSpec.and(spec);
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = getPageable(page, size);
         Page<Order> ordersPage = orderRepository.findAll(combinedSpec, pageable);
 
         List<OrderResponseDto> orderResponseDtos = ordersPage.getContent().stream()
@@ -76,6 +75,11 @@ public class OrderFilteringImpl implements OrderFiltering {
             spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status));
         }
         return spec;
+    }
+
+    @NotNull
+    private static Pageable getPageable(Integer page, Integer size) {
+        return PageRequest.of(page, size, Sort.by("createdAt").descending());
     }
 
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
