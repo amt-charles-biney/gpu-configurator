@@ -7,6 +7,7 @@ import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,22 +26,32 @@ public class OrderFilteringImpl implements OrderFiltering {
     private final OrderRepository orderRepository;
 
     @Override
-    public List<OrderResponseDto> orders(String status, LocalDate startDate, LocalDate endDate,Integer page, Integer size) {
+    public Page<OrderResponseDto> orders(String status, LocalDate startDate, LocalDate endDate, Integer page, Integer size) {
         Specification<Order> spec = createOrderSpecification(status, startDate, endDate);
         Pageable pageable = PageRequest.of(page, size);
         Page<Order> ordersPage = orderRepository.findAll(spec, pageable);
-        List<Order> orders = ordersPage.getContent();
-        return orders.stream().map(this::mapOrderToOrderResponseDto).toList();
+        List<OrderResponseDto> orderResponseDtos = ordersPage.getContent().stream()
+                .map(this::mapOrderToOrderResponseDto)
+                .toList();
+        return new PageImpl<>(orderResponseDtos, ordersPage.getPageable(), ordersPage.getTotalElements());
     }
 
     @Override
-    public List<OrderResponseDto> ordersUser(String status, LocalDate startDate, LocalDate endDate) {
+
+    public Page<OrderResponseDto> ordersUser(String status, LocalDate startDate, LocalDate endDate, Integer page, Integer size) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Specification<Order> userSpec = (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("user"), user);
         Specification<Order> spec = createOrderSpecification(status, startDate, endDate);
         Specification<Order> combinedSpec = userSpec.and(spec);
-        List<Order> orders = orderRepository.findAll(combinedSpec);
-        return orders.stream().map(this::mapOrderToOrderResponseDto).toList();
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Order> ordersPage = orderRepository.findAll(combinedSpec, pageable);
+
+        List<OrderResponseDto> orderResponseDtos = ordersPage.getContent().stream()
+                .map(this::mapOrderToOrderResponseDto)
+                .toList();
+
+        return new PageImpl<>(orderResponseDtos, ordersPage.getPageable(), ordersPage.getTotalElements());
     }
 
     private Specification<Order> createOrderSpecification(String status, LocalDate startDate, LocalDate endDate) {

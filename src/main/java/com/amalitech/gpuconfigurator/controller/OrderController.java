@@ -45,8 +45,7 @@ public class OrderController {
         Page<OrderResponseDto> resultPage;
 
         if (status != null || startDate != null || endDate != null) {
-            List<OrderResponseDto> orderByStatus = orderFiltering.orders(status, startDate, endDate, page,size);
-            resultPage = new PageImpl<>(orderByStatus, PageRequest.of(page, size), orderByStatus.size());
+            resultPage = orderFiltering.orders(status, startDate, endDate, page, size);
         } else {
             resultPage = orderService.getAllOrders(page, size);
         }
@@ -70,8 +69,7 @@ public class OrderController {
         Page<OrderResponseDto> resultPage;
 
         if (status != null || startDate != null || endDate != null) {
-            List<OrderResponseDto> orderByStatus = orderFiltering.ordersUser(status, startDate, endDate);
-            resultPage = new PageImpl<>(orderByStatus, PageRequest.of(page, size), orderByStatus.size());
+            resultPage = orderFiltering.ordersUser(status, startDate, endDate, page, size);
         } else {
             resultPage = orderService.getAllUserOrders(page, size, principal);
         }
