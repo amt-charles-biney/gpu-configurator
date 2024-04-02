@@ -24,7 +24,7 @@ public class EasyPostService {
 
     private final OrderServiceImpl orderService;
     private final ObjectMapper objectMapper;
-    private RedisPublisherService redisPublisherService;
+    private final RedisPublisherService redisPublisherService;
 
     public void handleTrackerUpdatedEvent(Event event) throws Exception {
         if("tracker.updated".equals(event.getDescription()) || "tracker.created".equals(event.getDescription())) {

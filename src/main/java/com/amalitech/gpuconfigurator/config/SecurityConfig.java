@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/v1/admin/orders/{id}").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())
                 .requestMatchers("/api/v1/admin/**").hasAnyAuthority("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/v1/cases/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/payment_info/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/product/**").permitAll()
                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
                 .permitAll()

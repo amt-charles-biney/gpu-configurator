@@ -12,6 +12,7 @@ import com.amalitech.gpuconfigurator.repository.PaymentInfoRepository.PaymentInf
 import com.amalitech.gpuconfigurator.service.encryption.AesEncryptionService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,8 +39,12 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 
     @Override
     public List<MobileMoneyResponse> getAllMobilePaymentByUser() {
-        User user = getCurrentUserHelper();
+        User user = getCurrentUserHelperOrNull();
+
+        if(user == null) return Collections.emptyList();
+
         List<MobilePayment> mobilePayment = mobileMoneyInfoRepository.findAllByUser(user);
+        if(mobilePayment.isEmpty()) return Collections.emptyList();
 
         return mobilePayment
                 .stream()
@@ -48,8 +54,13 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
 
     @Override
     public List<CardInfoResponse> getAllCardPaymentByUser() {
-        User user = getCurrentUserHelper();
+        User user = getCurrentUserHelperOrNull();
+
+        if(user == null) return Collections.emptyList();
+
         List<CardPayment> cardPayments = cardPaymentInfoRepository.findAllByUser(user);
+
+        if(cardPayments.isEmpty()) return Collections.emptyList();
 
         return cardPayments
                 .stream()
@@ -179,5 +190,15 @@ public class PaymentInfoServiceImpl implements PaymentInfoService {
             throw new IllegalArgumentException("No authenticated user found");
 
         return (User) authentication.getPrincipal();
+    }
+
+    public User getCurrentUserHelperOrNull() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+            return (User) authentication.getPrincipal();
+        } else {
+            return null;
+        }
     }
 }
