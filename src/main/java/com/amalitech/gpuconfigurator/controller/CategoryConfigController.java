@@ -39,15 +39,15 @@ public class CategoryConfigController {
         return ResponseEntity.ok(result);
     }
 
-    @CrossOrigin
-    @GetMapping("/v1/admin/category/config")
-    public ResponseEntity<List<CategoryListResponse>> getAllCategoryConfig() {
-        List<CategoryListResponse> result = categoryConfigServiceImpl.getCategoryListResponses();
-        return ResponseEntity.ok(result);
-    }
+//    @CrossOrigin
+//    @GetMapping("/v1/admin/category/config")
+//    public ResponseEntity<List<CategoryListResponse>> getAllCategoryConfig() {
+//        List<CategoryListResponse> result = categoryConfigServiceImpl.getCategoryListResponses();
+//        return ResponseEntity.ok(result);
+//    }
 
     @CrossOrigin
-    @GetMapping("/v1/admin/category/config/pageable")
+    @GetMapping("/v1/admin/category/config")
     public ResponseEntity<Page<CategoryListResponse>> getAllCategoryConfigPageable(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
