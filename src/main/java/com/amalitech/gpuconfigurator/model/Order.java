@@ -23,21 +23,25 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     private String status;
 
-    @Column(name = "tracking_id", nullable = false)
+    @Column(name = "tracking_id")
     private String trackingId;
 
-    @Column(name = "tracking_url", nullable = false)
+    @Column(name = "tracking_url")
     private String trackingUrl;
 
-    @Column(name = "estimated_delivery", nullable = false)
-    private Date estDeliveryDate;
+    @Column(name = "estimated_delivery")
+    private String estDeliveryDate;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = true)
+    @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "user_session")
+    private UserSession userSession;
 
     @OneToOne(cascade = CascadeType.ALL)
     private Payment payment;
