@@ -9,12 +9,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RedisPublisherImpl implements RedisPublisher {
 
-    private final RedisTemplate<String, String> redisTemplate;
-    private final ChannelTopic channelTopic;
-
+    private final RedisTemplate<String, Object> redisTemplate;
+    private ChannelTopic stockUpdateTopic;
     @Override
-    public void publish(String attributeName) {
-        redisTemplate.convertAndSend(channelTopic.getTopic(), attributeName);
+    public void publish(String channel, Object message) {
+        redisTemplate.convertAndSend(channel, message);
     }
-
 }

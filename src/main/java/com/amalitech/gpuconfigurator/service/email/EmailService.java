@@ -4,11 +4,17 @@ import com.amalitech.gpuconfigurator.dto.email.EmailTemplateRequest;
 import com.amalitech.gpuconfigurator.model.enums.OtpType;
 import jakarta.mail.MessagingException;
 
-public interface EmailService {
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-    void sendOtpMessage(String to, String otp, OtpType type) throws MessagingException;
+public interface EmailService<T> {
 
-    boolean isValidEmail(String email);
+    void send(T message) throws MessagingException;
 
-    void sendGenericEmail(EmailTemplateRequest emailTemplateRequest) throws MessagingException;
+    default boolean isValidEmail(String email) {
+            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+            Pattern pattern = Pattern.compile(emailRegex);
+            Matcher matcher = pattern.matcher(email);
+            return matcher.matches();
+        }
 }
