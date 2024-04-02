@@ -151,6 +151,7 @@ CREATE TABLE "order"
     tracking_url       VARCHAR(255) NOT NULL,
     estimated_delivery VARCHAR(255),
     user_id            UUID,
+    user_session       UUID,
     payment_id         UUID,
     cart_id            UUID,
     created_at         TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL,
@@ -356,6 +357,9 @@ ALTER TABLE "order"
 ALTER TABLE "order"
     ADD CONSTRAINT FK_ORDER_ON_USER FOREIGN KEY (user_id) REFERENCES users (id);
 
+ALTER TABLE "order"
+    ADD CONSTRAINT FK_ORDER_ON_USER_SESSION FOREIGN KEY (user_session) REFERENCES user_sessions (id);
+
 ALTER TABLE payment_info
     ADD CONSTRAINT FK_PAYMENT_INFO_ON_USER FOREIGN KEY (user_id) REFERENCES users (id);
 
@@ -400,5 +404,3 @@ ALTER TABLE configuration_configured_options
 
 ALTER TABLE configuration_configured_options
     ADD CONSTRAINT fk_conconopt_on_configuration FOREIGN KEY (configuration_id) REFERENCES configuration (id);
-
-

@@ -1,6 +1,5 @@
 package com.amalitech.gpuconfigurator.dto.order;
 
-import com.shippo.model.Shipment;
 import lombok.Builder;
 
 import java.util.UUID;

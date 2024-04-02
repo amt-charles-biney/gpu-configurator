@@ -1,6 +1,5 @@
 package com.amalitech.gpuconfigurator.service.payment;
 
-import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.Payment.*;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.model.User;
@@ -9,13 +8,9 @@ import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.amalitech.gpuconfigurator.repository.payment.PaymentRepository;
 import com.amalitech.gpuconfigurator.service.order.OrderServiceImpl;
 import com.easypost.exception.EasyPostException;
-import com.easypost.exception.General.MissingParameterError;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shippo.exception.APIConnectionException;
-import com.shippo.exception.APIException;
-import com.shippo.exception.AuthenticationException;
-import com.shippo.exception.InvalidRequestException;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -26,7 +21,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.security.Principal;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -74,7 +68,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     @Override
-    public VerifyPaymentResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user, UserSession userSession) throws JsonProcessingException, EasyPostException {
+    public VerifyPaymentResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user, UserSession userSession) throws JsonProcessingException {
 
         HttpHeaders verifyPaymentHeaders = new HttpHeaders();
         verifyPaymentHeaders.set("Authorization", "Bearer " + API_KEY);
