@@ -4,6 +4,7 @@ import com.amalitech.gpuconfigurator.dto.cart.*;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.service.cart.CartService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,10 @@ import java.util.UUID;
 public class CartController {
     private final CartService cartService;
 
+    @Operation(
+            summary = "Get the count of items in the cart",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/carts/item-count")
     public ResponseEntity<CartItemsCountResponse> getCartItemsCount(
@@ -28,6 +33,10 @@ public class CartController {
         return ResponseEntity.ok(cartService.getCartItemsCount(principal, userSession));
     }
 
+    @Operation(
+            summary = "Add an item to the cart",
+            method = "POST"
+    )
     @CrossOrigin
     @PostMapping("/v1/carts/add-item/{productId}")
     public ResponseEntity<AddCartItemResponse> addCartItem(
@@ -40,6 +49,10 @@ public class CartController {
         return ResponseEntity.ok(cartService.addCartItem(productId, warranty, components, principal, userSession));
     }
 
+    @Operation(
+            summary = "Delete an item from the cart",
+            method = "DELETE"
+    )
     @CrossOrigin
     @DeleteMapping("/v1/carts/delete-item/{configuredProductId}")
     public ResponseEntity<DeleteCartItemResponse> deleteCartItem(
@@ -50,6 +63,10 @@ public class CartController {
         return ResponseEntity.ok(cartService.deleteCartItem(configuredProductId, principal, userSession));
     }
 
+    @Operation(
+            summary = "Get items from the cart",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/carts")
     public ResponseEntity<CartItemsResponse> getCartItems(
@@ -59,6 +76,11 @@ public class CartController {
         return ResponseEntity.ok(cartService.getCartItems(principal, userSession));
     }
 
+
+    @Operation(
+            summary = "Update the quantity of an item in the cart",
+            method = "POST"
+    )
     @PostMapping("/v1/carts/update-quantity")
     public ResponseEntity<UpdateCartItemQuantityResponse> updateCartItemQuantity(
             @RequestBody @Valid UpdateCartItemQuantityRequest dto,

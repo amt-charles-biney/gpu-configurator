@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.customers.CustomerResponseDto;
 import com.amalitech.gpuconfigurator.service.customers.CustomerService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,10 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    @Operation(
+            summary = "Get all customers",
+            method = "GET"
+    )
     @GetMapping("/v1/admin/customers")
     public ResponseEntity<Page<CustomerResponseDto>> getAllCustomers(
             @RequestParam(defaultValue = "0") Integer page,

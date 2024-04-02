@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.dto.product.*;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,16 +26,21 @@ public class ProductController {
 
     private final ProductServiceImpl productService;
 
-
+    @Operation(
+            summary = "Add product",
+            method = "POST"
+    )
     @CrossOrigin
     @PostMapping("/v1/admin/product")
     @ResponseStatus(HttpStatus.CREATED)
-
     public CreateProductResponseDto addProduct(@Valid @RequestBody ProductDto request) {
         return productService.createProduct(request);
     }
 
-
+    @Operation(
+            summary = "Get product by product ID (for admin)",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/admin/product/{productId}")
     public ResponseEntity<ProductResponseWithBrandDto> getProductByProductId(@PathVariable("productId") String productId) {
@@ -42,6 +48,10 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
+    @Operation(
+            summary = "Get product by product ID (for user)",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/product/{productId}")
     public ResponseEntity<ProductResponseWithBrandDto> getProductByProductIdUser(@PathVariable("productId") String productId) {
@@ -49,7 +59,10 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
-
+    @Operation(
+            summary = "Get all products (for admin)",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/admin/product")
     public ResponseEntity<Page<ProductResponse>> getAllProducts(
@@ -61,6 +74,10 @@ public class ProductController {
         return ResponseEntity.ok(resultPage);
     }
 
+    @Operation(
+            summary = "Get all products (for user)",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/product")
     public ResponseEntity<Page<ProductResponse>> getAllProductUsers(
@@ -89,7 +106,10 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-
+    @Operation(
+            summary = "Update product",
+            method = "PATCH"
+    )
     @CrossOrigin
     @PatchMapping("/v1/admin/product/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
@@ -100,18 +120,25 @@ public class ProductController {
         return ResponseEntity.ok(updatedProduct);
     }
 
+    @Operation(
+            summary = "Delete product by ID",
+            method = "DELETE"
+    )
     @CrossOrigin
     @DeleteMapping("/v1/admin/product/{id}")
     public void deleteProduct(@PathVariable("id") UUID id) {
         productService.deleteProductById(id);
     }
 
+    @Operation(
+            summary = "Delete all products",
+            method = "DELETE"
+    )
     @CrossOrigin
     @DeleteMapping("/v1/admin/product/all")
     public ResponseEntity<GenericResponse> deleteAllProducts(@RequestBody List<String> productIds) {
         GenericResponse deletedBulkProduct = productService.deleteBulkProducts(productIds);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(deletedBulkProduct);
     }
-
 
 }

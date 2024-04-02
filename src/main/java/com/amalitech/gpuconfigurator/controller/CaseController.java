@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
 import com.amalitech.gpuconfigurator.dto.cases.UserCaseResponse;
 import com.amalitech.gpuconfigurator.service.cases.CaseService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,10 @@ import java.util.UUID;
 public class CaseController {
     private final CaseService caseService;
 
+    @Operation(
+            summary = "Create a new case (for admins)",
+            method = "POST"
+    )
     @CrossOrigin
     @PostMapping("/v1/admin/cases")
     public ResponseEntity<CaseResponse> createCase(
@@ -33,6 +38,10 @@ public class CaseController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Get all cases (for admins)",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/admin/cases")
     public ResponseEntity<Page<CaseResponse>> findAll(
@@ -42,12 +51,20 @@ public class CaseController {
         return ResponseEntity.ok(caseService.findAll(page, size));
     }
 
+    @Operation(
+            summary = "Get a case by ID (for admins)",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/admin/cases/{caseId}")
     public ResponseEntity<CaseResponse> findById(@PathVariable UUID caseId) {
         return ResponseEntity.ok(caseService.findById(caseId));
     }
 
+    @Operation(
+            summary = "Get all cases for a user",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/cases")
     public ResponseEntity<Page<UserCaseResponse>> findAllForUser(
@@ -57,12 +74,20 @@ public class CaseController {
         return ResponseEntity.ok(caseService.findAllForUser(page, size));
     }
 
+    @Operation(
+            summary = "Get a case for a user by ID",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/cases/{caseId}")
     public ResponseEntity<UserCaseResponse> findForUserById(@PathVariable UUID caseId) {
         return ResponseEntity.ok(caseService.findForUserById(caseId));
     }
 
+    @Operation(
+            summary = "Update a case by ID (for admins)",
+            method = "PUT"
+    )
     @CrossOrigin
     @PutMapping("/v1/admin/cases/{caseId}")
     public ResponseEntity<CaseResponse> updateCase(
@@ -74,6 +99,10 @@ public class CaseController {
         return ResponseEntity.ok(caseService.updateCase(caseId, dto, coverImage, images));
     }
 
+    @Operation(
+            summary = "Delete a case by ID (for admins)",
+            method = "DELETE"
+    )
     @CrossOrigin
     @DeleteMapping("/v1/admin/cases/{caseId}")
     public ResponseEntity<GenericResponse> deleteById(@PathVariable UUID caseId) {
