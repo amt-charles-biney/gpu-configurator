@@ -79,7 +79,7 @@ public class OrderFilteringImpl implements OrderFiltering {
 
     @NotNull
     private static Pageable getPageable(Integer page, Integer size) {
-        return PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return PageRequest.of(page, size, Sort.by("createdAt").ascending());
     }
 
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {
