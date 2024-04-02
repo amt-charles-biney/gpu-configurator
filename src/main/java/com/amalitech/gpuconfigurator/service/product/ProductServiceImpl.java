@@ -226,7 +226,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductResponse> getAllProductsAdmin(Integer page, Integer size, String query) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size,Sort.by("createdAt").descending());
         return productRepository.findAllByProductNameContainingIgnoreCase(query, pageable).map(getProductProductResponseFunction());
     }
 

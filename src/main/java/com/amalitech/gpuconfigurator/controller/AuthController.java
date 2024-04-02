@@ -9,6 +9,7 @@ import com.amalitech.gpuconfigurator.dto.otp.VerifyUserDto;
 import com.amalitech.gpuconfigurator.dto.profile.ChangePasswordDTO;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.service.user.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -22,9 +23,12 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final UserService userService;
 
+    @Operation(
+            summary = "User signup",
+            method = "POST"
+    )
     @CrossOrigin
     @PostMapping("/v1/auth/signup")
-
     public ResponseEntity<SignupResponse> signup(@Validated @RequestBody SignUpDto request) throws MessagingException, BadRequestException {
         userService.signup(request);
 
@@ -34,6 +38,10 @@ public class AuthController {
         return ResponseEntity.ok(message);
     }
 
+    @Operation(
+            summary = "Verify user",
+            method = "POST"
+    )
     @CrossOrigin
     @PostMapping("/v1/auth/verify")
     public ResponseEntity<AuthenticationResponse> verify(@RequestBody VerifyUserDto request) {
@@ -42,6 +50,10 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
+    @Operation(
+            summary = "Resend OTP",
+            method = "POST"
+    )
     @CrossOrigin
     @PostMapping("/v1/auth/resend-otp")
     public ResponseEntity<GenericResponse> resendOtp(@RequestBody ResendOtpDto resend) throws MessagingException {
@@ -49,6 +61,10 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+            summary = "User login",
+            method = "POST"
+    )
     @CrossOrigin
     @PostMapping("/v1/auth/login")
     public ResponseEntity<AuthenticationResponse> login(
@@ -58,6 +74,10 @@ public class AuthController {
         return ResponseEntity.ok(userService.login(request, userSession));
     }
 
+    @Operation(
+            summary = "Reset user password",
+            method = "POST"
+    )
     @CrossOrigin
     @PostMapping("/v1/auth/reset-password")
     public ResponseEntity<ResetResponseDTO> resetPassword(
@@ -68,6 +88,10 @@ public class AuthController {
         return ResponseEntity.ok(message);
     }
 
+    @Operation(
+            summary = "Verify OTP for password reset",
+            method = "POST"
+    )
     @CrossOrigin
     @PostMapping("/v1/auth/verify-otp")
     public ResponseEntity<VerifyOTPResponse> verifyOtp(
@@ -78,6 +102,10 @@ public class AuthController {
         return ResponseEntity.ok(message);
     }
 
+    @Operation(
+            summary = "Change user password",
+            method = "POST"
+    )
     @CrossOrigin
     @PostMapping("/v1/auth/change-password")
     public ResponseEntity<GenericResponse> changePassword(

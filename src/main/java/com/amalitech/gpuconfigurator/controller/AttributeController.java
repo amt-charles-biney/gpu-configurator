@@ -8,6 +8,8 @@ import com.amalitech.gpuconfigurator.dto.categoryconfig.CompatibleOptionGetRespo
 import com.amalitech.gpuconfigurator.exception.AttributeNameAlreadyExistsException;
 import com.amalitech.gpuconfigurator.model.attributes.Attribute;
 import com.amalitech.gpuconfigurator.service.attribute.AttributeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,12 +21,17 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@Tag(name = "Attribute")
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class AttributeController {
 
     private final AttributeService attributeService;
 
+    @Operation(
+            summary = "Create attributes and attribute options in bulk",
+            method = "POST"
+    )
     @CrossOrigin
     @PostMapping("/v1/admin/attributes/bulk")
     public ResponseEntity<ApiResponse<List<AttributeResponse>>> createAllAttributeandAttributeOptionsBulk(@Validated @RequestBody CreateAttributesRequest createAttributesRequest) throws AttributeNameAlreadyExistsException {
@@ -33,6 +40,10 @@ public class AttributeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(attributeApiResponse);
     }
 
+    @Operation(
+            summary = "Update attributes and attribute options in bulk",
+            method = "PUT"
+    )
     @CrossOrigin
     @PutMapping("/v1/admin/attributes/bulk")
     public ResponseEntity<ApiResponse<List<AttributeResponse>>> updateAllAttributendAttributeOptions(@Validated @RequestBody UpdateAttributeDto updateAttributeDto) {
@@ -41,6 +52,10 @@ public class AttributeController {
         return ResponseEntity.ok(attributeApiResponse);
     }
 
+    @Operation(
+            summary = "Get attributes with pagination support",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/admin/attributes/pageable")
     public ResponseEntity<Page<AttributeResponse>> getAttributesPageable(
@@ -52,6 +67,10 @@ public class AttributeController {
         return ResponseEntity.ok(attributes);
     }
 
+    @Operation(
+            summary = "Get all attributes",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/admin/attributes")
     public ResponseEntity<ApiResponse<List<AttributeResponse>>> getAttributes() {
@@ -59,6 +78,10 @@ public class AttributeController {
         return ResponseEntity.ok(new ApiResponse<>(attributes));
     }
 
+    @Operation(
+            summary = "Get all editable attributes",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/admin/attributes/config")
     public ResponseEntity<CompatibleOptionGetResponse> getAllAttributesEditable() {
@@ -66,6 +89,10 @@ public class AttributeController {
         return ResponseEntity.ok(compatibleOptionEditResponse);
     }
 
+    @Operation(
+            summary = "Get attribute by ID",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/admin/attributes/{attributeId}")
     public ResponseEntity<ApiResponse<AttributeResponse>> getAttribute(@PathVariable String attributeId) {
@@ -74,6 +101,10 @@ public class AttributeController {
         return ResponseEntity.ok(attributeResponse);
     }
 
+    @Operation(
+            summary = "Delete attribute by ID",
+            method = "DELETE"
+    )
     @CrossOrigin
     @DeleteMapping("/v1/admin/attributes/{attributeId}")
     public ResponseEntity<GenericResponse> deleteAttribute(@PathVariable String attributeId) {
@@ -81,6 +112,10 @@ public class AttributeController {
         return ResponseEntity.ok(deleteResponse);
     }
 
+    @Operation(
+            summary = "Delete all attributes",
+            method = "DELETE"
+    )
     @CrossOrigin
     @DeleteMapping("/v1/admin/attributes/all")
     public ResponseEntity<GenericResponse> deleteAllAttributes(@RequestBody List<String> attributes) {
@@ -88,6 +123,10 @@ public class AttributeController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(deletedBulkAttributes);
     }
 
+    @Operation(
+            summary = "Delete attribute option",
+            method = "DELETE"
+    )
     @CrossOrigin
     @DeleteMapping("/v1/admin/attributes/{attributeId}/options/{optionId}")
     public ResponseEntity<GenericResponse> deleteOption(

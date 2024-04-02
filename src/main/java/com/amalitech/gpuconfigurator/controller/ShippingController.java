@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.service.shipping.ShippingService;
 import com.easypost.exception.EasyPostException;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,10 @@ import java.security.Principal;
 public class ShippingController {
     private final ShippingService shippingService;
 
+    @Operation(
+            summary = "Update shipping information",
+            method = "PUT"
+    )
     @PostMapping("/v1/shipping")
     public ResponseEntity<ShippingResponse> create(
             @RequestBody @Valid ShippingRequest dto,

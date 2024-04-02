@@ -7,6 +7,7 @@ import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
 import com.amalitech.gpuconfigurator.service.order.OrderFiltering;
 import com.amalitech.gpuconfigurator.service.order.OrderService;
 import com.easypost.exception.EasyPostException;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,6 +30,10 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderFiltering orderFiltering;
 
+    @Operation(
+            summary = "Get all orders (for admin)",
+            method = "GET"
+    )
     @GetMapping("/v1/admin/orders")
     public ResponseEntity<Page<OrderResponseDto>> getOrders(
             @RequestParam(defaultValue = "0") Integer page,
@@ -40,8 +45,7 @@ public class OrderController {
         Page<OrderResponseDto> resultPage;
 
         if (status != null || startDate != null || endDate != null) {
-            List<OrderResponseDto> orderByStatus = orderFiltering.orders(status, startDate, endDate);
-            resultPage = new PageImpl<>(orderByStatus, PageRequest.of(page, size), orderByStatus.size());
+            resultPage = orderFiltering.orders(status, startDate, endDate, page, size);
         } else {
             resultPage = orderService.getAllOrders(page, size);
         }
@@ -49,6 +53,10 @@ public class OrderController {
         return ResponseEntity.ok(resultPage);
     }
 
+    @Operation(
+            summary = "Get all user orders",
+            method = "GET"
+    )
     @GetMapping("/v1/orders")
     public ResponseEntity<Page<OrderResponseDto>> getUserOrders(
             @RequestParam(defaultValue = "0") Integer page,
@@ -61,8 +69,7 @@ public class OrderController {
         Page<OrderResponseDto> resultPage;
 
         if (status != null || startDate != null || endDate != null) {
-            List<OrderResponseDto> orderByStatus = orderFiltering.ordersUser(status, startDate, endDate);
-            resultPage = new PageImpl<>(orderByStatus, PageRequest.of(page, size), orderByStatus.size());
+            resultPage = orderFiltering.ordersUser(status, startDate, endDate, page, size);
         } else {
             resultPage = orderService.getAllUserOrders(page, size, principal);
         }
@@ -70,13 +77,19 @@ public class OrderController {
         return ResponseEntity.ok(resultPage);
     }
 
-
+    @Operation(
+            summary = "Get order by ID",
+            method = "GET"
+    )
     @GetMapping("/v1/admin/orders/{id}")
-
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
+    @Operation(
+            summary = "Update order status",
+            method = "PATCH"
+    )
     @PatchMapping("/v1/admin/orders/{id}")
     public ResponseEntity<GenericResponse> updateStatus(
             @PathVariable("id") UUID id,
@@ -85,7 +98,10 @@ public class OrderController {
         return ResponseEntity.ok(orderService.updateStatus(id, status));
     }
 
-
+    @Operation(
+            summary = "Delete bulk orders",
+            method = "DELETE"
+    )
     @CrossOrigin
     @DeleteMapping("/v1/admin/orders/all")
     public ResponseEntity<GenericResponse> deleteBulkOrders(@RequestBody List<String> ids) {

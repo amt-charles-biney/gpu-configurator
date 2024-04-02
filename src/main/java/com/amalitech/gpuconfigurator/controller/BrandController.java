@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.dto.brand.BrandDto;
 import com.amalitech.gpuconfigurator.dto.brand.BrandRequest;
 import com.amalitech.gpuconfigurator.model.Brand;
 import com.amalitech.gpuconfigurator.service.brand.BrandService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,10 @@ public class BrandController {
 
     private final BrandService brandService;
 
+    @Operation(
+            summary = "Get all brands",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/brand")
     public ResponseEntity<List<BrandDto>> getAllBrands() {

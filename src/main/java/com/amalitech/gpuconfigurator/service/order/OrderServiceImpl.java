@@ -131,13 +131,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderResponseDto> getAllOrders(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = getPageable(page, size);
         return orderRepository.findAll(pageable).map(this::mapOrderToOrderResponseDto);
     }
 
     @Override
     public Page<OrderResponseDto> getAllUserOrders(Integer page, Integer size, Principal principal) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = getPageable(page, size);
 
         if (principal == null) throw new UsernameNotFoundException("user cannot be found");
 
@@ -253,6 +253,11 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+
+    @NotNull
+    private static Pageable getPageable(Integer page, Integer size) {
+        return PageRequest.of(page, size, Sort.by("createdAt").descending());
+    }
 
     private void reduceStock(Cart cart) {
         Set<Configuration> configuredProducts = cart.getConfiguredProducts();

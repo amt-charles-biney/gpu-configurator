@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.repository.FeaturedProductAbstraction;
 import com.amalitech.gpuconfigurator.service.recommendation.RecommendationService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,10 @@ public class RecommendationController {
 
     private final RecommendationService recommendationService;
 
+    @Operation(
+            summary = "Get recommendation",
+            method = "GET"
+    )
     @CrossOrigin
     @GetMapping("/v1/recommendation")
     public ResponseEntity<List<FeaturedProductDto>> getCartItems(

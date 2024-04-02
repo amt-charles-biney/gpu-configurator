@@ -6,6 +6,7 @@ import com.amalitech.gpuconfigurator.dto.wishlist.AddWishListItemResponse;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.service.wishlist.WishListService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,10 @@ public class WishListController {
 
     private final WishListService wishListService;
 
+    @Operation(
+            summary = "Add item to wishlist",
+            method = "POST"
+    )
     @PostMapping("/v1/wishlists/add-item/{productId}")
     public ResponseEntity<AddWishListItemResponse> addWishListItem(
             @PathVariable UUID productId,
@@ -39,6 +44,10 @@ public class WishListController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Get wishlist items",
+            method = "GET"
+    )
     @GetMapping("/v1/wishlists")
     public ResponseEntity<Page<ConfigurationResponseDto>> getWishListItems(
             @RequestParam(defaultValue = "0") int page,
@@ -53,6 +62,10 @@ public class WishListController {
         return ResponseEntity.ok(wishListService.getWishListItems(page, size, user, userSession));
     }
 
+    @Operation(
+            summary = "Remove item from wishlist",
+            method = "DELETE"
+    )
     @DeleteMapping("/v1/wishlists/{productIdOrConfiguredProductId}")
     public ResponseEntity<GenericResponse> removeWishListItem(
             @PathVariable UUID productIdOrConfiguredProductId,
