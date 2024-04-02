@@ -42,7 +42,7 @@ public class AttributeController {
     }
 
     @CrossOrigin
-    @GetMapping("/v1/admin/attributes/pageable")
+    @GetMapping("/v1/admin/attributes")
     public ResponseEntity<Page<AttributeResponse>> getAttributesPageable(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
@@ -52,12 +52,12 @@ public class AttributeController {
         return ResponseEntity.ok(attributes);
     }
 
-    @CrossOrigin
-    @GetMapping("/v1/admin/attributes")
-    public ResponseEntity<ApiResponse<List<AttributeResponse>>> getAttributes() {
-        List<AttributeResponse> attributes = attributeService.getAllAttributes();
-        return ResponseEntity.ok(new ApiResponse<>(attributes));
-    }
+//    @CrossOrigin
+//    @GetMapping("/v1/admin/attributes")
+//    public ResponseEntity<ApiResponse<List<AttributeResponse>>> getAttributes() {
+//        List<AttributeResponse> attributes = attributeService.getAllAttributes();
+//        return ResponseEntity.ok(new ApiResponse<>(attributes));
+//    }
 
     @CrossOrigin
     @GetMapping("/v1/admin/attributes/config")
