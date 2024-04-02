@@ -45,7 +45,7 @@ public class OrderController {
         Page<OrderResponseDto> resultPage;
 
         if (status != null || startDate != null || endDate != null) {
-            List<OrderResponseDto> orderByStatus = orderFiltering.orders(status, startDate, endDate);
+            List<OrderResponseDto> orderByStatus = orderFiltering.orders(status, startDate, endDate, page,size);
             resultPage = new PageImpl<>(orderByStatus, PageRequest.of(page, size), orderByStatus.size());
         } else {
             resultPage = orderService.getAllOrders(page, size);

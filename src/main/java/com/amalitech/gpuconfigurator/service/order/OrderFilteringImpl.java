@@ -6,6 +6,9 @@ import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.configuration.Configuration;
 import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,9 +25,11 @@ public class OrderFilteringImpl implements OrderFiltering {
     private final OrderRepository orderRepository;
 
     @Override
-    public List<OrderResponseDto> orders(String status, LocalDate startDate, LocalDate endDate) {
+    public List<OrderResponseDto> orders(String status, LocalDate startDate, LocalDate endDate,Integer page, Integer size) {
         Specification<Order> spec = createOrderSpecification(status, startDate, endDate);
-        List<Order> orders = orderRepository.findAll(spec);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Order> ordersPage = orderRepository.findAll(spec, pageable);
+        List<Order> orders = ordersPage.getContent();
         return orders.stream().map(this::mapOrderToOrderResponseDto).toList();
     }
 
