@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.dto.auth.AuthenticationResponse;
 import com.amalitech.gpuconfigurator.dto.auth.LoginDto;
 import com.amalitech.gpuconfigurator.dto.auth.ResetPasswordDTO;
 import com.amalitech.gpuconfigurator.dto.auth.SignUpDto;
+import com.amalitech.gpuconfigurator.dto.email.OtpTemplate;
 import com.amalitech.gpuconfigurator.dto.otp.ResendOtpDto;
 import com.amalitech.gpuconfigurator.dto.otp.VerifyOtpDTO;
 import com.amalitech.gpuconfigurator.dto.otp.VerifyUserDto;
@@ -15,7 +16,7 @@ import com.amalitech.gpuconfigurator.model.enums.Role;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.service.cart.CartService;
-import com.amalitech.gpuconfigurator.service.email.EmailServiceImpl;
+import com.amalitech.gpuconfigurator.service.email.OtpEmailServiceImpl;
 import com.amalitech.gpuconfigurator.service.jwt.JwtServiceImpl;
 import com.amalitech.gpuconfigurator.service.otp.OtpServiceImpl;
 import com.amalitech.gpuconfigurator.service.wishlist.WishListService;
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
     private final JwtServiceImpl jwtServiceImpl;
     private final AuthenticationManager authenticationManager;
     private final OtpServiceImpl otpService;
-    private final EmailServiceImpl emailService;
+    private final OtpEmailServiceImpl emailService;
     private final CartService cartService;
     private final WishListService wishListService;
 
@@ -68,7 +69,14 @@ public class UserServiceImpl implements UserService {
 
         repository.save(user);
         String code = otpService.generateAndSaveOtp(user, OtpType.CREATE);
-        emailService.sendOtpMessage(user.getEmail(), code, OtpType.CREATE);
+        OtpTemplate otpTemplate = OtpTemplate
+                .builder()
+                .to(user.getEmail())
+                .otp(code)
+                .otpType(OtpType.CREATE)
+                .build();
+
+        emailService.send(otpTemplate);
     }
 
     @Override
@@ -129,7 +137,14 @@ public class UserServiceImpl implements UserService {
 
         var otp = otpService.generateAndSaveOtp(user, OtpType.RESET);
 
-        emailService.sendOtpMessage(user.getEmail(), otp, OtpType.RESET);
+        OtpTemplate otpTemplate = OtpTemplate
+                .builder()
+                .otpType(OtpType.RESET)
+                .to(resetPasswordDTO.getEmail())
+                .otp(otp)
+                .build();
+
+        emailService.send(otpTemplate);
     }
 
     public void verifyResetOtp(VerifyOtpDTO verifyOtpDTO) {
@@ -154,7 +169,15 @@ public class UserServiceImpl implements UserService {
     public GenericResponse resendOtp(ResendOtpDto resend) throws MessagingException {
         User user = repository.findByEmail(resend.email()).orElseThrow(() -> new UsernameNotFoundException("could not send otp as this user does not exist"));
         String otp = otpService.generateAndSaveOtp(user, OtpType.valueOf(resend.type()));
-        emailService.sendOtpMessage(user.getEmail(), otp, OtpType.valueOf(resend.type()));
+
+        OtpTemplate otpTemplate = OtpTemplate
+                .builder()
+                .otp(otp)
+                .otpType(OtpType.valueOf(resend.type()))
+                .to(user.getEmail())
+                .build();
+
+        emailService.send(otpTemplate);
 
         return new GenericResponse(201, "otp has been sent");
     }

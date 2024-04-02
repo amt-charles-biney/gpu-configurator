@@ -200,9 +200,13 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+    public Order getOrderByTrackingCode(String trackingCode) {
+        return orderRepository.findByTrackingId(trackingCode).orElseThrow(() -> new NotFoundException("Order not found"));
+    }
+
     @Override
     public GenericResponse updateStatusByTrackingCode(String trackingCode, String status, String deliveryDate) {
-        Order order = orderRepository.findByTrackingId(trackingCode).orElseThrow(() -> new NotFoundException("Order not found"));
+        Order order = this.getOrderByTrackingCode(trackingCode);
         order.setStatus(status);
         order.setEstDeliveryDate(deliveryDate);
         orderRepository.save(order);

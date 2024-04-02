@@ -11,6 +11,7 @@ import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionReposit
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeRepository;
 import com.amalitech.gpuconfigurator.service.categoryConfig.CategoryConfigService;
 import com.amalitech.gpuconfigurator.service.messageQueue.redis.publisher.RedisPublisherImpl;
+import com.amalitech.gpuconfigurator.service.messageQueue.redis.publisher.RedisPublisherService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
@@ -34,7 +35,7 @@ public class AttributeServiceImpl implements AttributeService {
     private final AttributeRepository attributeRepository;
     private final AttributeOptionRepository attributeOptionRepository;
     private final CategoryConfigService categoryConfigService;
-    private final RedisPublisherImpl redisPublisher;
+    private final RedisPublisherService redisPublisherService;
 
     @Override
     public Page<AttributeResponse> getAllAttributesPageable(int size, int page, String query) {
@@ -232,7 +233,7 @@ public class AttributeServiceImpl implements AttributeService {
             newAttributeOptions.add(savedAttribute);
 
             if(attributeOption.inStock() > previousStockValue && previousStockValue <= 5) {
-                redisPublisher.publish(savedAttribute.getOptionName());
+                redisPublisherService.publishToStockUpdates(savedAttribute.getOptionName());
             }
         }
 

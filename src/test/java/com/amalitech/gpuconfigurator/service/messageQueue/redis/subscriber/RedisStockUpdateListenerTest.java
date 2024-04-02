@@ -2,7 +2,7 @@ package com.amalitech.gpuconfigurator.service.messageQueue.redis.subscriber;
 
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.User;
-import com.amalitech.gpuconfigurator.service.email.EmailServiceImpl;
+import com.amalitech.gpuconfigurator.service.email.NotifyStockUpdateEmailServiceImpl;
 import com.amalitech.gpuconfigurator.service.notification.NotificationServiceImpl;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,7 @@ class RedisStockUpdateListenerTest {
     private NotificationServiceImpl notificationService;
 
     @Mock
-    private EmailServiceImpl emailService;
+    private NotifyStockUpdateEmailServiceImpl emailService;
 
     @InjectMocks
     private RedisStockUpdateListener redisStockUpdateListener;
@@ -53,6 +53,6 @@ class RedisStockUpdateListenerTest {
         when(message.toString()).thenReturn(attributeName);
         redisStockUpdateListener.onMessage(message, new byte[0]);
 
-        verify(emailService, times(1)).sendGenericEmail(any());
+        verify(emailService, times(1)).send(any());
     }
 }

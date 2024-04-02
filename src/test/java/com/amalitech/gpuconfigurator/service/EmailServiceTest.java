@@ -1,6 +1,6 @@
 package com.amalitech.gpuconfigurator.service;
 
-import com.amalitech.gpuconfigurator.service.email.EmailServiceImpl;
+import com.amalitech.gpuconfigurator.service.email.EmailService;
 import jakarta.mail.internet.MimeMessage;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +21,7 @@ public class EmailServiceTest {
 
     @Autowired
     @InjectMocks
-    private EmailServiceImpl emailService;
+    private EmailService emailService;
 
     @Mock
     private JavaMailSender javaMailSender;
