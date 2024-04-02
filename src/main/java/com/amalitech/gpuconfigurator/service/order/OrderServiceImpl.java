@@ -256,7 +256,7 @@ public class OrderServiceImpl implements OrderService {
 
     @NotNull
     private static Pageable getPageable(Integer page, Integer size) {
-        return PageRequest.of(page, size, Sort.by("createdAt").ascending());
+        return PageRequest.of(page, size, Sort.by("createdAt").descending());
     }
 
     private void reduceStock(Cart cart) {
