@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.payment;
 
 import com.amalitech.gpuconfigurator.dto.Payment.*;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
+import com.amalitech.gpuconfigurator.exception.PaystackErrorException;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
@@ -90,7 +91,9 @@ public class PaymentServiceImpl implements PaymentService {
         if (paymentResponseJson.status()) {
             Payment paymentTransaction = savePaymentTransaction(paymentResponseJson, user, userSession);
             order = orderService.createOrder(paymentTransaction, user, userSession);
-
+        }
+        else {
+            throw new PaystackErrorException("something went wrong");
         }
 
         return VerifyPaymentResponse
