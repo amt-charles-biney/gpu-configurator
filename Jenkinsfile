@@ -87,11 +87,11 @@ pipeline {
                 sh 'docker logout'
             }
         }
-    }
-
-    stage('CleanUp') {
-        steps {
-            cleanWs()
+        
+        stage('CleanUp') {
+            steps {
+                cleanWs()
+            }
         }
     }
 }
