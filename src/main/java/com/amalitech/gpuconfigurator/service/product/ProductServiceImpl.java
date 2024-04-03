@@ -391,13 +391,30 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> products = productRepository.findAll(specification, PageRequest.of(page, size));
 
         Set<UUID> productsInWishList = getIdsOfProductsInWishList(products.getContent(), user, userSession);
+        Set<UUID> availableProducts = getIdsOfAvailableProducts(products.getContent());
 
         return products
                 .map(product -> {
                     product.setWishListItem(productsInWishList.contains(product.getId()));
+                    product.setProductAvailability(availableProducts.contains(product.getId()));
                     return product;
                 })
                 .map((new ResponseMapper())::mapProductToProductResponse);
+    }
+
+    private Set<UUID> getIdsOfAvailableProducts(List<Product> products) {
+        return products.stream()
+                .filter(product -> {
+                    List<CompatibleOption> compatibleOptions = product.getCategory().getCategoryConfig().getCompatibleOptions();
+
+                    return compatibleOptions.stream()
+                            .filter(CompatibleOption::getIsIncluded)
+                            .allMatch(includedOption ->
+                                    includedOption.getAttributeOption().getInStock() != null
+                                            && includedOption.getAttributeOption().getInStock() > 0);
+                })
+                .map(Product::getId)
+                .collect(Collectors.toSet());
     }
 
     private Set<UUID> getIdsOfProductsInWishList(List<Product> products, User user, UserSession userSession) {
