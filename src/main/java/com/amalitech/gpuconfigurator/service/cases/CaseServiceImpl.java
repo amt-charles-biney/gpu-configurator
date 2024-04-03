@@ -12,7 +12,6 @@ import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.service.cloudinary.UploadImageService;
-import com.amalitech.gpuconfigurator.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +30,6 @@ public class CaseServiceImpl implements CaseService {
     private final CaseRepository caseRepository;
     private final AttributeOptionRepository attributeOptionRepository;
     private final UploadImageService imageUploadService;
-    private final ProductService productService;
 
     @Override
     public CaseResponse createCase(CreateCaseRequest dto, MultipartFile coverImage, List<MultipartFile> images) {
@@ -59,11 +57,9 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Page<CaseResponse> findAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        return caseRepository.findAll(pageable)
-                .map(this::mapCaseToCaseResponse);
+    public Page<CaseResponse> findAll(int page, int size, String query) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return caseRepository.findAllByNameContainingIgnoreCase(query, pageRequest).map(this::mapCaseToCaseResponse);
     }
 
     @Override
@@ -100,10 +96,6 @@ public class CaseServiceImpl implements CaseService {
 
         Case savedCase = caseRepository.save(productCase);
 
-        if (isNewPrice) {
-            productService.updateTotalPriceWhenUpdatingCase(savedCase.getId(), savedCase.getPrice());
-        }
-
         return mapCaseToCaseResponse(savedCase);
     }
 
@@ -131,7 +123,7 @@ public class CaseServiceImpl implements CaseService {
                 .orElseThrow(() -> new NotFoundException("Case with id " + caseId + " does not exist."));
     }
 
-    private CaseResponse mapCaseToCaseResponse(Case productCase) {
+    public CaseResponse mapCaseToCaseResponse(Case productCase) {
         var compatibleVariants = productCase.getIncompatibleVariants()
                 .stream()
                 .map(this::mapAttributeOptionToAttributeOptionResponse)
@@ -165,5 +157,8 @@ public class CaseServiceImpl implements CaseService {
                         .unit(attributeOption.getAttribute().getUnit())
                         .build())
                 .build();
+    }
+    public List<Case> findAllCasesById(List<UUID> caseIds) {
+        return caseRepository.findAllById(caseIds);
     }
 }

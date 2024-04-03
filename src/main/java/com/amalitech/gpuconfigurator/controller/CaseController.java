@@ -46,9 +46,10 @@ public class CaseController {
     @GetMapping("/v1/admin/cases")
     public ResponseEntity<Page<CaseResponse>> findAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "100") int size
+            @RequestParam(defaultValue = "100") int size,
+            @RequestParam(defaultValue = "") String q
     ) {
-        return ResponseEntity.ok(caseService.findAll(page, size));
+        return ResponseEntity.ok(caseService.findAll(page, size, q));
     }
 
     @Operation(
