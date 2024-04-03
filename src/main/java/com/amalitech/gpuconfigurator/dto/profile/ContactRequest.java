@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.dto.profile;
 
+import com.amalitech.gpuconfigurator.annotation.IsValidPhoneNumber;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@IsValidPhoneNumber
 public class ContactRequest {
     @NotBlank
     public String phoneNumber;

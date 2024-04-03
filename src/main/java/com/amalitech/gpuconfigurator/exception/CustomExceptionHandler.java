@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler({Exception.class, PaystackErrorException.class})
     public ResponseEntity<Object> handleGenericException(Exception e) {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
