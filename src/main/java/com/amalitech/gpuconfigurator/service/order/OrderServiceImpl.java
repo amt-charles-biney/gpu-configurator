@@ -84,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderBuilder
                 .trackingId(null)
                 .trackingUrl(null)
-                .status("order confirmation")
+                .status("Assembling")
                 .estDeliveryDate(null)
                 .payment(payment).build();
         orderRepository.save(order);
