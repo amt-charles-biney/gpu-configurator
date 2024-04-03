@@ -3,6 +3,7 @@ package com.amalitech.gpuconfigurator.service.order;
 
 import com.amalitech.gpuconfigurator.constant.ShipmentContants;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.ShipmentDto;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
@@ -191,9 +192,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void shipment(UUID orderId) throws EasyPostException {
+    public void shipment( ShipmentDto orderId) throws EasyPostException {
         EasyPostClient client = new EasyPostClient(easyPost);
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("No order with this Id"));
+        Order order = orderRepository.findById(orderId.getId()).orElseThrow(() -> new NotFoundException("No order with this Id"));
 
         Map<String, Object> fromAddressMap = getFromAddressMap();
         Map<String, Object> toAddressMap = new HashMap<>();

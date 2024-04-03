@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service.order;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.ShipmentDto;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
@@ -32,5 +33,5 @@ public interface OrderService {
 
     GenericResponse updateStatusByTrackingCode(String trackingCode, String status, String deliveryDate);
 
-    void shipment(UUID orderId) throws EasyPostException;
+    void shipment( ShipmentDto orderId) throws EasyPostException;
 }
