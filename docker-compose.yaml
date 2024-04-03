@@ -37,6 +37,15 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     networks:
       - network
+    
+  redis-stack:
+    image: redis/redis-stack:latest
+    container_name: redis-stack-gpu
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    networks:
+      - network
 
 networks:
   network:
