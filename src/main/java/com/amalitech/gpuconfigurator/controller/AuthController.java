@@ -44,9 +44,12 @@ public class AuthController {
     )
     @CrossOrigin
     @PostMapping("/v1/auth/verify")
-    public ResponseEntity<AuthenticationResponse> verify(@RequestBody VerifyUserDto request) {
+    public ResponseEntity<AuthenticationResponse> verify(
+            @RequestBody VerifyUserDto request,
+            @RequestAttribute("userSession") UserSession userSession
+    ) {
 
-        AuthenticationResponse user = userService.verifyUserSignup(request);
+        AuthenticationResponse user = userService.verifyUserSignup(request, userSession);
         return ResponseEntity.ok(user);
     }
 

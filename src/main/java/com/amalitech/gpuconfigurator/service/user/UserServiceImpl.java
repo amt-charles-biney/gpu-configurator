@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public AuthenticationResponse verifyUserSignup(VerifyUserDto request) {
+    public AuthenticationResponse verifyUserSignup(VerifyUserDto request, UserSession userSession) {
         boolean isValidOtp = otpService.isValidOtp(request.email(), request.code(), OtpType.CREATE);
         if (!isValidOtp) {
             throw new UsernameNotFoundException("could not verify otp");
@@ -122,6 +122,10 @@ public class UserServiceImpl implements UserService {
         extraClaim.put("role", user.getRole());
 
         var jwtToken = jwtServiceImpl.generateToken(extraClaim, user);
+
+        cartService.mergeUserAndSessionCarts(user, userSession);
+
+        wishListService.mergeUserAndSessionWishLists(user, userSession);
 
         return AuthenticationResponse.builder()
                 .email(user.getEmail())

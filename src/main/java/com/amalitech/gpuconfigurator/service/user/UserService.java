@@ -18,7 +18,7 @@ public interface UserService {
 
     AuthenticationResponse login(LoginDto request, UserSession userSession);
 
-    AuthenticationResponse verifyUserSignup(VerifyUserDto request);
+    AuthenticationResponse verifyUserSignup(VerifyUserDto request, UserSession userSession);
 
     GenericResponse changePassword(ChangePasswordDTO changePasswordDTO) throws BadRequestException;
 
