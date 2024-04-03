@@ -1,18 +1,14 @@
 package com.amalitech.gpuconfigurator.controller;
 
-import com.amalitech.gpuconfigurator.dto.CancelledDto;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 
 import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
 import com.amalitech.gpuconfigurator.service.order.OrderFiltering;
 import com.amalitech.gpuconfigurator.service.order.OrderService;
-import com.easypost.exception.EasyPostException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -78,13 +74,6 @@ public class OrderController {
         return ResponseEntity.ok(resultPage);
     }
 
-    @PatchMapping("/v1/orders/{id}")
-    public GenericResponse cancelOrder(@PathVariable("id") UUID id,@RequestBody CancelledDto reason){
-
-        orderService.cancelOrder(id, reason);
-        return GenericResponse.builder().message("Order cancelled").status(200).build();
-    }
-
     @Operation(
             summary = "Get order by ID",
             method = "GET"
@@ -99,7 +88,7 @@ public class OrderController {
             method = "PATCH"
     )
     @PatchMapping("/v1/admin/orders/{id}")
-    public ResponseEntity<GenericResponse> updateStatus(
+    public ResponseEntity<GenericResponse> cancelledOrder(
             @PathVariable("id") UUID id,
             @RequestBody OrderStatusUpdate status
     ) {

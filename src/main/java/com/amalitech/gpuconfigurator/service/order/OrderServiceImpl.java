@@ -169,6 +169,7 @@ public class OrderServiceImpl implements OrderService {
     public GenericResponse updateStatus(UUID id, OrderStatusUpdate status) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
         order.setStatus(status.status());
+        order.setReason(status.reason());
         orderRepository.save(order);
         return GenericResponse.builder()
                 .status(200)
