@@ -1,16 +1,19 @@
 package com.amalitech.gpuconfigurator.service.categoryConfig;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.categoryconfig.*;
 import com.amalitech.gpuconfigurator.model.Category;
 import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
+import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
+import com.amalitech.gpuconfigurator.service.cases.CaseServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
@@ -39,7 +42,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     @Override
     @Transactional
     public GenericResponse createCategoryConfig(CategoryConfigRequest request) {
-        Category category = categoryService.createCategory(new CategoryRequestDto(request.name(), request.thumbnail()));
+        Category category = categoryService.createCategory(new CategoryRequestDto(request.name(), request.thumbnail(), request.caseIds()));
 
         CategoryConfig config = CategoryConfig
                 .builder()
@@ -86,6 +89,8 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .filter(entry -> entry.getValue().stream().anyMatch(option -> option.isCompatible() || option.isIncluded()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
+        List<CaseResponse> caseResponses = categoryService.getAllCaseByCategoryConfig(categoryConfig);
+
         List<VariantStockLeastDto> totalLeastStock = getTotalLeastStocks(compatibleOptions);
         int inStock = getTotalLeastStock(compatibleOptions);
 
@@ -95,6 +100,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .options(compatibleGroupedByType)
                 .inStock(inStock)
                 .totalLeastStocks(totalLeastStock)
+                .cases(caseResponses)
                 .build();
     }
 
@@ -152,6 +158,8 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                         .attributeOptionId(compatibleOption.getAttributeOption().getId().toString())
                         .build()).toList();
 
+        List<CaseResponse> caseResponses = categoryService.getAllCaseByCategoryConfig(categoryConfig);
+
         double totalPrice = compatibleOptionResponseDtoList
                 .stream()
                 .mapToDouble(compatibleOption -> compatibleOption.price() != null ? compatibleOption.price().doubleValue() : 0.0)
@@ -169,6 +177,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
                 .inStock(lowestInStock)
                 .totalLeastStocks(leastStocks)
                 .configPrice(totalPrice)
+                .cases(caseResponses)
                 .build();
     }
 
@@ -195,7 +204,12 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(UUID.fromString(compatibleOptionEditResponse.id()))
                 .orElseThrow(() -> new EntityNotFoundException("configuration does not exist"));
 
-        categoryService.updateCategory(compatibleOptionEditResponse.id(), compatibleOptionEditResponse.name(), compatibleOptionEditResponse.thumbnail());
+        categoryService.updateCategory(
+                compatibleOptionEditResponse.id(),
+                compatibleOptionEditResponse.name(),
+                compatibleOptionEditResponse.thumbnail(),
+                compatibleOptionEditResponse.caseIds()
+        );
         compatibleOptionService.updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
 
         return new GenericResponse(HttpStatus.ACCEPTED.value(), "updated category and config");

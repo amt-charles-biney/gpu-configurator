@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.model;
 
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @Builder
@@ -48,6 +48,9 @@ public class Case {
     )
     private List<AttributeOption> incompatibleVariants;
 
+    @ManyToMany(mappedBy = "categoryCase", cascade = CascadeType.PERSIST)
+    private List<Category> categories;
+
     @OneToMany(mappedBy = "productCase", cascade = {CascadeType.REMOVE})
     private List<Product> products;
 
@@ -56,4 +59,12 @@ public class Case {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @PreRemove
+    public void preRemove() {
+        for (Category category : categories) {
+            category.getCategoryCase().remove(this);
+        }
+        categories.clear();
+    }
 }

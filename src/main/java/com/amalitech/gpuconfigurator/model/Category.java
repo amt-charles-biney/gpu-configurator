@@ -7,10 +7,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -48,6 +45,17 @@ public class Category {
     private CategoryConfig categoryConfig;
 
 
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE, CascadeType.REFRESH })
+    @JoinTable(
+            name = "category_case",
+            joinColumns = @JoinColumn(name = "category_id"),
+            inverseJoinColumns = @JoinColumn(name = "case_id")
+    )
+    private List<Case> categoryCase;
+
+    public void addCases(List<Case> newCases) {
+        this.categoryCase = newCases;
+    }
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

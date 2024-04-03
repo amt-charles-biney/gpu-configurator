@@ -31,7 +31,6 @@ public class CaseServiceImpl implements CaseService {
     private final CaseRepository caseRepository;
     private final AttributeOptionRepository attributeOptionRepository;
     private final UploadImageService imageUploadService;
-    private final ProductService productService;
 
     @Override
     public CaseResponse createCase(CreateCaseRequest dto, MultipartFile coverImage, List<MultipartFile> images) {
@@ -100,10 +99,6 @@ public class CaseServiceImpl implements CaseService {
 
         Case savedCase = caseRepository.save(productCase);
 
-        if (isNewPrice) {
-            productService.updateTotalPriceWhenUpdatingCase(savedCase.getId(), savedCase.getPrice());
-        }
-
         return mapCaseToCaseResponse(savedCase);
     }
 
@@ -131,7 +126,7 @@ public class CaseServiceImpl implements CaseService {
                 .orElseThrow(() -> new NotFoundException("Case with id " + caseId + " does not exist."));
     }
 
-    private CaseResponse mapCaseToCaseResponse(Case productCase) {
+    public CaseResponse mapCaseToCaseResponse(Case productCase) {
         var compatibleVariants = productCase.getIncompatibleVariants()
                 .stream()
                 .map(this::mapAttributeOptionToAttributeOptionResponse)
@@ -165,5 +160,8 @@ public class CaseServiceImpl implements CaseService {
                         .unit(attributeOption.getAttribute().getUnit())
                         .build())
                 .build();
+    }
+    public List<Case> findAllCasesById(List<UUID> caseIds) {
+        return caseRepository.findAllById(caseIds);
     }
 }

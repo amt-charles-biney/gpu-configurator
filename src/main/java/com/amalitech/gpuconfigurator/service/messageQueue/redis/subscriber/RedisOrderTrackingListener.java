@@ -24,7 +24,7 @@ public class RedisOrderTrackingListener implements MessageListener {
 
         EmailOrderRequest emailOrderRequest = EmailOrderRequest
                 .builder()
-                .email(order.getUser().getEmail())
+                .email(order.getUserSession().getCurrentShipping().getEmail())
                 .orderStatus(order.getStatus())
                 .orderId(order.getTrackingId())
                 .message("the current order of " +  order.getTrackingId() +  "is " + order.getStatus())

@@ -14,7 +14,7 @@ public interface CategoryService {
 
     Category getCategory(String categoryName);
 
-    CategoryResponse updateCategory(String categoryId, @NotNull  String name, String thumbnail);
+    CategoryResponse updateCategory(String categoryId, @NotNull  String name, String thumbnail, List<String> caseIds);
 
     List<AllCategoryResponse> getAllCategories();
 
