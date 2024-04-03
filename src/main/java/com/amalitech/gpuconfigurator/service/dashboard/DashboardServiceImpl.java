@@ -45,7 +45,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .customers(customers)
                 .orders(orders)
                 .products(products)
-                .revenue(revenue.setScale(2, RoundingMode.HALF_UP))
+                .revenue(revenue != null ? revenue.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO)
                 .latestOrders(latestOrder())
                 .build();
     }
