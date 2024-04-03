@@ -95,7 +95,8 @@ public class OrderFilteringImpl implements OrderFiltering {
                 .paymentMethod(order.getPayment().getChannel())
                 .status(order.getStatus())
                 .trackingUrl(order.getTrackingUrl())
-                .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
+                .customerName(order.getUser() != null ? order.getUser().getFirstName() + " " + order.getUser().getLastName() :
+                        order.getUserSession().getCurrentShipping().getFirstName() + " " + order.getUserSession().getCurrentShipping().getLastName())
                 .totalPrice(order.getCart().getConfiguredProducts().stream()
                         .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
                 .date(order.getCreatedAt())

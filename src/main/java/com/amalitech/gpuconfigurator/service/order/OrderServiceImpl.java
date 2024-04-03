@@ -55,46 +55,46 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession) {
 
-            User user = null;
-            UsernamePasswordAuthenticationToken authenticationToken = ((UsernamePasswordAuthenticationToken) principal);
+        User user = null;
+        UsernamePasswordAuthenticationToken authenticationToken = ((UsernamePasswordAuthenticationToken) principal);
 
-            if (authenticationToken != null) {
-                user = (User) authenticationToken.getPrincipal();
-            }
+        if (authenticationToken != null) {
+            user = (User) authenticationToken.getPrincipal();
+        }
 
-            Order.OrderBuilder orderBuilder = Order.builder();
+        Order.OrderBuilder orderBuilder = Order.builder();
 
-            if (user != null) {
-                orderBuilder.cart(user.getCart());
-                user.setCart(new Cart());
-                userRepository.save(user);
-                orderBuilder.user(user);
-                orderBuilder.userSession(userSession);
+        if (user != null) {
+            orderBuilder.cart(user.getCart());
+            user.setCart(new Cart());
+            userRepository.save(user);
+            orderBuilder.user(user);
+            orderBuilder.userSession(userSession);
 
-            } else {
-                orderBuilder.cart(userSession.getCart());
-                userSession.setCart(new Cart());
-                userSessionRepository.save(userSession);
-                orderBuilder.userSession(userSession);
+        } else {
+            orderBuilder.cart(userSession.getCart());
+            userSession.setCart(new Cart());
+            userSessionRepository.save(userSession);
+            orderBuilder.userSession(userSession);
 
-            }
+        }
 
 
-            Order order = orderBuilder
-                    .trackingId(null)
-                    .trackingUrl(null)
-                    .status("order confirmation")
-                    .estDeliveryDate(null)
-                    .payment(payment).build();
-            orderRepository.save(order);
+        Order order = orderBuilder
+                .trackingId(null)
+                .trackingUrl(null)
+                .status("order confirmation")
+                .estDeliveryDate(null)
+                .payment(payment).build();
+        orderRepository.save(order);
 
-            reduceStock(order.getCart());
+        reduceStock(order.getCart());
 
-            return CreateOrderDto.builder()
-                    .orderId(order.getId())
-                    .trackingId(order.getTrackingId())
-                    .trackingUrl(order.getTrackingUrl())
-                    .build();
+        return CreateOrderDto.builder()
+                .orderId(order.getId())
+                .trackingId(order.getTrackingId())
+                .trackingUrl(order.getTrackingUrl())
+                .build();
 
 
     }
@@ -198,21 +198,13 @@ public class OrderServiceImpl implements OrderService {
         Map<String, Object> fromAddressMap = getFromAddressMap();
         Map<String, Object> toAddressMap = new HashMap<>();
 
-//        if (order.getUser() != null) {
-//            toAddressMap.put("name", order.getUser().getShippingInformation().getFirstName());
-//            toAddressMap.put("street1", order.getUser().getShippingInformation().getAddress1());
-//            toAddressMap.put("city", order.getUser().getShippingInformation().getCity());
-//            toAddressMap.put("state", order.getUser().getShippingInformation().getState());
-//            toAddressMap.put("country", order.getUser().getShippingInformation().getCountry());
-//            toAddressMap.put("zip", order.getUser().getShippingInformation().getZipCode());
-//        } else {
-            toAddressMap.put("name", order.getUserSession().getCurrentShipping().getFirstName());
-            toAddressMap.put("street1", order.getUserSession().getCurrentShipping().getAddress1());
-            toAddressMap.put("city", order.getUserSession().getCurrentShipping().getCity());
-            toAddressMap.put("state", order.getUserSession().getCurrentShipping().getState());
-            toAddressMap.put("country", order.getUserSession().getCurrentShipping().getCountry());
-            toAddressMap.put("zip", order.getUserSession().getCurrentShipping().getZipCode());
-//        }
+        toAddressMap.put("name", order.getUserSession().getCurrentShipping().getFirstName());
+        toAddressMap.put("street1", order.getUserSession().getCurrentShipping().getAddress1());
+        toAddressMap.put("city", order.getUserSession().getCurrentShipping().getCity());
+        toAddressMap.put("state", order.getUserSession().getCurrentShipping().getState());
+        toAddressMap.put("country", order.getUserSession().getCurrentShipping().getCountry());
+        toAddressMap.put("zip", order.getUserSession().getCurrentShipping().getZipCode());
+
 
         Map<String, Object> parcelMap = getParcelMap();
 
@@ -243,14 +235,15 @@ public class OrderServiceImpl implements OrderService {
                 .paymentMethod(order.getPayment().getChannel())
                 .status(order.getStatus())
                 .trackingUrl(order.getTrackingUrl())
-                .customerName(order.getUser().getFirstName() + " " + order.getUser().getLastName())
+                .customerName(order.getUser() != null ? order.getUser().getFirstName() + " " + order.getUser().getLastName() :
+                        order.getUserSession().getCurrentShipping().getFirstName() + " " + order.getUserSession().getCurrentShipping().getLastName())
                 .totalPrice(order.getCart().getConfiguredProducts().stream()
                         .map(Configuration::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add))
                 .date(order.getCreatedAt())
                 .estArrival(order.getEstDeliveryDate())
                 .brandName(order.getCart().getConfiguredProducts().stream().findFirst()
                         .map(prod -> prod.getProduct().getProductCase().getName()).orElse(null))
-                .shippingAddress(order.getUser().getShippingInformation().getAddress1())
+                .shippingAddress(order.getUserSession().getCurrentShipping().getAddress1())
                 .build();
     }
 
