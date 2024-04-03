@@ -31,6 +31,7 @@ public class OrderController {
             summary = "Get all orders (for admin)",
             method = "GET"
     )
+    @CrossOrigin
     @GetMapping("/v1/admin/orders")
     public ResponseEntity<Page<OrderResponseDto>> getOrders(
             @RequestParam(defaultValue = "0") Integer page,
@@ -54,6 +55,7 @@ public class OrderController {
             summary = "Get all user orders",
             method = "GET"
     )
+    @CrossOrigin
     @GetMapping("/v1/orders")
     public ResponseEntity<Page<OrderResponseDto>> getUserOrders(
             @RequestParam(defaultValue = "0") Integer page,
@@ -78,6 +80,7 @@ public class OrderController {
             summary = "Get order by ID",
             method = "GET"
     )
+    @CrossOrigin
     @GetMapping("/v1/admin/orders/{id}")
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
@@ -87,6 +90,7 @@ public class OrderController {
             summary = "Update order status",
             method = "PATCH"
     )
+    @CrossOrigin
     @PatchMapping("/v1/admin/orders/{id}")
     public ResponseEntity<GenericResponse> cancelledOrder(
             @PathVariable("id") UUID id,
