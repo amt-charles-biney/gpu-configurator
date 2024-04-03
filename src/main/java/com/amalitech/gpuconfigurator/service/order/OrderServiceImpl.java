@@ -192,7 +192,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void shipment( ShipmentDto orderId) throws EasyPostException {
+    public void shipment(ShipmentDto orderId) throws EasyPostException {
         EasyPostClient client = new EasyPostClient(easyPost);
         Order order = orderRepository.findById(orderId.getId()).orElseThrow(() -> new NotFoundException("No order with this Id"));
 
@@ -221,6 +221,14 @@ public class OrderServiceImpl implements OrderService {
         order.setEstDeliveryDate(boughtShipment.getTracker().getEstDeliveryDate() != null ? boughtShipment.getTracker().getEstDeliveryDate().toString() : null);
         orderRepository.save(order);
 
+    }
+
+    @Override
+    public void cancelOrder(UUID id, String reason) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
+        order.setStatus("Cancelled");
+        order.setReason(reason);
+        orderRepository.save(order);
     }
 
     private OrderResponseDto mapOrderToOrderResponseDto(Order order) {

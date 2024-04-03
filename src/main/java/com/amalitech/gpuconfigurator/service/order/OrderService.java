@@ -34,4 +34,6 @@ public interface OrderService {
     GenericResponse updateStatusByTrackingCode(String trackingCode, String status, String deliveryDate);
 
     void shipment( ShipmentDto orderId) throws EasyPostException;
+
+    void cancelOrder(UUID id, String reason);
 }

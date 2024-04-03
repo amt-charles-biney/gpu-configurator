@@ -43,6 +43,9 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "cancelled_reason")
+    private String reason;
+
     @ManyToOne
     @JoinColumn(name = "user_session")
     private UserSession userSession;

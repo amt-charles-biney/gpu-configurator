@@ -77,6 +77,13 @@ public class OrderController {
         return ResponseEntity.ok(resultPage);
     }
 
+    @PatchMapping("/v1/orders/{id}")
+    public GenericResponse cancelOrder(@PathVariable("id") UUID id, String reason){
+
+        orderService.cancelOrder(id, reason);
+        return GenericResponse.builder().message("Order cancelled").status(200).build();
+    }
+
     @Operation(
             summary = "Get order by ID",
             method = "GET"
