@@ -227,7 +227,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<ProductResponse> getAllProductsAdmin(Integer page, Integer size, String query) {
         Pageable pageable = PageRequest.of(page, size,Sort.by("createdAt").descending());
-        return productRepository.findAllByProductNameContainingIgnoreCase(query, pageable).map(getProductProductResponseFunction());
+        return productRepository.findAllByProductWithNoSoftDelete(query, pageable).map(getProductProductResponseFunction());
     }
 
     @NotNull
@@ -363,6 +363,8 @@ public class ProductServiceImpl implements ProductService {
 
             predicates.add(builder.notEqual(root.get("category").get("categoryName"), "unassigned")); // exclude products without category
 
+            predicates.add(builder.equal(root.get("isDeleted"), false));
+
             if (!dto.query().isBlank()) {
                 predicates.add(getQueryPredicate(dto.query(), root, builder));
             }
@@ -469,7 +471,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public void deleteProductById(UUID id) {
-        productRepository.deleteById(id);
+       Product prod =  productRepository.findById(id).orElseThrow(()-> new NotFoundException("No product found"));
+       prod.setIsDeleted(true);
+       productRepository.save(prod);
     }
 
     public List<FeaturedProductDto> getNewProducts() {

@@ -64,6 +64,9 @@ public class Product {
     @Column(name = "product_featured")
     private Boolean featured;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
     @Column(name = "product_availability", nullable = false)
     private Boolean productAvailability;
 
@@ -82,6 +85,7 @@ public class Product {
         createdAt = LocalDateTime.now();
         productAvailability = true;
         featured = false;
+        isDeleted = false;
     }
 
 
