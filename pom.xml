@@ -136,8 +136,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-<<<<<<< HEAD
-=======
 
             <!-- Flyway Maven Plugin -->
             <plugin>
@@ -152,7 +150,6 @@
 <!--                    <locations>filesystem:src/main/resources/db/migration</locations>-->
 <!--                </configuration>-->
             </plugin>
->>>>>>> 8c583d16 (fix: decouple shipment from order)
         </plugins>
     </build>
 
