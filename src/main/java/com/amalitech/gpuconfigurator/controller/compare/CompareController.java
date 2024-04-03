@@ -7,7 +7,6 @@ import com.amalitech.gpuconfigurator.dto.product.ProductResponseDto;
 import com.amalitech.gpuconfigurator.service.compare.CompareServiceImpl;
 import com.amalitech.gpuconfigurator.service.product.ProductServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -69,6 +69,7 @@ public class OrderServiceImpl implements OrderService {
                 user.setCart(new Cart());
                 userRepository.save(user);
                 orderBuilder.user(user);
+                orderBuilder.userSession(userSession);
 
             } else {
                 orderBuilder.cart(userSession.getCart());
@@ -197,21 +198,21 @@ public class OrderServiceImpl implements OrderService {
         Map<String, Object> fromAddressMap = getFromAddressMap();
         Map<String, Object> toAddressMap = new HashMap<>();
 
-        if (order.getUser() != null) {
-            toAddressMap.put("name", order.getUser().getShippingInformation().getFirstName());
-            toAddressMap.put("street1", order.getUser().getShippingInformation().getAddress1());
-            toAddressMap.put("city", order.getUser().getShippingInformation().getCity());
-            toAddressMap.put("state", order.getUser().getShippingInformation().getState());
-            toAddressMap.put("country", order.getUser().getShippingInformation().getCountry());
-            toAddressMap.put("zip", order.getUser().getShippingInformation().getZipCode());
-        } else {
+//        if (order.getUser() != null) {
+//            toAddressMap.put("name", order.getUser().getShippingInformation().getFirstName());
+//            toAddressMap.put("street1", order.getUser().getShippingInformation().getAddress1());
+//            toAddressMap.put("city", order.getUser().getShippingInformation().getCity());
+//            toAddressMap.put("state", order.getUser().getShippingInformation().getState());
+//            toAddressMap.put("country", order.getUser().getShippingInformation().getCountry());
+//            toAddressMap.put("zip", order.getUser().getShippingInformation().getZipCode());
+//        } else {
             toAddressMap.put("name", order.getUserSession().getCurrentShipping().getFirstName());
             toAddressMap.put("street1", order.getUserSession().getCurrentShipping().getAddress1());
             toAddressMap.put("city", order.getUserSession().getCurrentShipping().getCity());
             toAddressMap.put("state", order.getUserSession().getCurrentShipping().getState());
             toAddressMap.put("country", order.getUserSession().getCurrentShipping().getCountry());
             toAddressMap.put("zip", order.getUserSession().getCurrentShipping().getZipCode());
-        }
+//        }
 
         Map<String, Object> parcelMap = getParcelMap();
 
