@@ -2,6 +2,7 @@ package com.amalitech.gpuconfigurator.service.order;
 
 
 import com.amalitech.gpuconfigurator.constant.ShipmentContants;
+import com.amalitech.gpuconfigurator.dto.CancelledDto;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.ShipmentDto;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
@@ -224,10 +225,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void cancelOrder(UUID id, String reason) {
+    public void cancelOrder(UUID id, CancelledDto reason) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
         order.setStatus("Cancelled");
-        order.setReason(reason);
+        order.setReason(reason.reason());
         orderRepository.save(order);
     }
 

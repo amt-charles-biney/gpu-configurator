@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.order;
 
+import com.amalitech.gpuconfigurator.dto.CancelledDto;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.ShipmentDto;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
@@ -35,5 +36,5 @@ public interface OrderService {
 
     void shipment( ShipmentDto orderId) throws EasyPostException;
 
-    void cancelOrder(UUID id, String reason);
+    void cancelOrder(UUID id, CancelledDto reason);
 }

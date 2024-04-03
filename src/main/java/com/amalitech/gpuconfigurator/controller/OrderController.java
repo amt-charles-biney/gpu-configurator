@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.controller;
 
+import com.amalitech.gpuconfigurator.dto.CancelledDto;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 
@@ -78,7 +79,7 @@ public class OrderController {
     }
 
     @PatchMapping("/v1/orders/{id}")
-    public GenericResponse cancelOrder(@PathVariable("id") UUID id, String reason){
+    public GenericResponse cancelOrder(@PathVariable("id") UUID id,@RequestBody CancelledDto reason){
 
         orderService.cancelOrder(id, reason);
         return GenericResponse.builder().message("Order cancelled").status(200).build();
