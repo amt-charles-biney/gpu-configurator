@@ -1,11 +1,15 @@
-FROM maven:3.9.6 AS build
+FROM openjdk:21-jdk-slim AS build
 
 WORKDIR /code
 COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw mvnw
 COPY . /code
 
+RUN chmod +x mvnw
 # Build the application cache dependancies
-RUN --mount=type=cache,target=/root/.m2 mvn install
+# RUN --mount=type=cache,target=/root/.m2 mvn install
+RUN ./mvnw clean package -Dmaven.test.skip
 
 # # Build the application
 # RUN mvn clean package -DskipTests
