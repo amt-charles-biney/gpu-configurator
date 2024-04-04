@@ -2,7 +2,6 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.FeaturedResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.FeaturedProductDto;
-import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.service.product.FeaturedService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

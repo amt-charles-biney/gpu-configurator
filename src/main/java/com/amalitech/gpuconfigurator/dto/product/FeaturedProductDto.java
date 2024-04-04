@@ -13,6 +13,7 @@ public record FeaturedProductDto(
 
         BigDecimal productPrice,
 
-        String productBrand
+        String productBrand,
+        boolean productAvailability
         ) {
 }
