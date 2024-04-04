@@ -46,8 +46,8 @@ public class ProductServiceImpl implements ProductService {
 
     private static Predicate getQueryPredicate(String query, Root<Product> root, CriteriaBuilder builder) {
         return builder.or(
-                builder.like(builder.lower(root.get("productName")), "%" + query + "%"),
-                builder.like(builder.lower(root.get("productDescription")), "%" + query + "%")
+                builder.like(builder.lower(root.get("productName")), "%" + query.toLowerCase() + "%"),
+                builder.like(builder.lower(root.get("productDescription")), "%" + query.toLowerCase() + "%")
         );
     }
 
