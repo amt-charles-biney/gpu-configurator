@@ -18,6 +18,7 @@ import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
+import com.amalitech.gpuconfigurator.service.email.CancellationEmailService;
 import com.amalitech.gpuconfigurator.service.status.StatusService;
 import com.easypost.exception.EasyPostException;
 import com.easypost.exception.General.MissingParameterError;
@@ -50,6 +51,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserSessionRepository userSessionRepository;
     private final CompatibleOptionRepository compatibleOptionRepository;
     private final AttributeOptionRepository attributeOption;
+    private final CancellationEmailService cancellationEmailService;
     @Value("${easy-test-key}")
     private String easyPost;
 
@@ -230,6 +232,8 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
         order.setStatus("Cancelled");
         order.setReason(reason.reason());
+
+        cancellationEmailService.cancelEmail(order.getUserSession().getCurrentShipping().getEmail(), reason.reason(), "Order Cancelled");
         orderRepository.save(order);
     }
 

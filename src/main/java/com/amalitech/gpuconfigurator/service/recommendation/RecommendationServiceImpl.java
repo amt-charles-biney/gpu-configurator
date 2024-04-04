@@ -27,23 +27,27 @@ public class RecommendationServiceImpl implements RecommendationService {
 
         List<FeaturedProductDto> recommendedProducts = new ArrayList<>();
 
-        Product product = getProductFromUserOrSession(user, userSession);
+        if (userSession.getCart() == null) {
+            return recommendedProducts;
+        } else {
+            Product product = getProductFromUserOrSession(user, userSession);
 
-        if (product != null) {
-            List<FeaturedProductAbstraction> prods = productRepository.selectAllProductByCategory(product.getCategory().getId());
+            if (product != null) {
+                List<FeaturedProductAbstraction> prods = productRepository.selectAllProductByCategory(product.getCategory().getId());
 
-            // Filter out the product that is already in the user's cart
-            prods.removeIf(prod -> user != null && user.getCart().getConfiguredProducts().stream()
-                    .anyMatch(config -> config.getProduct().getId().toString().equals(prod.getId())));
+                // Filter out the product that is already in the user's cart
+                prods.removeIf(prod -> user != null && user.getCart().getConfiguredProducts().stream()
+                        .anyMatch(config -> config.getProduct().getId().toString().equals(prod.getId())));
 
-            // Shuffle the list of products
-            Collections.shuffle(prods);
+                // Shuffle the list of products
+                Collections.shuffle(prods);
 
-            // Add the first 3 random products to the list
-            int count = Math.min(3, prods.size()); // Ensure not to exceed the size of the list
-            for (int i = 0; i < count; i++) {
-                FeaturedProductAbstraction featuredProduct = prods.get(i);
-                recommendedProducts.add(createFeaturedProductDto(featuredProduct));
+                // Add the first 3 random products to the list
+                int count = Math.min(3, prods.size()); // Ensure not to exceed the size of the list
+                for (int i = 0; i < count; i++) {
+                    FeaturedProductAbstraction featuredProduct = prods.get(i);
+                    recommendedProducts.add(createFeaturedProductDto(featuredProduct));
+                }
             }
         }
 
