@@ -214,7 +214,7 @@ public class AttributeServiceImpl implements AttributeService {
                         return newOption;
                     });
 
-            int previousStockValue = updateAttribute.getInStock();
+            int previousStockValue = (updateAttribute.getInStock() != null) ? updateAttribute.getInStock() : Integer.MAX_VALUE;
 
             updateAttribute.setPriceAdjustment(attributeOption.price());
             updateAttribute.setAttribute(attribute);
