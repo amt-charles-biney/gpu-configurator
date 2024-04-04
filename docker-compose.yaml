@@ -5,8 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: gpu-configurator-backend-dec-java
-    container_name: gpu-configurator-backend-dec-backend
+    image: gpu-configurator-backend-dev-java
+    container_name: gpu-configurator-backend-dev-backend
     restart: on-failure
     ports:
       - "8081:8081"
