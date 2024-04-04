@@ -69,10 +69,10 @@ pipeline {
                         sh """
                             ssh -i "sshkey" $USERNAME@$HOST_IP \
                             cd /home/ubuntu/gpu-configurator
-                            sudo docker system prune --force
-                            sudo docker pull amalitechservices/gpu-configurator:latest
-                            sudo docker rm -f gpu-configurator
-                            sudo docker run -d  -p 8081:8081 --name gpu-configurator amalitechservices/gpu-configurator:latest
+                            docker system prune --force
+                            docker pull amalitechservices/gpu-configurator:latest
+                            docker rm -f gpu-configurator
+                            docker run -d  -p 8081:8081 --name gpu-configurator amalitechservices/gpu-configurator:latest
                         """
                         }
                 }
