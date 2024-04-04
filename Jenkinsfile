@@ -3,14 +3,18 @@ pipeline {
 
     stages {
         stage('Build With Maven') {
-            //build on every branch
+            when {
+                anyOf {
+                    branch 'PresentationLayDev'
+                    branch 'staging'
+                }
+            }
             steps {
                 sh './mvnw wrapper:wrapper'
             }
         }
 
         stage('Build Docker Image') {
-            // only on specified branches
             when {
                 anyOf {
                     branch 'PresentationLayDev'
