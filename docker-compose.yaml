@@ -7,9 +7,9 @@ services:
       dockerfile: Dockerfile
     image: gpu-configurator-backend-dev-java
     container_name: gpu-configurator-backend-dev-backend
-    # restart: on-failure
+    restart: on-failure
     ports:
-      - "8082:8081"
+      - "8081:8081"
     env_file: .env
     # environment:
     #   - DOCKER_BUILDKIT=1
