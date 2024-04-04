@@ -73,25 +73,13 @@ pipeline {
                             docker pull amalitechservices/gpu-configurator:latest
                             docker rm -f gpu-configurator
                             docker run -d  -p 8081:8081 --name gpu-configurator amalitechservices/gpu-configurator:latest
+                            docker logout
                         """
                         }
                 }
             }
         }
 
-        stage('Prune docker') {
-            when {
-                anyOf {
-                    branch 'PresentationLayDev'
-                    branch 'staging'
-                }
-            }
-            steps {
-                sh 'docker rmi amalitechservices/gpu-configurator:latest'
-                sh 'docker logout'
-            }
-        }
-        
         stage('CleanUp') {
             steps {
                 cleanWs()
