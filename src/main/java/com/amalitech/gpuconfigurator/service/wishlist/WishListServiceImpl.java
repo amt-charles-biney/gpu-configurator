@@ -58,6 +58,21 @@ public class WishListServiceImpl implements WishListService {
         Pageable pageable = PageRequest.of(page, size);
 
         return configuredProductRepository.findByWishListId(wishList.getId(), pageable)
+                .map(configuredProduct -> {
+                    boolean isAvailable = configuredProduct
+                            .getProduct()
+                            .getCategory()
+                            .getCategoryConfig()
+                            .getCompatibleOptions()
+                            .stream()
+                            .filter(CompatibleOption::getIsIncluded)
+                            .allMatch(includedOption ->
+                                    includedOption.getAttributeOption().getInStock() != null
+                                            && includedOption.getAttributeOption().getInStock() > 0);
+
+                    configuredProduct.getProduct().setProductAvailability(isAvailable);
+                    return configuredProduct;
+                })
                 .map((new ResponseMapper())::mapConfigurationToConfigurationResponseDto);
     }
 

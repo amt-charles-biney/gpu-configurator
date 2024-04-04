@@ -16,9 +16,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
+    private final String MESSAGE = "Something went wrong, try again later";
+
     @ExceptionHandler({Exception.class, PaystackErrorException.class})
     public ResponseEntity<Object> handleGenericException(Exception e) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, MESSAGE);
     }
 
     @ExceptionHandler({MessagingException.class})

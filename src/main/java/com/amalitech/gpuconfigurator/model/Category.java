@@ -61,6 +61,11 @@ public class Category {
         createdAt = LocalDateTime.now();
     }
 
+    @PreRemove
+    public void preRemove() {
+       categoryCase.clear();
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

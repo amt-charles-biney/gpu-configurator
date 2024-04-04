@@ -1,90 +1,206 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<title>Stock Email Update</title>
 <head>
     <meta charset="UTF-8">
-    <title>Email Template</title>
-    <style>
-        /* Reset styles */
-        body, html {
-          margin: 0;
-          padding: 0;
-          font-family: Arial, sans-serif;
-          background-color: #f5f5f5; /* Greyish background */
-        }
-        /* Container */
-        .container {
-          max-width: 600px;
-          margin: 20px auto;
-          padding: 20px;
-          border-radius: 8px;
-          background-color: #fff; /* White background */
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Box shadow */
-        }
-        /* Header */
-        .header {
-          text-align: center;
-          margin-bottom: 20px;
-        }
-        .header h1 {
-          color: #3cb043; /* Primary color */
-          margin: 0;
-          font-size: 24px; /* Adjusted font size */
-        }
-        /* Product Info */
-        .product-info {
-          border-top: 1px solid #ccc;
-          padding-top: 20px;
-          margin-top: 20px;
-        }
-        .product-info h2 {
-          margin-top: 0;
-          color: #333;
-          font-size: 20px; /* Adjusted font size */
-        }
-        .product-info p {
-          color: #666;
-          margin-bottom: 5px;
-          font-size: 16px; /* Adjusted font size */
-        }
-        .product-info .button {
-          display: inline-block;
-          padding: 8px 16px; /* Adjusted button padding */
-          background-color: #3cb043; /* Primary color */
-          color: #fff;
-          text-decoration: none;
-          border-radius: 5px;
-          transition: background-color 0.3s ease;
-          font-size: 14px; /* Adjusted font size */
-        }
-        .product-info .button:hover {
-          background-color: #2e8736; /* Darker shade of primary color */
-        }
-        /* Footer */
-        .footer {
-          margin-top: 20px;
-          text-align: center;
-          color: #999;
-          font-size: 14px; /* Adjusted font size */
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Stock Update</title>
+
 </head>
+<style>
+    *{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+
+}
+
+body{
+    background: rgb(243, 240, 240);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.main-section{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    max-width: 600px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.logo{
+    margin: 10px;
+}
+.image img{
+    width: 600px;
+    height: 300px;
+    border-radius: 15px;
+}
+
+.sub-message-1,
+.sub-message-2{
+    padding: 10px;
+    text-align: center;
+    color: rgb(46, 42, 42);
+    width: 100%;
+    margin: 0;
+}
+
+.sub-message-1 p,
+.sub-message-2 p{
+    margin-top: 20px;
+    font-size: 14px;
+
+}
+
+.btn{
+    background-color: rgb(65, 111, 240);
+    border: none;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    color: white;
+    padding: 10px 15px 10px 15px;
+    border-radius: 22px;
+    box-shadow: 2px 25px 16px -7px rgba(224,207,207,0.72);
+-webkit-box-shadow: 2px 25px 16px -7px rgba(224,207,207,0.72);
+-moz-box-shadow: 2px 25px 16px -7px rgba(224,207,207,0.72);
+}
+
+.section-group{
+    margin-top: 20px;
+    justify-content: center;
+    align-items: center;
+
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+td{
+    padding: 10px;
+    font-weight: lighter;
+    font-size: 14px;
+    border: none;
+
+}
+tr:nth-child(odd) {
+    background-color: #ddf0f8;
+  }
+  span{
+    font-weight: bold;
+  }
+
+
+h3{
+    font-size: 14px;
+    font-weight: lighter;
+}
+
+footer{
+    margin-top: 60px;
+    margin-bottom: 30px;
+    justify-content: center;
+    text-align: center;
+}
+
+.nav ul{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    list-style-type: none;
+}
+.nav ul li a{
+    text-decoration: none;
+    color: rgb(85, 78, 78);
+    font-weight: bold;
+}
+.socials{
+    margin-top: 10px;
+}
+.socials img{
+    width: 20px;
+    height: 20px;
+}
+
+ p{
+    margin-top: 20px;
+    font-size: 14px;
+}
+a{
+    color: rgb(49, 46, 46);
+}
+</style>
 <body>
-
-<div class="container">
-    <div class="header">
-        <p th:text="${title}">title</p>
+<div class="main-section">
+    <div class="logo">
+        <img src="./Default_A_minimalist_and_elegant_logo_that_conveys_the_sophist_0_01cdac1b-90fe-48d9-8a3a-393a54603823_0 1.png" alt="">
+        <img src="./assets/name.PNG" alt="">
     </div>
-
-    <div class="product-info">
-        <p th:text="${message}">Message</p>
-        <a href="#" class="button">View Product</a>
+    <div class="image">
+        <img src="https://th.bing.com/th/id/OIP.L-2JnVeW5kxBaWgDxXSlYwHaEN?w=808&h=459&rs=1&pid=ImgDetMain" alt="conference">
     </div>
+    <div class="sub-message-1">
+        <h1 th:text="${title}">title</h1>
+        <div class="logo">
+            <img src="./assets/Default_A_minimalist_and_elegant_logo_that_conveys_the_sophist_0_01cdac1b-90fe-48d9-8a3a-393a54603823_0 1.png" alt="">
+            <img src="./assets/name.PNG" alt="">
+        </div>
+        <p th:text="${message}" style="font-size: 20px; font-weight: bold">Message</p>
 
-    <div class="footer">
-        <p>This email was sent by GPU Configurator</p>
+        <button class="btn">Watch the Video</button>
+    </div>
+    <div class="sub-message-2">
+        <h1>
+   GPU SERVER CONFIGURATOR
+        </h1>
+        <p>
+           e
+        </p>
+        <button class="btn">Log in S3RVERS</button>
     </div>
 </div>
 
+<footer>
+    <div class="nav">
+        <ul>
+            <li>
+                <a href="#">
+                    About us
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    News
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    Career
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    The shops
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="socials">
+        <img src="./assets/email.png" alt="email icon">
+    </div>
+    <p>
+        You are receiving this email because you have visited our site or asked us about the regular <br>
+        newsletter. Make sure our messages get to your inbox(and not your bulk or junk folders) <br>
+        <a href="#">privacy policy | Unsubscribe</a>
+    </p>
+    </div>
+</footer>
 </body>
 </html>

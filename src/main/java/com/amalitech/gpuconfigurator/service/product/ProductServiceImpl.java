@@ -46,8 +46,8 @@ public class ProductServiceImpl implements ProductService {
 
     private static Predicate getQueryPredicate(String query, Root<Product> root, CriteriaBuilder builder) {
         return builder.or(
-                builder.like(builder.lower(root.get("productName")), "%" + query + "%"),
-                builder.like(builder.lower(root.get("productDescription")), "%" + query + "%")
+                builder.like(builder.lower(root.get("productName")), "%" + query.toLowerCase() + "%"),
+                builder.like(builder.lower(root.get("productDescription")), "%" + query.toLowerCase() + "%")
         );
     }
 
@@ -502,6 +502,12 @@ public class ProductServiceImpl implements ProductService {
                 .productBrand(product.getProductCase().getName())
                 .productPrice(product.getTotalProductPrice())
                 .coverImage(product.getProductCase().getCoverImageUrl())
+                .productAvailability(product.getCategory().getCategoryConfig().getCompatibleOptions()
+                                .stream()
+                                .filter(CompatibleOption::getIsIncluded)
+                                .allMatch(includedOption ->
+                                        includedOption.getAttributeOption().getInStock() != null
+                                                && includedOption.getAttributeOption().getInStock() > 0))
                 .build()).toList();
     }
 
