@@ -173,6 +173,10 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(status.status());
         order.setReason(status.reason());
         orderRepository.save(order);
+
+        String message = "Sorry, we cannot process your order due to the following reason\n" + status.reason() + "\nThank you for your cooperation";
+
+        cancellationEmailService.cancelEmail(order.getUserSession().getCurrentShipping().getEmail(), message, "Order Cancelled");
         return GenericResponse.builder()
                 .status(200)
                 .message("order id" + " " + id + " " + "updated")
@@ -232,8 +236,6 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
         order.setStatus("Cancelled");
         order.setReason(reason.reason());
-
-        cancellationEmailService.cancelEmail(order.getUserSession().getCurrentShipping().getEmail(), reason.reason(), "Order Cancelled");
         orderRepository.save(order);
     }
 

@@ -12,16 +12,21 @@ import org.springframework.stereotype.Service;
 public class CancellationEmailServiceImpl implements CancellationEmailService {
 
     private final JavaMailSender mailSender;
+
+    @Value("${spring.mail.host}")
+    private String sender;
+
     @Override
     public void cancelEmail(String toEMail, String body, String subject) {
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("S3VERS");
+        message.setFrom(sender);
         message.setTo(toEMail);
         message.setText(body);
         message.setSubject(subject);
 
         mailSender.send(message);
+
 
     }
 }
