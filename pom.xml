@@ -15,7 +15,7 @@
     <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>21</java.version>
-        <maven.test.skip>true</maven.test.skip>
+<!--        <maven.test.skip>true</maven.test.skip>-->
     </properties>
     <dependencies>
         <dependency>
@@ -180,6 +180,13 @@
 <!--                    <url>jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}</url>-->
 <!--                    <locations>filesystem:src/main/resources/db/migration</locations>-->
 <!--                </configuration>-->
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
             </plugin>
         </plugins>
     </build>

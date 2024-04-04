@@ -5,7 +5,7 @@ COPY pom.xml .
 COPY . /code
 
 # Build the application cache dependancies
-RUN --mount=type=cache,target=/root/.m2 mvn install
+RUN --mount=type=cache,target=/root/.m2 mvn clean install -Dmaven.test.skip=true
 
 # # Build the application
 # RUN mvn clean package -DskipTests
