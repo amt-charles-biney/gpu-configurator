@@ -7,16 +7,16 @@ services:
       dockerfile: Dockerfile
     image: gpu-configurator-backend-dev-java
     container_name: gpu-configurator-backend-dev-backend
-    restart: on-failure
+    # restart: on-failure
     ports:
-      - "8081:8081"
+      - "8082:8081"
     env_file: .env
-    environment:
-      - DOCKER_BUILDKIT=1
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}
-      - SPRING_DATASOURCE_USERNAME=${DB_USER}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    # environment:
+    #   - DOCKER_BUILDKIT=1
+    #   - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}
+    #   - SPRING_DATASOURCE_USERNAME=${DB_USER}
+    #   - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+    #   - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     networks:
       - network
     depends_on: 
