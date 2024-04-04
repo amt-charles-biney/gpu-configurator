@@ -22,7 +22,13 @@ pipeline {
                 }
             }
             steps {
-                sh 'docker build -t amalitechservices/gpu-configurator:latest .'
+                script {
+                    withCredentials([
+                        file(credentialsId: 'env', variable: 'envFile')]) {
+                            sh 'cat $envFile > .env'
+                            sh 'docker build -t amalitechservices/gpu-configurator:latest .'
+                        }
+                }
             }
         }
 
@@ -72,7 +78,7 @@ pipeline {
                             docker system prune --force
                             docker pull amalitechservices/gpu-configurator:latest
                             docker rm -f gpu-configurator
-                            docker run -d -p 8081:8081 --name gpu-configurator amalitechservices/gpu-configurator:latest
+                            docker run -d -p 8081:8081 --env-file=.env --name gpu-configurator amalitechservices/gpu-configurator:latest
                             docker logout '
                         """
                         }
