@@ -55,7 +55,6 @@ pipeline {
             }
             steps {
                 sh 'docker push amalitechservices/gpu-configurator:latest'
-                sh 'docker logout'
             }
         }
 
@@ -73,14 +72,14 @@ pipeline {
                         usernamePassword(credentialsId: 'EC2_CRED', usernameVariable: 'USERNAME', passwordVariable: 'HOST_IP')]) {
                         sh 'cp $EC2_SSH_KEY ./sshkey'
                         sh 'chmod 400 sshkey'
-                        sh 'scp -i sshkey -o StrictHostKeyChecking=no -r /* $USERNAME@$HOST_IP:/home/ubuntu/gpu-configurator/'
                         sh """
                             ssh -i "sshkey" -o StrictHostKeyChecking=no $USERNAME@$HOST_IP '
                             cd /home/ubuntu/gpu-configurator
                             docker system prune --force
                             docker compose build --no-cache
                             docker rm -f gpu-configurator
-                            docker compose up -d '
+                            docker compose up -d
+                            docker logout '
                         """
                         }
                 }
