@@ -30,6 +30,6 @@ public class WebConfiguration implements WebMvcConfigurer {
                 .allowedOrigins("https://servers.amalitech-dev.net", "http://localhost:4200")
                 .allowCredentials(true)
                 .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name(), HttpMethod.PATCH.name())
-                .allowedHeaders(HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION);
+                .allowedHeaders("*");
     }
 }
