@@ -67,7 +67,6 @@ public class CartController {
             summary = "Get items from the cart",
             method = "GET"
     )
-    @CrossOrigin
     @GetMapping("/v1/carts")
     public ResponseEntity<CartItemsResponse> getCartItems(
             @RequestAttribute("userSession") UserSession userSession,
