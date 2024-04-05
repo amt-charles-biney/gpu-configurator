@@ -16,7 +16,7 @@ import java.util.UUID;
 public class UserSessionInterceptor implements HandlerInterceptor {
     private final String USER_SESSION_COOKIE_NAME = "user_session";
 
-    private final int USER_SESSION_COOKIE_MAX_AGE = 365 * 24 * 60 * 60; // 1yr
+    private final int USER_SESSION_COOKIE_MAX_AGE = 365 * 24 * 60 * 60;
 
     private final UserSessionRepository userSessionRepository;
 
@@ -72,7 +72,8 @@ public class UserSessionInterceptor implements HandlerInterceptor {
         sessionCookie.setPath("/");
         sessionCookie.setMaxAge(USER_SESSION_COOKIE_MAX_AGE);
         sessionCookie.setHttpOnly(true);
-        sessionCookie.setAttribute("SameSite", "Lax");
+        sessionCookie.setAttribute("SameSite", "None");
+        sessionCookie.setSecure(true);
 
         return sessionCookie;
     }
