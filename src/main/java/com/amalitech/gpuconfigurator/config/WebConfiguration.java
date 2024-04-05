@@ -27,8 +27,8 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:4200")
-                .allowedOrigins("https://servers.amalitech-dev.net/")
+//                .allowedOrigins("http://localhost:4200")
+                .allowedOrigins("https://servers.amalitech-dev.net")
                 .allowCredentials(true)
                 .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name())
                 .allowedHeaders(HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION);
