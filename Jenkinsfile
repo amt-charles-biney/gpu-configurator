@@ -22,7 +22,13 @@ pipeline {
                 }
             }
             steps {
-                sh 'docker build -t amalitechservices/gpu-configurator:latest .'
+                script {
+                    withCredentials([
+                        file(credentialsId: 'env', variable: 'envFile')]) {
+                            sh 'cat $envFile > .env'
+                            sh 'docker build -t amalitechservices/gpu-configurator:latest .'
+                        }
+                }
             }
         }
 
@@ -65,15 +71,15 @@ pipeline {
                         file(credentialsId: 'EC2_SSH_KEY', variable: 'EC2_SSH_KEY'),
                         usernamePassword(credentialsId: 'EC2_CRED', usernameVariable: 'USERNAME', passwordVariable: 'HOST_IP')]) {
                         sh 'cp $EC2_SSH_KEY ./sshkey'
-                        sh 'chmod 600 sshkey'
+                        sh 'chmod 400 sshkey'
                         sh """
-                            ssh -i "sshkey" $USERNAME@$HOST_IP \
+                            ssh -i "sshkey" -o StrictHostKeyChecking=no $USERNAME@$HOST_IP '
                             cd /home/ubuntu/gpu-configurator
                             docker system prune --force
-                            docker pull amalitechservices/gpu-configurator:latest
+                            docker compose build --no-cache
                             docker rm -f gpu-configurator
-                            docker run -d  -p 8081:8081 --name gpu-configurator amalitechservices/gpu-configurator:latest
-                            docker logout
+                            docker compose up -d
+                            docker logout '
                         """
                         }
                 }

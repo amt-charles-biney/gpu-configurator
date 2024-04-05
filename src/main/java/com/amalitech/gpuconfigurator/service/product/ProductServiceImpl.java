@@ -493,9 +493,12 @@ public class ProductServiceImpl implements ProductService {
        productRepository.save(prod);
     }
 
-    public List<FeaturedProductDto> getNewProducts() {
+    public List<FeaturedProductDto> getNewProducts(User user, UserSession userSession) {
         LocalDateTime timeRequest = LocalDateTime.now().minusHours(24);
         var products = productRepository.getBrandNewProducts(timeRequest).orElse(Collections.emptyList());
+
+        Set<UUID> productsInWishList = getIdsOfNewProductsInWishList(products, user, userSession);
+
         return products.stream().map(product -> FeaturedProductDto.builder()
                 .id(product.getId())
                 .productName(product.getProductName())
@@ -508,7 +511,54 @@ public class ProductServiceImpl implements ProductService {
                                 .allMatch(includedOption ->
                                         includedOption.getAttributeOption().getInStock() != null
                                                 && includedOption.getAttributeOption().getInStock() > 0))
+                .isWishListItem(productsInWishList.contains(UUID.fromString(product.getId())))
                 .build()).toList();
+    }
+
+    private Set<UUID> getIdsOfNewProductsInWishList(List<FeaturedProductAbstraction> products, User user, UserSession userSession) {
+        Optional<WishList> optionalWishList = getUserOrSessionWishList(user, userSession);
+        if (optionalWishList.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        List<Configuration> wishListItems = configurationRepository.findByWishListIdAndProductIdIn(
+                optionalWishList.get().getId(),
+                products.stream().map(product -> UUID.fromString(product.getId())).toList()
+        );
+
+        Set<UUID> productsInWishList = new HashSet<>();
+
+        for (FeaturedProductAbstraction product : products) {
+            Set<CompatibleOption> productVariants = product.getCategory()
+                    .getCategoryConfig()
+                    .getCompatibleOptions()
+                    .stream()
+                    .filter(CompatibleOption::getIsIncluded)
+                    .collect(Collectors.toSet());
+
+            for (Configuration item : wishListItems) {
+                if (!item.getProduct().getId().equals(UUID.fromString(product.getId()))) {
+                    continue;
+                }
+
+                boolean isVariantInProductBaseConfiguration = true;
+                for (ConfigOptions configOption : item.getConfiguredOptions()) {
+                    if (configOption.getIsMeasured()) {
+                        isVariantInProductBaseConfiguration = isVariantInProductBaseConfiguration
+                                && productVariants.stream().anyMatch(option -> option.getId().toString().equals(configOption.getOptionId())
+                                && option.getSize().equals(Integer.valueOf(configOption.getSize())));
+                    } else {
+                        isVariantInProductBaseConfiguration = isVariantInProductBaseConfiguration && configOption.isIncluded();
+                    }
+                }
+                if (isVariantInProductBaseConfiguration) {
+                    productsInWishList.add(UUID.fromString(product.getId()));
+                    break;
+                }
+            }
+        }
+
+        return productsInWishList;
     }
 
     private ProductResponse mapProductToProductResponse(Product updatedProduct) {

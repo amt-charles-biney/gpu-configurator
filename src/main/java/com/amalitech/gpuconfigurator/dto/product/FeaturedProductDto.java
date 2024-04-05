@@ -14,6 +14,7 @@ public record FeaturedProductDto(
         BigDecimal productPrice,
 
         String productBrand,
-        boolean productAvailability
+        boolean productAvailability,
+        boolean isWishListItem
         ) {
 }
