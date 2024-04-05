@@ -2,12 +2,16 @@ package com.amalitech.gpuconfigurator.controller;
 
 import com.amalitech.gpuconfigurator.dto.FeaturedResponseDto;
 import com.amalitech.gpuconfigurator.dto.product.FeaturedProductDto;
+import com.amalitech.gpuconfigurator.model.User;
+import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.service.product.FeaturedService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,8 +28,13 @@ public class FeaturedProductController {
     @CrossOrigin
     @GetMapping("/v1/featured")
     @ResponseStatus(HttpStatus.OK)
-    public List<FeaturedProductDto> getAllFeaturedProduct() {
-        return featuredService.getAllFeaturedProduct();
+    public List<FeaturedProductDto> getAllFeaturedProduct(
+            @RequestAttribute("userSession") UserSession userSession,
+            Principal principal
+    ) {
+        User user = principal == null ? null : (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+
+        return featuredService.getAllFeaturedProduct(user, userSession);
     }
 
     @Operation(

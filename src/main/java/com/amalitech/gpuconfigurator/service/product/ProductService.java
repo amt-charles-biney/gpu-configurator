@@ -24,7 +24,7 @@ public interface ProductService {
 
     Page<ProductResponse> getAllProducts(int page, int size, String sort);
 
-    List<FeaturedProductDto> getNewProducts();
+    List<FeaturedProductDto> getNewProducts(User user, UserSession userSession);
 
 
     Page<ProductResponse> getAllProductsAdmin(Integer page, Integer size, String query);
