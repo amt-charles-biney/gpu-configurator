@@ -24,6 +24,8 @@ public class WebConfiguration implements WebMvcConfigurer {
                 .excludePathPatterns("/swagger-ui/**", "/v3/api-docs/**");
     }
 
+
+    // re-run the deployment
 //    @Override
 //    public void addCorsMappings(CorsRegistry registry) {
 //        registry.addMapping("/**")
