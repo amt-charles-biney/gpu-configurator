@@ -25,10 +25,10 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
     @Query("SELECT i FROM Product i WHERE i.productId =?1")
     Optional<Product> getProductByProductId(String productId);
 
-    @Query("SELECT p FROM Product p WHERE p.featured = true")
+    @Query("SELECT p FROM Product p WHERE p.featured = true AND p.isDeleted = FALSE ")
     Optional<List<FeaturedProductAbstraction>> getFeaturedProduct();
 
-    @Query("SELECT p FROM Product p WHERE p.createdAt >= :startDate")
+    @Query("SELECT p FROM Product p WHERE p.createdAt >= :startDate AND p.isDeleted = FALSE ")
     Optional<List<FeaturedProductAbstraction>> getBrandNewProducts(@Param("startDate") LocalDateTime startDate);
 
     @Query("SELECT COUNT(p) FROM Product p WHERE p.category.id = :categoryId")
