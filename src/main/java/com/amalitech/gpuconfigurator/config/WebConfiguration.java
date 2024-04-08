@@ -24,12 +24,12 @@ public class WebConfiguration implements WebMvcConfigurer {
                 .excludePathPatterns("/swagger-ui/**", "/v3/api-docs/**");
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("https://servers.amalitech-dev.net", "http://localhost:4200")
-                .allowCredentials(true)
-                .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name(), HttpMethod.PATCH.name())
-                .allowedHeaders("*");
-    }
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**")
+//                .allowedOrigins("https://servers.amalitech-dev.net", "http://localhost:4200")
+//                .allowCredentials(true)
+//                .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name(), HttpMethod.PATCH.name())
+//                .allowedHeaders("*");
+//    }
 }
