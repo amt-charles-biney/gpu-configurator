@@ -53,20 +53,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     private List<IncompatibleAttributeResponse> getAllAttributesById(List<String> attributeUUIDStrings) {
         List<UUID> attributeUUIDs = attributeUUIDStrings.stream().map(UUID::fromString).toList();
-        return attributeOptionRepository.findAllById(attributeUUIDs).stream().map(attribute -> IncompatibleAttributeResponse
-                .builder()
-                .id(attribute.getId().toString())
-                .optionName(attribute.getOptionName())
-                .optionPrice(attribute.getPriceAdjustment())
-                .additionalInfo(new AttributeVariantDto(attribute.getBaseAmount(), attribute.getMaxAmount(), attribute.getPriceFactor()))
-                .brand(attribute.getBrand())
-                .attribute(AttributeResponseDto
-                        .builder()
-                        .id(attribute.getAttribute().getId().toString())
-                        .isMeasured(attribute.getAttribute().isMeasured())
-                        .name(attribute.getAttribute().getAttributeName())
-                        .build())
-                .build()).distinct().toList();
+        return attributeOptionRepository.findAllById(attributeUUIDs).stream().map(this::createAttributeResponseIncompatibleOptions).distinct().toList();
     }
 
     @Override
@@ -284,6 +271,23 @@ public class AttributeServiceImpl implements AttributeService {
                 .toList();
     }
 
+    private IncompatibleAttributeResponse createAttributeResponseIncompatibleOptions(AttributeOption attributeOption) {
+        return IncompatibleAttributeResponse
+                .builder()
+                .id(attributeOption.getId().toString())
+                .optionName(attributeOption.getOptionName())
+                .optionPrice(attributeOption.getPriceAdjustment())
+                .additionalInfo(new AttributeVariantDto(attributeOption.getBaseAmount(), attributeOption.getMaxAmount(), attributeOption.getPriceFactor()))
+                .optionMedia(attributeOption.getMedia())
+                .attribute(
+                        new AttributeResponseDto(
+                                attributeOption.getAttribute().getAttributeName(),
+                                attributeOption.getAttribute().getId().toString(),
+                                attributeOption.getAttribute().isMeasured(),
+                                attributeOption.getAttribute().getUnit()
+                        ))
+                .build();
+    }
 
     private AttributeOptionResponseDto createAttributeResponseType(@NotNull AttributeOption attributeOption) {
         return AttributeOptionResponseDto

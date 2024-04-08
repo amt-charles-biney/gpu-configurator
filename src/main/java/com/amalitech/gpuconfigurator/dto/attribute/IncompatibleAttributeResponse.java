@@ -6,5 +6,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
-public record IncompatibleAttributeResponse(String id, String optionName, AttributeVariantDto additionalInfo, BigDecimal optionPrice, String optionMedia, AttributeResponseDto attribute, String brand) {
+public record IncompatibleAttributeResponse(String id, String optionName, AttributeVariantDto additionalInfo, BigDecimal optionPrice, String optionMedia, AttributeResponseDto attribute) {
 }
+

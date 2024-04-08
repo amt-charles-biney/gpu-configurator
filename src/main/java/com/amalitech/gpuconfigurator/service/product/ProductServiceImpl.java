@@ -78,7 +78,8 @@ public class ProductServiceImpl implements ProductService {
         brandSubquery.select(builder.literal(1L));
         brandSubquery.where(
                 builder.and(
-                        builder.in(compatibleOptionJoin.get("attributeOption").get("brand")).value(brands),
+                        builder.trim(CriteriaBuilder.Trimspec.BOTH, ' ', compatibleOptionJoin.get("attributeOption").get("brand"))
+                                .in(brands),
                         builder.isTrue(compatibleOptionJoin.get("isCompatible"))
                 )
         );
@@ -374,11 +375,17 @@ public class ProductServiceImpl implements ProductService {
             }
 
             if (!dto.categories().isEmpty()) {
-                predicates.add(builder.in(root.get("category").get("categoryName")).value(dto.categories()));
+                predicates.add(
+                        builder.trim(CriteriaBuilder.Trimspec.BOTH, ' ', root.get("category").get("categoryName"))
+                                .in(dto.categories())
+                );
             }
 
             if (!dto.cases().isEmpty()) {
-                predicates.add(builder.in(root.get("productCase").get("name")).value(dto.cases()));
+                predicates.add(
+                        builder.trim(CriteriaBuilder.Trimspec.BOTH, ' ', root.get("productCase").get("name"))
+                                .in(dto.cases())
+                );
             }
 
             if (!dto.prices().isEmpty()) {
