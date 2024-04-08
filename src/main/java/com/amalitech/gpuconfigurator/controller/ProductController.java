@@ -98,10 +98,10 @@ public class ProductController {
     ) {
         ProductSearchRequest productSearchRequest = ProductSearchRequest.builder()
                 .query(query)
-                .cases(productCase.stream().map(String::strip).toList())
+                .cases(productCase.stream().map(String::trim).toList())
                 .prices(price)
-                .brands(brand.stream().map(String::strip).toList())
-                .categories(categories.stream().map(String::strip).toList())
+                .brands(brand.stream().map(String::trim).toList())
+                .categories(categories.stream().map(String::trim).toList())
                 .build();
 
         User user = principal == null ? null : (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
