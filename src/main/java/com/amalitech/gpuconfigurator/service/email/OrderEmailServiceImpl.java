@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CancellationEmailServiceImpl implements CancellationEmailService {
+public class OrderEmailServiceImpl implements OrderEmailService {
 
     private final JavaMailSender mailSender;
 
@@ -17,7 +17,7 @@ public class CancellationEmailServiceImpl implements CancellationEmailService {
     private String sender;
 
     @Override
-    public void cancelEmail(String toEMail, String body, String subject) {
+    public void sendEmail(String toEMail, String body, String subject) {
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(sender);

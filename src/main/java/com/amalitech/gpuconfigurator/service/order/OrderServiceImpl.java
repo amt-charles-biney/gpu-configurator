@@ -18,12 +18,12 @@ import com.amalitech.gpuconfigurator.repository.OrderRepository;
 import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
-import com.amalitech.gpuconfigurator.service.email.CancellationEmailService;
+import com.amalitech.gpuconfigurator.service.email.OrderEmailService;
 import com.amalitech.gpuconfigurator.service.status.StatusService;
 import com.easypost.exception.EasyPostException;
-import com.easypost.exception.General.MissingParameterError;
 import com.easypost.model.Shipment;
 import com.easypost.service.EasyPostClient;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -51,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserSessionRepository userSessionRepository;
     private final CompatibleOptionRepository compatibleOptionRepository;
     private final AttributeOptionRepository attributeOption;
-    private final CancellationEmailService cancellationEmailService;
+    private final OrderEmailService orderEmailService;
     @Value("${easy-test-key}")
     private String easyPost;
 
@@ -91,6 +91,10 @@ public class OrderServiceImpl implements OrderService {
                 .estDeliveryDate(null)
                 .payment(payment).build();
         orderRepository.save(order);
+
+
+        String message = "New order with orderId: " + order.getId();
+        orderEmailService.sendEmail(ShipmentContants.ADDRESS_FROM_EMAIL, message, "New Order");
 
         reduceStock(order.getCart());
 
@@ -176,7 +180,7 @@ public class OrderServiceImpl implements OrderService {
 
         String message = "Sorry, we cannot process your order due to the following reason\n" + status.reason() + "\nThank you for your cooperation";
 
-        cancellationEmailService.cancelEmail(order.getUserSession().getCurrentShipping().getEmail(), message, "Order Cancelled");
+        orderEmailService.sendEmail(order.getUserSession().getCurrentShipping().getEmail(), message, "Order Cancelled");
         return GenericResponse.builder()
                 .status(200)
                 .message("order id" + " " + id + " " + "updated")

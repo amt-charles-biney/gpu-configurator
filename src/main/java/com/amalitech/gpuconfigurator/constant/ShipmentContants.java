@@ -9,7 +9,7 @@ public class ShipmentContants {
 
     public static final String ADDRESS_FROM_COUNTRY = "US";
 
-    public static final String ADDRESS_FROM_EMAIL = "s3vers@admin.com";
+    public static final String ADDRESS_FROM_EMAIL = "admin@servers.com";
     public static final String ADDRESS_FROM_PHONE = "+233 123 123 1234";
 
     public static final String ADDRESS_FROM_ID = "1234456";
