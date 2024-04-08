@@ -1,7 +1,10 @@
 package com.amalitech.gpuconfigurator.service.cases;
 
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionResponseDto;
 import com.amalitech.gpuconfigurator.dto.attribute.AttributeResponseDto;
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeVariantDto;
+import com.amalitech.gpuconfigurator.dto.attribute.IncompatibleAttributeResponse;
 import com.amalitech.gpuconfigurator.dto.cases.AttributeOptionResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CaseResponse;
 import com.amalitech.gpuconfigurator.dto.cases.CreateCaseRequest;
@@ -142,21 +145,22 @@ public class CaseServiceImpl implements CaseService {
                 .build();
     }
 
-    private AttributeOptionResponse mapAttributeOptionToAttributeOptionResponse(AttributeOption attributeOption) {
-        return AttributeOptionResponse.builder()
-                .id(attributeOption.getId())
-                .optionName(attributeOption.getOptionName())
-                .priceAdjustment(attributeOption.getPriceAdjustment())
-                .media(attributeOption.getMedia())
-                .baseAmount(attributeOption.getBaseAmount())
-                .maxAmount(attributeOption.getMaxAmount())
-                .priceFactor(attributeOption.getPriceFactor())
-                .attribute(AttributeResponseDto.builder()
-                        .id(String.valueOf(attributeOption.getAttribute().getId()))
-                        .name(attributeOption.getAttribute().getAttributeName())
-                        .unit(attributeOption.getAttribute().getUnit())
-                        .build())
-                .build();
+    private IncompatibleAttributeResponse mapAttributeOptionToAttributeOptionResponse(AttributeOption attributeOption) {
+            return IncompatibleAttributeResponse
+                    .builder()
+                    .id(attributeOption.getId().toString())
+                    .optionName(attributeOption.getOptionName())
+                    .optionPrice(attributeOption.getPriceAdjustment())
+                    .additionalInfo(new AttributeVariantDto(attributeOption.getBaseAmount(), attributeOption.getMaxAmount(), attributeOption.getPriceFactor()))
+                    .optionMedia(attributeOption.getMedia())
+                    .attribute(
+                            new AttributeResponseDto(
+                                    attributeOption.getAttribute().getAttributeName(),
+                                    attributeOption.getAttribute().getId().toString(),
+                                    attributeOption.getAttribute().isMeasured(),
+                                    attributeOption.getAttribute().getUnit()
+                            ))
+                    .build();
     }
     public List<Case> findAllCasesById(List<UUID> caseIds) {
         return caseRepository.findAllById(caseIds);

@@ -1,5 +1,7 @@
 package com.amalitech.gpuconfigurator.dto.cases;
 
+import com.amalitech.gpuconfigurator.dto.attribute.AttributeOptionResponseDto;
+import com.amalitech.gpuconfigurator.dto.attribute.IncompatibleAttributeResponse;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +30,7 @@ public class CaseResponse {
 
     private BigDecimal price;
 
-    private List<AttributeOptionResponse> incompatibleVariants;
+    private List<IncompatibleAttributeResponse> incompatibleVariants;
 
     private LocalDateTime createdAt;
 
