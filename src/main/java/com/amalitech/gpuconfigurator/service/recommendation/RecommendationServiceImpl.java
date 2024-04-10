@@ -1,6 +1,7 @@
 package com.amalitech.gpuconfigurator.service.recommendation;
 
 import com.amalitech.gpuconfigurator.dto.product.FeaturedProductDto;
+import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.User;
 import com.amalitech.gpuconfigurator.model.UserSession;
@@ -84,6 +85,12 @@ public class RecommendationServiceImpl implements RecommendationService {
                 .coverImage(featuredProduct.getProductCase().getCoverImageUrl())
                 .productPrice(featuredProduct.getTotalProductPrice())
                 .productBrand(featuredProduct.getProductCase().getName())
+                .productAvailability(featuredProduct.getCategory().getCategoryConfig().getCompatibleOptions()
+                        .stream()
+                        .filter(CompatibleOption::getIsIncluded)
+                        .allMatch(includedOption ->
+                                includedOption.getAttributeOption().getInStock() != null
+                                        && includedOption.getAttributeOption().getInStock() > 0))
                 .build();
     }
 }
