@@ -38,7 +38,7 @@ public class Attribute {
     private String description;
 
     @Column
-    private boolean isDefaultRequired;
+    private boolean isDefaultRequired = false;
 
     @Column
     private boolean isRequired;
