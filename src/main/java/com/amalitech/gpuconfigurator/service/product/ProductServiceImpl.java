@@ -450,6 +450,10 @@ public class ProductServiceImpl implements ProductService {
                     continue;
                 }
 
+                if (item.getProduct().getCategory().getCategoryName().equals("unassigned")) {
+                    continue;
+                }
+
                 boolean isVariantInProductBaseConfiguration = true;
                 for (ConfigOptions configOption : item.getConfiguredOptions()) {
                     if (configOption.getIsMeasured()) {
@@ -545,6 +549,10 @@ public class ProductServiceImpl implements ProductService {
 
             for (Configuration item : wishListItems) {
                 if (!item.getProduct().getId().equals(UUID.fromString(product.getId()))) {
+                    continue;
+                }
+
+                if (item.getProduct().getCategory().getCategoryName().equals("unassigned")) {
                     continue;
                 }
 
