@@ -38,6 +38,9 @@ public class Attribute {
     private String description;
 
     @Column
+    private boolean isDefaultRequired;
+
+    @Column
     private boolean isRequired;
 
     @JsonIgnore

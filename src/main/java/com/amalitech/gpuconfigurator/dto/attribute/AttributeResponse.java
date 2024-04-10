@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.UUID;
 
 @Builder
-public record AttributeResponse(UUID id, String attributeName, Boolean isMeasured, String unit, String description, List<AttributeOptionResponseDto> attributeOptions, boolean isRequired) {
+public record AttributeResponse(UUID id, String attributeName, Boolean isMeasured, String unit, String description, List<AttributeOptionResponseDto> attributeOptions, boolean isDefaultRequired, boolean isRequired) {
 }

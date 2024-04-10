@@ -319,6 +319,7 @@ public class AttributeServiceImpl implements AttributeService {
                 .isMeasured(attribute.isMeasured())
                 .isRequired(attribute.isRequired())
                 .description(attribute.getDescription())
+                .isDefaultRequired(attribute.isDefaultRequired())
                 .unit(attribute.getUnit())
                 .attributeOptions(this.streamAttributeOptions(attributeOptions))
                 .build();
