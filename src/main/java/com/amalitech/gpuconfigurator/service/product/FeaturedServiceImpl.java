@@ -115,6 +115,10 @@ public class FeaturedServiceImpl implements FeaturedService {
                     continue;
                 }
 
+                if (item.getProduct().getCategory().getCategoryName().equals("unassigned")) {
+                    continue;
+                }
+
                 boolean isVariantInProductBaseConfiguration = true;
                 for (ConfigOptions configOption : item.getConfiguredOptions()) {
                     if (configOption.getIsMeasured()) {
