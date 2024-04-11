@@ -319,7 +319,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
     }
 
     public Long extractProductCount(UUID category) {
-        return productRepository.countProductsByCategoryId(category);
+        return productRepository.countProductsByCategoryIdAndIsDeletedFalse(category);
     }
 
     public AttributeOption getAttributeOption(String id) {

@@ -54,4 +54,5 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
 @Query("SELECT p FROM Product p WHERE LOWER(p.productName) LIKE LOWER(CONCAT('%', :query, '%')) AND p.isDeleted = FALSE")
 Page<Product> findAllByProductWithNoSoftDelete(@Param("query") String query, Pageable pageable);
 
+    Long countProductsByCategoryIdAndIsDeletedFalse(UUID category);
 }
