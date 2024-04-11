@@ -57,7 +57,7 @@ public class WishListServiceImpl implements WishListService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return configuredProductRepository.findByWishListId(wishList.getId(), pageable)
+        return configuredProductRepository.findByWishListIdWithPagination(wishList.getId(), pageable)
                 .map(configuredProduct -> {
                     boolean isAvailable = configuredProduct
                             .getProduct()
