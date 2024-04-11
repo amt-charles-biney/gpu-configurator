@@ -37,7 +37,9 @@ public class NotificationServiceImpl {
         List<WishList> wishLists = wishListRepository.findAll();
 
         for (WishList wishList : wishLists) {
-            Set<Configuration> configurations = wishList.getConfiguredProducts();
+            // made changes to the set to return product not deleted
+            Set<Configuration> configurations = wishList.getConfiguredProducts()
+                    .stream().filter(configOption -> !configOption.getProduct().getIsDeleted()).collect(Collectors.toSet());
             for (Configuration configuration : configurations) {
 
                 boolean isProductPresent = this.isProductPresent(configuration, products);
@@ -78,7 +80,8 @@ public class NotificationServiceImpl {
                 products.addAll(categoryConfig.getCategory().getProducts());
             }
         }
-        return products;
+        return products
+                .stream().filter(product -> !product.getIsDeleted()).toList();
     }
 
     public boolean isLeastStockGreaterThan(List<CompatibleOption> compatibleOptions, String attributeName) {
