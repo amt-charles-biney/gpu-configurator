@@ -12,6 +12,7 @@ import com.easypost.exception.EasyPostException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -69,7 +70,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     @Override
-    public VerifyPaymentResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user, UserSession userSession) throws JsonProcessingException {
+    public VerifyPaymentResponse verifyPaymentTransaction(@Validated VerifyPaymentRequest reference, Principal user, UserSession userSession) throws JsonProcessingException, MessagingException {
 
         HttpHeaders verifyPaymentHeaders = new HttpHeaders();
         verifyPaymentHeaders.set("Authorization", "Bearer " + API_KEY);

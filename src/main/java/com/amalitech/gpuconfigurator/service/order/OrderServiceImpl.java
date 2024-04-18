@@ -5,6 +5,7 @@ import com.amalitech.gpuconfigurator.constant.ShipmentContants;
 import com.amalitech.gpuconfigurator.dto.CancelledDto;
 import com.amalitech.gpuconfigurator.dto.GenericResponse;
 import com.amalitech.gpuconfigurator.dto.ShipmentDto;
+import com.amalitech.gpuconfigurator.dto.email.EmailOrderRequest;
 import com.amalitech.gpuconfigurator.dto.order.CreateOrderDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderResponseDto;
 import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
@@ -19,6 +20,7 @@ import com.amalitech.gpuconfigurator.repository.UserRepository;
 import com.amalitech.gpuconfigurator.repository.UserSessionRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
 import com.amalitech.gpuconfigurator.service.email.OrderEmailService;
+import com.amalitech.gpuconfigurator.service.email.OrderManagementEmailServiceImpl;
 import com.amalitech.gpuconfigurator.service.status.StatusService;
 import com.easypost.exception.EasyPostException;
 import com.easypost.model.Shipment;
@@ -51,13 +53,13 @@ public class OrderServiceImpl implements OrderService {
     private final UserSessionRepository userSessionRepository;
     private final CompatibleOptionRepository compatibleOptionRepository;
     private final AttributeOptionRepository attributeOption;
-    private final OrderEmailService orderEmailService;
+    private final OrderManagementEmailServiceImpl orderEmailService;
     @Value("${easy-test-key}")
     private String easyPost;
 
     @Override
     @Transactional
-    public CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession) {
+    public CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession) throws MessagingException {
 
         User user = null;
         UsernamePasswordAuthenticationToken authenticationToken = ((UsernamePasswordAuthenticationToken) principal);
@@ -93,8 +95,14 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
 
-        String message = "New order with orderId: " + order.getId();
-        orderEmailService.sendEmail(ShipmentContants.ADDRESS_FROM_EMAIL, message, "New Order");
+        orderEmailService.send(
+                EmailOrderRequest
+                .builder()
+                .email(userSession.getCurrentShipping() != null ? userSession.getCurrentShipping().getEmail() :  user != null ? user.getEmail() : "")
+                .orderStatus(order.getStatus())
+                .orderId(order.getId().toString())
+                .message("New order with orderId: " + order.getId() + " " + order.getStatus())
+                .build());
 
         reduceStock(order.getCart());
 
@@ -172,15 +180,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public GenericResponse updateStatus(UUID id, OrderStatusUpdate status) {
+    public GenericResponse updateStatus(UUID id, OrderStatusUpdate status) throws MessagingException {
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
         order.setStatus(status.status());
         order.setReason(status.reason());
         orderRepository.save(order);
 
-        String message = "Sorry, we cannot process your order due to the following reason\n" + status.reason() + "\nThank you for your cooperation";
+        orderEmailService.send(
+                EmailOrderRequest
+                .builder()
+                .email(order.getUserSession().getCurrentShipping().getEmail())
+                .orderStatus(order.getStatus())
+                .orderId(order.getId().toString())
+                .message("Sorry, we cannot process your order due to the following reason\n" + status.reason() + "\nThank you for your cooperation")
+                .build());
 
-        orderEmailService.sendEmail(order.getUserSession().getCurrentShipping().getEmail(), message, "Order Cancelled");
         return GenericResponse.builder()
                 .status(200)
                 .message("order id" + " " + id + " " + "updated")

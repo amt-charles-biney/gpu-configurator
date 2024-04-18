@@ -9,6 +9,7 @@ import com.amalitech.gpuconfigurator.service.payment.PaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -43,7 +44,7 @@ public class PaymentController {
     @GetMapping("/v1/payment/{reference}")
     public ResponseEntity<Object> verifyPayment(@PathVariable String reference,
                                                 @RequestAttribute("userSession") UserSession userSession,
-                                                Principal principal) throws NoSuchFieldException, JsonProcessingException {
+                                                Principal principal) throws NoSuchFieldException, JsonProcessingException, MessagingException {
         VerifyPaymentRequest verifyPaymentRequest = new VerifyPaymentRequest(reference);
         return ResponseEntity.ok(paymentService.verifyPaymentTransaction(verifyPaymentRequest, principal, userSession));
     }

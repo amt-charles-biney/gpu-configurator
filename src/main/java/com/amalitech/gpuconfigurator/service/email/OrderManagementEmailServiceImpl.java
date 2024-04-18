@@ -25,6 +25,8 @@ public class OrderManagementEmailServiceImpl implements EmailService<EmailOrderR
 
         Context context = new Context();
         context.setVariable("message", message.message());
+        context.setVariable("status", message.orderStatus());
+        context.setVariable("orderId", message.orderId());
 
         String process = templateEngine.process("email-order-template", context);
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();

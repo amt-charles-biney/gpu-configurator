@@ -106,21 +106,19 @@
     <tbody>
     <tr>
         <td>
-            <h1>Your Order is Confirmed</h1>
+            <h1>Product Stock Update</h1>
         </td>
     </tr>
 
     <tr>
         <td class="content-wrapper">
-            <p th:text="${message}">Thank you for your order!</p>
-            <p>Progress status : <span style="color: #3CB043;" th:text="${status}"></span></p>
+            <p th:text="${message}">Product Updated!</p>
             <div class="order-details">
-                <p>OrderId: <span style="font-weight: bold;" th:text="${orderId}"></span></p>
-
+                <p>Product: <span style="font-weight: bold;" th:text="${productId}"></span></p>
             </div>
 
-            <p>To track your order, click the button below:</p>
-            <a th:href="'https://servers.amalitech-dev.net/settings/orders/' + ${orderId}" class="call-to-action">Track Your Order</a>
+            <p>To view Product, click the button below:</p>
+            <a th:href="'https://servers.amalitech-dev.net/product/configure/' + ${productId}" class="call-to-action">view product</a>
             <p class="disclaimer">For any questions or concerns, please contact our support team.</p>
         </td>
     </tr>

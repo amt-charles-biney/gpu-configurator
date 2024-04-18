@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.email;
 
+import com.amalitech.gpuconfigurator.dto.email.EmailStockRequest;
 import com.amalitech.gpuconfigurator.dto.email.EmailTemplateRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -13,22 +14,23 @@ import org.thymeleaf.context.Context;
 
 @Service
 @RequiredArgsConstructor
-public class NotifyStockUpdateEmailServiceImpl implements EmailService<EmailTemplateRequest>{
+public class NotifyStockUpdateEmailServiceImpl implements EmailService<EmailStockRequest>{
 
     private final JavaMailSender javaMailSender;
     private final ITemplateEngine templateEngine;
     @Override
-    public void send(EmailTemplateRequest emailTemplateRequest) throws MessagingException {
-        if(!isValidEmail(emailTemplateRequest.to())) throw new EntityNotFoundException("email is not valid");
+    public void send(EmailStockRequest emailStockRequest) throws MessagingException {
+        if(!isValidEmail(emailStockRequest.email())) throw new EntityNotFoundException("email is not valid");
         Context context = new Context();
-        context.setVariable("message", emailTemplateRequest.message());
+        context.setVariable("message", emailStockRequest.message());
+        context.setVariable("productId", emailStockRequest.productId());
 
-        String process = templateEngine.process(emailTemplateRequest.templateString(), context);
+        String process = templateEngine.process("email-stock-template", context);
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-        helper.setSubject(emailTemplateRequest.title());
+        helper.setSubject("Product Stock Update");
         helper.setText(process, true);
-        helper.setTo(emailTemplateRequest.to());
+        helper.setTo(emailStockRequest.email());
 
         javaMailSender.send(mimeMessage);
     }

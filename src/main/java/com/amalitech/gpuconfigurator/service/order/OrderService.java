@@ -9,6 +9,7 @@ import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
 import com.amalitech.gpuconfigurator.model.UserSession;
 import com.amalitech.gpuconfigurator.model.payment.Payment;
 import com.easypost.exception.EasyPostException;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 
@@ -18,7 +19,7 @@ import java.util.UUID;
 
 public interface OrderService {
     @Transactional
-    CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession);
+    CreateOrderDto createOrder(Payment payment, Principal principal, UserSession userSession) throws MessagingException;
 
     Page<OrderResponseDto> getAllOrders(Integer page, Integer size);
 
@@ -30,7 +31,7 @@ public interface OrderService {
     @Transactional
     GenericResponse deleteBulkProducts(List<String> ids);
 
-    GenericResponse updateStatus(UUID id, OrderStatusUpdate status);
+    GenericResponse updateStatus(UUID id, OrderStatusUpdate status) throws MessagingException;
 
     GenericResponse updateStatusByTrackingCode(String trackingCode, String status, String deliveryDate);
 

@@ -7,6 +7,7 @@ import com.amalitech.gpuconfigurator.dto.order.OrderStatusUpdate;
 import com.amalitech.gpuconfigurator.service.order.OrderFiltering;
 import com.amalitech.gpuconfigurator.service.order.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -95,7 +96,7 @@ public class OrderController {
     public ResponseEntity<GenericResponse> cancelledOrder(
             @PathVariable("id") UUID id,
             @RequestBody OrderStatusUpdate status
-    ) {
+    ) throws MessagingException {
         return ResponseEntity.ok(orderService.updateStatus(id, status));
     }
 

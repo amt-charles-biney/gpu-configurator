@@ -1,5 +1,6 @@
 package com.amalitech.gpuconfigurator.service.messageQueue.redis.subscriber;
 
+import com.amalitech.gpuconfigurator.dto.email.EmailStockRequest;
 import com.amalitech.gpuconfigurator.dto.email.EmailTemplateRequest;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.User;
@@ -29,20 +30,21 @@ public class RedisStockUpdateListener implements MessageListener {
         for (Map.Entry<User, Product> entry : usersToProduct.entrySet()) {
             User user = entry.getKey();
             Product product = entry.getValue();
+            if(user != null) {
+                EmailStockRequest emailStockRequest = EmailStockRequest
+                        .builder()
+                        .email(user != null ? user.getEmail() : "blank@email.com")
+                        .message("Product " + product.getProductName() + " has been updated in stock value")
+                        .productId(product.getId().toString())
+                        .build();
 
-            EmailTemplateRequest emailTemplateRequest = EmailTemplateRequest
-                    .builder()
-                    .to(user.getEmail())
-                    .message("Product " + product.getProductName() + " has been updated in stock value")
-                    .templateString("email-generic-template")
-                    .title("Product stock Update")
-                    .build();
-
-            try {
-                emailService.send(emailTemplateRequest);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
+                try {
+                    emailService.send(emailStockRequest);
+                } catch (MessagingException e) {
+                    throw new RuntimeException(e);
+                }
             }
+
         }
     }
 }
