@@ -2,7 +2,7 @@ name: Java CI/CD with Maven
 
 on:
   push:
-    branches: ["devop/pipeline-update", "PresentationLayDev" ]
+    branches: ["PresentationLayDev" ]
 #   pull_request:
 #     branches: [  ]
 
