@@ -258,6 +258,7 @@ public class ProductServiceImpl implements ProductService {
                 // handling the exception here will cause the UI to break
             }
 
+
             return ProductResponse.builder()
                     .productName(product.getProductName())
                     .id(product.getId().toString())
