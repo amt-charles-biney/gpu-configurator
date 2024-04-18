@@ -45,7 +45,7 @@ public class Category {
     private CategoryConfig categoryConfig;
 
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE, CascadeType.REFRESH })
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @JoinTable(
             name = "category_case",
             joinColumns = @JoinColumn(name = "category_id"),

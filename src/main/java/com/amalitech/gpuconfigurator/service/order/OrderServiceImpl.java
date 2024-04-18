@@ -104,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
                 .message("New order with orderId: " + order.getId() + " " + order.getStatus())
                 .build());
 
-        reduceStock(order.getCart());
+//        reduceStock(order.getCart());
 
         return CreateOrderDto.builder()
                 .orderId(order.getId())
@@ -246,6 +246,8 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(StatusService.mapEasyPostStatus(boughtShipment.getTracker().getStatus()));
         order.setEstDeliveryDate(boughtShipment.getTracker().getEstDeliveryDate() != null ? boughtShipment.getTracker().getEstDeliveryDate().toString() : null);
         orderRepository.save(order);
+
+        reduceStock(order.getCart());
 
     }
 
