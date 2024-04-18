@@ -37,7 +37,7 @@ public class BrandServiceImpl implements BrandService {
                         .description(brand.getAttribute().getDescription())
                         .build())
                 .collect(Collectors.toMap(
-                        brand -> brand.name().toLowerCase(),
+                        brand -> brand.name().toLowerCase().strip().trim(),
                         brand -> brand,
                         (existing, replacement) -> existing))
                 .values().stream()

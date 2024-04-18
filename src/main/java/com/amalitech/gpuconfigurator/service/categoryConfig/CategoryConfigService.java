@@ -28,7 +28,7 @@ public interface CategoryConfigService {
     GenericResponse deleteCategoryAndCategoryConfig(List<String> categoryIds);
 
     @Transactional
-    GenericResponse updateCategoryAndConfigs(CompatibleOptionEditResponse compatibleOptionEditResponse);
+    CompatibleOptionGetResponse updateCategoryAndConfigs(CompatibleOptionEditResponse compatibleOptionEditResponse);
 
     @Transactional
     void updateExistingCategoryConfigs(List<AttributeOption> attributeOptions);

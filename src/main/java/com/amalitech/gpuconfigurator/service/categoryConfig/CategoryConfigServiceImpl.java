@@ -8,12 +8,10 @@ import com.amalitech.gpuconfigurator.model.CategoryConfig;
 import com.amalitech.gpuconfigurator.model.CompatibleOption;
 import com.amalitech.gpuconfigurator.model.Product;
 import com.amalitech.gpuconfigurator.model.attributes.AttributeOption;
-import com.amalitech.gpuconfigurator.repository.CaseRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryConfigRepository;
 import com.amalitech.gpuconfigurator.repository.CategoryRepository;
 import com.amalitech.gpuconfigurator.repository.ProductRepository;
 import com.amalitech.gpuconfigurator.repository.attribute.AttributeOptionRepository;
-import com.amalitech.gpuconfigurator.service.cases.CaseServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.CategoryServiceImpl;
 import com.amalitech.gpuconfigurator.service.category.compatible.CompatibleOptionServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
@@ -200,7 +198,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
 
     @Override
     @Transactional
-    public GenericResponse updateCategoryAndConfigs(CompatibleOptionEditResponse compatibleOptionEditResponse) {
+    public CompatibleOptionGetResponse updateCategoryAndConfigs(CompatibleOptionEditResponse compatibleOptionEditResponse) {
         CategoryConfig categoryConfig = categoryConfigRepository.findByCategoryId(UUID.fromString(compatibleOptionEditResponse.id()))
                 .orElseThrow(() -> new EntityNotFoundException("configuration does not exist"));
 
@@ -212,7 +210,7 @@ public class CategoryConfigServiceImpl implements CategoryConfigService {
         );
         compatibleOptionService.updateBulkCompatibleOptions(categoryConfig, compatibleOptionEditResponse.config());
 
-        return new GenericResponse(HttpStatus.ACCEPTED.value(), "updated category and config");
+        return this.getCategoryAndCompatibleOption(UUID.fromString(compatibleOptionEditResponse.id()));
     }
 
     public CategoryConfigResponseDto getCategoryConfigByProduct(String productId) {

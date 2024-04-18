@@ -84,8 +84,8 @@ public class CategoryConfigController {
     )
     @CrossOrigin
     @PutMapping("/v1/admin/category/config/{categoryId}")
-    public ResponseEntity<GenericResponse> update(@RequestBody CompatibleOptionEditResponse compatibleOptionEditResponse) {
-        GenericResponse result = categoryConfigServiceImpl.updateCategoryAndConfigs(compatibleOptionEditResponse);
+    public ResponseEntity<CompatibleOptionGetResponse> update(@RequestBody CompatibleOptionEditResponse compatibleOptionEditResponse) {
+        CompatibleOptionGetResponse result = categoryConfigServiceImpl.updateCategoryAndConfigs(compatibleOptionEditResponse);
         return ResponseEntity.ok(result);
     }
 
